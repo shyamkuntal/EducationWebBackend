@@ -10,6 +10,8 @@ import {
   getallsubboards,
   getallsubjects,
   getsinglesheet,
+  AssignSheetToPastPaper,
+  AssignSheetToReviewer,
 } from "../controller/PPMSupervisor/PPMSupervisor.js";
 import { Sheet } from "../models/Sheet.js";
 import { paginatedSheetResults } from "../middlewares/paginatedSheet.js";
@@ -30,5 +32,6 @@ router.get("/:sheetid/getsheet/", getsinglesheet);
 router.patch("/:sheetid/togglepublishsheet", TogglePublishSheet);
 router.patch("/:sheetid/togglearchivesheet", ToggleArchiveSheet);
 
-// router.post("/:sheetid/createassignmenttopp", AddSheetAssignmentToPastPaper);
+router.post("/assignsheettopastpaper", AssignSheetToPastPaper);
+router.post("/assignsheettoreviewer", AssignSheetToReviewer);
 export default router;

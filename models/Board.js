@@ -38,7 +38,7 @@ const Board = db.define("board", {
 });
 
 Board.sync().then(() => {
-  console.log("table created");
+  console.log("Board created");
 });
 
 const SubBoard = db.define("subBoard", {
@@ -57,7 +57,7 @@ const SubBoard = db.define("subBoard", {
 });
 
 SubBoard.sync().then(() => {
-  console.log(" sub-board table created");
+  console.log("sub-board created");
 });
 
 SubBoard.belongsTo(Board, {

@@ -52,8 +52,10 @@ const Roles = db.define("roles", {
   },
 });
 
+User.belongsTo(Roles, { foreignKey: "roleId" });
+
 Roles.sync().then(() => {
-  console.log(" Roles table created");
+  console.log("Roles created");
 });
 
 // SubBoard.belongsTo(Board, {

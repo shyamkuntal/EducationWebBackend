@@ -2,6 +2,8 @@ import { Sequelize } from "sequelize";
 import { db } from "../config/database.js";
 import { Board, SubBoard } from "./Board.js";
 import { Subject, SubjectLevel } from "./Subject.js";
+import { User, Roles } from "./User.js";
+import { sheetModelConstants } from "../constants/constants.js";
 const grades = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 const Sheet = db.define("sheet", {
@@ -44,6 +46,22 @@ const Sheet = db.define("sheet", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  lifeCycle: {
+    type: Sequelize.STRING,
+    defaultValue: sheetModelConstants.defaultSheetLifeCycle,
+  },
+  supervisorId: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
+  assignedToUserId: {
+    type: Sequelize.INTEGER,
+    allowNull: true,
+  },
+  isSpam: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
   isArchived: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
@@ -74,4 +92,44 @@ Sheet.belongsTo(SubBoard, {
   foreignKey: "SubBoardId",
 });
 
-export { Sheet };
+Sheet.belongsTo(User, {
+  foreignKey: "assignedToUserId",
+  as: "assignedTo",
+});
+Sheet.belongsTo(User, {
+  foreignKey: "supervisorId",
+  as: "supervisor",
+});
+
+const SheetStatus = db.define("sheetStatus", {
+  sheetId: { type: Sequelize.INTEGER, allowNull: false },
+  statusForSupervisor: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  statusForPastPaper: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  statusForReviewer: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+});
+
+SheetStatus.sync().then(() => {
+  console.log("sheetStatus created");
+});
+
+const SheetLog = db.define("sheetLog", {
+  sheetId: { type: Sequelize.INTEGER, allowNull: false },
+  assignee: { type: Sequelize.STRING, allowNull: false },
+  assignedTo: { type: Sequelize.STRING, allowNull: false },
+  logMessage: { type: Sequelize.STRING, allowNull: false },
+});
+
+SheetLog.sync().then(() => {
+  console.log("sheetLog created");
+});
+
+export { Sheet, SheetStatus, SheetLog };

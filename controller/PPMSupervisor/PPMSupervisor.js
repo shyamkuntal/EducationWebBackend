@@ -1,7 +1,12 @@
 import { Sequelize } from "sequelize";
 import { Board, SubBoard } from "../../models/Board.js";
 import { Sheet } from "../../models/Sheet.js";
+import { roleNames } from "../../constants/constants.js";
 import { Subject, SubjectLevel } from "../../models/Subject.js";
+import { services } from "../../services/index.js";
+import { assignUserToSheetSchema } from "../../validations/PPMSupervisorValidations.js";
+import { sheetStatuses, sheetLogsMessages } from "../../constants/constants.js";
+import httpStatus from "http-status";
 
 //take care of isarchived and ispublished later
 export const CreateSheet = async (req, res) => {
@@ -17,6 +22,7 @@ export const CreateSheet = async (req, res) => {
       varient,
       paperNumber,
       resources,
+      supervisorId,
     } = req.body;
 
     const sheet = await Sheet.create({
@@ -30,8 +36,16 @@ export const CreateSheet = async (req, res) => {
       varient,
       paperNumber,
       resources,
+      supervisorId,
     });
-    return res.json({ status: 200, sheet });
+
+    let sheetData = sheet.get({ plain: true });
+
+    // creating sheetStatus record
+
+    let createSheetStatusRecord =
+      await services.sheetService.createSheetStatusRecord(sheetData.id);
+    return res.json({ status: 200, sheet, createSheetStatusRecord });
   } catch (err) {
     return res.json({ status: 501, error: err.message });
   }
@@ -232,6 +246,97 @@ export const ToggleArchiveSheet = async (req, res) => {
     await sheet.save();
     res.json({ status: 200, sheet });
   } catch (err) {
+    return res.json({ status: 501, error: err.message });
+  }
+};
+
+export const AssignSheetToPastPaper = async (req, res) => {
+  try {
+    let values = await assignUserToSheetSchema.validateAsync(req.body);
+
+    let user = await services.userService.checkUserRole(
+      values.userId,
+      roleNames.PastPaper
+    );
+    let userData = user[0];
+
+    let sheetData = await services.sheetService.findSheetAndUser(
+      values.sheetId
+    );
+
+    let responseMessage = {
+      assinedUserToSheet: "",
+      UpdateSheetStatus: "",
+      sheetLog: "",
+    };
+    console.log(sheetData.supervisor.Name);
+    if (userData && sheetData) {
+      // Checking if sheet is already assigned to past paper uploader
+
+      if (sheetData.assignedToUserId === userData.id) {
+        res
+          .status(httpStatus.OK)
+          .send("sheet already assigned to past paper uploader");
+      } else {
+        //UPDATE sheet assignment & life cycle
+
+        let updateAssignAndUpdateLifeCycle =
+          await services.sheetService.assignUserToSheetAndUpdateLifeCycle(
+            sheetData.id,
+            userData.id,
+            roleNames.PastPaper
+          );
+
+        if (updateAssignAndUpdateLifeCycle.length > 0) {
+          responseMessage.assinedUserToSheet =
+            "Sheet assigned to past paper and lifeCycle updated successfully";
+        }
+
+        // UPDATE sheet status
+        let sheetStatusToBeUpdated = {
+          statusForSupervisor: sheetStatuses.NotStarted,
+          statusForPastPaper: sheetStatuses.NotStarted,
+          statusForReviewer: null,
+        };
+        let updateSheetStatus = await services.sheetService.updateSheetStatus(
+          values.sheetId,
+          sheetStatusToBeUpdated.statusForSupervisor,
+          sheetStatusToBeUpdated.statusForPastPaper,
+          sheetStatusToBeUpdated.statusForReviewer
+        );
+        if (updateSheetStatus.length > 0) {
+          responseMessage.UpdateSheetStatus =
+            "Sheet Status updated for supervisor and uploader successfully";
+        }
+        // CREATE sheet log for sheet assignment to past paper uploader
+
+        let createLog = await services.sheetService.createSheetLog(
+          sheetData.id,
+          sheetData.supervisor.Name,
+          userData.Name,
+          sheetLogsMessages.supervisorAssignToPastPaper
+        );
+
+        if (createLog) {
+          responseMessage.sheetLog =
+            "Log record for assignment to uploader added successfully";
+        }
+
+        res.status(httpStatus.OK).send(responseMessage);
+      }
+    } else {
+      res.status(httpStatus.BAD_REQUEST).send("Wrong user Id or Sheet Id");
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
+  }
+};
+
+export const AssignSheetToReviewer = async (req, res) => {
+  try {
+    console.log(req.body);
+  } catch (error) {
     return res.json({ status: 501, error: err.message });
   }
 };
