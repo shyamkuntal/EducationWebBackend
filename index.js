@@ -1,72 +1,83 @@
 import express from "express";
 import cors from "cors";
+import multer from "multer";
 import dotenv from "dotenv";
-import BoardRouters from "./routes/BoardManagement.js";
-import SubjectRouters from "./routes/SubjectManagement.js";
-import PPMSupervisor from "./routes/PPMSupervisor.js";
-import AccountManagement from "./routes/AccountManagement.js";
-dotenv.config();
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
+
+// import BoardRouters from "./routes/BoardManagement.js";
+// import SubjectRouters from "./routes/SubjectManagement.js";
+// import PPMSupervisor from "./routes/PPMSupervisor.js";
+// import AccountManagement from "./routes/AccountManagement.js";
+import indexRouter from "./routes/index.js";
 import { db } from "./config/database.js";
+//import { checkValidRole } from "./middlewares/checkvalidrole.js";
+import crypto from "crypto";
+dotenv.config();
+const generateFileName = (bytes = 32) =>
+  crypto.randomBytes(bytes).toString("hex");
 const app = express();
 app.use(express.json());
 app.use(cors());
-
-// import pg from "pg";
-// import { connectDb } from "./db.js";
-//import User from "./models/User.js";
-
-/* Mongoose setup */
-//connectDb();
-
-// Database
-//const db = require("./config/database");
 
 // Test DB
 db.authenticate()
   .then(() => console.log("Database connected..."))
   .catch((err) => console.log("Error: " + err));
 
-// db.sequelize
-//   .sync()
-//   .then(() => {
-//     console.log("Synced db.");
-//   })
-//   .catch((err) => {
-//     console.log("Failed to sync db: " + err.message);
-//   });
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+const bucketName = process.env.AWS_BUCKET_NAME;
 
-app.use("/boardmanagement", BoardRouters);
-app.use("/subjectmanagement", SubjectRouters);
-app.use("/ppmsupervisor", PPMSupervisor);
-app.use("/accountmanagement", AccountManagement);
-app.post("/users", async (req, res) => {
-  try {
-    // Extract user details from the request body
-    const { name, email, password } = req.body;
+const region = process.env.AWS_BUCKET_REGION;
+const accessKeyId = process.env.AWS_ACCESS_KEY;
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
-    // Create a new user in the database
-    const newUser = await User.create({ name, email, password });
-
-    // Send a response with the newly created user
-    res.status(201).json(newUser);
-  } catch (error) {
-    console.error("Error creating user:", error);
-    res.status(500).json({ error: "Failed to create user" });
-  }
+const s3Client = new S3Client({
+  region,
+  credentials: {
+    accessKeyId,
+    secretAccessKey,
+  },
 });
 
-app.get("/getusers", async (req, res) => {
-  try {
-    const users = await User.findAll();
-    return res.status(500).json(users);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch user" });
-  }
+app.post("/uploadimg", upload.single("image"), async (req, res) => {
+  const fileBuffer = req.file.buffer;
+  console.log(fileBuffer);
+
+  // Configure the upload details to send to S3
+  const fileName = generateFileName();
+  console.log(bucketName);
+  const uploadParams = {
+    Bucket: bucketName,
+    Body: fileBuffer,
+    Key: fileName,
+    ContentType: req.file.mimetype,
+  };
+
+  // Send the upload to S3
+  await s3Client.send(new PutObjectCommand(uploadParams));
+
+  res.send({});
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello developer");
+app.get("/getimage", async (req, res) => {
+  const imageName =
+    "88123c7cb235b9494dcbc53d88083d5fa38bbac92cebed1f615a7f891e8ef092";
+  const getObjectParams = {
+    Bucket: bucketName,
+    Key: imageName,
+  };
+  const command = new GetObjectCommand(getObjectParams);
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+  res.send(url);
 });
+
+app.use("/api", indexRouter);
 
 const PORT = process.env.PORT || 3002;
 
