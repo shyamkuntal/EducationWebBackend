@@ -1,12 +1,16 @@
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { generateFileName, s3Client } from "../../config/s3.js";
 import { Subject, SubjectLevel } from "../../models/Subject.js";
+import dotenv from "dotenv";
+dotenv.config();
 
+const bucketName = process.env.AWS_BUCKET_NAME;
 export const CreateSubject = async (req, res) => {
   const {
     boardId,
     SubBoardId,
     grade,
     subjectName,
-    subjectImage,
     isArchived,
     isPublished,
     subjectLevels,
@@ -14,6 +18,23 @@ export const CreateSubject = async (req, res) => {
 
   try {
     // Create a new subject entry
+
+    const fileBuffer = req.file.buffer;
+    console.log(req.file);
+
+    // Configure the upload details to send to S3
+    const subjectImage = generateFileName();
+
+    const uploadParams = {
+      Bucket: bucketName,
+      Body: fileBuffer,
+      Key: subjectImage,
+      ContentType: req.file.mimetype,
+    };
+
+    // Send the upload to S3
+    await s3Client.send(new PutObjectCommand(uploadParams));
+
     const subject = await Subject.create({
       boardId,
       SubBoardId,
@@ -145,21 +166,37 @@ export const UpdateSubject = async (req, res) => {
     SubBoardId,
     grade,
     subjectName,
-    subjectImage,
     isArchived,
     isPublished,
     subjectLevels,
   } = req.body;
 
   try {
-    // Find the board by ID
+    // Find subject by ID
     const subject = await Subject.findByPk(id);
 
     if (!Subject) {
       return res.status(404).json({ message: "Subject not found" });
     }
 
-    // Update board details
+    const fileBuffer = req.file.buffer;
+
+    // Configure the upload details to send to S3
+    let subjectImage = subject.subjectImage;
+    if (subject.subjectImage !== req.file.originalname) {
+      subjectImage = generateFileName();
+      const uploadParams = {
+        Bucket: bucketName,
+        Body: fileBuffer,
+        Key: subjectImage,
+        ContentType: req.file.mimetype,
+      };
+
+      // Send the upload to S3
+      await s3Client.send(new PutObjectCommand(uploadParams));
+    }
+
+    // Update subject details
     subject.boardId = boardId;
     subject.SubBoardId = SubBoardId;
     subject.grade = grade;
@@ -170,22 +207,22 @@ export const UpdateSubject = async (req, res) => {
 
     await subject.save();
 
-    // Update sub-board details
+    // Update subjectLevel details
     if (subjectLevels && subjectLevels.length > 0) {
-      // Get the sub-boards associated with the board
+      // Get the subjectLevel associated with the board
       const existinglevels = await SubjectLevel.findAll({
         where: { subjectId: subject.id },
       });
 
-      // Map the existing sub-boards to their IDs
+      // Map the existing subjectLevel to their IDs
       const existinglevelsID = existinglevels.map((level) => level.id);
 
-      // Filter out the sub-boards to be updated
+      // Filter out the subjectLevel to be updated
       const levelsToUpdate = subjectLevels.filter(
         (level) => level.id && existinglevelsID.includes(level.id)
       );
 
-      // Create new sub-boards and update existing sub-boards
+      // Create new subjectLevel and update existing subjectLevel
       const levelsToCreateOrUpdate = subjectLevels.map((level) => ({
         id: level.id || null,
         subjectLevelName: level.subjectLevelName,
@@ -193,12 +230,12 @@ export const UpdateSubject = async (req, res) => {
         subjectId: subject.id,
       }));
 
-      // Bulk create/update the sub-boards
+      // Bulk create/update the subjectLevel
       await SubjectLevel.bulkCreate(levelsToCreateOrUpdate, {
         updateOnDuplicate: ["subjectLevelName", "isArchived"],
       });
 
-      // Update the existing sub-boards
+      // Update the existing subjectLevel
       await Promise.all(
         levelsToUpdate.map((level) =>
           SubjectLevel.update(
@@ -219,7 +256,7 @@ export const UpdateSubject = async (req, res) => {
     });
 
     return res.status(200).json({
-      message: "Board and sub-board details updated successfully",
+      message: "subject and subjectLevel details updated successfully",
       subject,
       alllevels,
     });

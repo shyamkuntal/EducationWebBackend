@@ -1,25 +1,15 @@
 import express from "express";
 import cors from "cors";
-import multer from "multer";
+// import multer from "multer";
 import dotenv from "dotenv";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-} from "@aws-sdk/client-s3";
-
-// import BoardRouters from "./routes/BoardManagement.js";
-// import SubjectRouters from "./routes/SubjectManagement.js";
-// import PPMSupervisor from "./routes/PPMSupervisor.js";
-// import AccountManagement from "./routes/AccountManagement.js";
+import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import indexRouter from "./routes/index.js";
 import { db } from "./config/database.js";
-//import { checkValidRole } from "./middlewares/checkvalidrole.js";
-import crypto from "crypto";
+import { generateFileName, s3Client } from "./config/s3.js";
+import upload from "./config/multer.js";
 dotenv.config();
-const generateFileName = (bytes = 32) =>
-  crypto.randomBytes(bytes).toString("hex");
+
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -29,21 +19,21 @@ db.authenticate()
   .then(() => console.log("Database connected..."))
   .catch((err) => console.log("Error: " + err));
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage: storage });
 const bucketName = process.env.AWS_BUCKET_NAME;
 
-const region = process.env.AWS_BUCKET_REGION;
-const accessKeyId = process.env.AWS_ACCESS_KEY;
-const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+// const region = process.env.AWS_BUCKET_REGION;
+// const accessKeyId = process.env.AWS_ACCESS_KEY;
+// const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
-const s3Client = new S3Client({
-  region,
-  credentials: {
-    accessKeyId,
-    secretAccessKey,
-  },
-});
+// const s3Client = new S3Client({
+//   region,
+//   credentials: {
+//     accessKeyId,
+//     secretAccessKey,
+//   },
+// });
 
 app.post("/uploadimg", upload.single("image"), async (req, res) => {
   const fileBuffer = req.file.buffer;
