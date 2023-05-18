@@ -3,6 +3,11 @@
 import { Sequelize } from "sequelize";
 import { db } from "../config/database.js";
 const Board = db.define("board", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
   boardName: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -42,6 +47,11 @@ Board.sync().then(() => {
 });
 
 const SubBoard = db.define("subBoard", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
   SubBoardName: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -51,7 +61,7 @@ const SubBoard = db.define("subBoard", {
     defaultValue: false,
   },
   boardId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.UUID,
     allowNull: false,
   },
 });

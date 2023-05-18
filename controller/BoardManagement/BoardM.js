@@ -19,7 +19,7 @@ export const CreateBoard = async (req, res) => {
     //Create sub-board entries
     if (subBoard && subBoard.length > 0) {
       const subBoards = subBoard.map((subBoardData) => ({
-        SubBoardName: subBoardData.name,
+        SubBoardName: subBoardData.SubBoardName,
         isArchived: subBoardData.isArchived || false,
         boardId: board.id, // Associate the sub-board with the created board
       }));
@@ -27,12 +27,10 @@ export const CreateBoard = async (req, res) => {
       await SubBoard.bulkCreate(subBoards);
     }
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Board and sub-board created successfully",
       board,
     });
-
-    return res.json({ status: 200, board });
   } catch (err) {
     return res.json({ status: 501, error: err.message });
   }

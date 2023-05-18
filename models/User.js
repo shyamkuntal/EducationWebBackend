@@ -13,6 +13,11 @@ const roles = [
   "Superadmin",
 ];
 const User = db.define("user", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
   Name: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -30,9 +35,8 @@ const User = db.define("user", {
     allowNull: false,
   },
   roleId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.UUID,
     allowNull: false,
-    defaultValue: 1,
   },
   isActive: {
     type: Sequelize.BOOLEAN,
@@ -45,6 +49,11 @@ User.sync().then(() => {
 });
 
 const Roles = db.define("roles", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
   roleName: {
     type: Sequelize.STRING,
     enum: roles,

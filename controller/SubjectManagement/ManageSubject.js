@@ -6,15 +6,7 @@ dotenv.config();
 
 const bucketName = process.env.AWS_BUCKET_NAME;
 export const CreateSubject = async (req, res) => {
-  const {
-    boardId,
-    SubBoardId,
-    grade,
-    subjectName,
-    isArchived,
-    isPublished,
-    subjectLevels,
-  } = req.body;
+  const { boardId, SubBoardId, grade, subjectName, subjectLevels } = req.body;
 
   try {
     // Create a new subject entry
@@ -41,8 +33,6 @@ export const CreateSubject = async (req, res) => {
       grade,
       subjectName,
       subjectImage,
-      isArchived,
-      isPublished,
     });
 
     //Create sub-board entries
@@ -54,6 +44,7 @@ export const CreateSubject = async (req, res) => {
       }));
 
       await SubjectLevel.bulkCreate(SubjectLevels);
+      console.log(subjectLevels);
     }
 
     return res.status(201).json({

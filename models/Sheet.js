@@ -5,12 +5,17 @@ import { Subject, SubjectLevel } from "./Subject.js";
 const grades = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 const Sheet = db.define("sheet", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
   boardId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.UUID,
     allowNull: false,
   },
   SubBoardId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.UUID,
     allowNull: true,
   },
   grade: {
@@ -19,11 +24,11 @@ const Sheet = db.define("sheet", {
     allowNull: false,
   },
   subjectId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.UUID,
     allowNull: false,
   },
   subjectLevelId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.UUID,
     allowNull: false,
   },
   year: {

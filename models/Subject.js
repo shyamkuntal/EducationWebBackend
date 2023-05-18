@@ -4,12 +4,17 @@ import { Board, SubBoard } from "./Board.js";
 const grades = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 const Subject = db.define("subject", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
   boardId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.UUID,
     allowNull: false,
   },
   SubBoardId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.UUID,
     allowNull: true,
   },
   grade: {
@@ -48,6 +53,11 @@ Subject.belongsTo(Board, {
 });
 
 const SubjectLevel = db.define("subjectLevel", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
   subjectLevelName: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -57,7 +67,7 @@ const SubjectLevel = db.define("subjectLevel", {
     defaultValue: false,
   },
   subjectId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.UUID,
     allowNull: false,
   },
 });
