@@ -4,12 +4,12 @@ export const createUserRole = async (req, res) => {
   const roles = [
     "Supervisor",
     "Superadmin",
-    // "Uploader2",
-    // "Teacher",
-    // "Pricer",
-    // "Reviewer",
-    // "DataGenerator",
-    // "PastPaper",
+    "Uploader2",
+    "Teacher",
+    "Pricer",
+    "Reviewer",
+    "DataGenerator",
+    "PastPaper",
   ];
   try {
     const role = await Roles.bulkCreate(
