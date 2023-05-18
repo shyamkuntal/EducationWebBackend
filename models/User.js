@@ -1,7 +1,6 @@
-// const Sequelize = require("sequelize");
-// const db = require("../config/database");
-import { Sequelize } from "sequelize";
-import { db } from "../config/database.js";
+const Sequelize = require("sequelize");
+const db = require("../config/database");
+
 const roles = [
   "Uploader2",
   "Teacher",
@@ -73,4 +72,4 @@ Roles.sync().then(() => {
 
 //SubBoard.hasMany(Subject, { foreignKey: 'subBoardId' });
 
-export { User, Roles };
+module.exports = { User, Roles };

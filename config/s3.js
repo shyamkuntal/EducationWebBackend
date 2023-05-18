@@ -1,10 +1,10 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import crypto from "crypto";
+const { S3Client } = require("@aws-sdk/client-s3");
+const crypto = require("crypto");
 const region = process.env.AWS_BUCKET_REGION;
 const accessKeyId = process.env.AWS_ACCESS_KEY;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
-export const s3Client = new S3Client({
+const s3Client = new S3Client({
   region,
   credentials: {
     accessKeyId,
@@ -12,5 +12,7 @@ export const s3Client = new S3Client({
   },
 });
 
-export const generateFileName = (bytes = 32) =>
+const generateFileName = (bytes = 32) =>
   crypto.randomBytes(bytes).toString("hex");
+
+module.exports = { s3Client, generateFileName };

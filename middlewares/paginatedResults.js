@@ -1,7 +1,7 @@
-import { Op } from "sequelize";
-import { Board } from "../models/Board.js";
+const { Op } = require("sequelize");
+const { Board } = require("../models/Board.js");
 
-export function paginatedResults(model) {
+const paginatedResults = (model) => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 3;
@@ -54,4 +54,6 @@ export function paginatedResults(model) {
       res.status(500).json({ message: e.message });
     }
   };
-}
+};
+
+module.exports = paginatedResults;

@@ -1,9 +1,9 @@
-import BoardRouters from "./BoardManagement.js";
-import SubjectRouters from "./SubjectManagement.js";
-import PPMSupervisor from "./PPMSupervisor.js";
-import AccountManagement from "./AccountManagement.js";
-import express from "express";
-import PastPaperUploader from "./PastPaperUploader.js";
+const express = require("express");
+const BoardRouters = require("./BoardManagement.js");
+const SubjectRouters = require("./SubjectManagement.js");
+const PPMSupervisor = require("./PPMSupervisor.js");
+const AccountManagement = require("./AccountManagement.js");
+
 const router = express.Router();
 router.use("/boardmanagement", BoardRouters);
 router.use("/subjectmanagement", SubjectRouters);
@@ -11,4 +11,4 @@ router.use("/ppmsupervisor", PPMSupervisor);
 router.use("/accountmanagement", AccountManagement);
 router.use("/ppuploader", PastPaperUploader);
 
-export default router;
+module.exports = router;

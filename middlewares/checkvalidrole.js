@@ -1,6 +1,6 @@
-import { User } from "../models/User.js";
+const { User } = require("../models/User.js");
 
-export const checkValidRole = (allowedRolesId) => {
+const checkValidRole = (allowedRolesId) => {
   return async (req, res, next) => {
     //here we will take user info from jwt signed token
     const id = req.body.user.id;
@@ -18,3 +18,5 @@ export const checkValidRole = (allowedRolesId) => {
     }
   };
 };
+
+module.exports = { checkValidRole };

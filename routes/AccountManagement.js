@@ -1,10 +1,7 @@
-import express from "express";
-import {
-  createUser,
-  createUserRole,
-} from "../controller/AccountManagement/ManageAccount.js";
+const express = require("express");
+const AccountManagementController = require("../controller/AccountManagement/ManageAccount.js");
 const router = express.Router();
 
-router.post("/createuserrole", createUserRole);
-router.post("/createuser", createUser);
-export default router;
+router.post("/createuserrole", AccountManagementController.createUserRole);
+router.post("/createuser", AccountManagementController.createUser);
+module.exports = router;

@@ -1,37 +1,53 @@
-import express from "express";
-import {
-  CreateSheet,
-  ToggleArchiveSheet,
-  TogglePublishSheet,
-  getallboards,
-  getallgrades,
-  getalllevels,
-  getallsheetsubjects,
-  getallsubboards,
-  getallsubjects,
-  getsinglesheet,
-  AssignSheetToPastPaper,
-  AssignSheetToReviewer,
-} from "../controller/PPMSupervisor/PPMSupervisor.js";
-import { Sheet } from "../models/Sheet.js";
-import { paginatedSheetResults } from "../middlewares/paginatedSheet.js";
+const express = require("express");
+const PastPaperSupervisorController = require("../controller/PPMSupervisor/PPMSupervisor.js");
+const { Sheet } = require("../models/Sheet.js");
+const paginatedSheetResults = require("../middlewares/paginatedSheet.js");
 
 const router = express.Router();
 
-router.post("/createsheet", CreateSheet);
-router.get("/getallboards", getallboards);
-router.get("/:boardId/getallsubboards", getallsubboards);
-router.get("/:boardId/:SubBoardId/getallgrades", getallgrades);
-router.get("/:boardId/:SubBoardId/:grade/getallsubjects", getallsubjects);
-router.get("/:subjectid/getalllevels", getalllevels);
+router.post("/createsheet", PastPaperSupervisorController.CreateSheet);
+router.get("/getallboards", PastPaperSupervisorController.getallboards);
+router.get(
+  "/:boardId/getallsubboards",
+  PastPaperSupervisorController.getallsubboards
+);
+router.get(
+  "/:boardId/:SubBoardId/getallgrades",
+  PastPaperSupervisorController.getallgrades
+);
+router.get(
+  "/:boardId/:SubBoardId/:grade/getallsubjects",
+  PastPaperSupervisorController.getallsubjects
+);
+router.get(
+  "/:subjectid/getalllevels",
+  PastPaperSupervisorController.getalllevels
+);
 router.get("/getallsheets", paginatedSheetResults(Sheet), (req, res) => {
   res.json(res.paginatedResults);
 });
-router.get("/getsheetsubjects", getallsheetsubjects);
-router.get("/:sheetid/getsheet/", getsinglesheet);
-router.patch("/:sheetid/togglepublishsheet", TogglePublishSheet);
-router.patch("/:sheetid/togglearchivesheet", ToggleArchiveSheet);
+router.get(
+  "/getsheetsubjects",
+  PastPaperSupervisorController.getallsheetsubjects
+);
+router.get("/:sheetid/getsheet/", PastPaperSupervisorController.getsinglesheet);
 
-router.post("/assignsheettopastpaper", AssignSheetToPastPaper);
-router.post("/assignsheettoreviewer", AssignSheetToReviewer);
-export default router;
+router.patch(
+  "/:sheetid/togglepublishsheet",
+  PastPaperSupervisorController.TogglePublishSheet
+);
+
+router.patch(
+  "/:sheetid/togglearchivesheet",
+  PastPaperSupervisorController.ToggleArchiveSheet
+);
+router.patch(
+  "/assignsheettopastpaper",
+  PastPaperSupervisorController.AssignSheetToPastPaper
+);
+router.patch(
+  "/assignsheettoreviewer",
+  PastPaperSupervisorController.AssignSheetToReviewer
+);
+
+module.exports = router;

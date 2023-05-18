@@ -1,8 +1,8 @@
-import { Board, SubBoard } from "../models/Board.js";
-import { Sheet } from "../models/Sheet.js";
-import { SubjectLevel } from "../models/Subject.js";
+const { Board, SubBoard } = require("../models/Board.js");
+const { Sheet } = require("../models/Sheet.js");
+const { SubjectLevel } = require("../models/Subject.js");
 
-export function paginatedSheetResults(model) {
+const paginatedSheetResults = (model) => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -92,4 +92,6 @@ export function paginatedSheetResults(model) {
       res.status(500).json({ status: 501, error: err.message });
     }
   };
-}
+};
+
+module.exports = paginatedSheetResults;

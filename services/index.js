@@ -1,7 +1,2 @@
-import { sheetService } from "./sheetService.js";
-import { userService } from "./userService.js";
-
-export const services = {
-  sheetService,
-  userService,
-};
+module.exports.sheetService = require("./sheetService.js");
+module.exports.userService = require("./userService.js");
