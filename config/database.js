@@ -1,8 +1,7 @@
-import { Sequelize } from "sequelize";
-import dotenv from "dotenv";
-dotenv.config();
+const Sequelize = require("sequelize");
+require("dotenv").config();
 
-export const db = new Sequelize(
+const db = new Sequelize(
   process.env.DATABASE_NAME,
   process.env.DATABASE_USERNAME,
   process.env.DATABASE_PASSWORD,
@@ -12,3 +11,5 @@ export const db = new Sequelize(
     synchronize: true, // Automatically creates tables based on model definitions
   }
 );
+
+module.exports = db;

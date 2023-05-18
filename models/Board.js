@@ -1,7 +1,6 @@
-// const Sequelize = require("sequelize");
-// const db = require("../config/database");
-import { Sequelize } from "sequelize";
-import { db } from "../config/database.js";
+const Sequelize = require("sequelize");
+const db = require("../config/database");
+
 const Board = db.define("board", {
   id: {
     type: Sequelize.UUID,
@@ -76,4 +75,4 @@ SubBoard.belongsTo(Board, {
 
 //SubBoard.hasMany(Subject, { foreignKey: 'subBoardId' });
 
-export { Board, SubBoard };
+module.exports = { Board, SubBoard };

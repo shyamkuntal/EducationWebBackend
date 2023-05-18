@@ -1,6 +1,6 @@
-import { Sequelize } from "sequelize";
-import { db } from "../config/database.js";
-import { Board, SubBoard } from "./Board.js";
+const Sequelize = require("sequelize");
+const db = require("../config/database");
+const { Board, SubBoard } = require("./Board.js");
 const grades = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 const Subject = db.define("subject", {
@@ -84,4 +84,4 @@ Subject.hasMany(SubjectLevel, {
   foreignKey: "subjectId",
 });
 
-export { Subject, SubjectLevel };
+module.exports = { Subject, SubjectLevel };

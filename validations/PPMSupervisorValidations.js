@@ -1,11 +1,16 @@
-import Joi from "joi";
+const Joi = require("joi");
 
-export const assignUploderUserToSheetSchema = Joi.object({
+const assignUploderUserToSheetSchema = Joi.object({
   sheetId: Joi.string().guid(),
   uploaderUserId: Joi.string().guid(),
 });
 
-export const assignReviewerUserToSheetSchema = Joi.object({
+const assignReviewerUserToSheetSchema = Joi.object({
   sheetId: Joi.string().guid(),
   reviewerUserId: Joi.string().guid(),
 });
+
+module.exports = {
+  assignUploderUserToSheetSchema,
+  assignReviewerUserToSheetSchema,
+};

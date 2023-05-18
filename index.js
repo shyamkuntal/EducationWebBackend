@@ -1,14 +1,13 @@
-import express from "express";
-import cors from "cors";
+const express = require("express");
+const cors = require("cors");
 // import multer from "multer";
-import dotenv from "dotenv";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import indexRouter from "./routes/index.js";
-import { db } from "./config/database.js";
-import { generateFileName, s3Client } from "./config/s3.js";
-import upload from "./config/multer.js";
-dotenv.config();
+require("dotenv").config();
+const getSignedUrl = require("@aws-sdk/s3-request-presigner");
+const { PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const routes = require("./routes/index.js");
+const db = require("./config/database.js");
+const { generateFileName, s3Client } = require("./config/s3.js");
+const upload = require("./config/multer.js");
 
 const app = express();
 app.use(express.json());
@@ -67,7 +66,7 @@ app.get("/getimage", async (req, res) => {
   res.send(url);
 });
 
-app.use("/api", indexRouter);
+app.use("/api", routes);
 
 const PORT = process.env.PORT || 3002;
 

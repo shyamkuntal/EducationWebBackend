@@ -1,8 +1,8 @@
-import { Op } from "sequelize";
-import { Board, SubBoard } from "../models/Board.js";
-import { Subject, SubjectLevel } from "../models/Subject.js";
+const { Op } = require("sequelize");
+const { Board, SubBoard } = require("../models/Board.js");
+const { Subject, SubjectLevel } = require("../models/Subject.js");
 
-export function paginatedSubjects(model) {
+const paginatedSubjects = (model) => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 3;
@@ -92,4 +92,6 @@ export function paginatedSubjects(model) {
       res.status(500).json({ status: 501, error: err.message });
     }
   };
-}
+};
+
+module.exports = paginatedSubjects;

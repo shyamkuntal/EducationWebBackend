@@ -1,23 +1,28 @@
-import express from "express";
-import {
-  CreateSubject,
-  ToggleArchiveLevel,
-  TogglePublishSubject,
-  UpdateSubject,
-} from "../controller/SubjectManagement/ManageSubject.js";
-import { Subject } from "../models/Subject.js";
-import { paginatedSubjects } from "../middlewares/subjectFilter.js";
-import upload from "../config/multer.js";
+const express = require("express");
+const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject.js");
+const { Subject } = require("../models/Subject.js");
+const paginatedSubjects = require("../middlewares/subjectFilter.js");
+const upload = require("../config/multer.js");
 
 const router = express.Router();
 
 router.get("/getallsubjects", paginatedSubjects(Subject), (req, res) => {
   res.json(res.paginatedResults);
 });
-router.post("/createsubject", upload.single("image"), CreateSubject);
-router.put("/:id/updatesubject", UpdateSubject);
-router.patch("/togglepublishsubject", TogglePublishSubject);
+router.post(
+  "/createsubject",
+  upload.single("image"),
+  SubjectManagementController.CreateSubject
+);
+router.put("/:id/updatesubject", SubjectManagementController.UpdateSubject);
+router.patch(
+  "/togglepublishsubject",
+  SubjectManagementController.TogglePublishSubject
+);
 // //router.patch("/:id/togglearchivesubject", ToggleArchiveSubject);
-router.patch("/:subjectId/togglearchive/level", ToggleArchiveLevel);
+router.patch(
+  "/:subjectId/togglearchive/level",
+  SubjectManagementController.ToggleArchiveLevel
+);
 
-export default router;
+module.exports = router;

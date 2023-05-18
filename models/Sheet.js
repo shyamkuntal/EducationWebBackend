@@ -1,9 +1,9 @@
-import { Sequelize } from "sequelize";
-import { db } from "../config/database.js";
-import { Board, SubBoard } from "./Board.js";
-import { Subject, SubjectLevel } from "./Subject.js";
-import { User, Roles } from "./User.js";
-import { sheetModelConstants } from "../constants/constants.js";
+const Sequelize = require("sequelize");
+const db = require("../config/database");
+const { Board, SubBoard } = require("./Board.js");
+const { Subject, SubjectLevel } = require("./Subject.js");
+const { User, Roles } = require("./User.js");
+const { sheetModelConstants } = require("../constants/constants.js");
 const grades = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 const Sheet = db.define("sheet", {
@@ -134,4 +134,4 @@ SheetLog.sync().then(() => {
   console.log("sheetLog created");
 });
 
-export { Sheet, SheetLog };
+module.exports = { Sheet, SheetLog };
