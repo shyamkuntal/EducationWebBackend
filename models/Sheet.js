@@ -44,7 +44,7 @@ const Sheet = db.define("sheet", {
     allowNull: false,
   },
   paperNumber: {
-    type: Sequelize.STRING,
+    type: Sequelize.INTEGER,
     allowNull: false,
   },
   resources: {
@@ -56,11 +56,23 @@ const Sheet = db.define("sheet", {
     defaultValue: sheetModelConstants.defaultSheetLifeCycle,
   },
   supervisorId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.UUID,
     allowNull: false,
   },
   assignedToUserId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.UUID,
+    allowNull: true,
+  },
+  statusForSupervisor: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  statusForPastPaper: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  statusForReviewer: {
+    type: Sequelize.STRING,
     allowNull: true,
   },
   isSpam: {
@@ -106,28 +118,13 @@ Sheet.belongsTo(User, {
   as: "supervisor",
 });
 
-const SheetStatus = db.define("sheetStatus", {
-  sheetId: { type: Sequelize.INTEGER, allowNull: false },
-  statusForSupervisor: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  statusForPastPaper: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  statusForReviewer: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-});
-
-SheetStatus.sync().then(() => {
-  console.log("sheetStatus created");
-});
-
 const SheetLog = db.define("sheetLog", {
-  sheetId: { type: Sequelize.INTEGER, allowNull: false },
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
+  sheetId: { type: Sequelize.UUID, allowNull: false },
   assignee: { type: Sequelize.STRING, allowNull: false },
   assignedTo: { type: Sequelize.STRING, allowNull: false },
   logMessage: { type: Sequelize.STRING, allowNull: false },
@@ -137,4 +134,4 @@ SheetLog.sync().then(() => {
   console.log("sheetLog created");
 });
 
-export { Sheet, SheetStatus, SheetLog };
+export { Sheet, SheetLog };

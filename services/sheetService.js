@@ -1,5 +1,5 @@
 import { Op, Sequelize } from "sequelize";
-import { Sheet, SheetLog, SheetStatus } from "../models/Sheet.js";
+import { Sheet, SheetLog } from "../models/Sheet.js";
 import { User } from "../models/User.js";
 
 const sheetService = {
@@ -50,15 +50,31 @@ const sheetService = {
       throw err;
     }
   },
-  async assignUserToSheetAndUpdateLifeCycle(sheetId, userId, lifeCycleName) {
+  async assignUserToSheetAndUpdateLifeCycleAndStatuses(
+    sheetId,
+    userId,
+    lifeCycleName,
+    statusForSupervisor,
+    statusForPastPaper
+  ) {
     try {
-      console.log(userId, lifeCycleName);
-      let assignSheet = await Sheet.update(
-        { assignedToUserId: userId, lifeCycle: lifeCycleName },
+      console.log(
+        userId,
+        lifeCycleName,
+        statusForSupervisor,
+        statusForPastPaper
+      );
+      let assignSheetAndStatus = await Sheet.update(
+        {
+          assignedToUserId: userId,
+          lifeCycle: lifeCycleName,
+          statusForSupervisor,
+          statusForPastPaper,
+        },
         { where: { id: sheetId } }
       );
-     
-      return assignSheet;
+
+      return assignSheetAndStatus;
     } catch (err) {
       throw err;
     }
@@ -75,50 +91,8 @@ const sheetService = {
     }
   },
 
-  async createSheetStatusRecord(
-    sheetId,
-    statusForSupervisor,
-    statusForPastPaper
-  ) {
-    try {
-      let createSheet = await SheetStatus.create({
-        sheetId,
-        statusForSupervisor,
-        statusForPastPaper,
-      });
-
-     
-      return createSheet;
-    } catch (err) {
-      throw err;
-    }
-  },
-
-  async updateSheetStatus(
-    sheetId,
-    statusForSupervisor,
-    statusForPastPaper,
-    statusForReviewer
-  ) {
-    try {
-      let updateSheetStatus = await SheetStatus.update(
-        {
-          statusForSupervisor: statusForSupervisor,
-          statusForPastPaper: statusForPastPaper,
-          statusForReviewer: statusForReviewer,
-        },
-        { where: { sheetId: sheetId } }
-      );
-    
-      return updateSheetStatus;
-    } catch (err) {
-      throw err;
-    }
-  },
-
   async createSheetLog(sheetId, assignee, assignedTo, logMessage) {
     try {
-   
       let createLog = await SheetLog.create({
         sheetId,
         assignee,

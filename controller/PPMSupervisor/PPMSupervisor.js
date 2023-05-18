@@ -4,7 +4,10 @@ import { Sheet } from "../../models/Sheet.js";
 import { roleNames } from "../../constants/constants.js";
 import { Subject, SubjectLevel } from "../../models/Subject.js";
 import { services } from "../../services/index.js";
-import { assignUserToSheetSchema } from "../../validations/PPMSupervisorValidations.js";
+import {
+  assignUploderUserToSheetSchema,
+  assignReviewerUserToSheetSchema,
+} from "../../validations/PPMSupervisorValidations.js";
 import { sheetStatuses, sheetLogsMessages } from "../../constants/constants.js";
 import httpStatus from "http-status";
 
@@ -39,13 +42,7 @@ export const CreateSheet = async (req, res) => {
       supervisorId,
     });
 
-    let sheetData = sheet.get({ plain: true });
-
-    // creating sheetStatus record
-
-    let createSheetStatusRecord =
-      await services.sheetService.createSheetStatusRecord(sheetData.id);
-    return res.json({ status: 200, sheet, createSheetStatusRecord });
+    return res.json({ status: 200, sheet });
   } catch (err) {
     return res.json({ status: 501, error: err.message });
   }
@@ -252,10 +249,10 @@ export const ToggleArchiveSheet = async (req, res) => {
 
 export const AssignSheetToPastPaper = async (req, res) => {
   try {
-    let values = await assignUserToSheetSchema.validateAsync(req.body);
+    let values = await assignUploderUserToSheetSchema.validateAsync(req.body);
 
     let user = await services.userService.checkUserRole(
-      values.userId,
+      values.uploaderUserId,
       roleNames.PastPaper
     );
     let userData = user[0];
@@ -269,7 +266,7 @@ export const AssignSheetToPastPaper = async (req, res) => {
       UpdateSheetStatus: "",
       sheetLog: "",
     };
-    console.log(sheetData.supervisor.Name);
+
     if (userData && sheetData) {
       // Checking if sheet is already assigned to past paper uploader
 
@@ -278,36 +275,30 @@ export const AssignSheetToPastPaper = async (req, res) => {
           .status(httpStatus.OK)
           .send("sheet already assigned to past paper uploader");
       } else {
-        //UPDATE sheet assignment & life cycle
+        //UPDATE sheet assignment & life cycle & sheet status
 
-        let updateAssignAndUpdateLifeCycle =
-          await services.sheetService.assignUserToSheetAndUpdateLifeCycle(
-            sheetData.id,
-            userData.id,
-            roleNames.PastPaper
-          );
-
-        if (updateAssignAndUpdateLifeCycle.length > 0) {
-          responseMessage.assinedUserToSheet =
-            "Sheet assigned to past paper and lifeCycle updated successfully";
-        }
-
-        // UPDATE sheet status
         let sheetStatusToBeUpdated = {
           statusForSupervisor: sheetStatuses.NotStarted,
           statusForPastPaper: sheetStatuses.NotStarted,
           statusForReviewer: null,
         };
-        let updateSheetStatus = await services.sheetService.updateSheetStatus(
-          values.sheetId,
-          sheetStatusToBeUpdated.statusForSupervisor,
-          sheetStatusToBeUpdated.statusForPastPaper,
-          sheetStatusToBeUpdated.statusForReviewer
-        );
-        if (updateSheetStatus.length > 0) {
+
+        let updateAssignAndUpdateLifeCycle =
+          await services.sheetService.assignUserToSheetAndUpdateLifeCycleAndStatuses(
+            sheetData.id,
+            userData.id,
+            roleNames.PastPaper,
+            sheetStatusToBeUpdated.statusForSupervisor,
+            sheetStatusToBeUpdated.statusForPastPaper
+          );
+
+        if (updateAssignAndUpdateLifeCycle.length > 0) {
+          responseMessage.assinedUserToSheet =
+            "Sheet assigned to past paper and lifeCycle updated successfully";
           responseMessage.UpdateSheetStatus =
-            "Sheet Status updated for supervisor and uploader successfully";
+            "Sheet Statuses updated successfully";
         }
+
         // CREATE sheet log for sheet assignment to past paper uploader
 
         let createLog = await services.sheetService.createSheetLog(
@@ -335,8 +326,72 @@ export const AssignSheetToPastPaper = async (req, res) => {
 
 export const AssignSheetToReviewer = async (req, res) => {
   try {
-    console.log(req.body);
-  } catch (error) {
-    return res.json({ status: 501, error: err.message });
+    let values = await assignReviewerUserToSheetSchema.validateAsync(req.body);
+
+    let user = await services.userService.checkUserRole(
+      values.reviewerUserId,
+      roleNames.Reviewer
+    );
+    let userData = user[0];
+
+    let sheetData = await services.sheetService.findSheetAndUser(
+      values.sheetId
+    );
+
+    let responseMessage = {
+      assinedUserToSheet: "",
+      UpdateSheetStatus: "",
+      sheetLog: "",
+    };
+
+    if (userData && sheetData) {
+      // Checking if sheet is already assigned to past paper uploader
+
+      if (sheetData.assignedToUserId === userData.id) {
+        res.status(httpStatus.OK).send("sheet already assigned to reviewer");
+      } else {
+        //UPDATE sheet assignment & life cycle & sheet status
+        let sheetStatusToBeUpdated = {
+          statusForSupervisor: sheetStatuses.NotStarted,
+          statusForReviewer: sheetStatuses.NotStarted,
+        };
+
+        let updateAssignAndUpdateLifeCycle =
+          await services.sheetService.assignUserToSheetAndUpdateLifeCycleAndStatuses(
+            sheetData.id,
+            userData.id,
+            roleNames.Reviewer,
+            sheetStatusToBeUpdated.statusForSupervisor,
+            sheetStatusToBeUpdated.statusForReviewer
+          );
+
+        if (updateAssignAndUpdateLifeCycle.length > 0) {
+          responseMessage.assinedUserToSheet =
+            "Sheet assigned to past paper and lifeCycle updated successfully";
+          responseMessage.UpdateSheetStatus =
+            "Sheet Statuses updated successfully";
+        }
+
+        // CREATE sheet log for sheet assignment to past paper uploader
+        let createLog = await services.sheetService.createSheetLog(
+          sheetData.id,
+          sheetData.supervisor.Name,
+          userData.Name,
+          sheetLogsMessages.supervisorAssignToReviewer
+        );
+
+        if (createLog) {
+          responseMessage.sheetLog =
+            "Log record for assignment to uploader added successfully";
+        }
+
+        res.status(httpStatus.OK).send(responseMessage);
+      }
+    } else {
+      res.status(httpStatus.BAD_REQUEST).send("Wrong user Id or Sheet Id");
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
   }
 };

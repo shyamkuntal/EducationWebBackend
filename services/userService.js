@@ -1,6 +1,5 @@
 import { Sequelize } from "sequelize";
 import { User, Roles } from "../models/User.js";
-import { roleNames } from "../constants/constants.js";
 
 const userService = {
   async checkUserRole(userId, role) {
@@ -16,7 +15,7 @@ const userService = {
 
       let roleData = checkUser[0].role;
 
-      if (roleData.roleName === roleNames.PastPaper) {
+      if (roleData.roleName === role) {
         return userData;
       } else {
         return false;

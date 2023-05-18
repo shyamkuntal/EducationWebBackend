@@ -32,6 +32,6 @@ router.get("/:sheetid/getsheet/", getsinglesheet);
 router.patch("/:sheetid/togglepublishsheet", TogglePublishSheet);
 router.patch("/:sheetid/togglearchivesheet", ToggleArchiveSheet);
 
-router.post("/assignsheettopastpaper", AssignSheetToPastPaper);
-router.post("/assignsheettoreviewer", AssignSheetToReviewer);
+router.patch("/assignsheettopastpaper", AssignSheetToPastPaper);
+router.patch("/assignsheettoreviewer", AssignSheetToReviewer);
 export default router;

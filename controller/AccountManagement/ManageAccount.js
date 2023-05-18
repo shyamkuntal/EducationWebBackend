@@ -1,15 +1,15 @@
 import { Roles, User } from "../../models/User.js";
+import { roleNames } from "../../constants/constants.js";
 
 export const createUserRole = async (req, res) => {
   const roles = [
-    "Supervisor",
-    "Superadmin",
-    // "Uploader2",
-    // "Teacher",
-    // "Pricer",
-    // "Reviewer",
-    // "DataGenerator",
-    // "PastPaper",
+    roleNames.Superadmin,
+    roleNames.Supervisor,
+    roleNames.PastPaper,
+    roleNames.Reviewer,
+    roleNames.Teacher,
+    roleNames.Pricer,
+    roleNames.Uploader2,
   ];
   try {
     const role = await Roles.bulkCreate(
@@ -18,6 +18,8 @@ export const createUserRole = async (req, res) => {
       }))
     );
     return res.status(200).json({ role });
+
+    console.log(roles);
   } catch (error) {
     return res.status(200).json({ msg: error.message });
   }

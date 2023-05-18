@@ -21,4 +21,5 @@ export const sheetStatuses = Object.freeze({
 
 export const sheetLogsMessages = Object.freeze({
   supervisorAssignToPastPaper: " assign sheet to past paper uploader name ",
+  supervisorAssignToReviewer: " assign task to reviewer ",
 });
