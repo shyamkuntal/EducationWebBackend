@@ -41,6 +41,18 @@ const paginatedSheetResults = (model) => {
     if (req.query.search) {
       filters.boardName = { $regex: req.query.search, $options: "i" };
     }
+
+    if (req.query.time === "today") {
+      filters.createdAt = {
+        [Op.gte]: today,
+      };
+    }
+    if (req.query.time === "thisweek") {
+      filters.createdAt = {
+        [Op.gte]: today,
+      };
+    }
+
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 

@@ -1,5 +1,6 @@
-import { Sequelize } from "sequelize";
-import { db } from "../config/database.js";
+const { Sequelize } = require("sequelize");
+const db = require("../config/database");
+const { Sheet } = require("./Sheet");
 
 const PastPaper = db.define("pastPaper", {
   id: {
@@ -27,10 +28,18 @@ const PastPaper = db.define("pastPaper", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  sheetId: {
+    type: Sequelize.UUID,
+    allowNull: false,
+  },
 });
 
 PastPaper.sync().then(() => {
   console.log("PastPaper created");
 });
 
-export { PastPaper };
+PastPaper.belongsTo(Sheet, {
+  foreignKey: { name: "sheetId" },
+});
+
+module.exports = { PastPaper };
