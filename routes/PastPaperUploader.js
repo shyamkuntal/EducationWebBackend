@@ -6,6 +6,7 @@ const {
   SubmitToSupervisor,
   Markitascomplete,
   getallassignedsheetsubjects,
+  EditPastPaper,
 } = require("../controller/PastPaperUploader/PastPaper.js");
 
 const router = express.Router();

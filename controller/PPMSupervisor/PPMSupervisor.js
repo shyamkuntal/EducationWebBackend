@@ -7,10 +7,6 @@ const {
   assignUploderUserToSheetSchema,
   assignReviewerUserToSheetSchema,
 } = require("../../validations/PPMSupervisorValidations.js");
-const {
-  sheetStatuses,
-  sheetLogsMessages,
-} = require("../../constants/constants.js");
 const httpStatus = require("http-status");
 
 const PastPaperSupervisorController = {
@@ -254,11 +250,11 @@ const PastPaperSupervisorController = {
     try {
       let values = await assignUploderUserToSheetSchema.validateAsync(req.body);
 
-      let user = await userService.checkUserRole(
-        values.uploaderUserId,
+      // userData can later on come from middleware
+      let userData = await userService.finduser(
+        values.uploaderId,
         CONSTANTS.roleNames.PastPaper
       );
-      let userData = user[0];
 
       let sheetData = await sheetService.findSheetAndUser(values.sheetId);
 
@@ -274,7 +270,7 @@ const PastPaperSupervisorController = {
         if (sheetData.assignedToUserId === userData.id) {
           res
             .status(httpStatus.OK)
-            .send("sheet already assigned to past paper uploader");
+            .send({ mesage: "sheet already assigned to past paper uploader" });
         } else {
           //UPDATE sheet assignment & life cycle & sheet status
 
@@ -306,21 +302,22 @@ const PastPaperSupervisorController = {
             sheetData.id,
             sheetData.supervisor.Name,
             userData.Name,
-            sheetLogsMessages.supervisorAssignToPastPaper
+            CONSTANTS.sheetLogsMessages.supervisorAssignToPastPaper
           );
 
           if (createLog) {
             responseMessage.sheetLog =
-              "Log record for assignment to uploader added successfully";
+              "Log record for sheet assignment to uploader added successfully";
           }
 
-          res.status(httpStatus.OK).send(responseMessage);
+          res.status(httpStatus.OK).send({ message: responseMessage });
         }
       } else {
-        res.status(httpStatus.BAD_REQUEST).send("Wrong user Id or Sheet Id");
+        res
+          .status(httpStatus.BAD_REQUEST)
+          .send({ message: "Wrong user Id or Sheet Id" });
       }
     } catch (err) {
-      console.log(err);
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }
   },
@@ -329,12 +326,8 @@ const PastPaperSupervisorController = {
       let values = await assignReviewerUserToSheetSchema.validateAsync(
         req.body
       );
-
-      let user = await userService.checkUserRole(
-        values.reviewerUserId,
-        CONSTANTS.roleNames.Reviewer
-      );
-      let userData = user[0];
+      // userData can later on come from middleware
+      let userData = await userService.finduser(values.reviewerId);
 
       let sheetData = await sheetService.findSheetAndUser(values.sheetId);
 
@@ -348,7 +341,9 @@ const PastPaperSupervisorController = {
         // Checking if sheet is already assigned to past paper uploader
 
         if (sheetData.assignedToUserId === userData.id) {
-          res.status(httpStatus.OK).send("sheet already assigned to reviewer");
+          res
+            .status(httpStatus.OK)
+            .send({ message: "sheet already assigned to reviewer" });
         } else {
           //UPDATE sheet assignment & life cycle & sheet status
           let sheetStatusToBeUpdated = {
@@ -377,21 +372,22 @@ const PastPaperSupervisorController = {
             sheetData.id,
             sheetData.supervisor.Name,
             userData.Name,
-            sheetLogsMessages.supervisorAssignToReviewer
+            CONSTANTS.sheetLogsMessages.supervisorAssignToReviewer
           );
 
           if (createLog) {
             responseMessage.sheetLog =
-              "Log record for assignment to uploader added successfully";
+              "Log record for sheet assignment to reviewer added successfully";
           }
 
-          res.status(httpStatus.OK).send(responseMessage);
+          res.status(httpStatus.OK).send({ message: responseMessage });
         }
       } else {
-        res.status(httpStatus.BAD_REQUEST).send("Wrong user Id or Sheet Id");
+        res
+          .status(httpStatus.BAD_REQUEST)
+          .send({ mesage: "Wrong user Id or Sheet Id" });
       }
     } catch (err) {
-      console.log(err);
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }
   },

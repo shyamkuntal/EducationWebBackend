@@ -59,6 +59,14 @@ const Sheet = db.define("sheet", {
     type: Sequelize.UUID,
     allowNull: false,
   },
+  pastPaperId: {
+    type: Sequelize.UUID,
+    allowNull: true,
+  },
+  reviewerId: {
+    type: Sequelize.UUID,
+    allowNull: true,
+  },
   assignedToUserId: {
     type: Sequelize.UUID,
     allowNull: true,
@@ -116,6 +124,27 @@ Sheet.belongsTo(User, {
 Sheet.belongsTo(User, {
   foreignKey: "supervisorId",
   as: "supervisor",
+});
+
+const SpamSheetErrorReportAndComment = db.define(
+  "spamSheetErrorReportAndComment",
+  {
+    id: {
+      type: Sequelize.UUID,
+      defaultValue: Sequelize.UUIDV4,
+      primaryKey: true,
+    },
+    errorReport: { type: Sequelize.STRING, allowNull: true },
+    errorReportImg: { type: Sequelize.STRING, allowNull: true },
+    reviewerCommentToSupervisor: { type: Sequelize.STRING, allowNull: true },
+    supervisorCommentToReviewer: { type: Sequelize.STRING, allowNull: true },
+    supervisorCommentToPastPaper: { type: Sequelize.STRING, allowNull: true },
+    reviewerRecheckComment1: { type: Sequelize.STRING, allowNull: true },
+    reviewerRecheckComment2: { type: Sequelize.STRING, allowNull: true },
+  }
+);
+SpamSheetErrorReportAndComment.sync().then(() => {
+  console.log("SpamSheetErrorReportAndComment created");
 });
 
 const SheetLog = db.define("sheetLog", {
