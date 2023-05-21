@@ -83,6 +83,11 @@ const Sheet = db.define("sheet", {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  errorReport: { type: Sequelize.STRING, allowNull: true },
+  errorReportImg: { type: Sequelize.STRING, allowNull: true },
+  reviewerCommentToSupervisor: { type: Sequelize.STRING, allowNull: true },
+  supervisorCommentToReviewer: { type: Sequelize.STRING, allowNull: true },
+  supervisorCommentToPastPaper: { type: Sequelize.STRING, allowNull: true },
   isSpam: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
@@ -126,25 +131,22 @@ Sheet.belongsTo(User, {
   as: "supervisor",
 });
 
-const SpamSheetErrorReportAndComment = db.define(
-  "spamSheetErrorReportAndComment",
-  {
-    id: {
-      type: Sequelize.UUID,
-      defaultValue: Sequelize.UUIDV4,
-      primaryKey: true,
-    },
-    errorReport: { type: Sequelize.STRING, allowNull: true },
-    errorReportImg: { type: Sequelize.STRING, allowNull: true },
-    reviewerCommentToSupervisor: { type: Sequelize.STRING, allowNull: true },
-    supervisorCommentToReviewer: { type: Sequelize.STRING, allowNull: true },
-    supervisorCommentToPastPaper: { type: Sequelize.STRING, allowNull: true },
-    reviewerRecheckComment1: { type: Sequelize.STRING, allowNull: true },
-    reviewerRecheckComment2: { type: Sequelize.STRING, allowNull: true },
-  }
-);
-SpamSheetErrorReportAndComment.sync().then(() => {
-  console.log("SpamSheetErrorReportAndComment created");
+const SpamSheetRecheckComments = db.define("SpamSheetRecheckComments", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
+  sheetId: { type: Sequelize.UUID, allowNull: false },
+  reviewerRecheckComment: { type: Sequelize.STRING, allowNull: true },
+});
+
+SpamSheetRecheckComments.sync().then(() => {
+  console.log("SpamSheetRecheckComments created");
+});
+
+SpamSheetRecheckComments.belongsTo(Sheet, {
+  foreignKey: "sheetId",
 });
 
 const SheetLog = db.define("sheetLog", {
@@ -162,5 +164,6 @@ const SheetLog = db.define("sheetLog", {
 SheetLog.sync().then(() => {
   console.log("sheetLog created");
 });
+SheetLog.belongsTo(Sheet, { foreignKey: "sheetId" });
 
-module.exports = { Sheet, SheetLog };
+module.exports = { Sheet, SheetLog, SpamSheetRecheckComments };

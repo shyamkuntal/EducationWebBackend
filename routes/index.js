@@ -10,7 +10,7 @@ const router = express.Router();
 router.use("/boardmanagement", BoardRouters);
 router.use("/subjectmanagement", SubjectRouters);
 router.use("/ppmsupervisor", PPMSupervisor);
-router.use("/ppmReviewer", PPMReviewer);
+router.use("/ppmreviewer", PPMReviewer);
 router.use("/accountmanagement", AccountManagement);
 router.use("/ppuploader", PastPaperUploader);
 

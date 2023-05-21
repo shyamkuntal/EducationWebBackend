@@ -1,5 +1,9 @@
 const { Op, Sequelize } = require("sequelize");
-const { Sheet, SheetLog } = require("../models/Sheet.js");
+const {
+  Sheet,
+  SheetLog,
+  SpamSheetRecheckComments,
+} = require("../models/Sheet.js");
 const { User } = require("../models/User.js");
 const CONSTANTS = require("../constants/constants.js");
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
@@ -199,6 +203,48 @@ const uploadErrorReportFile = async (fileName, fileObj) => {
     throw err;
   }
 };
+const updateErrorReportAndAssignToSupervisor = async (
+  sheetId,
+  supervisorId,
+  statusForSupervisor,
+  statusForReviewer,
+  isSpam,
+  errorReport,
+  comment,
+  fileName
+) => {
+  try {
+    let updateErrorReport = await Sheet.update(
+      {
+        assignedToUserId: supervisorId,
+        statusForReviewer: statusForReviewer,
+        statusForSupervisor: statusForSupervisor,
+        isSpam: isSpam,
+        errorReport: errorReport,
+        reviewerCommentToSupervisor: comment,
+        errorReportImg: fileName,
+      },
+      { where: { id: sheetId } }
+    );
+
+    return updateErrorReport;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const addRecheckError = async (sheetId, recheckComment) => {
+  try {
+    let createRecheckComment = await SpamSheetRecheckComments.create({
+      sheetId: sheetId,
+      reviewerRecheckComment: recheckComment,
+    });
+
+    return createRecheckComment;
+  } catch (err) {
+    throw err;
+  }
+};
 
 module.exports = {
   findSheet,
@@ -211,4 +257,6 @@ module.exports = {
   updateSheetStatusForSupervisorAndReviewer,
   updateSheetStatusForReviewer,
   uploadErrorReportFile,
+  updateErrorReportAndAssignToSupervisor,
+  addRecheckError,
 };

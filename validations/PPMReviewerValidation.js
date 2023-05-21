@@ -12,9 +12,8 @@ const assignSupervisorUserToSheetSchema = Joi.object({
 
 const reportErrorSchema = Joi.object({
   sheetId: Joi.string().guid().required(),
-  errorReport: Joi.string().max(150).required(),
-  comment: Joi.string().max(150).required(),
-  file: Joi.string().required(),
+  reviewerId: Joi.string().guid().required(),
+  recheckComment: Joi.string().max(225),
 });
 
 module.exports = {
