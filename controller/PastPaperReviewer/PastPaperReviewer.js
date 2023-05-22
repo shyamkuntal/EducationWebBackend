@@ -3,18 +3,23 @@ const {
   assignSupervisorUserToSheetSchema,
   updateSheetStatusSchema,
   reportErrorSchema,
+  getRecheckingComments,
 } = require("../../validations/PPMReviewerValidation.js");
 const services = require("../../services/index.js");
 const httpStatus = require("http-status");
 const { generateFileName } = require("../../config/s3.js");
 
 const PastPaperReviewerController = {
-  async getSheet(req, res) {
+  async getRecheckErrors(req, res) {
     try {
+      let reqVariables = { sheetId: req.query.sheetId };
 
-      
+      let values = await getRecheckingComments.validateAsync(reqVariables);
 
+      let recheckingComments =
+        await services.sheetService.findRecheckingComments(values.sheetId);
 
+      res.status(httpStatus.OK).send(recheckingComments);
     } catch (err) {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }

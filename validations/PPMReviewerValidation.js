@@ -13,11 +13,16 @@ const assignSupervisorUserToSheetSchema = Joi.object({
 const reportErrorSchema = Joi.object({
   sheetId: Joi.string().guid().required(),
   reviewerId: Joi.string().guid().required(),
-  recheckComment: Joi.string().max(225),
+  recheckComment: Joi.string().max(225).required(),
+});
+
+const getRecheckingComments = Joi.object({
+  sheetId: Joi.string().guid().required(),
 });
 
 module.exports = {
   assignSupervisorUserToSheetSchema,
   updateSheetStatusSchema,
   reportErrorSchema,
+  getRecheckingComments,
 };

@@ -9,6 +9,9 @@ router.get("/getsheets", getPaginatedReviewersheets(), (req, res) => {
   res.json(res.paginatedResults);
 });
 
+// api/ppmReviewer/getrecheckcomments
+router.get("/getrecheckcomments", PastPaperReviewerController.getRecheckErrors);
+
 // api/ppmReviewer/updateinprogresssheetstatus
 router.patch(
   "/updateinprogresssheetstatus",

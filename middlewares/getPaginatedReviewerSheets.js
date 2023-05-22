@@ -1,14 +1,18 @@
+const { Op } = require("sequelize");
 const { Board, SubBoard } = require("../models/Board.js");
 const { Sheet } = require("../models/Sheet.js");
-const { SubjectLevel } = require("../models/Subject.js");
+const { SubjectLevel, Subject } = require("../models/Subject.js");
 
 const getPaginatedReviewerSheets = (model) => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
+
     const filters = {};
-    if (req.query.isPublished) {
-      filters.isPublished = req.query.isPublished;
+    // later on reviewer id will be coming through checkvalidrole middleware
+    filters.assignedToUserId = req.query.reviewerId;
+    if (req.query.isSpam) {
+      filters.isSpam = req.query.isSpam;
     }
     if (req.query.boardId) {
       filters.boardId = req.query.boardId;
@@ -16,31 +20,18 @@ const getPaginatedReviewerSheets = (model) => {
     if (req.query.SubBoardId) {
       filters.SubBoardId = req.query.SubBoardId;
     }
-    if (req.query.subjectName) {
-      filters.subjectName = req.query.subjectName;
+    if (req.query.subjectId) {
+      filters.subjectId = req.query.subjectId;
     }
     if (req.query.grade) {
       filters.grade = req.query.grade;
     }
-    if (req.query.subjectLevel) {
-      filters.subjectLevel = req.query.subjectLevel;
-    }
-    if (req.query.year) {
-      filters.year = req.query.year;
-    }
-    if (req.query.season) {
-      filters.season = req.query.season;
-    }
-    if (req.query.varient) {
-      filters.subjectLevel = req.query.season;
-    }
-    if (req.query.paperNumber) {
-      filters.paperNumber = req.query.paperNumber;
+    if (req.query.search) {
+      filters.year = { [Op.iLike]: `%${req.query.search}%` };
+      
     }
 
-    if (req.query.search) {
-      filters.boardName = { $regex: req.query.search, $options: "i" };
-    }
+    console.log(filters);
 
     if (req.query.time === "today") {
       filters.createdAt = {
@@ -75,30 +66,63 @@ const getPaginatedReviewerSheets = (model) => {
     }
 
     try {
-      const subjects = await Sheet.findAll({
-        attributes: ["id", "grade", "year"],
-        include: [
-          {
-            model: SubBoard,
-            attributes: ["SubBoardName"],
-          },
-          {
-            model: Board,
-            attributes: ["boardName"],
-          },
-          {
-            model: SubjectLevel,
-            attributes: ["subjectLevelName"],
-            required: false,
-          },
-        ],
-        where: filters,
-        limit,
-        offset: startIndex,
-      });
+      console.log(req.query.isSpam);
+      if (req.query.isSpam === "true") {
+        const sheets = await Sheet.findAll({
+          attributes: [
+            "id",
+            "grade",
+            "year",
+            "statusForReviewer",
+            "errorReport",
+            "supervisorCommentToReviewer",
+          ],
+          include: [
+            {
+              model: SubBoard,
+              attributes: ["SubBoardName"],
+            },
+            {
+              model: Board,
+              attributes: ["boardName"],
+            },
+          ],
+          where: filters,
+          limit,
+          offset: startIndex,
+        });
+        results.results = sheets;
+        res.paginatedResults = results;
+      } else {
+        const sheets = await Sheet.findAll({
+          attributes: [
+            "id",
+            "grade",
+            "year",
+            "varient",
+            "paperNumber",
+            "statusForReviewer",
+          ],
+          include: [
+            {
+              model: SubBoard,
+              attributes: ["SubBoardName"],
+            },
+            {
+              model: Board,
+              attributes: ["boardName"],
+            },
+            { model: Subject, attributes: ["subjectName"] },
+            { model: SubjectLevel, attributes: ["subjectLevelName"] },
+          ],
+          where: filters,
+          limit,
+          offset: startIndex,
+        });
+        results.results = sheets;
+        res.paginatedResults = results;
+      }
 
-      results.results = subjects;
-      res.paginatedResults = results;
       next();
     } catch (err) {
       res.status(500).json({ status: 501, error: err.message });

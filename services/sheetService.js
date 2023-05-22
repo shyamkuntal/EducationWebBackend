@@ -246,6 +246,19 @@ const addRecheckError = async (sheetId, recheckComment) => {
   }
 };
 
+const findRecheckingComments = async (sheetId) => {
+  try {
+    let findRecheckComments = await SpamSheetRecheckComments.findAll({
+      where: { sheetId: sheetId },
+      order: [["createdAt", "ASC"]],
+      raw: true,
+    });
+    return findRecheckComments;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   findSheet,
   findSheetAndUser,
@@ -259,4 +272,5 @@ module.exports = {
   uploadErrorReportFile,
   updateErrorReportAndAssignToSupervisor,
   addRecheckError,
+  findRecheckingComments,
 };
