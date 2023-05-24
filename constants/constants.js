@@ -20,5 +20,8 @@ module.exports = Object.freeze({
   sheetLogsMessages: {
     supervisorAssignToPastPaper: " assign sheet to past paper uploader name ",
     supervisorAssignToReviewer: " assign task to reviewer ",
+    reviewerAssignToSupervisor: "completed sheet review and assigned back to",
+    reviewerAssignToSupervisorErrorReport:
+      "found an error in the sheet and send back to",
   },
 });
