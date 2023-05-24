@@ -2,7 +2,7 @@ const { Board, SubBoard } = require("../../models/Board.js");
 const { Sheet } = require("../../models/Sheet.js");
 const CONSTANTS = require("../../constants/constants.js");
 const { Subject, SubjectLevel } = require("../../models/Subject.js");
-const { sheetService, userService } = require("../../services/index.js");
+const services = require("../../services/index.js");
 const {
   assignUploderUserToSheetSchema,
   assignReviewerUserToSheetSchema,
@@ -251,12 +251,14 @@ const PastPaperSupervisorController = {
       let values = await assignUploderUserToSheetSchema.validateAsync(req.body);
 
       // userData can later on come from middleware
-      let userData = await userService.finduser(
+      let userData = await services.userService.finduser(
         values.uploaderId,
         CONSTANTS.roleNames.PastPaper
       );
 
-      let sheetData = await sheetService.findSheetAndUser(values.sheetId);
+      let sheetData = await services.sheetService.findSheetAndUser(
+        values.sheetId
+      );
 
       let responseMessage = {
         assinedUserToSheet: "",
@@ -281,7 +283,7 @@ const PastPaperSupervisorController = {
           };
 
           let updateAssignAndLifeCycleAndStatus =
-            await sheetService.assignUserToSheetAndUpdateLifeCycleAndStatuses(
+            await services.sheetService.assignUserToSheetAndUpdateLifeCycleAndStatuses(
               sheetData.id,
               userData.id,
               CONSTANTS.roleNames.PastPaper,
@@ -298,7 +300,7 @@ const PastPaperSupervisorController = {
 
           // CREATE sheet log for sheet assignment to past paper uploader
 
-          let createLog = await sheetService.createSheetLog(
+          let createLog = await services.sheetService.createSheetLog(
             sheetData.id,
             sheetData.supervisor.Name,
             userData.Name,
@@ -327,9 +329,11 @@ const PastPaperSupervisorController = {
         req.body
       );
       // userData can later on come from middleware
-      let userData = await userService.finduser(values.reviewerId);
+      let userData = await services.userService.finduser(values.reviewerId);
 
-      let sheetData = await sheetService.findSheetAndUser(values.sheetId);
+      let sheetData = await services.sheetService.findSheetAndUser(
+        values.sheetId
+      );
 
       let responseMessage = {
         assinedUserToSheet: "",
@@ -338,7 +342,7 @@ const PastPaperSupervisorController = {
       };
 
       if (userData && sheetData) {
-        // Checking if sheet is already assigned to past paper uploader
+        // Checking if sheet is already assigned to past paper reviewer
 
         if (sheetData.assignedToUserId === userData.id) {
           res
@@ -352,7 +356,7 @@ const PastPaperSupervisorController = {
           };
 
           let updateAssignAndUpdateLifeCycle =
-            await sheetService.assignUserToSheetAndUpdateLifeCycleAndStatuses(
+            await services.sheetService.assignUserToSheetAndUpdateLifeCycleAndStatuses(
               sheetData.id,
               userData.id,
               CONSTANTS.roleNames.Reviewer,
@@ -368,7 +372,7 @@ const PastPaperSupervisorController = {
           }
 
           // CREATE sheet log for sheet assignment to past paper uploader
-          let createLog = await sheetService.createSheetLog(
+          let createLog = await services.sheetService.createSheetLog(
             sheetData.id,
             sheetData.supervisor.Name,
             userData.Name,
@@ -378,6 +382,18 @@ const PastPaperSupervisorController = {
           if (createLog) {
             responseMessage.sheetLog =
               "Log record for sheet assignment to reviewer added successfully";
+          }
+
+          // Create Sheet CheckList
+          let checkForPreviousCheckList =
+            await services.sheetService.findCheckList(sheetData.id);
+
+          if (checkForPreviousCheckList.length <= 0) {
+            let createSheetCheckList =
+              await services.sheetService.createSheetCheckList(sheetData.id);
+            if (createSheetCheckList.length > 0) {
+              responseMessage.CheckList = "Check List Created!";
+            }
           }
 
           res.status(httpStatus.OK).send({ message: responseMessage });
