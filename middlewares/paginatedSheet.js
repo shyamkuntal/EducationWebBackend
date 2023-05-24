@@ -6,9 +6,18 @@ const paginatedSheetResults = (model) => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const filters = {};
+    const filters = {
+      isArchived: false,
+      isPublished: false,
+    };
     if (req.query.isPublished) {
       filters.isPublished = req.query.isPublished;
+    }
+    if (req.query.assignedToUserId) {
+      filters.assignedToUserId = req.query.assignedToUserId;
+    }
+    if (req.query.supervisorId) {
+      filters.supervisorId = req.query.supervisorId;
     }
     if (req.query.boardId) {
       filters.boardId = req.query.boardId;

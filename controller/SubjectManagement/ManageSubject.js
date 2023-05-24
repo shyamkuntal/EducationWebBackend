@@ -1,12 +1,17 @@
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
 const { generateFileName, s3Client } = require("../../config/s3.js");
-const { Subject, SubjectLevel } = require("../../models/Subject.js");
+const {
+  Subject,
+  SubjectLevel,
+  subjectName,
+} = require("../../models/Subject.js");
 require("dotenv").config();
 const bucketName = process.env.AWS_BUCKET_NAME;
 
 const SubjectManagementController = {
   async CreateSubject(req, res) {
-    const { boardId, SubBoardId, grade, subjectName, subjectLevels } = req.body;
+    const { boardId, SubBoardId, grade, subjectNameId, subjectLevels } =
+      req.body;
 
     try {
       // Create a new subject entry
@@ -31,7 +36,7 @@ const SubjectManagementController = {
         boardId,
         SubBoardId,
         grade,
-        subjectName,
+        subjectNameId,
         subjectImage,
       });
 
@@ -156,7 +161,7 @@ const SubjectManagementController = {
       boardId,
       SubBoardId,
       grade,
-      subjectName,
+      subjectNameId,
       isArchived,
       isPublished,
       subjectLevels,
@@ -191,7 +196,7 @@ const SubjectManagementController = {
       subject.boardId = boardId;
       subject.SubBoardId = SubBoardId;
       subject.grade = grade;
-      subject.subjectName = subjectName;
+      subject.subjectNameId = subjectNameId;
       subject.subjectImage = subjectImage;
       subject.isArchived = isArchived;
       subject.isPublished = isPublished;
@@ -251,6 +256,19 @@ const SubjectManagementController = {
         subject,
         alllevels,
       });
+    } catch (err) {
+      return res.status(500).json({ message: err.message });
+    }
+  },
+
+  async createsubjectName(req, res) {
+    try {
+      const name = req.body.subjectName;
+      console.log(name);
+      const subjectNameid = await subjectName.create({
+        subjectName: name,
+      });
+      return res.status(200).json({ subjectNameid });
     } catch (err) {
       return res.status(500).json({ message: err.message });
     }

@@ -24,5 +24,9 @@ router.patch(
   "/:subjectId/togglearchive/level",
   SubjectManagementController.ToggleArchiveLevel
 );
+router.post(
+  "/createsubjectname",
+  SubjectManagementController.createsubjectName
+);
 
 module.exports = router;

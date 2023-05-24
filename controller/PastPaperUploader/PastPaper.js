@@ -178,6 +178,76 @@ const PastPaperUploaderController = {
       return res.json({ status: 501, error: err.message });
     }
   },
+
+  async getdatafordashboard(req, res) {
+    try {
+      const assignedToUserId = req.params.userId;
+      const sheet = await Sheet.findAll({ where: { assignedToUserId } });
+      const totalsheet = await Sheet.count({
+        where: { assignedToUserId, isSpam: false },
+      });
+      const sheetComplete = await Sheet.count({
+        where: {
+          assignedToUserId,
+          statusForPastPaper: "Complete",
+          isSpam: false,
+        },
+      });
+      const sheetNotStarted = await Sheet.count({
+        where: {
+          assignedToUserId,
+          statusForPastPaper: "NotStarted",
+          isSpam: false,
+        },
+      });
+      const sheetInProgress = await Sheet.count({
+        where: {
+          assignedToUserId,
+          statusForPastPaper: "InProgress",
+          isSpam: false,
+        },
+      });
+
+      const totalSpamsheet = await Sheet.count({
+        where: { assignedToUserId, isSpam: true },
+      });
+      const spamSheetComplete = await Sheet.count({
+        where: {
+          assignedToUserId,
+          statusForPastPaper: "Complete",
+          isSpam: true,
+        },
+      });
+      const spamSheetNotStarted = await Sheet.count({
+        where: {
+          assignedToUserId,
+          statusForPastPaper: "NotStarted",
+          isSpam: true,
+        },
+      });
+      const spamSheetInProgress = await Sheet.count({
+        where: {
+          assignedToUserId,
+          statusForPastPaper: "InProgress",
+          isSpam: true,
+        },
+      });
+
+      res.send({
+        sheet,
+        totalsheet: totalsheet,
+        sheetComplete: sheetComplete,
+        sheetNotStarted: sheetNotStarted,
+        sheetInProgress: sheetInProgress,
+        totalSpamsheet: totalSpamsheet,
+        spamSheetComplete: spamSheetComplete,
+        spamSheetNotStarted: spamSheetNotStarted,
+        spamSheetInProgress: spamSheetInProgress,
+      });
+    } catch (err) {
+      return res.json({ status: 501, error: err.message });
+    }
+  },
 };
 
 module.exports = PastPaperUploaderController;

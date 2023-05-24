@@ -22,8 +22,8 @@ const Subject = db.define("subject", {
     enum: grades,
     allowNull: false,
   },
-  subjectName: {
-    type: Sequelize.STRING,
+  subjectNameId: {
+    type: Sequelize.UUID,
     allowNull: false,
   },
   subjectImage: {
@@ -41,7 +41,7 @@ const Subject = db.define("subject", {
 });
 
 Subject.sync().then(() => {
-  console.log("table created");
+  console.log("subject created");
 });
 
 Subject.belongsTo(SubBoard, {
@@ -84,4 +84,22 @@ Subject.hasMany(SubjectLevel, {
   foreignKey: "subjectId",
 });
 
-module.exports = { Subject, SubjectLevel };
+const subjectName = db.define("subjectName", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
+  subjectName: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+});
+
+Subject.belongsTo(subjectName, { foreignKey: "subjectNameId" });
+
+subjectName.sync().then(() => {
+  console.log("subjectName created");
+});
+
+module.exports = { Subject, SubjectLevel, subjectName };
