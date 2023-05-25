@@ -28,5 +28,6 @@ router.post(
   "/createsubjectname",
   SubjectManagementController.createsubjectName
 );
-
+router.get("/getallboards", SubjectManagementController.getallboards);
+router.post("/getallsubboards", SubjectManagementController.getAllSubBoards);
 module.exports = router;

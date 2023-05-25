@@ -28,9 +28,9 @@ const paginatedSubjects = (model) => {
     if (req.query.SubBoardId) {
       filters.SubBoardId = req.query.SubBoardId;
     }
-    if (req.query.subjectName) {
-      filters.subjectName = req.query.subjectName;
-    }
+    // if (req.query.subjectName) {
+    //   filters.subjectName = req.query.subjectName;
+    // }
     if (req.query.grade) {
       filters.grade = req.query.grade;
     }
@@ -59,7 +59,7 @@ const paginatedSubjects = (model) => {
         attributes: [
           "id",
           "grade",
-          "subjectName",
+
           "subjectImage",
           "isArchived",
           "isPublished",
