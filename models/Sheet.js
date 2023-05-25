@@ -149,6 +149,33 @@ SpamSheetRecheckComments.belongsTo(Sheet, {
   foreignKey: "sheetId",
 });
 
+SheetCheckList = db.define("SheetCheckList", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
+  sheetId: {
+    type: Sequelize.UUID,
+    allowNull: false,
+  },
+  label: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  isChecked: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+});
+SheetCheckList.sync().then(() => {
+  console.log("SpamSheetRecheckComments created");
+});
+
+SheetCheckList.belongsTo(Sheet, {
+  foreignKey: "sheetId",
+});
+
 const SheetLog = db.define("sheetLog", {
   id: {
     type: Sequelize.UUID,
@@ -166,4 +193,4 @@ SheetLog.sync().then(() => {
 });
 SheetLog.belongsTo(Sheet, { foreignKey: "sheetId" });
 
-module.exports = { Sheet, SheetLog, SpamSheetRecheckComments };
+module.exports = { Sheet, SheetLog, SpamSheetRecheckComments, SheetCheckList };

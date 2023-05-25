@@ -3,6 +3,7 @@ const {
   Sheet,
   SheetLog,
   SpamSheetRecheckComments,
+  SheetCheckList,
 } = require("../models/Sheet.js");
 const { User } = require("../models/User.js");
 const CONSTANTS = require("../constants/constants.js");
@@ -160,7 +161,6 @@ const updateSheetStatusForSupervisorAndReviewer = async (
 
     return updateStatus;
   } catch (err) {
-    console.log(err);
     throw err;
   }
 };
@@ -176,7 +176,6 @@ const updateSheetStatusForReviewer = async (sheetId, statusForReviewer) => {
 
     return updateStatus;
   } catch (err) {
-    console.log(err);
     throw err;
   }
 };
@@ -259,6 +258,40 @@ const findRecheckingComments = async (sheetId) => {
   }
 };
 
+const findCheckList = async (sheetId) => {
+  try {
+    let findCheckList = await SheetCheckList.findAll({
+      sheetId: sheetId,
+      raw: true,
+    });
+    return findCheckList;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const createSheetCheckList = async (sheetId) => {
+  try {
+    let checkList = [
+      { sheetId: sheetId, label: CONSTANTS.sheetCheckList.CheckListItem1 },
+      { sheetId: sheetId, label: CONSTANTS.sheetCheckList.CheckListItem2 },
+      { sheetId: sheetId, label: CONSTANTS.sheetCheckList.CheckListItem3 },
+      { sheetId: sheetId, label: CONSTANTS.sheetCheckList.CheckListItem4 },
+      { sheetId: sheetId, label: CONSTANTS.sheetCheckList.CheckListItem5 },
+      { sheetId: sheetId, label: CONSTANTS.sheetCheckList.CheckListItem6 },
+      { sheetId: sheetId, label: CONSTANTS.sheetCheckList.CheckListItem7 },
+      { sheetId: sheetId, label: CONSTANTS.sheetCheckList.CheckListItem8 },
+      { sheetId: sheetId, label: CONSTANTS.sheetCheckList.CheckListItem9 },
+      { sheetId: sheetId, label: CONSTANTS.sheetCheckList.CheckListItem10 },
+    ];
+
+    let bulkCreateCheckList = await SheetCheckList.bulkCreate(checkList);
+    return bulkCreateCheckList;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   findSheet,
   findSheetAndUser,
@@ -273,4 +306,6 @@ module.exports = {
   updateErrorReportAndAssignToSupervisor,
   addRecheckError,
   findRecheckingComments,
+  createSheetCheckList,
+  findCheckList,
 };
