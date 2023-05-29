@@ -177,6 +177,7 @@ const UserSubjectMapping = db.define("usersubjectmapping", {
   },
 });
 
+User.hasMany(UserSubjectMapping, { foreignKey: "userId" });
 UserSubjectMapping.belongsTo(User, { foreignKey: "userId" });
 
 UserSubjectMapping.sync().then(() => {

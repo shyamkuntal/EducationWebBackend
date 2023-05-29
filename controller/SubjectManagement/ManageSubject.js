@@ -5,6 +5,11 @@ const {
   SubjectLevel,
   subjectName,
 } = require("../../models/Subject.js");
+const {
+  getallboards,
+  getallsubboards,
+} = require("../PPMSupervisor/PPMSupervisor.js");
+const { Board, SubBoard } = require("../../models/Board.js");
 require("dotenv").config();
 const bucketName = process.env.AWS_BUCKET_NAME;
 
@@ -271,6 +276,38 @@ const SubjectManagementController = {
       return res.status(200).json({ subjectNameid });
     } catch (err) {
       return res.status(500).json({ message: err.message });
+    }
+  },
+
+  async getallboards(req, res) {
+    try {
+      const boards = await Board.findAll({
+        attributes: ["boardName", "id"],
+      });
+      return res.status(200).json({ boards });
+    } catch (err) {
+      return res.status(500).json({ message: err.message });
+    }
+  },
+
+  async getAllSubBoards(req, res) {
+    const boardIds = req.body.boardIds;
+
+    try {
+      const subBoards = await SubBoard.findAll({
+        attributes: ["SubBoardName", "id", "boardId"],
+        where: { boardId: boardIds },
+        include: {
+          model: Board,
+          as: "board",
+          attributes: [],
+        },
+        group: ["subBoard.id"],
+      });
+
+      return res.status(200).json({ subBoards });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
     }
   },
 };
