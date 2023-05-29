@@ -27,8 +27,6 @@ const AccountManagementController = {
         }))
       );
       return res.status(200).json({ role });
-
-      console.log(roles);
     } catch (error) {
       return res.status(200).json({ msg: error.message });
     }

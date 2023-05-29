@@ -246,9 +246,6 @@ const PastPaperReviewerController = {
             if (uploadFile) {
               responseMessage.message.errorReportFileUpload =
                 "Error Report file added successfully!";
-            } else {
-              responseMessage.message.errorReportFileUpload =
-                "Failed to upload Error Report file";
             }
 
             // updating error report, adding reviewer comments,updating sheetStatuses,setting IsSpam to true

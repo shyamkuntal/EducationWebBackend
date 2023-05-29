@@ -149,7 +149,7 @@ SpamSheetRecheckComments.belongsTo(Sheet, {
   foreignKey: "sheetId",
 });
 
-SheetCheckList = db.define("SheetCheckList", {
+const SheetCheckList = db.define("SheetCheckList", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
