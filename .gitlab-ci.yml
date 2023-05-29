@@ -21,22 +21,21 @@ deploy to dev:
   script:
     - echo "${DEV_SSH_PRIVATE_KEY}" > ssh_key.pem
     - chmod 400 ssh_key.pem
-    - ssh -o StrictHostKeyChecking=no -i ssh_key.pem "${USER}"@"${DEV_SERVER_IP}" "./backend-dev-cd.sh"
+    - ssh -o StrictHostKeyChecking=no -i ssh_key.pem "${USER}"@"${DEV_SERVER_IP}" "./backend-dev-cicd.sh"
 
   environment:
     name: dev
   only:
     - dev
 
-# deploy to prod:
-#   stage: deploy
-#   script:
-#     - echo "${PROD_SSH_PRIVATE_KEY}" > ssh_key.pem
-#     - chmod 400 ssh_key.pem
-#     - ssh -o StrictHostKeyChecking=no -i ssh_key.pem "${USER}"@"${PROD_SERVER_IP}" "./backend-prod-cd.sh"
-#     - echo "deployed to prod"
+deploy to prod:
+  stage: deploy
+  script:
+    - echo "${PROD_SSH_PRIVATE_KEY}" > ssh_key.pem
+    - chmod 400 ssh_key.pem
+    - ssh -o StrictHostKeyChecking=no -i ssh_key.pem "${USER}"@"${PROD_SERVER_IP}" "./backend-prod-cicd.sh"
 
-#   environment:
-#     name: prod
-#   only:
-#     - prod
+  environment:
+    name: prod
+  only:
+    - prod
