@@ -1,5 +1,9 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
+const { Sheet } = require("./Sheet");
+const { Board, SubBoard } = require("./Board");
+const { subjectName } = require("./Subject");
+// const { Sheet } = require("./Sheet");
 const gradeRange = ["1-5", "6-8", "9-10", "11-12"];
 const roles = [
   "Uploader2",
@@ -83,7 +87,12 @@ const UserBoardMapping = db.define("userboardmapping", {
 });
 
 UserBoardMapping.belongsTo(User, { foreignKey: "userId" });
-
+UserBoardMapping.belongsTo(Board, {
+  foreignKey: "boardID",
+  targetKey: "id",
+  schema: "boards",
+});
+User.hasMany(UserBoardMapping, { foreignKey: "userId" });
 UserBoardMapping.sync().then(() => {
   console.log("UserBoardMapping created");
 });
@@ -104,8 +113,13 @@ const UserSubBoardMapping = db.define("usersubboardmapping", {
   },
 });
 
+UserSubBoardMapping.belongsTo(SubBoard, {
+  foreignKey: "subBoardID",
+  targetKey: "id",
+  schema: "subBoards",
+});
 UserSubBoardMapping.belongsTo(User, { foreignKey: "userId" });
-
+User.hasMany(UserSubBoardMapping, { foreignKey: "userId" });
 UserSubBoardMapping.sync().then(() => {
   console.log("UserSubBoardMapping created");
 });
@@ -128,6 +142,7 @@ const UserQualificationMapping = db.define("userqualificationmapping", {
 });
 
 UserQualificationMapping.belongsTo(User, { foreignKey: "userId" });
+User.hasMany(UserQualificationMapping, { foreignKey: "userId" });
 
 UserQualificationMapping.sync().then(() => {
   console.log("UserQualificationMapping created");
@@ -148,6 +163,11 @@ const UserSubjectMapping = db.define("usersubjectmapping", {
     allowNull: false,
   },
 });
+UserSubjectMapping.belongsTo(subjectName, {
+  foreignKey: "subjectNameIds",
+  targetKey: "id",
+  schema: "subjectNames",
+});
 
 User.hasMany(UserSubjectMapping, { foreignKey: "userId" });
 UserSubjectMapping.belongsTo(User, { foreignKey: "userId" });
@@ -156,6 +176,7 @@ UserSubjectMapping.sync().then(() => {
   console.log("UsersubjectMapping created");
 });
 
+// User.hasMany(Sheet, { foreignKey: "assignedToUserId" });
 // SubBoard.belongsTo(Board, {
 //   foreignKey: { name: "boardId" },
 // });

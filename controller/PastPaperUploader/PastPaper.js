@@ -4,7 +4,8 @@ const { PastPaper } = require("../../models/PastPaper.js");
 //const { Sheet } = require("../../models/Sheet.js");
 const dotenv = require("dotenv");
 const { Sheet } = require("../../models/Sheet.js");
-const { Subject } = require("../../models/Subject.js");
+const { Subject, SubjectLevel } = require("../../models/Subject.js");
+const { SubBoard, Board } = require("../../models/Board.js");
 
 dotenv.config();
 
@@ -28,6 +29,21 @@ const PastPaperUploaderController = {
     console.log(assignedToUserId);
     try {
       const allAssignedSheeets = await Sheet.findAll({
+        include: [
+          {
+            model: SubBoard,
+            attributes: ["SubBoardName"],
+          },
+          {
+            model: Board,
+            attributes: ["boardName"],
+          },
+          {
+            model: SubjectLevel,
+            attributes: ["id", "subjectLevelName", "isArchived"],
+            required: false,
+          },
+        ],
         where: { assignedToUserId },
       });
 

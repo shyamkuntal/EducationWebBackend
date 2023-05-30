@@ -9,6 +9,8 @@ const {
 const { roleNames } = require("../../constants/constants.js");
 const { Sequelize } = require("sequelize");
 const { subjectName } = require("../../models/Subject.js");
+const { Sheet } = require("../../models/Sheet.js");
+const { SubBoard, Board } = require("../../models/Board.js");
 
 const AccountManagementController = {
   async createUserRole(req, res) {
@@ -36,12 +38,30 @@ const AccountManagementController = {
   },
 
   async getallroles(req, res) {
-    //const userId = req.params.userId;
+    const roleId = req.params.roleId;
     try {
       const roles = await Roles.findAll({
         attributes: ["roleName", "id"],
       });
-      return res.status(200).json({ roles });
+      // const rolesForSupervisor = [
+      //   "ce4afb0a-91b3-454a-a515-70c3cbb7b69b",
+      //   "c0ac1044-4d52-4305-b764-02124bd66434",
+      // ];
+      const rolesForSuperAdmin = [
+        "ce4afb0a-91b3-454a-a515-70c3cbb7b69b",
+        "c0ac1044-4d52-4305-b764-02124bd66434",
+        "11be6989-f4c7-4646-a474-b5023d937c73",
+      ];
+      if (roleId === "11be6989-f4c7-4646-a474-b5023d937c73") {
+        rolesForSuperAdmin.pop("11be6989-f4c7-4646-a474-b5023d937c73");
+      }
+
+      const avialableRoles = roles.filter((role) => {
+        if (rolesForSuperAdmin.includes(role.id)) {
+          return role;
+        }
+      });
+      return res.status(200).json({ avialableRoles });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
@@ -191,20 +211,26 @@ const AccountManagementController = {
       const results = await User.findAll({
         attributes: [
           "roleId",
-          [Sequelize.fn("count", Sequelize.col("id")), "totalUsers"],
+          [Sequelize.fn("count", Sequelize.col("user.id")), "totalUsers"],
         ],
-        group: "roleId",
+        include: [
+          {
+            model: Roles,
+            attributes: ["roleName"],
+          },
+        ],
+        group: ["roleId", "role.id"],
       });
 
-      const summary = results.map((result) => {
-        const { roleId, totalUsers } = result.dataValues;
-        return { roleId, totalUsers };
-      });
+      // const summary = results.map((result) => {
+      //   const { roleId, totalUsers } = result.dataValues;
+      //   return { roleId, totalUsers };
+      // });
 
-      summary.forEach((item) => {
-        console.log(`Role ID: ${item.roleId} - ${item.totalUsers} users`);
-      });
-      return res.status(200).json({ summary });
+      // summary.forEach((item) => {
+      //   console.log(`Role ID: ${item.roleId} - ${item.totalUsers} users`);
+      // });
+      return res.status(200).json({ results });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
@@ -227,23 +253,7 @@ const AccountManagementController = {
       const users = await User.findAll({
         attributes: ["userName", "email", "Name"],
         where: { roleId },
-        include: [
-          {
-            model: UserSubjectMapping,
-            attributes: [
-              [
-                Sequelize.fn("COUNT", Sequelize.col("subjectNameIds")),
-                "totalSubjects",
-              ],
-            ],
-            as: "usersubjectmappings",
-          },
-        ],
-        group: [
-          "user.id",
-          "usersubjectmappings.id",
-          "usersubjectmappings.userId",
-        ],
+        include: { all: true, nested: true },
       });
       return res.status(200).json({ users });
     } catch (error) {
@@ -258,6 +268,44 @@ const AccountManagementController = {
       user.isActive = !user.isActive;
       await user.save();
       return res.status(200).json({ user });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+  //{ all: true, nested: true }
+  async getSupervisorInfo(req, res) {
+    try {
+      const roleId = "11be6989-f4c7-4646-a474-b5023d937c73";
+      const users = await User.findAll({
+        where: { roleId },
+        include: { all: true, nested: true },
+      });
+
+      // Create an empty object to store the grouped subboard names for each user
+      const userSubboardNames = {};
+
+      users.forEach((user) => {
+        // Create an empty object to store the grouped subboard names for the current user
+        const subboardNamesByBoard = {};
+
+        user.usersubboardmappings.forEach((mapping) => {
+          const boardName = mapping.subBoard.board.boardName;
+          const subBoardName = mapping.subBoard.SubBoardName;
+
+          if (!subboardNamesByBoard.hasOwnProperty(boardName)) {
+            subboardNamesByBoard[boardName] = [];
+          }
+
+          subboardNamesByBoard[boardName].push(subBoardName);
+        });
+
+        // Store the grouped subboard names for the current user
+        userSubboardNames[user.id] = subboardNamesByBoard;
+      });
+
+      console.log(userSubboardNames);
+
+      return res.status(200).json({ users, userSubboardNames });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
