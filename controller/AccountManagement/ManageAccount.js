@@ -62,7 +62,9 @@ const AccountManagementController = {
       //     return role;
       //   }
       // });
-      return res.status(200).json({ avialableRoles });
+      return res.status(200).json({
+        roles: roles,
+      });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }

@@ -6,7 +6,7 @@ const router = express.Router();
 router.post("/createuserrole", AccountManagementController.createUserRole);
 router.post("/createuser", AccountManagementController.createUser);
 router.put("/edituser", AccountManagementController.editUser);
-router.get("/:roleId/getallroles", AccountManagementController.getallroles);
+router.get("/getallroles", AccountManagementController.getallroles);
 // router.get('/:roleId/getallroles',AccountManagementController.getallroles);
 router.get(
   "/getrolebyname/:roleName",
