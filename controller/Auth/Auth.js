@@ -12,17 +12,25 @@ const AuthController = {
         values.password,
         values.roleId
       );
-
+      let token = "";
       // Creating jwt for user
+      if (values.remember === true) {
+        token = await services.authService.generateCmsAuthToken(user, "7d");
+      } else {
+        token = await services.authService.generateCmsAuthToken(user, "1d");
+      }
 
-      let token = await services.authService.generateCmsAuthToken(user);
+      let userDetailsToBeSent = {
+        id: user.id,
+        name: user.Name,
+        userName: user.userName,
+        email: user.email,
+        roleId: user.roleId,
+        roleName: user.role.roleName,
+        token: token,
+      };
 
-      res
-        .cookie("ExamCare-token", token, {
-          expires: services.authService.setExpiry(7),
-        })
-        .status(httpStatus.OK)
-        .send(user);
+      res.status(httpStatus.OK).send(userDetailsToBeSent);
     } catch (err) {
       next(err);
     }
@@ -34,8 +42,17 @@ const AuthController = {
       let userId = auth.id;
       console.log(userId);
       let user = await services.userService.finduser(userId);
+
+      let userDetailsToBeSent = {
+        id: user.id,
+        name: user.Name,
+        userName: user.userName,
+        email: user.email,
+        roleId: user.roleId,
+        roleName: user.role.roleName,
+      };
       if (auth && user) {
-        res.status(httpStatus.OK).send(user);
+        res.status(httpStatus.OK).send(userDetailsToBeSent);
       }
     } catch (err) {
       next(err);

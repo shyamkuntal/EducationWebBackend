@@ -11,6 +11,9 @@ const { Sequelize } = require("sequelize");
 const { subjectName } = require("../../models/Subject.js");
 const { Sheet } = require("../../models/Sheet.js");
 const { SubBoard, Board } = require("../../models/Board.js");
+const services = require("../../services");
+const { findRoleByNameSchema } = require("../../validations/RoleValidation.js");
+const httpStatus = require("http-status");
 
 const AccountManagementController = {
   async createUserRole(req, res) {
@@ -306,6 +309,19 @@ const AccountManagementController = {
       return res.status(200).json({ users, userSubboardNames });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
+    }
+  },
+  async getRoleByName(req, res, next) {
+    try {
+      let values = await findRoleByNameSchema.validateAsync({
+        roleName: req.params.roleName,
+      });
+
+      let role = await services.roleService.findRoleByName(values.roleName);
+
+      res.status(httpStatus.OK).send(role);
+    } catch (err) {
+      next(err);
     }
   },
 };
