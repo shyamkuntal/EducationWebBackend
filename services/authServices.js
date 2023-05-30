@@ -7,7 +7,7 @@ const setExpiry = (days) => {
   return date;
 };
 
-const generateCmsAuthToken = async (user) => {
+const generateCmsAuthToken = async (user, expiryInDays) => {
   try {
     let userId = user.dataValues.id;
     let userRoleId = user.dataValues.roleId;
@@ -15,7 +15,7 @@ const generateCmsAuthToken = async (user) => {
 
     const userObj = { id: userId, roleId: userRoleId, roleName: roleName };
     const token = jwt.sign(userObj, process.env.APP_SECRET, {
-      expiresIn: "7d",
+      expiresIn: expiryInDays,
     });
 
     return token;

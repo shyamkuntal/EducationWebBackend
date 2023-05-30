@@ -80,6 +80,8 @@ exports.AuthPastPaper = () => async (req, res, next) => {
 exports.Auth = () => async (req, res, next) => {
   try {
     let token = req.headers["authorization"].split(" ")[1];
+
+    console.log(token);
     let decoded = await services.authService.validateToken(token);
 
     if (decoded) {

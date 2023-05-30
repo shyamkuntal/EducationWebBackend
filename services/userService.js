@@ -21,7 +21,7 @@ const finduser = async (userId) => {
 const findByRoleName = async (roleName) => {
   try {
     let role = Roles.findOne({ where: { roleName: roleName }, raw: true });
-   
+
     return role;
   } catch (err) {
     throw error;
@@ -44,7 +44,10 @@ const checkUserEmailPassword = async (email, password, roleId) => {
           throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Password!");
         }
       } else {
-        throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Role!");
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          "Access Denied, Invalid Role!"
+        );
       }
     } else {
       throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Email!");
