@@ -8,10 +8,17 @@ const routes = require("./routes/index.js");
 const db = require("./config/database.js");
 const { generateFileName, s3Client } = require("./config/s3.js");
 const upload = require("./config/multer.js");
+const { convertToApiError, handleError } = require("./middlewares/apiError.js");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    methods: ["POST", "GET", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 // Test DB
 db.authenticate()
@@ -67,6 +74,12 @@ app.get("/getimage", async (req, res) => {
 });
 
 app.use("/api", routes);
+
+//API ERROR HANDLING
+app.use(convertToApiError);
+app.use((err, req, res, next) => {
+  handleError(err, res);
+});
 
 const PORT = process.env.PORT || 3002;
 

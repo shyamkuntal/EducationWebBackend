@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
+const bcrypt = require("bcrypt");
 const { Sheet } = require("./Sheet");
 const { Board, SubBoard } = require("./Board");
 const { subjectName } = require("./Subject");
@@ -15,41 +16,68 @@ const roles = [
   "Supervisor",
   "Superadmin",
 ];
-const User = db.define("user", {
-  id: {
-    type: Sequelize.UUID,
-    defaultValue: Sequelize.UUIDV4,
-    primaryKey: true,
+const User = db.define(
+  "user",
+  {
+    id: {
+      type: Sequelize.UUID,
+      defaultValue: Sequelize.UUIDV4,
+      primaryKey: true,
+    },
+    Name: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    userName: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    password: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    roleId: {
+      type: Sequelize.UUID,
+      allowNull: false,
+    },
+    isActive: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+    },
   },
-  Name: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  userName: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  email: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  password: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  roleId: {
-    type: Sequelize.UUID,
-    allowNull: false,
-  },
-  isActive: {
-    type: Sequelize.BOOLEAN,
-    defaultValue: true,
-  },
-});
+  {
+    hooks: {
+      beforeCreate: async (user) => {
+        if (user.password) {
+          const salt = await bcrypt.genSaltSync(10, "a");
+          user.password = bcrypt.hashSync(user.password, salt);
+        }
+      },
+      beforeUpdate: async (user) => {
+        if (user.password) {
+          const salt = await bcrypt.genSaltSync(10, "a");
+          user.password = bcrypt.hashSync(user.password, salt);
+        }
+      },
+    },
+    instanceMethods: {
+      validPassword: (password) => {
+        return bcrypt.compareSync(password, this.password);
+      },
+    },
+  }
+);
 
 User.sync().then(() => {
   console.log("User created");
 });
+User.prototype.validPassword = async (password, hash) => {
+  return await bcrypt.compareSync(password, hash);
+};
 
 const Roles = db.define("roles", {
   id: {

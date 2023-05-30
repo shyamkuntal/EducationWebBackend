@@ -11,7 +11,7 @@ const httpStatus = require("http-status");
 
 const PastPaperSupervisorController = {
   //take care of isarchived and ispublished later
-  async CreateSheet(req, res) {
+  async CreateSheet(req, res, next) {
     try {
       const {
         boardId,
@@ -43,7 +43,8 @@ const PastPaperSupervisorController = {
 
       return res.json({ status: 200, sheet });
     } catch (err) {
-      return res.json({ status: 501, error: err.message });
+      console.log(err);
+      next(err);
     }
   },
 
