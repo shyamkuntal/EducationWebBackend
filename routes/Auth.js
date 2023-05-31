@@ -5,10 +5,10 @@ const { Auth } = require("../middlewares/authentication");
 
 router.post("/cmslogin", AuthController.CmsLogin);
 
-router.post("/sendpasswordresetmail");
+router.post("/sendpasswordresetemail", AuthController.sendPasswordResetEmail);
 
-router.post("/resetpassword");
+router.put("/resetpassword", AuthController.resetPassword);
 
-router.post("/isauth", Auth(), AuthController.isAuth);
+router.get("/isauth", Auth(), AuthController.isAuth);
 
 module.exports = router;
