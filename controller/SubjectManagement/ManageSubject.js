@@ -300,12 +300,29 @@ const SubjectManagementController = {
         include: {
           model: Board,
           as: "board",
-          attributes: [],
+          attributes: ["boardName"],
         },
-        group: ["subBoard.id"],
+        group: ["board.id", "subBoard.id"],
       });
 
-      return res.status(200).json({ subBoards });
+      const groupedSubBoards = subBoards.reduce((result, subBoard) => {
+        const { SubBoardName, id, boardId, board } = subBoard;
+        const { boardName } = board;
+
+        if (!result[boardName]) {
+          result[boardName] = [];
+        }
+
+        result[boardName].push({
+          SubBoardName,
+          id,
+          boardId,
+        });
+
+        return result;
+      }, {});
+
+      return res.status(200).json({ subBoards: groupedSubBoards });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
