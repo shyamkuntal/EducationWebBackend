@@ -7,4 +7,17 @@ const CmsLoginSchema = Joi.object({
   remember: Joi.boolean().required(),
 });
 
-module.exports = { CmsLoginSchema };
+const CmsSendResetPasswordEmailSchema = Joi.object({
+  toEmail: Joi.string().email().required(),
+});
+
+const CmsResetPasswordSchema = Joi.object({
+  token: Joi.string().required(),
+  newPassword: Joi.string().required(),
+});
+
+module.exports = {
+  CmsLoginSchema,
+  CmsSendResetPasswordEmailSchema,
+  CmsResetPasswordSchema,
+};

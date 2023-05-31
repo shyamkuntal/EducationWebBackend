@@ -18,6 +18,16 @@ const finduser = async (userId) => {
   }
 };
 
+const findUserByEmail = async (email) => {
+  try {
+    let user = await User.findOne({ where: { email: email }, raw: true });
+
+    return user;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const findByRoleName = async (roleName) => {
   try {
     let role = Roles.findOne({ where: { roleName: roleName }, raw: true });
@@ -57,8 +67,25 @@ const checkUserEmailPassword = async (email, password, roleId) => {
   }
 };
 
+const updatePassword = async (userId, newPassword) => {
+  try {
+    console.log(userId, newPassword);
+    let updatePass = await User.findOne({
+      where: { id: userId },
+      attributes: ["id"],
+    }).then((record) => {
+      return record.update({ password: newPassword });
+    });
+    return updatePass;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   finduser,
   checkUserEmailPassword,
   findByRoleName,
+  findUserByEmail,
+  updatePassword,
 };
