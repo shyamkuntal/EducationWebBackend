@@ -48,6 +48,7 @@ const paginatedResults = (model) => {
         offset: startIndex,
       });
       results.results = await query;
+
       res.paginatedResults = results;
       next();
     } catch (e) {

@@ -3,6 +3,30 @@ const httpStatus = require("http-status");
 const services = require("../services/index");
 const CONSTANTS = require("../constants/constants");
 
+exports.AuthSuperadmin = () => async (req, res, next) => {
+  try {
+    let token = req.headers["authorization"].split(" ")[1];
+    let decoded = await services.authService.validateToken(token);
+
+    let roleDetails = await services.userService.findByRoleName(
+      CONSTANTS.roleNames.Superadmin
+    );
+
+    if (roleDetails.id === decoded.roleId) {
+      req.user = decoded;
+      next();
+    } else {
+      res
+        .status(httpStatus.UNAUTHORIZED)
+        .send({ error: "Invalid Role, Access Denied", status: false });
+    }
+  } catch (err) {
+    res
+      .status(httpStatus.UNAUTHORIZED)
+      .send({ error: "Access Denied", status: false });
+  }
+};
+
 exports.AuthSupervisor = () => async (req, res, next) => {
   try {
     let token = req.headers["authorization"].split(" ")[1];

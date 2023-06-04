@@ -6,20 +6,24 @@ const { Board } = require("../models/Board.js");
 const router = express.Router();
 
 router.get("/getallboards", paginatedResults(Board), (req, res) => {
+  console.log(paginatedResults);
   res.json(res.paginatedResults);
 });
+
+router.get("/:boardId/getsubboards", BoardManagementController.GetSubBoards);
 router.post("/createboard", BoardManagementController.CreateBoard);
+router.post("/createsubboard", BoardManagementController.createSubBoard);
 router.put("/:id/editboard", BoardManagementController.UpdateBoard);
 router.patch(
-  "/:id/togglepublishboard",
+  "/togglepublishboard",
   BoardManagementController.TogglePublishBoard
 );
 router.patch(
-  "/:id/togglearchiveboard",
+  "/togglearchiveboard",
   BoardManagementController.ToggleArchiveBoard
 );
 router.patch(
-  "/:id/togglearchive/subboard",
+  "/togglearchivesubboard",
   BoardManagementController.ToggleArchiveSubBoards
 );
 

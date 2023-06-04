@@ -36,4 +36,12 @@ module.exports = Object.freeze({
     CheckListItem9: "Check List Item 9",
     CheckListItem10: "Check List Item 10",
   },
+  validationRegex: {
+    phoneRegex: /^[2-9]{2}[0-9]{8}/,
+    emailRegex: /^\S+@\S+\.\S+$/,
+    urlRegex: newFunction(),
+  },
 });
+function newFunction() {
+  return /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+}

@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
-    methods: ["POST", "GET", "PUT", "DELETE"],
+    methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Authorization", "Content-Type"],
     credentials: true,
   })
@@ -26,21 +26,7 @@ db.authenticate()
   .then(() => console.log("Database connected..."))
   .catch((err) => console.log("Error: " + err));
 
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage: storage });
 const bucketName = process.env.AWS_BUCKET_NAME;
-
-// const region = process.env.AWS_BUCKET_REGION;
-// const accessKeyId = process.env.AWS_ACCESS_KEY;
-// const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-
-// const s3Client = new S3Client({
-//   region,
-//   credentials: {
-//     accessKeyId,
-//     secretAccessKey,
-//   },
-// });
 
 app.post("/uploadimg", upload.single("image"), async (req, res) => {
   const fileBuffer = req.file.buffer;

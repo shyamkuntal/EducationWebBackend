@@ -6,10 +6,11 @@ const AccountManagement = require("./AccountManagement.js");
 const PPMReviewer = require("./PastPaperReviewer.js");
 const PastPaperUploader = require("./PastPaperUploader.js");
 const Auth = require("./Auth.js");
+const { AuthSuperadmin } = require("../middlewares/authentication.js");
 
 const router = express.Router();
 router.use("/auth", Auth);
-router.use("/boardmanagement", BoardRouters);
+router.use("/boardmanagement", AuthSuperadmin(), BoardRouters);
 router.use("/subjectmanagement", SubjectRouters);
 router.use("/ppmsupervisor", PPMSupervisor);
 router.use("/ppmreviewer", PPMReviewer);
