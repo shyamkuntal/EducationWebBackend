@@ -59,7 +59,6 @@ const paginatedSubjects = (model) => {
         attributes: [
           "id",
           "grade",
-
           "subjectImage",
           "isArchived",
           "isPublished",

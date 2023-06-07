@@ -6,9 +6,12 @@ const {
   toggleIsPublishedSchema,
   archiveBoardSchema,
   archiveSubBoardsSchema,
+  getBoardsAndSubBoards,
+  editBoardSchema,
 } = require("../../validations/BoardManagementValidations.js");
 const services = require("../../services/index.js");
 const httpStatus = require("http-status");
+const { v4: uuidv4 } = require("uuid");
 
 // creating board initially
 
@@ -68,34 +71,28 @@ const BoardManagementController = {
   },
 
   // Update board and sub-board details
-  async UpdateBoard(req, res) {
-    const { id } = req.params;
-    const { boardName, boardType, contact, email, website, address, subBoard } =
-      req.body;
-
+  async UpdateBoard(req, res, next) {
     try {
+      let values = await editBoardSchema.validateAsync(req.body);
       // Find the board by ID
-      const board = await Board.findByPk(id);
-
+      const board = await Board.findByPk(values.id);
       if (!board) {
         return res.status(404).json({ message: "Board not found" });
       }
 
       // Update board details
-      board.boardName = boardName;
-      board.boardType = boardType;
-      board.contact = contact;
-      board.email = email;
-      board.website = website;
-      board.address = address;
-
+      board.boardName = values.boardName;
+      board.boardType = values.boardType;
+      board.contact = values.contact;
+      board.email = values.email;
+      board.website = values.website;
+      board.address = values.address;
       await board.save();
-
       // Update sub-board details
-      if (subBoard && subBoard.length > 0) {
+      if (values.subBoards && values.subBoards.length > 0) {
         // Get the sub-boards associated with the board
         const existingSubBoards = await SubBoard.findAll({
-          where: { boardId: board.id },
+          where: { boardId: values.id },
         });
 
         // Map the existing sub-boards to their IDs
@@ -104,19 +101,20 @@ const BoardManagementController = {
         );
 
         // Filter out the sub-boards to be updated
-        const subBoardsToUpdate = subBoard.filter(
+        const subBoardsToUpdate = values.subBoards.filter(
           (subBoardData) =>
             subBoardData.id && existingSubBoardIds.includes(subBoardData.id)
         );
 
         // Create new sub-boards and update existing sub-boards
-        const subBoardsToCreateOrUpdate = subBoard.map((subBoardData) => ({
-          id: subBoardData.id || null,
-          SubBoardName: subBoardData.SubBoardName,
-          isArchived: subBoardData.isArchived || false,
-          boardId: board.id,
-        }));
-
+        const subBoardsToCreateOrUpdate = values.subBoards.map(
+          (subBoardData) => ({
+            id: subBoardData.id || uuidv4(),
+            SubBoardName: subBoardData.SubBoardName,
+            isArchived: subBoardData.isArchived || false,
+            boardId: values.id,
+          })
+        );
         // Bulk create/update the sub-boards
         await SubBoard.bulkCreate(subBoardsToCreateOrUpdate, {
           updateOnDuplicate: ["SubBoardName", "isArchived"],
@@ -137,20 +135,18 @@ const BoardManagementController = {
           )
         );
       }
-
       const allboard = await SubBoard.findAll({
         where: { boardId: board.id },
       });
-
       return res.status(200).json({
         message: "Board and sub-board details updated successfully",
         board,
         allboard,
       });
     } catch (err) {
-      return res
-        .status(500)
-        .json({ message: "Failed to update board and sub-board details" });
+      console.log(err);
+      next(err);
+
     }
   },
   async TogglePublishBoard(req, res, next) {
@@ -212,7 +208,6 @@ const BoardManagementController = {
     try {
       let values = await archiveSubBoardsSchema.validateAsync(req.body);
 
-      console.log(values);
 
       // Update sub-boards
       if (values.subBoardIds && values.subBoardIds.length > 0) {
@@ -223,7 +218,7 @@ const BoardManagementController = {
             values.isArchived
           );
 
-        console.log(archiveSubBoards);
+        
         if (archiveSubBoards.length > 0) {
           res.status(httpStatus.OK).send({
             message: "Sub-boards Isarchived updated successfully!",
@@ -239,8 +234,8 @@ const BoardManagementController = {
     try {
       let values = await createSubBoardsSchema.validateAsync(req.body);
 
-      console.log(values);
 
+      
       let subBoards = await services.boardService.createSubBoard(
         values.boardId,
         values.subBoardName
@@ -250,6 +245,29 @@ const BoardManagementController = {
     } catch (err) {
       next(err);
     }
+  },
+  async GetBoardAndSubBords(req, res, next) {
+    try {
+      let values = await getBoardsAndSubBoards.validateAsync({
+        boardId: req.query.id,
+      });
+
+      let getboard = await services.boardService.findBoardById(values.boardId);
+
+      let getSubBoards = await services.boardService.getSubBoardsByBoardId(
+        values.boardId
+      );
+
+      getboard.subBoards = getSubBoards;
+
+      res.status(httpStatus.OK).send(getboard);
+    } catch (err) {
+      next(err);
+    }
+  },
+  async deleteBoard(req, res, next) {
+    try {
+    } catch (err) {}
   },
 };
 

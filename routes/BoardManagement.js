@@ -11,9 +11,13 @@ router.get("/getallboards", paginatedResults(Board), (req, res) => {
 });
 
 router.get("/:boardId/getsubboards", BoardManagementController.GetSubBoards);
+router.get(
+  "/getboardsandsubboards",
+  BoardManagementController.GetBoardAndSubBords
+);
 router.post("/createboard", BoardManagementController.CreateBoard);
 router.post("/createsubboard", BoardManagementController.createSubBoard);
-router.put("/:id/editboard", BoardManagementController.UpdateBoard);
+router.put("/editboard", BoardManagementController.UpdateBoard);
 router.patch(
   "/togglepublishboard",
   BoardManagementController.TogglePublishBoard

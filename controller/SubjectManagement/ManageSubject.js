@@ -5,64 +5,125 @@ const {
   SubjectLevel,
   subjectName,
 } = require("../../models/Subject.js");
+
 const {
-  getallboards,
-  getallsubboards,
-} = require("../PPMSupervisor/PPMSupervisor.js");
-const { Board, SubBoard } = require("../../models/Board.js");
+  createSubjectSchema,
+  getSubBoardsSchema,
+  getSubjectNameSugesstionsSchema,
+} = require("../../validations/subjectManagementValidations.js");
+const httpStatus = require("http-status");
+const services = require("../../services/index.js");
 require("dotenv").config();
 const bucketName = process.env.AWS_BUCKET_NAME;
 
 const SubjectManagementController = {
-  async CreateSubject(req, res) {
-    const { boardId, SubBoardId, grade, subjectNameId, subjectLevels } =
-      req.body;
-
+  async CreateSubject(req, res, next) {
     try {
       // Create a new subject entry
+      let values = await createSubjectSchema.validateAsync({
+        boardId: req.body.boardId,
+        subBoardId: req.body.subBoardId,
+        grade: req.body.grade,
+        subjectName: req.body.subjectName,
+        subjectNameId: req.body.subjectNameId,
+        subjectImage: req.body.subjectImage,
+        subjectLevels: req.body.subjectLevels,
+        image: req.file,
+      });
 
-      const fileBuffer = req.file.buffer;
+      console.log(values);
+      const fileBuffer = values.image;
       console.log(req.file);
 
-      // Configure the upload details to send to S3
-      const subjectImage = generateFileName();
+      if (!values.subjectNameId) {
+        // Configure the upload details to send to S3
+        const subjectImage = generateFileName();
 
-      const uploadParams = {
-        Bucket: bucketName,
-        Body: fileBuffer,
-        Key: subjectImage,
-        ContentType: req.file.mimetype,
-      };
+        const uploadParams = {
+          Bucket: bucketName,
+          Body: fileBuffer,
+          Key: subjectImage,
+          ContentType: req.file.mimetype,
+        };
 
-      // Send the upload to S3
-      await s3Client.send(new PutObjectCommand(uploadParams));
+        // Send the upload to S3
+        await s3Client.send(new PutObjectCommand(uploadParams));
 
-      const subject = await Subject.create({
-        boardId,
-        SubBoardId,
-        grade,
-        subjectNameId,
-        subjectImage,
-      });
+        const subjectNameid = await subjectName.create({
+          subjectName: subjectName,
+        });
 
-      //Create sub-board entries
-      if (subjectLevels && subjectLevels.length > 0) {
-        const SubjectLevels = subjectLevels.map((subjectLevel) => ({
-          subjectLevelName: subjectLevel.subjectLevelName,
-          isArchived: subjectLevel.isArchived || false,
-          subjectId: subject.id, // Associate the sub-board with the created board
-        }));
+        const subject = await Subject.create({
+          boardId,
+          SubBoardId,
+          grade,
+          subjectNameId: subjectNameid,
+          subjectImage,
+        });
 
-        await SubjectLevel.bulkCreate(SubjectLevels);
-        console.log(subjectLevels);
+        //Create sub-board entries
+        if (subjectLevels && subjectLevels.length > 0) {
+          const SubjectLevels = subjectLevels.map((subjectLevel) => ({
+            subjectLevelName: subjectLevel.subjectLevelName,
+            isArchived: subjectLevel.isArchived || false,
+            subjectId: subject.id, // Associate the sub-board with the created board
+          }));
+
+          await SubjectLevel.bulkCreate(SubjectLevels);
+          console.log(subjectLevels);
+        }
+        return res.status(201).json({
+          message: "Subject and levels created successfully",
+          subject,
+        });
       }
 
-      return res.status(201).json({
-        message: "Subject and levels created successfully",
-        subject,
-      });
+      if (values.subjectNameId) {
+        console.log("in else");
+        // check if subject exists
+
+        let subjectExists = await services.subjectService.findSubjectByIds(
+          values.boardId,
+          values.subBoardId,
+          values.grade,
+          values.subjectNameId
+        );
+        if (!subjectExists) {
+          let subject = await services.subjectService.createSubject(
+            values.boardId,
+            values.subBoardId,
+            values.grade,
+            values.subjectNameId,
+            values.subjectImage
+          );
+
+          //Create sub-board entries
+          let subjectLevelsCreated;
+          if (values.subjectLevels && values.subjectLevels.length > 0) {
+            const SubjectLevels = values.subjectLevels.map((subjectLevel) => ({
+              subjectLevelName: subjectLevel.subjectLevelName,
+              isArchived: subjectLevel.isArchived || false,
+              subjectId: subject.id, // Associate the sub-board with the created board
+            }));
+
+            subjectLevelsCreated =
+              await services.subjectService.bulkCreateSubjectLevels(
+                SubjectLevels
+              );
+          }
+          return res.status(201).json({
+            message: "Subject and levels created successfully",
+            subject,
+            subjectLevelsCreated,
+          });
+        } else {
+          res
+            .status(httpStatus.BAD_REQUEST)
+            .send({ message: "Subject already exists!" });
+        }
+      }
     } catch (err) {
-      return res.json({ status: 501, error: err.message });
+      next(err);
     }
   },
 
@@ -279,52 +340,78 @@ const SubjectManagementController = {
     }
   },
 
-  async getallboards(req, res) {
+  async getAllboards(req, res, next) {
     try {
-      const boards = await Board.findAll({
-        attributes: ["boardName", "id"],
-      });
-      return res.status(200).json({ boards });
+      let attributes = ["id", "boardName", "boardType"];
+      let boards = await services.boardService.findAllBoards(attributes);
+
+      res.status(httpStatus.OK).send(boards);
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      next(err);
     }
   },
 
   async getAllSubBoards(req, res) {
-    const boardIds = req.body.boardIds;
-
     try {
-      const subBoards = await SubBoard.findAll({
-        attributes: ["SubBoardName", "id", "boardId"],
-        where: { boardId: boardIds },
-        include: {
-          model: Board,
-          as: "board",
-          attributes: ["boardName"],
-        },
-        group: ["board.id", "subBoard.id"],
+      let values = await getSubBoardsSchema.validateAsync({
+        boardId: req.query.boardId,
       });
+      console.log(values);
 
-      const groupedSubBoards = subBoards.reduce((result, subBoard) => {
-        const { SubBoardName, id, boardId, board } = subBoard;
-        const { boardName } = board;
+      let subBoards = await services.boardService.getSubBoardsByBoardId(
+        values.boardId
+      );
+      // const subBoards = await SubBoard.findAll({
+      //   attributes: ["SubBoardName", "id", "boardId"],
+      //   where: { boardId: boardIds },
+      //   include: {
+      //     model: Board,
+      //     as: "board",
+      //     attributes: ["boardName"],
+      //   },
+      //   group: ["board.id", "subBoard.id"],
+      // });
 
-        if (!result[boardName]) {
-          result[boardName] = [];
-        }
+      // const groupedSubBoards = subBoards.reduce((result, subBoard) => {
+      //   const { SubBoardName, id, boardId, board } = subBoard;
+      //   const { boardName } = board;
 
-        result[boardName].push({
-          SubBoardName,
-          id,
-          boardId,
-        });
+      //   if (!result[boardName]) {
+      //     result[boardName] = [];
+      //   }
 
-        return result;
-      }, {});
+      //   result[boardName].push({
+      //     SubBoardName,
+      //     id,
+      //     boardId,
+      //   });
 
-      return res.status(200).json({ subBoards: groupedSubBoards });
+      //   return result;
+      // }, {});
+
+      return res.status(200).json(subBoards);
     } catch (error) {
       return res.status(500).json({ message: error.message });
+    }
+  },
+
+  async getSubjectNameSugesstions(req, res, next) {
+    try {
+      let values = await getSubjectNameSugesstionsSchema.validateAsync(
+        req.body
+      );
+      console.log(values);
+
+      let getSubjectName =
+        await services.subjectService.getSubjectNameByBoardAndSubBoard(
+          values.boardId,
+          values.subBoardId
+        );
+      let newSubjectNames = {};
+
+      res.status(httpStatus.OK).send(getSubjectName);
+    } catch (err) {
+      next(err);
     }
   },
 };

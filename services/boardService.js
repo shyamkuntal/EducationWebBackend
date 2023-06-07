@@ -24,7 +24,19 @@ const createBoard = async (
   }
 };
 
-const findBoardById = async (boardId) => {
+const findAllBoards = async (attributes) => {
+  try {
+    let boards = await Board.findAll({
+      where: { isArchived: false },
+      attributes: attributes,
+    });
+    return boards;
+  } catch (err) {
+    throw err;
+  }
+};
+
+async function findBoardById(boardId) {
   try {
     let board = await Board.findOne({ where: { id: boardId }, raw: true });
 
@@ -32,13 +44,13 @@ const findBoardById = async (boardId) => {
   } catch (err) {
     throw err;
   }
-};
+}
 
 const getSubBoardsByBoardId = async (boardId) => {
   try {
     let subBoards = await SubBoard.findAll({
       where: { boardId: boardId, isArchived: "false" },
-      attributes: ["id", "SubBoardName", "boardId"],
+      attributes: ["id", "SubBoardName", "boardId", "isArchived"],
       raw: true,
     });
 
@@ -63,10 +75,8 @@ const createSubBoard = async (boardId, subBoardName) => {
 
 const bulkCreateSubBoards = async (subBoards) => {
   try {
-    console.log(subBoards);
     let bulkSubBoards = await SubBoard.bulkCreate(subBoards);
 
-    console.log(bulkSubBoards);
     return bulkSubBoards;
   } catch (err) {
     throw err;
@@ -121,4 +131,5 @@ module.exports = {
   updateBoardIsPublished,
   updateBoardIsArchived,
   updateSuBoardsIsArchived,
+  findAllBoards,
 };
