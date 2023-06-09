@@ -76,14 +76,14 @@ const PastPaperSupervisorController = {
     const boardId = req.params.boardId;
     try {
       const distinctSubBoardIds = await Subject.findAll({
-        attributes: ["SubBoardId"],
-        group: ["SubBoardId"],
+        attributes: ["subBoardId"],
+        group: ["subBoardId"],
       });
       const subboardIds = distinctSubBoardIds.map(
         (subboard) => subboard.SubBoardId
       );
       const subboards = await SubBoard.findAll({
-        attributes: ["id", "SubBoardName"],
+        attributes: ["id", "subBoardName"],
         where: {
           id: subboardIds,
           boardId,

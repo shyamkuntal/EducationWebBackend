@@ -112,7 +112,7 @@ const PastPaperUploaderController = {
         include: [
           {
             model: SubBoard,
-            attributes: ["SubBoardName"],
+            attributes: ["subBoardName"],
           },
           {
             model: Board,
@@ -142,7 +142,7 @@ const PastPaperUploaderController = {
         include: [
           {
             model: SubBoard,
-            attributes: ["SubBoardName"],
+            attributes: ["subBoardName"],
           },
           {
             model: Board,
