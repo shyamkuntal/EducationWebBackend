@@ -50,7 +50,7 @@ const getSubBoardsByBoardId = async (boardId) => {
   try {
     let subBoards = await SubBoard.findAll({
       where: { boardId: boardId, isArchived: "false" },
-      attributes: ["id", "SubBoardName", "boardId", "isArchived"],
+      attributes: ["id", "subBoardName", "boardId", "isArchived"],
       raw: true,
     });
 
@@ -64,7 +64,7 @@ const createSubBoard = async (boardId, subBoardName) => {
   try {
     let subBoards = await SubBoard.create({
       boardId: boardId,
-      SubBoardName: subBoardName,
+      subBoardName: subBoardName,
     });
 
     return subBoards;

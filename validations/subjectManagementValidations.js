@@ -30,8 +30,20 @@ const getSubjectNameSugesstionsSchema = Joi.object({
   subBoardId: Joi.string().guid().required(),
 });
 
+const getSubjectBySubjectNameId = Joi.object({
+  subjectNameId: Joi.string().guid().required(),
+});
+
+const getSubjectByIds = Joi.object({
+  boardId: Joi.string().guid().required(),
+  subBoardId: Joi.string().guid().required(),
+  grade: Joi.string().max(50).required(),
+});
+
 module.exports = {
   createSubjectSchema,
   getSubBoardsSchema,
   getSubjectNameSugesstionsSchema,
+  getSubjectBySubjectNameId,
+  getSubjectByIds,
 };

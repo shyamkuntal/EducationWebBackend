@@ -22,8 +22,8 @@ const paginatedSheetResults = (model) => {
     if (req.query.boardId) {
       filters.boardId = req.query.boardId;
     }
-    if (req.query.SubBoardId) {
-      filters.SubBoardId = req.query.SubBoardId;
+    if (req.query.subBoardId) {
+      filters.subBoardId = req.query.subBoardId;
     }
     if (req.query.subjectName) {
       filters.subjectName = req.query.subjectName;
@@ -89,7 +89,7 @@ const paginatedSheetResults = (model) => {
         include: [
           {
             model: SubBoard,
-            attributes: ["SubBoardName"],
+            attributes: ["subBoardName"],
           },
           {
             model: Board,

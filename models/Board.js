@@ -51,7 +51,7 @@ const SubBoard = db.define("subBoard", {
     defaultValue: Sequelize.UUIDV4,
     primaryKey: true,
   },
-  SubBoardName: {
+  subBoardName: {
     type: Sequelize.STRING,
     allowNull: false,
   },

@@ -13,7 +13,7 @@ const Subject = db.define("subject", {
     type: Sequelize.UUID,
     allowNull: false,
   },
-  SubBoardId: {
+  subBoardId: {
     type: Sequelize.UUID,
     allowNull: true,
   },
@@ -45,7 +45,7 @@ Subject.sync().then(() => {
 });
 
 Subject.belongsTo(SubBoard, {
-  foreignKey: { name: "SubBoardId" },
+  foreignKey: { name: "subBoardId" },
 });
 
 Subject.belongsTo(Board, {

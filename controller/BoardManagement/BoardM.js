@@ -35,7 +35,7 @@ const BoardManagementController = {
 
       if (values.subBoard && values.subBoard.length > 0) {
         let subBoards = values.subBoard.map((subBoardData) => ({
-          SubBoardName: subBoardData.SubBoardName,
+          subBoardName: subBoardData.subBoardName,
           isArchived: subBoardData.isArchived || false,
           boardId: board.id, // Associate the sub-board with the created board
         }));
@@ -110,14 +110,14 @@ const BoardManagementController = {
         const subBoardsToCreateOrUpdate = values.subBoards.map(
           (subBoardData) => ({
             id: subBoardData.id || uuidv4(),
-            SubBoardName: subBoardData.SubBoardName,
+            subBoardName: subBoardData.subBoardName,
             isArchived: subBoardData.isArchived || false,
             boardId: values.id,
           })
         );
         // Bulk create/update the sub-boards
         await SubBoard.bulkCreate(subBoardsToCreateOrUpdate, {
-          updateOnDuplicate: ["SubBoardName", "isArchived"],
+          updateOnDuplicate: ["subBoardName", "isArchived"],
         });
 
         // Update the existing sub-boards
@@ -125,7 +125,7 @@ const BoardManagementController = {
           subBoardsToUpdate.map((subBoardData) =>
             SubBoard.update(
               {
-                SubBoardName: subBoardData.SubBoardName,
+                subBoardName: subBoardData.subBoardName,
                 isArchived: subBoardData.isArchived || false,
               },
               {

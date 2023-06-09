@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const { Board, SubBoard } = require("../models/Board.js");
-const { Subject, SubjectLevel } = require("../models/Subject.js");
+const { Subject, SubjectLevel, subjectName } = require("../models/Subject.js");
 
 const paginatedSubjects = (model) => {
   return async (req, res, next) => {
@@ -10,14 +10,12 @@ const paginatedSubjects = (model) => {
       //   isArchived: false,
       //   isPublished: false,
     };
+    let subjectNameFilter = "";
     if (req.query.isArchived) {
       filters.isArchived = req.query.isArchived;
     }
     if (req.query.isPublished) {
       filters.isPublished = req.query.isPublished;
-    }
-    if (req.query.boardType) {
-      filters.boardType = req.query.boardType;
     }
     // if (req.query.search) {
     //   filters.boardName = { [Op.iLike]: `%${req.query.search}%` };
@@ -25,19 +23,19 @@ const paginatedSubjects = (model) => {
     if (req.query.boardId) {
       filters.boardId = req.query.boardId;
     }
-    if (req.query.SubBoardId) {
-      filters.SubBoardId = req.query.SubBoardId;
+    if (req.query.subBoardId) {
+      filters.subBoardId = req.query.subBoardId;
     }
-    // if (req.query.subjectName) {
-    //   filters.subjectName = req.query.subjectName;
-    // }
+    if (req.query.subjectName) {
+      subjectNameFilter;
+    }
     if (req.query.grade) {
       filters.grade = req.query.grade;
     }
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    console.log(filters);
+    console.log("filters.........", filters);
     const results = {};
     const count = await Subject.count({ where: filters });
     if (endIndex < count) {
@@ -66,22 +64,33 @@ const paginatedSubjects = (model) => {
         include: [
           {
             model: SubBoard,
-            attributes: ["SubBoardName"],
+            attributes: ["id", "subBoardName"],
           },
           {
             model: Board,
-            attributes: ["boardName"],
+            attributes: ["id", "boardName"],
           },
           {
             model: SubjectLevel,
-            attributes: ["id", "subjectLevelName", "isArchived"],
+            attributes: ["id", "subjectLevelName", "subjectId", "isArchived"],
             required: false,
+          },
+          {
+            model: subjectName,
+            where: req.query.subjectName ? { id: req.query.subjectName } : {},
+            attributes: ["id", "subjectName"],
           },
         ],
         where: filters,
         limit,
         offset: startIndex,
-        group: ["subject.id", "boardId", "SubBoardId", "grade"],
+        group: [
+          "subject.id",
+          "subjectName.id",
+          "boardId",
+          "subBoardId",
+          "grade",
+        ],
       });
 
       results.results = subjects;

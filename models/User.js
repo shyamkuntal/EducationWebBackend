@@ -131,7 +131,7 @@ const UserSubBoardMapping = db.define("usersubboardmapping", {
     defaultValue: Sequelize.UUIDV4,
     primaryKey: true,
   },
-  subBoardID: {
+  subBoardId: {
     type: Sequelize.UUID,
     allowNull: false,
   },
@@ -142,7 +142,7 @@ const UserSubBoardMapping = db.define("usersubboardmapping", {
 });
 
 UserSubBoardMapping.belongsTo(SubBoard, {
-  foreignKey: "subBoardID",
+  foreignKey: "subBoardId",
   targetKey: "id",
   schema: "subBoards",
 });

@@ -17,8 +17,8 @@ const getPaginatedReviewerSheets = (model) => {
     if (req.query.boardId) {
       filters.boardId = req.query.boardId;
     }
-    if (req.query.SubBoardId) {
-      filters.SubBoardId = req.query.SubBoardId;
+    if (req.query.subBoardId) {
+      filters.subBoardId = req.query.subBoardId;
     }
     if (req.query.subjectId) {
       filters.subjectId = req.query.subjectId;
@@ -80,7 +80,7 @@ const getPaginatedReviewerSheets = (model) => {
           include: [
             {
               model: SubBoard,
-              attributes: ["SubBoardName"],
+              attributes: ["subBoardName"],
             },
             {
               model: Board,
@@ -106,7 +106,7 @@ const getPaginatedReviewerSheets = (model) => {
           include: [
             {
               model: SubBoard,
-              attributes: ["SubBoardName"],
+              attributes: ["subBoardName"],
             },
             {
               model: Board,

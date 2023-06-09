@@ -16,7 +16,7 @@ const Sheet = db.define("sheet", {
     type: Sequelize.UUID,
     allowNull: false,
   },
-  SubBoardId: {
+  subBoardId: {
     type: Sequelize.UUID,
     allowNull: true,
   },
@@ -119,7 +119,7 @@ Sheet.belongsTo(Board, {
 });
 
 Sheet.belongsTo(SubBoard, {
-  foreignKey: "SubBoardId",
+  foreignKey: "subBoardId",
 });
 
 Sheet.belongsTo(User, {

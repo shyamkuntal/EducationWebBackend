@@ -3,23 +3,56 @@ const { Subject, subjectName, SubjectLevel } = require("../models/Subject");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
 
-const createSubject = async (
+const createSubject = async ({
   boardId,
-  SubBoardId,
+  subBoardId,
   grade,
   subjectNameId,
-  subjectImage
-) => {
+  subjectImage,
+}) => {
   try {
-    console.log(boardId, SubBoardId, grade, subjectNameId, subjectImage);
+    console.log(
+      "........................",
+      boardId,
+      subBoardId,
+      grade,
+      subjectNameId,
+      subjectImage
+    );
     let subject = await Subject.create({
       boardId,
-      SubBoardId,
+      subBoardId,
       grade,
       subjectNameId,
       subjectImage,
     });
     return subject;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+const createSubjectName = async (subjectNameValue) => {
+  try {
+    let subjectNameid = await subjectName.create({
+      subjectName: subjectNameValue,
+    });
+
+    return subjectNameid;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findBySubjectNameInUniqueSubjectNames = async (subjectNameValue) => {
+  try {
+    let subjectNameExists = await subjectName.findOne({
+      where: { subjectName: subjectNameValue },
+      raw: true,
+    });
+
+    return subjectNameExists;
   } catch (err) {
     throw err;
   }
@@ -35,23 +68,10 @@ const bulkCreateSubjectLevels = async (SubjectLevels) => {
   }
 };
 
-const getSubjectNameByBoardAndSubBoard = async (boardId, subBoardId) => {
-  try {
-    let subject = await Subject.findAll({
-      where: { boardId: boardId, SubBoardId: subBoardId },
-      attributes: ["id", "boardId", "SubBoardId", "grade", "subjectImage"],
-      include: [{ model: subjectName, attributes: ["id", "subjectName"] }],
-    });
-    return subject;
-  } catch (err) {
-    throw err;
-  }
-};
-
-const findSubjectByIds = async (boardId, SubBoardId, grade, subjectNameId) => {
+const findSubjectByIds = async (boardId, subBoardId, grade, subjectNameId) => {
   try {
     let subject = await Subject.findOne({
-      where: { boardId, SubBoardId, grade, subjectNameId },
+      where: { boardId, subBoardId, grade, subjectNameId },
       attributes: ["id"],
       raw: true,
     });
@@ -61,9 +81,54 @@ const findSubjectByIds = async (boardId, SubBoardId, grade, subjectNameId) => {
   }
 };
 
+const getSubjectBySubjectNameId = async (subjectNameId) => {
+  try {
+    let subject = Subject.findOne({
+      where: { subjectNameId: subjectNameId },
+      raw: true,
+    });
+
+    return subject;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const getSubjectNames = async () => {
+  try {
+    let subjectNames = await subjectName.findAll({
+      attributes: ["id", "subjectName"],
+    });
+    return subjectNames;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findSubjectDetailsByBoardSubBoardGrade = async (
+  boardId,
+  subBoardId,
+  grade
+) => {
+  try {
+    let subjectDetails = await Subject.findAll({
+      where: { boardId, subBoardId: subBoardId, grade },
+      attributes: ["id", "boardId", "subBoardId", "grade", "subjectNameId"],
+      include: [{ model: subjectName }, { model: SubjectLevel }],
+    });
+
+    return subjectDetails;
+  } catch (err) {
+    throw err;
+  }
+};
 module.exports = {
   createSubject,
   bulkCreateSubjectLevels,
-  getSubjectNameByBoardAndSubBoard,
   findSubjectByIds,
+  getSubjectBySubjectNameId,
+  getSubjectNames,
+  createSubjectName,
+  findBySubjectNameInUniqueSubjectNames,
+  findSubjectDetailsByBoardSubBoardGrade,
 };

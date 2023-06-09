@@ -23,7 +23,7 @@ router.patch(
   SubjectManagementController.TogglePublishSubject
 );
 
-// //router.patch("/:id/togglearchivesubject", ToggleArchiveSubject);
+//router.patch("/:id/togglearchivesubject", ToggleArchiveSubject);
 router.patch(
   "/:subjectId/togglearchive/level",
   SubjectManagementController.ToggleArchiveLevel
@@ -34,12 +34,21 @@ router.post(
   SubjectManagementController.createsubjectName
 );
 
+router.get(
+  "/getsubjectdetailsbyids",
+  SubjectManagementController.getSubjectDetailsByBoardSubBoardGrade
+);
+
+router.get("/getsubjectnames", SubjectManagementController.getsubjectName);
+
 router.get("/getallboards", SubjectManagementController.getAllboards);
 
 router.get("/getallsubboards", SubjectManagementController.getAllSubBoards);
 
-router.post(
-  "/getsubjectnamesugesstions",
-  SubjectManagementController.getSubjectNameSugesstions
+router.post("/getsubjectname", SubjectManagementController.getsubjectName);
+
+router.get(
+  "/getsubjectbysubjectnameid",
+  SubjectManagementController.getSubjectBySubjectNameId
 );
 module.exports = router;

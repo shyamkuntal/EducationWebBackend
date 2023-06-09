@@ -9,7 +9,7 @@ const addBoardSchema = Joi.object({
   website: Joi.string().regex(CONSTANTS.validationRegex.urlRegex).required(),
   address: Joi.string().max(225).required(),
   subBoard: Joi.array().items(
-    Joi.object({ SubBoardName: Joi.string().max(225).required() })
+    Joi.object({ subBoardName: Joi.string().max(225).required() })
   ),
 });
 
@@ -24,7 +24,7 @@ const editBoardSchema = Joi.object({
   subBoards: Joi.array().items(
     Joi.object({
       id: Joi.string().guid().required().allow(null),
-      SubBoardName: Joi.string().max(225).required(),
+      subBoardName: Joi.string().max(225).required(),
       isArchived: Joi.boolean().required(),
       boardId: Joi.string().guid().required(),
     })

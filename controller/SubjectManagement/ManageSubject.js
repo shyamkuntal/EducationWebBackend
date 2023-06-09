@@ -9,7 +9,8 @@ const {
 const {
   createSubjectSchema,
   getSubBoardsSchema,
-  getSubjectNameSugesstionsSchema,
+  getSubjectBySubjectNameId,
+  getSubjectByIds,
 } = require("../../validations/subjectManagementValidations.js");
 const httpStatus = require("http-status");
 const services = require("../../services/index.js");
@@ -32,54 +33,72 @@ const SubjectManagementController = {
       });
 
       console.log(values);
-      const fileBuffer = values.image;
-      console.log(req.file);
 
+      // create subject name first if no subjectNameId
       if (!values.subjectNameId) {
         // Configure the upload details to send to S3
-        const subjectImage = generateFileName();
-
+        const subjectImageName = `${
+          process.env.AWS_BUCKET_SUBJECT_IMAGE_FOLDER
+        }/${generateFileName()}`;
         const uploadParams = {
           Bucket: bucketName,
-          Body: fileBuffer,
-          Key: subjectImage,
+          Body: values.image.buffer,
+          Key: subjectImageName,
           ContentType: req.file.mimetype,
         };
+
+        console.log("subBoard", values.subBoardId);
 
         // Send the upload to S3
         await s3Client.send(new PutObjectCommand(uploadParams));
 
-        const subjectNameid = await subjectName.create({
-          subjectName: subjectName,
-        });
+        // check if subjectName alredy exists
 
-        const subject = await Subject.create({
-          boardId,
-          SubBoardId,
-          grade,
-          subjectNameId: subjectNameid,
-          subjectImage,
-        });
+        let subjectNameExists =
+          await services.subjectService.findBySubjectNameInUniqueSubjectNames(
+            values.subjectName
+          );
 
-        //Create sub-board entries
-        if (subjectLevels && subjectLevels.length > 0) {
-          const SubjectLevels = subjectLevels.map((subjectLevel) => ({
-            subjectLevelName: subjectLevel.subjectLevelName,
-            isArchived: subjectLevel.isArchived || false,
-            subjectId: subject.id, // Associate the sub-board with the created board
-          }));
+        let subjectNameFromRequest = values.subjectName.toLowerCase();
 
-          await SubjectLevel.bulkCreate(SubjectLevels);
-          console.log(subjectLevels);
+        let subjectNameFetched = subjectNameExists
+          ? subjectNameExists.subjectName.toLowerCase()
+          : null;
+
+        if (subjectNameFromRequest !== subjectNameFetched) {
+          let subjectNameid = await services.subjectService.createSubjectName(
+            values.subjectName
+          );
+          let subject = await Subject.create({
+            boardId: values.boardId,
+            subBoardId: values.subBoardId,
+            grade: values.grade,
+            subjectNameId: subjectNameid.id,
+            subjectImage: subjectImageName,
+          });
+          // Create sub-board entries
+          if (values.subjectLevels && values.subjectLevels.length > 0) {
+            const SubjectLevels = values.subjectLevels.map((subjectLevel) => ({
+              subjectLevelName: subjectLevel.subjectLevelName,
+              isArchived: subjectLevel.isArchived || false,
+              subjectId: subject.id, // Associate the sub-board with the created board
+            }));
+            await SubjectLevel.bulkCreate(SubjectLevels);
+            console.log(values.subjectLevels);
+          }
+          return res.status(201).json({
+            message: "Subject and levels created successfully",
+            subject,
+          });
+        } else {
+          res
+            .status(httpStatus.BAD_REQUEST)
+            .send({ message: "Subject Name already exists" });
         }
-        return res.status(201).json({
-          message: "Subject and levels created successfully",
-          subject,
-        });
       }
 
+      // create subject directly if  subjectNameId exists
       if (values.subjectNameId) {
-        console.log("in else");
         // check if subject exists
 
         let subjectExists = await services.subjectService.findSubjectByIds(
@@ -88,14 +107,15 @@ const SubjectManagementController = {
           values.grade,
           values.subjectNameId
         );
+        console.log(values);
         if (!subjectExists) {
-          let subject = await services.subjectService.createSubject(
-            values.boardId,
-            values.subBoardId,
-            values.grade,
-            values.subjectNameId,
-            values.subjectImage
-          );
+          let subject = await services.subjectService.createSubject({
+            boardId: values.boardId,
+            subBoardId: values.subBoardId,
+            grade: values.grade,
+            subjectNameId: values.subjectNameId,
+            subjectImage: values.subjectImage,
+          });
 
           //Create sub-board entries
           let subjectLevelsCreated;
@@ -123,6 +143,7 @@ const SubjectManagementController = {
         }
       }
     } catch (err) {
+      console.log(err);
       next(err);
     }
   },
@@ -225,7 +246,7 @@ const SubjectManagementController = {
     const { id } = req.params;
     const {
       boardId,
-      SubBoardId,
+      subBoardId,
       grade,
       subjectNameId,
       isArchived,
@@ -260,7 +281,7 @@ const SubjectManagementController = {
 
       // Update subject details
       subject.boardId = boardId;
-      subject.SubBoardId = SubBoardId;
+      subject.subBoardId = subBoardId;
       subject.grade = grade;
       subject.subjectNameId = subjectNameId;
       subject.subjectImage = subjectImage;
@@ -340,6 +361,16 @@ const SubjectManagementController = {
     }
   },
 
+  async getsubjectName(req, res, next) {
+    try {
+      const subjectName = await services.subjectService.getSubjectNames();
+
+      res.status(httpStatus.OK).send(subjectName);
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async getAllboards(req, res, next) {
     try {
       let attributes = ["id", "boardName", "boardType"];
@@ -395,21 +426,38 @@ const SubjectManagementController = {
     }
   },
 
-  async getSubjectNameSugesstions(req, res, next) {
+  async getSubjectBySubjectNameId(req, res, next) {
     try {
-      let values = await getSubjectNameSugesstionsSchema.validateAsync(
-        req.body
+      let values = await getSubjectBySubjectNameId.validateAsync({
+        subjectNameId: req.query.subjectNameId,
+      });
+
+      let subject = await services.subjectService.getSubjectBySubjectNameId(
+        values.subjectNameId
       );
-      console.log(values);
 
-      let getSubjectName =
-        await services.subjectService.getSubjectNameByBoardAndSubBoard(
+      res.status(httpStatus.OK).send(subject);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getSubjectDetailsByBoardSubBoardGrade(req, res, next) {
+    try {
+      let values = await getSubjectByIds.validateAsync({
+        boardId: req.query.boardId,
+        subBoardId: req.query.subBoardId,
+        grade: req.query.grade,
+      });
+
+      let subjectsDetails =
+        await services.subjectService.findSubjectDetailsByBoardSubBoardGrade(
           values.boardId,
-          values.subBoardId
+          values.subBoardId,
+          values.grade
         );
-      let newSubjectNames = {};
 
-      res.status(httpStatus.OK).send(getSubjectName);
+      res.status(httpStatus.OK).send(subjectsDetails);
     } catch (err) {
       next(err);
     }

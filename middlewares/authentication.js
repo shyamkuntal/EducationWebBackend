@@ -45,6 +45,7 @@ exports.AuthSupervisor = () => async (req, res, next) => {
         .send({ error: "Invalid Role, Access Denied", status: false });
     }
   } catch (err) {
+    console.log(err);
     res
       .status(httpStatus.UNAUTHORIZED)
       .send({ error: "Access Denied", status: false });

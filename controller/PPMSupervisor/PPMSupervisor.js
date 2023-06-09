@@ -15,7 +15,7 @@ const PastPaperSupervisorController = {
     try {
       const {
         boardId,
-        SubBoardId,
+        subBoardId,
         grade,
         subjectId,
         subjectLevelId,
@@ -29,7 +29,7 @@ const PastPaperSupervisorController = {
 
       const sheet = await Sheet.create({
         boardId,
-        SubBoardId,
+        subBoardId,
         grade,
         subjectId,
         subjectLevelId,
