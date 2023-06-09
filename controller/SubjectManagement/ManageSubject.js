@@ -11,9 +11,11 @@ const {
   getSubBoardsSchema,
   getSubjectBySubjectNameId,
   getSubjectByIds,
+  archiveSubjectsLevels,
 } = require("../../validations/subjectManagementValidations.js");
 const httpStatus = require("http-status");
 const services = require("../../services/index.js");
+const { updateSubjectLevels } = require("../../services/subjectService.js");
 require("dotenv").config();
 const bucketName = process.env.AWS_BUCKET_NAME;
 
@@ -216,7 +218,7 @@ const SubjectManagementController = {
   //   }
   // };
 
-  async ToggleArchiveLevel(req, res) {
+  async ToggleArchiveLevel(req, res, next) {
     //const boardId = req.params.id;
     const isArchived = req.body.isArchived;
     const levelsId = req.body.levelsId; // Array of sub-board IDs
@@ -225,20 +227,26 @@ const SubjectManagementController = {
 
     try {
       // Update sub-boards
-
+      let values = await archiveSubjectsLevels.validateAsync(req.body);
+      console.log(values);
+      let dataTobeUpdated = { isArchived: values.isArchived };
+      let whereQuery = { where: { id: levelsId, subjectId: values.subjectId } };
+      console.log(whereQuery);
+      let updateSubjectLevels;
       if (levelsId && levelsId.length > 0) {
-        await SubjectLevel.update(
-          { isArchived },
-          { where: { id: levelsId, subjectId } }
+        updateSubjectLevels = await services.subjectService.updateSubjectLevels(
+          dataTobeUpdated,
+          whereQuery
         );
       }
-
-      return res.json({
-        status: 200,
-        message: "levels archived successfully",
-      });
+      console.log(updateSubjectLevels);
+      if (updateSubjectLevels.length >= 1) {
+        res
+          .status(httpStatus.OK)
+          .send({ message: "levels archived successfully" });
+      }
     } catch (err) {
-      return res.status(501).json({ error: err.message });
+      next(err);
     }
   },
 

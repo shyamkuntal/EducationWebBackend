@@ -11,14 +11,6 @@ const createSubject = async ({
   subjectImage,
 }) => {
   try {
-    console.log(
-      "........................",
-      boardId,
-      subBoardId,
-      grade,
-      subjectNameId,
-      subjectImage
-    );
     let subject = await Subject.create({
       boardId,
       subBoardId,
@@ -28,7 +20,6 @@ const createSubject = async ({
     });
     return subject;
   } catch (err) {
-    console.log(err);
     throw err;
   }
 };
@@ -114,10 +105,22 @@ const findSubjectDetailsByBoardSubBoardGrade = async (
     let subjectDetails = await Subject.findAll({
       where: { boardId, subBoardId: subBoardId, grade },
       attributes: ["id", "boardId", "subBoardId", "grade", "subjectNameId"],
-      include: [{ model: subjectName }, { model: SubjectLevel }],
+      include: [
+        { model: subjectName },
+        { model: SubjectLevel, where: { isArchived: false }, required: false },
+      ],
     });
 
     return subjectDetails;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const updateSubjectLevels = async (dataToBeUpdated, whereQuery) => {
+  try {
+    let updatedSubject = await SubjectLevel.update(dataToBeUpdated, whereQuery);
+    return updatedSubject;
   } catch (err) {
     throw err;
   }
@@ -131,4 +134,5 @@ module.exports = {
   createSubjectName,
   findBySubjectNameInUniqueSubjectNames,
   findSubjectDetailsByBoardSubBoardGrade,
+  updateSubjectLevels,
 };

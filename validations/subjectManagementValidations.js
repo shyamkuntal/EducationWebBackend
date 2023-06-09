@@ -40,10 +40,17 @@ const getSubjectByIds = Joi.object({
   grade: Joi.string().max(50).required(),
 });
 
+const archiveSubjectsLevels = Joi.object({
+  subjectId: Joi.string().guid().required(),
+  isArchived: Joi.boolean().required(),
+  levelsId: Joi.array().items(Joi.string().guid().required()),
+});
+
 module.exports = {
   createSubjectSchema,
   getSubBoardsSchema,
   getSubjectNameSugesstionsSchema,
   getSubjectBySubjectNameId,
   getSubjectByIds,
+  archiveSubjectsLevels,
 };

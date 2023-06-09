@@ -73,6 +73,7 @@ const paginatedSubjects = (model) => {
           {
             model: SubjectLevel,
             attributes: ["id", "subjectLevelName", "subjectId", "isArchived"],
+            where: { isArchived: false },
             required: false,
           },
           {

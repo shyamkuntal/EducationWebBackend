@@ -25,7 +25,7 @@ router.patch(
 
 //router.patch("/:id/togglearchivesubject", ToggleArchiveSubject);
 router.patch(
-  "/:subjectId/togglearchive/level",
+  "/togglearchiveSubjectLevels",
   SubjectManagementController.ToggleArchiveLevel
 );
 
