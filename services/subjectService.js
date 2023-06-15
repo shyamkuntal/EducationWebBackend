@@ -1,4 +1,4 @@
-const { Op, Sequelize } = require("sequelize");
+const { Op, Sequelize, where } = require("sequelize");
 const { Subject, subjectName, SubjectLevel } = require("../models/Subject");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
@@ -104,10 +104,22 @@ const findSubjectDetailsByBoardSubBoardGrade = async (
   try {
     let subjectDetails = await Subject.findAll({
       where: { boardId, subBoardId: subBoardId, grade },
-      attributes: ["id", "boardId", "subBoardId", "grade", "subjectNameId"],
+      attributes: [
+        "id",
+        "boardId",
+        "subBoardId",
+        "grade",
+        "subjectNameId",
+        "subjectImage",
+      ],
       include: [
         { model: subjectName },
-        { model: SubjectLevel, where: { isArchived: false }, required: false },
+        {
+          model: SubjectLevel,
+          where: { isArchived: false },
+          attributes: ["id", "subjectLevelName", "isArchived", "subjectId"],
+          required: false,
+        },
       ],
     });
 
@@ -125,6 +137,27 @@ const updateSubjectLevels = async (dataToBeUpdated, whereQuery) => {
     throw err;
   }
 };
+
+const findSubject = async (whereQuery, include) => {
+  try {
+    let subject = await Subject.findOne({
+      where: whereQuery,
+      include,
+    });
+    return subject;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const updateSubject = async (dataToBeUpdated, whereQuery) => {
+  try {
+    let updateSubject = await Subject.update(dataToBeUpdated, whereQuery);
+    return updateSubject;
+  } catch (err) {
+    throw err;
+  }
+};
 module.exports = {
   createSubject,
   bulkCreateSubjectLevels,
@@ -135,4 +168,6 @@ module.exports = {
   findBySubjectNameInUniqueSubjectNames,
   findSubjectDetailsByBoardSubBoardGrade,
   updateSubjectLevels,
+  findSubject,
+  updateSubject,
 };

@@ -79,7 +79,6 @@ exports.AuthReviewer = () => async (req, res, next) => {
 
 exports.AuthPastPaper = () => async (req, res, next) => {
   try {
-    console.log("in auth");
     let token = req.headers["authorization"].split(" ")[1];
     let decoded = await services.authService.validateToken(token);
 
@@ -88,6 +87,38 @@ exports.AuthPastPaper = () => async (req, res, next) => {
     );
 
     if (roleDetails.id === decoded.roleId) {
+      req.user = decoded;
+      next();
+    } else {
+      res
+        .status(httpStatus.UNAUTHORIZED)
+        .send({ error: "Invalid Role, Access Denied", status: false });
+    }
+  } catch (err) {
+    res
+      .status(httpStatus.UNAUTHORIZED)
+      .send({ error: "Access Denied", status: false });
+  }
+};
+
+exports.AuthSuperadminSupervisor = () => async (req, res, next) => {
+  try {
+    let token = req.headers["authorization"].split(" ")[1];
+
+    let decoded = await services.authService.validateToken(token);
+
+    let superadminRoleDetails = await services.userService.findByRoleName(
+      CONSTANTS.roleNames.Superadmin
+    );
+
+    let supervisorRoleDetails = await services.userService.findByRoleName(
+      CONSTANTS.roleNames.Supervisor
+    );
+
+    if (
+      superadminRoleDetails.id === decoded.roleId ||
+      supervisorRoleDetails.id === decoded.roleId
+    ) {
       req.user = decoded;
       next();
     } else {

@@ -28,7 +28,6 @@ const getPaginatedReviewerSheets = (model) => {
     }
     if (req.query.search) {
       filters.year = { [Op.iLike]: `%${req.query.search}%` };
-      
     }
 
     console.log(filters);

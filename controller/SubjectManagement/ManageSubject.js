@@ -12,6 +12,9 @@ const {
   getSubjectBySubjectNameId,
   getSubjectByIds,
   archiveSubjectsLevels,
+  getSingleSubjectById,
+  togglePublishSubject,
+  updateSubjectSchema,
 } = require("../../validations/subjectManagementValidations.js");
 const httpStatus = require("http-status");
 const services = require("../../services/index.js");
@@ -33,23 +36,18 @@ const SubjectManagementController = {
         subjectLevels: req.body.subjectLevels,
         image: req.file,
       });
-
-      console.log(values);
-
       // create subject name first if no subjectNameId
       if (!values.subjectNameId) {
         // Configure the upload details to send to S3
         const subjectImageName = `${
           process.env.AWS_BUCKET_SUBJECT_IMAGE_FOLDER
-        }/${generateFileName()}`;
+        }/${generateFileName(32, values.image.originalname)}`;
         const uploadParams = {
           Bucket: bucketName,
           Body: values.image.buffer,
           Key: subjectImageName,
           ContentType: req.file.mimetype,
         };
-
-        console.log("subBoard", values.subBoardId);
 
         // Send the upload to S3
         await s3Client.send(new PutObjectCommand(uploadParams));
@@ -86,7 +84,6 @@ const SubjectManagementController = {
               subjectId: subject.id, // Associate the sub-board with the created board
             }));
             await SubjectLevel.bulkCreate(SubjectLevels);
-            console.log(values.subjectLevels);
           }
           return res.status(201).json({
             message: "Subject and levels created successfully",
@@ -109,7 +106,7 @@ const SubjectManagementController = {
           values.grade,
           values.subjectNameId
         );
-        console.log(values);
+
         if (!subjectExists) {
           let subject = await services.subjectService.createSubject({
             boardId: values.boardId,
@@ -145,101 +142,49 @@ const SubjectManagementController = {
         }
       }
     } catch (err) {
-      console.log(err);
       next(err);
     }
   },
 
-  //we can publish different subjects
-  async TogglePublishSubject(req, res) {
-    const ids = req.body.ids; // It will be an array
-    const isPublished = req.body.isPublished; // It will be the same for all ids sent (either true to publish or false to unpublish)
-
+  async TogglePublishSubject(req, res, next) {
     try {
-      // Update the subjects
-      const results = await Subject.update(
-        { isPublished },
-        { where: { id: ids } }
+      let values = await togglePublishSubject.validateAsync(req.body);
+
+      let dataToBeUpdated = {
+        isPublished: values.isPublished,
+      };
+      let whereQuery = { where: { id: values.subjectIds } };
+
+      let updatedSubjects = await services.subjectService.updateSubject(
+        dataToBeUpdated,
+        whereQuery
       );
 
-      res.json({
-        status: 200,
-        message: `${results[0]} subjects updated successfully!`,
-        subjects: results,
+      res.status(httpStatus.OK).send({
+        message: `${updatedSubjects[0]} subjects updated successfully!`,
       });
     } catch (err) {
-      return res.json({ status: 501, error: err.message });
+      next(err);
     }
   },
 
-  // export const ToggleArchiveLevel = async (req, res) => {
-  //   try {
-  //     const { levelsId } = req.body;
-  //     const subjectId = req.params.subjectId;
-
-  //     if (!levelsId || !subjectId) {
-  //       return res.status(400).json({ message: "Missing required parameter" });
-  //     }
-
-  //     const subject = await Subject.findByPk(subjectId);
-
-  //     if (!subject) {
-  //       return res.status(404).json({ message: "Subject not found" });
-  //     }
-
-  //     const levelsToUpdate = await SubjectLevel.findAll({
-  //       where: {
-  //         id: levelsId,
-  //         subjectId,
-  //       },
-  //     });
-
-  //     if (levelsToUpdate.length === 0) {
-  //       return res
-  //         .status(404)
-  //         .json({ message: "No levels found with given IDs" });
-  //     }
-
-  //     const updatedLevels = await Promise.all(
-  //       levelsToUpdate.map(async (level) => {
-  //         level.isArchived = !level.isArchived;
-  //         await level.save();
-  //         return level;
-  //       })
-  //     );
-
-  //     return res.status(200).json({
-  //       message: "Levels archived status updated successfully",
-  //       subject,
-  //       updatedLevels,
-  //     });
-  //   } catch (err) {
-  //     return res.status(500).json({ status: 501, error: err.message });
-  //   }
-  // };
-
   async ToggleArchiveLevel(req, res, next) {
-    //const boardId = req.params.id;
-    const isArchived = req.body.isArchived;
-    const levelsId = req.body.levelsId; // Array of sub-board IDs
-    // const { levelsId } = req.body;
-    const subjectId = req.params.subjectId;
-
     try {
       // Update sub-boards
       let values = await archiveSubjectsLevels.validateAsync(req.body);
-      console.log(values);
       let dataTobeUpdated = { isArchived: values.isArchived };
-      let whereQuery = { where: { id: levelsId, subjectId: values.subjectId } };
-      console.log(whereQuery);
+      let whereQuery = {
+        where: { id: values.levelsId, subjectId: values.subjectId },
+      };
+
       let updateSubjectLevels;
-      if (levelsId && levelsId.length > 0) {
+      if (values.levelsId && values.levelsId.length > 0) {
         updateSubjectLevels = await services.subjectService.updateSubjectLevels(
           dataTobeUpdated,
           whereQuery
         );
       }
-      console.log(updateSubjectLevels);
+
       if (updateSubjectLevels.length >= 1) {
         res
           .status(httpStatus.OK)
@@ -250,32 +195,31 @@ const SubjectManagementController = {
     }
   },
 
-  async UpdateSubject(req, res) {
-    const { id } = req.params;
-    const {
-      boardId,
-      subBoardId,
-      grade,
-      subjectNameId,
-      isArchived,
-      isPublished,
-      subjectLevels,
-    } = req.body;
-
+  async UpdateSubject(req, res, next) {
     try {
-      // Find subject by ID
-      const subject = await Subject.findByPk(id);
+      let values = await updateSubjectSchema.validateAsync({
+        id: req.body.id,
+        boardId: req.body.boardId,
+        subBoardId: req.body.subBoardId,
+        grade: req.body.grade,
+        subjectNameId: req.body.subjectNameId,
+        subjectLevels: req.body.subjectLevels,
+        image: req.file,
+      });
 
+      // Find subject by ID
+      const subject = await Subject.findByPk(values.id);
       if (!Subject) {
         return res.status(404).json({ message: "Subject not found" });
       }
 
-      const fileBuffer = req.file.buffer;
-
       // Configure the upload details to send to S3
       let subjectImage = subject.subjectImage;
-      if (subject.subjectImage !== req.file.originalname) {
-        subjectImage = generateFileName();
+      if (values.image) {
+        const fileBuffer = values.image.buffer;
+        subjectImage = `${
+          process.env.AWS_BUCKET_SUBJECT_IMAGE_FOLDER
+        }/${generateFileName(32, values.image.originalname)}`;
         const uploadParams = {
           Bucket: bucketName,
           Body: fileBuffer,
@@ -283,49 +227,60 @@ const SubjectManagementController = {
           ContentType: req.file.mimetype,
         };
 
+        console.log("in image");
         // Send the upload to S3
         await s3Client.send(new PutObjectCommand(uploadParams));
+        // delete previous image below
+
+        // Update subject details
+
+        let dataToBeUpdated = {
+          boardId: subject.boardId,
+          subBoardId: subject.subBoardId,
+          grade: subject.grade,
+          subjectNameId: subject.subjectNameId,
+          subjectImage: subjectImage,
+        };
+
+        let whereQuery = {
+          where: {
+            boardId: subject.boardId,
+            subBoardId: subject.subBoardId,
+            grade: subject.grade,
+            subjectNameId: subject.subjectNameId,
+          },
+        };
+
+        let updatedSubject = await services.subjectService.updateSubject(
+          dataToBeUpdated,
+          whereQuery
+        );
       }
 
-      // Update subject details
-      subject.boardId = boardId;
-      subject.subBoardId = subBoardId;
-      subject.grade = grade;
-      subject.subjectNameId = subjectNameId;
-      subject.subjectImage = subjectImage;
-      subject.isArchived = isArchived;
-      subject.isPublished = isPublished;
-
-      await subject.save();
-
+      // console.log(updatedSubject);
       // Update subjectLevel details
-      if (subjectLevels && subjectLevels.length > 0) {
+      if (values.subjectLevels && values.subjectLevels.length > 0) {
         // Get the subjectLevel associated with the board
         const existinglevels = await SubjectLevel.findAll({
           where: { subjectId: subject.id },
         });
-
         // Map the existing subjectLevel to their IDs
         const existinglevelsID = existinglevels.map((level) => level.id);
-
         // Filter out the subjectLevel to be updated
-        const levelsToUpdate = subjectLevels.filter(
+        const levelsToUpdate = values.subjectLevels.filter(
           (level) => level.id && existinglevelsID.includes(level.id)
         );
-
         // Create new subjectLevel and update existing subjectLevel
-        const levelsToCreateOrUpdate = subjectLevels.map((level) => ({
+        const levelsToCreateOrUpdate = values.subjectLevels.map((level) => ({
           id: level.id || null,
           subjectLevelName: level.subjectLevelName,
           isArchived: level.isArchived || false,
           subjectId: subject.id,
         }));
-
         // Bulk create/update the subjectLevel
         await SubjectLevel.bulkCreate(levelsToCreateOrUpdate, {
           updateOnDuplicate: ["subjectLevelName", "isArchived"],
         });
-
         // Update the existing subjectLevel
         await Promise.all(
           levelsToUpdate.map((level) =>
@@ -341,25 +296,23 @@ const SubjectManagementController = {
           )
         );
       }
-
       const alllevels = await SubjectLevel.findAll({
         where: { subjectId: subject.id },
       });
-
       return res.status(200).json({
         message: "subject and subjectLevel details updated successfully",
         subject,
         alllevels,
       });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      console.log(err);
+      next(err);
     }
   },
 
   async createsubjectName(req, res) {
     try {
       const name = req.body.subjectName;
-      console.log(name);
       const subjectNameid = await subjectName.create({
         subjectName: name,
       });
@@ -395,39 +348,10 @@ const SubjectManagementController = {
       let values = await getSubBoardsSchema.validateAsync({
         boardId: req.query.boardId,
       });
-      console.log(values);
 
       let subBoards = await services.boardService.getSubBoardsByBoardId(
         values.boardId
       );
-      // const subBoards = await SubBoard.findAll({
-      //   attributes: ["SubBoardName", "id", "boardId"],
-      //   where: { boardId: boardIds },
-      //   include: {
-      //     model: Board,
-      //     as: "board",
-      //     attributes: ["boardName"],
-      //   },
-      //   group: ["board.id", "subBoard.id"],
-      // });
-
-      // const groupedSubBoards = subBoards.reduce((result, subBoard) => {
-      //   const { SubBoardName, id, boardId, board } = subBoard;
-      //   const { boardName } = board;
-
-      //   if (!result[boardName]) {
-      //     result[boardName] = [];
-      //   }
-
-      //   result[boardName].push({
-      //     SubBoardName,
-      //     id,
-      //     boardId,
-      //   });
-
-      //   return result;
-      // }, {});
-
       return res.status(200).json(subBoards);
     } catch (error) {
       return res.status(500).json({ message: error.message });
@@ -470,5 +394,34 @@ const SubjectManagementController = {
       next(err);
     }
   },
+
+  async getSubjectDetailsByBoardSubBoardGradeSubjectNameId(req, res, next) {
+    try {
+      let values = await getSingleSubjectById.validateAsync({
+        subjectNameId: req.query.subjectNameId,
+        boardId: req.query.boardId,
+        subBoardId: req.query.subBoardId,
+        grade: req.query.grade,
+      });
+
+      let whereQuery = {
+        boardId: values.boardId,
+        subBoardId: values.subBoardId,
+        subjectNameId: values.subjectNameId,
+        grade: values.grade,
+      };
+
+      let include = [{ model: subjectName, attributes: ["subjectName"] }];
+      let subject = await services.subjectService.findSubject(
+        whereQuery,
+        include
+      );
+
+      res.status(httpStatus.OK).send(subject);
+    } catch (err) {
+      next(err);
+    }
+  },
 };
+
 module.exports = SubjectManagementController;

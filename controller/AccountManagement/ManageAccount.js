@@ -14,6 +14,10 @@ const { SubBoard, Board } = require("../../models/Board.js");
 const services = require("../../services");
 const { findRoleByNameSchema } = require("../../validations/RoleValidation.js");
 const httpStatus = require("http-status");
+const {
+  getSubBoardsSchema,
+  createAccountSchema,
+} = require("../../validations/AccountManagementValidation.js");
 
 const AccountManagementController = {
   async createUserRole(req, res) {
@@ -102,46 +106,47 @@ const AccountManagementController = {
     }
   },
 
-  async createUser(req, res) {
-    const {
-      Name,
-      userName,
-      email,
-      password,
-      roleId,
-      boardIds,
-      subboardIds,
-      qualifications,
-      subjects,
-    } = req.body;
+  async createUser(req, res, next) {
     try {
-      const user = await User.create({
-        Name,
-        userName,
-        email,
-        password,
-        roleId,
-      });
+      let values = await createAccountSchema.validateAsync(req.body);
+
+      let checkEmail = await services.userService.checkUserEmail(
+        values.email,
+        values.roleId
+      );
+
+      console.log(values);
+      console.log(checkEmail);
+
+      let user = await services.userService.createUser(
+        values.Name,
+        values.userName,
+        values.email,
+        values.password,
+        values.roleId
+      );
 
       //Create boardmapping entries
-      if (boardIds && boardIds.length > 0) {
-        const boardmapping = boardIds.map((boardid) => ({
+      if (values.boardIds && values.boardIds.length > 0) {
+        console.log("in board mapping");
+        const boardmapping = values.boardIds.map((boardid) => ({
           userId: user.id,
           boardID: boardid,
         }));
 
         await UserBoardMapping.bulkCreate(boardmapping);
       }
-      if (subboardIds && subboardIds.length > 0) {
-        const subboardmapping = subboardIds.map((subboardid) => ({
+      if (values.subBoardIds && values.subBoardIds.length > 0) {
+        console.log("in subboard mapping");
+        const subboardmapping = values.subBoardIds.map((subboardid) => ({
           userId: user.id,
-          subBoardID: subboardid,
+          subBoardId: subboardid,
         }));
 
         await UserSubBoardMapping.bulkCreate(subboardmapping);
       }
 
-      if (qualifications && qualifications.length > 0) {
+      if (values.qualifications && values.qualifications.length > 0) {
         const qmapping = qualifications.map((range) => ({
           userId: user.id,
           gradeQualification: range,
@@ -150,8 +155,9 @@ const AccountManagementController = {
         await UserQualificationMapping.bulkCreate(qmapping);
       }
 
-      if (subjects && subjects.length > 0) {
-        const subjectmapping = subjects.map((subjectid) => ({
+      if (values.subjectsIds && values.subjectsIds.length > 0) {
+        console.log("in subject mapping");
+        const subjectmapping = values.subjectsIds.map((subjectid) => ({
           userId: user.id,
           subjectNameIds: subjectid,
         }));
@@ -159,9 +165,9 @@ const AccountManagementController = {
         await UserSubjectMapping.bulkCreate(subjectmapping);
       }
 
-      return res.status(200).json({ user });
-    } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      res.status(httpStatus.OK).send({ user });
+    } catch (err) {
+      next(err);
     }
   },
 
@@ -243,7 +249,7 @@ const AccountManagementController = {
 
   async getusernoroleweise(req, res) {
     try {
-      const roleId = req.params.roleId;
+      const roleId = req.query.roleId;
 
       const results = await User.findAll({
         attributes: [
@@ -372,6 +378,33 @@ const AccountManagementController = {
       let role = await services.roleService.findRoleByName(values.roleName);
 
       res.status(httpStatus.OK).send(role);
+    } catch (err) {
+      next(err);
+    }
+  },
+  async getAllBoards(req, res, next) {
+    try {
+      let boards = await services.boardService.findAllBoards();
+
+      res.status(httpStatus.OK).send(boards);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getSubBoardsById(req, res, next) {
+    try {
+      let values = await getSubBoardsSchema.validateAsync({
+        boardId: req.query.boardId,
+      });
+
+      console.log(values.boardId);
+
+      let subBoard = await services.boardService.getSubBoardsByBoardId(
+        values.boardId
+      );
+
+      res.status(httpStatus.OK).send(subBoard);
     } catch (err) {
       next(err);
     }

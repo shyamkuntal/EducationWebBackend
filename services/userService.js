@@ -3,6 +3,22 @@ const { User, Roles } = require("../models/User.js");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
 
+const createUser = async (Name, userName, email, password, roleId) => {
+  try {
+    let user = await User.create({
+      Name,
+      userName,
+      email,
+      password,
+      roleId,
+    });
+
+    return user;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const finduser = async (userId) => {
   try {
     const checkUser = await User.findOne({
@@ -67,6 +83,29 @@ const checkUserEmailPassword = async (email, password, roleId) => {
   }
 };
 
+const checkUserEmail = async (email, roleId) => {
+  try {
+    let user = await User.findOne({
+      where: { email: email, roleId: roleId },
+      include: [{ model: Roles, attributes: ["roleName"] }],
+      nest: true,
+    });
+
+    if (user) {
+      console.log(user);
+      console.log(user.roleId);
+      console.log(roleId);
+
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "EmailId already exists for this role!"
+      );
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
 const updatePassword = async (userId, newPassword) => {
   try {
     console.log(userId, newPassword);
@@ -88,4 +127,6 @@ module.exports = {
   findByRoleName,
   findUserByEmail,
   updatePassword,
+  checkUserEmail,
+  createUser,
 };

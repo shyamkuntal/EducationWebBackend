@@ -10,7 +10,6 @@ const paginatedSubjects = (model) => {
       //   isArchived: false,
       //   isPublished: false,
     };
-    let subjectNameFilter = "";
     if (req.query.isArchived) {
       filters.isArchived = req.query.isArchived;
     }
@@ -25,9 +24,6 @@ const paginatedSubjects = (model) => {
     }
     if (req.query.subBoardId) {
       filters.subBoardId = req.query.subBoardId;
-    }
-    if (req.query.subjectName) {
-      subjectNameFilter;
     }
     if (req.query.grade) {
       filters.grade = req.query.grade;

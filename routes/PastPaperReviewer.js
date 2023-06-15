@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const PastPaperReviewerController = require("../controller/PastPaperReviewer/PastPaperReviewer");
 const upload = require("../config/multer.js");
-const getPaginatedReviewersheets = require("../middlewares/getPaginatedReviewerSheets");
+const getPaginatedReviewersheets = require("../middlewares/paginatedReviewerSheets");
 
 // api/ppmReviewer/getsheets
 router.get("/getsheets", getPaginatedReviewersheets(), (req, res) => {

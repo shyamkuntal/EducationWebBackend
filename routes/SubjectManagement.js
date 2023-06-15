@@ -16,7 +16,11 @@ router.post(
   SubjectManagementController.CreateSubject
 );
 
-router.put("/:id/updatesubject", SubjectManagementController.UpdateSubject);
+router.put(
+  "/updatesubject",
+  upload.single("image"),
+  SubjectManagementController.UpdateSubject
+);
 
 router.patch(
   "/togglepublishsubject",
@@ -50,5 +54,10 @@ router.post("/getsubjectname", SubjectManagementController.getsubjectName);
 router.get(
   "/getsubjectbysubjectnameid",
   SubjectManagementController.getSubjectBySubjectNameId
+);
+
+router.get(
+  "/getsubjectdetails",
+  SubjectManagementController.getSubjectDetailsByBoardSubBoardGradeSubjectNameId
 );
 module.exports = router;
