@@ -13,32 +13,10 @@ const PastPaperSupervisorController = {
   //take care of isarchived and ispublished later
   async CreateSheet(req, res, next) {
     try {
-      const {
-        boardId,
-        subBoardId,
-        grade,
-        subjectId,
-        subjectLevelId,
-        year,
-        season,
-        varient,
-        paperNumber,
-        resources,
-        supervisorId,
+      const { boardId, subBoardId, grade, subjectId, subjectLevelId, year, season, varient, paperNumber, resources, supervisorId,
       } = req.body;
 
-      const sheet = await Sheet.create({
-        boardId,
-        subBoardId,
-        grade,
-        subjectId,
-        subjectLevelId,
-        year,
-        season,
-        varient,
-        paperNumber,
-        resources,
-        supervisorId,
+      const sheet = await Sheet.create({ boardId, subBoardId, grade, subjectId, subjectLevelId, year, season, varient, paperNumber, resources, supervisorId,
       });
 
       return res.json({ status: 200, sheet });
@@ -211,7 +189,7 @@ const PastPaperSupervisorController = {
 
   async TogglePublishSheet(req, res) {
     const id = req.params.sheetid;
-    const isPublished = req.body.isPublished;
+    // const isPublished = req.body.isPublished;
 
     try {
       const sheet = await Sheet.findByPk(id);
@@ -220,7 +198,7 @@ const PastPaperSupervisorController = {
         return res.status(404).json({ message: "sheet not found" });
       }
 
-      sheet.isPublished = isPublished;
+      sheet.isPublished = true;
       await sheet.save();
 
       return res.json({ status: 200, sheet });
@@ -231,7 +209,7 @@ const PastPaperSupervisorController = {
 
   async ToggleArchiveSheet(req, res) {
     const id = req.params.sheetid;
-    const isArchived = req.body.isArchived;
+    // const isArchived = req.body.isArchived;
     try {
       const sheet = await Sheet.findByPk(id);
 
@@ -239,7 +217,7 @@ const PastPaperSupervisorController = {
         return res.status(404).json({ message: "sheet not found" });
       }
 
-      sheet.isArchived = isArchived;
+      sheet.isArchived = true;
       await sheet.save();
       res.json({ status: 200, sheet });
     } catch (err) {
@@ -324,6 +302,7 @@ const PastPaperSupervisorController = {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }
   },
+  
   async AssignSheetToReviewer(req, res) {
     try {
       let values = await assignReviewerUserToSheetSchema.validateAsync(

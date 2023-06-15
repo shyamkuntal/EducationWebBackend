@@ -8,8 +8,8 @@ const createPastPaperSchema = Joi.object({
   image: Joi.object({
     fieldname: Joi.string(),
     originalname: Joi.string(),
-    encoding: Joi.string(),
-    mimetype: Joi.string(),
+    encoding: Joi.string(), 
+    mimetype: Joi.string().valid('image/jpeg', 'image/png'),
     buffer: Joi.any(),
     size: Joi.number(),
   }),

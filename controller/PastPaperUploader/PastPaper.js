@@ -169,16 +169,19 @@ const PastPaperUploaderController = {
   },
 
   async createPastPaper(req, res, next) {    
+    try {
+      let values = await createPastPaperSchema.validateAsync({
+        paperNumber: req.body.paperNumber,
+        googleLink: req.body.googleLink,
+        image: req.files["image"],
+        questionPdf: req.files["questionPdf"],
+        answerPdf: req.files["answerPdf"],
+        sheetId: req.body.sheetId,
+      });
+      console.log(values)
+   
     
-    let values = await createPastPaperSchema.validateAsync({
-      paperNumber: req.body.paperNumber,
-      googleLink: req.body.googleLink,
-      image: req.files["image"][0],
-      questionPdf: req.files["questionPdf"][0],
-      answerPdf: req.files["answerPdf"][0],
-      sheetId: req.body.sheetId,
-    });
-    console.log(values)
+    
 
     // Get the uploaded image buffer
     const imageBuffer = req.files["image"].buffer;
@@ -213,7 +216,6 @@ const PastPaperUploaderController = {
       ContentType: req.files["answerPdf"][0].mimetype,
     };
 
-    try {
       // Upload the image buffer to S3
       await s3Client.send(new PutObjectCommand(imageUploadParams));
 
@@ -254,12 +256,12 @@ const PastPaperUploaderController = {
 
     try {
       const sheet = await Sheet.findByPk(id);
-      if (sheet.statusForPastPaper !== "Complete") {
+      if (sheet.statusForPastPaper !== CONSTANTS.sheetStatuses.Complete) {
         return res
           .status(200)
           .json({ msg: "Please mark it as complete first" });
       }
-      sheet.statusForSupervisor = "Complete";
+      sheet.statusForSupervisor = CONSTANTS.sheetStatuses.Complete;
       await sheet.save();
       return res.status(201).json({
         message: "Sheet Submitted successfully",

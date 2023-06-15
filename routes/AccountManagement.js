@@ -19,17 +19,22 @@ router.get(
   "/getrolebyname/:roleName",
   AccountManagementController.getRoleByName
 );
+
 router.get(
   "/alluserrolenumber",
   AccountManagementController.getusernoroleweise
 );
+
 router.get("/getallsubjects", AccountManagementController.getallsubjects);
-router.get("/:roleId/getusers", AccountManagementController.getAllUserByRole);
+
+router.get("/getusers", AccountManagementController.getAllUserByRole);
+
 // router.get(
 //   "/:getsupervisorinfo",
 //   AccountManagementController.getSupervisorInfo
 // );
 router.get("/getallboards", AccountManagementController.getAllBoards);
 router.get("/getsubboards", AccountManagementController.getSubBoardsById);
+
 router.patch("/toggleactivate", AccountManagementController.toggleActivateUser);
 module.exports = router;

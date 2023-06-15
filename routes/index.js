@@ -6,12 +6,7 @@ const AccountManagement = require("./AccountManagement.js");
 const PPMReviewer = require("./PastPaperReviewer.js");
 const PastPaperUploader = require("./PastPaperUploader.js");
 const Auth = require("./Auth.js");
-const {
-  AuthSuperadmin,
-  AuthPastPaper,
-  AuthSupervisor,
-  AuthSuperadminSupervisor,
-} = require("../middlewares/authentication.js");
+const { AuthSuperadmin, AuthPastPaper, AuthSupervisor } = require("../middlewares/authentication.js");
 
 const router = express.Router();
 router.use("/auth", Auth);

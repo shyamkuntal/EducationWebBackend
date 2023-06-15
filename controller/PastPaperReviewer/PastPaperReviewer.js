@@ -208,16 +208,16 @@ const PastPaperReviewerController = {
 
   async ReportError(req, res, next) {
     try {
-      let reqBody = {
+      let values = {
         ...req.body,
-        file: req.file.originalname,
+        file: req.file,
       };
 
       let responseMessage = {
         message: { errorReport: "", errorReportFileUpload: "", sheetLog: "" },
       };
 
-      let values = await reportErrorSchema.validateAsync(reqBody);
+      // let values = await reportErrorSchema.validateAsync(reqBody);
 
       // checking sheet
       let userData = await services.userService.finduser(
