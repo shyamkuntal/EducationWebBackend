@@ -1,5 +1,5 @@
 const { Board, SubBoard } = require("../../models/Board.js");
-const { Sheet } = require("../../models/Sheet.js");
+const { Sheet, SheetLog } = require("../../models/Sheet.js");
 const CONSTANTS = require("../../constants/constants.js");
 const { Subject, SubjectLevel } = require("../../models/Subject.js");
 const services = require("../../services/index.js");
@@ -8,6 +8,7 @@ const {
   assignReviewerUserToSheetSchema,
 } = require("../../validations/PPMSupervisorValidations.js");
 const httpStatus = require("http-status");
+const { User, Roles } = require("../../models/User.js");
 
 const PastPaperSupervisorController = {
   //take care of isarchived and ispublished later
@@ -19,7 +20,45 @@ const PastPaperSupervisorController = {
       const sheet = await Sheet.create({ boardId, subBoardId, grade, subjectId, subjectLevelId, year, season, varient, paperNumber, resources, supervisorId,
       });
 
-      return res.json({ status: 200, sheet });
+      return res.json({ 
+        status: 200,
+        sheet 
+      });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  },
+
+  async UpdateSheet(req, res, next) {
+    try {
+
+      const { sheetId, boardId, subBoardId, grade, subjectId, subjectLevelId, year, season, varient, paperNumber, resources, supervisorId } = req.body;
+  
+      // Find the sheet with the given ID
+      const sheet = await Sheet.findByPk(sheetId);
+  
+      // Update the sheet's values with the provided data
+      sheet.boardId = boardId;
+      sheet.subBoardId = subBoardId;
+      sheet.grade = grade;
+      sheet.subjectId = subjectId;
+      sheet.subjectLevelId = subjectLevelId;
+      sheet.year = year;
+      sheet.season = season;
+      sheet.varient = varient;
+      sheet.paperNumber = paperNumber;
+      sheet.resources = resources;
+      sheet.supervisorId = supervisorId;
+  
+      // Save the updated sheet
+      await sheet.save();
+  
+      return res.json({ 
+        status: 200,
+        message: "Sheet Updated Successfully",
+        sheet 
+      });
     } catch (err) {
       console.log(err);
       next(err);
@@ -187,6 +226,45 @@ const PastPaperSupervisorController = {
     }
   },
 
+  async getSheetLogs(req, res, next) {
+    const sheetId = req.query.id
+    try {
+      const sheetLogs = await services.sheetService.findSheetLog()
+      res.status(httpStatus.OK).send({sheetLogs: sheetLogs})
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  async getAllUserByRole(req, res) { 
+    const roleId = req.query.roleId;
+    try {
+      const users = await User.findAll({
+        attributes: ["userName", "email", "Name"],
+        where: { roleId },
+        include: { all: true, nested: true },
+      });
+  
+      return res.status(200).json({ users });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+
+  async getallroles(req, res) {
+    const roleId = req.params.roleId;
+    try {
+      const roles = await Roles.findAll({
+        attributes: ["roleName", "id"],
+      });
+      return res.status(200).json({
+        roles: roles,
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+
   async TogglePublishSheet(req, res) {
     const id = req.params.sheetid;
     // const isPublished = req.body.isPublished;
@@ -198,7 +276,8 @@ const PastPaperSupervisorController = {
         return res.status(404).json({ message: "sheet not found" });
       }
 
-      sheet.isPublished = true;
+      sheet.isPublished = !(sheet.isPublished);
+      sheet.isSpam = false;
       await sheet.save();
 
       return res.json({ status: 200, sheet });

@@ -48,24 +48,6 @@ const AccountManagementController = {
       const roles = await Roles.findAll({
         attributes: ["roleName", "id"],
       });
-      // const rolesForSupervisor = [
-      //   "ce4afb0a-91b3-454a-a515-70c3cbb7b69b",
-      //   "c0ac1044-4d52-4305-b764-02124bd66434",
-      // ];
-      // const rolesForSuperAdmin = [
-      //   "ce4afb0a-91b3-454a-a515-70c3cbb7b69b",
-      //   "c0ac1044-4d52-4305-b764-02124bd66434",
-      //   "11be6989-f4c7-4646-a474-b5023d937c73",
-      // ];
-      // if (roleId === "11be6989-f4c7-4646-a474-b5023d937c73") {
-      //   rolesForSuperAdmin.pop("11be6989-f4c7-4646-a474-b5023d937c73");
-      // }
-
-      // const avialableRoles = roles.filter((role) => {
-      //   if (rolesForSuperAdmin.includes(role.id)) {
-      //     return role;
-      //   }
-      // });
       return res.status(200).json({
         roles: roles,
       });

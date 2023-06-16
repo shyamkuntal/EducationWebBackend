@@ -85,16 +85,16 @@ const paginatedSheetResults = (model, req) => {
 
     try {
       const subjects = await Sheet.findAll({
-        attributes: ["id", "grade", "year", "lifeCycle", "assignedToUserId", "statusForPastPaper", "isSpam", "varient", "season", "paperNumber", "isPublished"],
+        attributes: ["id", "grade", "year", "lifeCycle", "assignedToUserId", "statusForPastPaper", "isSpam", "varient", "season", "paperNumber", "isPublished", "errorReport", "resources"],
         include: [
           {
             model: SubBoard,
-            attributes: ["subBoardName"],
+            attributes: ["id", "subBoardName"],
           },
         
           {
             model: Board,
-            attributes: ["id", "boardName"],
+            attributes: ["id", "boardName"], 
           },
           {
             model: SubjectLevel,
