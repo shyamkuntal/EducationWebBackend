@@ -176,9 +176,19 @@ const AccountManagementController = {
 
       await user.save();
 
+      let dataToBeUpdated = {
+        Name: values.Name,
+        userName: values.userName,
+      };
+      let whereQuery = {
+        where: {
+          id: user.id,
+        },
+      };
+
+      await services.userService.updateUser(dataToBeUpdated, whereQuery);
+
       if (values.password && values.password.length > 1) {
-        console.log(values.password);
-        console.log("in pass chnage");
         await services.userService.updatePassword(
           values.userId,
           values.password
@@ -257,22 +267,14 @@ const AccountManagementController = {
         group: ["roleId", "role.id"],
       });
 
-      const rolesForSuperAdmin = [
-        "ce4afb0a-91b3-454a-a515-70c3cbb7b69b",
-        "c0ac1044-4d52-4305-b764-02124bd66434",
-        "11be6989-f4c7-4646-a474-b5023d937c73",
-      ];
-      if (roleId === "11be6989-f4c7-4646-a474-b5023d937c73") {
-        rolesForSuperAdmin.pop("11be6989-f4c7-4646-a474-b5023d937c73");
-      }
+      let userCount = {};
 
-      const avialableRoles = results.filter((role) => {
-        if (rolesForSuperAdmin.includes(role.roleId)) {
-          return role;
-        }
-      });
+      results.map(
+        (item) =>
+          (userCount[item.role.roleName + "Count"] = item.dataValues.totalUsers)
+      );
 
-      return res.status(200).json({ avialableRoles });
+      return res.status(200).json(userCount);
     } catch (err) {
       next(err);
     }
