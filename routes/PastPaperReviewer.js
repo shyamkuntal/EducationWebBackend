@@ -9,6 +9,11 @@ router.get("/getsheets", getPaginatedReviewersheets(), (req, res) => {
   res.json(res.paginatedResults);
 });
 
+// api/ppmReviewer/getsubjectnames
+router.get("/getsubjectnames", PastPaperReviewerController.getsubjectName, (req, res) => {
+  res.json(res);
+});
+
 // api/ppmReviewer/getrecheckcomments
 router.get("/getrecheckcomments", PastPaperReviewerController.getRecheckErrors);
 

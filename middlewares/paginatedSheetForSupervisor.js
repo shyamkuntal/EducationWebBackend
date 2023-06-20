@@ -1,6 +1,6 @@
 const { Board, SubBoard } = require("../models/Board.js");
 const { Sheet } = require("../models/Sheet.js");
-const { SubjectLevel, subjectName } = require("../models/Subject.js");
+const { SubjectLevel, subjectName, Subject } = require("../models/Subject.js");
 const { User } = require("../models/User.js");
 
 const paginatedSheetResults = (model, req) => {
@@ -85,7 +85,7 @@ const paginatedSheetResults = (model, req) => {
 
     try {
       const subjects = await Sheet.findAll({
-        attributes: ["id", "grade", "year", "lifeCycle", "assignedToUserId", "statusForPastPaper", "isSpam", "varient", "season", "paperNumber", "isPublished", "errorReport", "resources"],
+        attributes: ["id", "grade", "year", "lifeCycle", "assignedToUserId", "statusForPastPaper", "statusForReviewer", "isSpam", "varient", "season", "paperNumber", "isPublished", "errorReport", "resources"],
         include: [
           {
             model: SubBoard,
@@ -104,6 +104,10 @@ const paginatedSheetResults = (model, req) => {
           {
             model: User,
             attributes: ["Name"]
+          },
+          {
+            model: Subject,
+            attributes: ["id"]
           },
         ],
         where: filters,

@@ -1,10 +1,11 @@
 const { Op } = require("sequelize");
 const { Board, SubBoard } = require("../models/Board.js");
-const { Sheet } = require("../models/Sheet.js");
+const { Sheet, SpamSheetRecheckComments } = require("../models/Sheet.js");
 const { SubjectLevel, Subject } = require("../models/Subject.js");
 
 const getPaginatedReviewerSheets = (model) => {
   return async (req, res, next) => {
+    try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const filters = {};
@@ -61,7 +62,7 @@ const getPaginatedReviewerSheets = (model) => {
       };
     }
 
-    try {
+   
       console.log(req.query.isSpam);
       if (req.query.isSpam === "true") {
         const sheets = await Sheet.findAll({
@@ -95,9 +96,14 @@ const getPaginatedReviewerSheets = (model) => {
             "id",
             "grade",
             "year",
+            "season",
             "varient",
             "paperNumber",
             "statusForReviewer",
+            "isSpam",
+            "errorReport",
+            "errorReportImg",
+
           ],
           include: [
             {
@@ -108,8 +114,15 @@ const getPaginatedReviewerSheets = (model) => {
               model: Board,
               attributes: ["boardName"],
             },
-            { model: Subject, attributes: ["subjectName"] },
-            { model: SubjectLevel, attributes: ["subjectLevelName"] },
+            { 
+              model: Subject, 
+              where: req.query.subjectNameId ? { subjectNameId: req.query.subjectNameId } : {},
+              attributes: ["subjectNameId"] 
+            },
+            { 
+              model: SubjectLevel, 
+              attributes: ["subjectLevelName"] 
+            },
           ],
           where: filters,
           limit,

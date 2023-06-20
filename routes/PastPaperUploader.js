@@ -18,7 +18,7 @@ const { Sheet } = require("../models/Sheet.js");
 const router = express.Router();
 
 router.get(
-  "/:userId/getassignedsheets",
+  "/getassignedsheets",
   paginatedSheetResults(Sheet),
   getAssignedSheets
 );

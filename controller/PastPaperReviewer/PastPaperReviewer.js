@@ -10,6 +10,17 @@ const httpStatus = require("http-status");
 const { generateFileName } = require("../../config/s3.js");
 
 const PastPaperReviewerController = {
+
+  async getsubjectName(req, res, next) {
+    try {
+      const subjectName = await services.subjectService.getSubjectNames();
+  
+      res.status(httpStatus.OK).send(subjectName);
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async getRecheckErrors(req, res) {
     try {
       let reqVariables = { sheetId: req.query.sheetId };
@@ -24,6 +35,7 @@ const PastPaperReviewerController = {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }
   },
+
   async UpdateInprogressSheetStatus(req, res) {
     try {
       let values = await updateSheetStatusSchema.validateAsync(req.body);
@@ -75,6 +87,7 @@ const PastPaperReviewerController = {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }
   },
+  
   async UpdateCompleteSheetStatus(req, res) {
     try {
       let values = await updateSheetStatusSchema.validateAsync(req.body);
@@ -212,7 +225,7 @@ const PastPaperReviewerController = {
         ...req.body,
         file: req.file,
       };
-
+      console.log(values)
       let responseMessage = {
         message: { errorReport: "", errorReportFileUpload: "", sheetLog: "" },
       };
@@ -235,7 +248,7 @@ const PastPaperReviewerController = {
           // checking if erorr Report exists, adding if does not exists
           if (sheetData.errorReport === null) {
             // uploading error report file
-            let fileName = generateFileName();
+            let fileName = generateFileName(32, req.file.originalname);
             let fileObj = req.file;
 
             let uploadFile = await services.sheetService.uploadErrorReportFile(
@@ -303,7 +316,9 @@ const PastPaperReviewerController = {
         res.status(httpStatus.BAD_REQUEST).send({ message: "Invalid sheetId" });
       }
     } catch (err) {
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
+      console.log(err)
+      next(err)
+      // return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }
   },
 
@@ -348,6 +363,7 @@ const PastPaperReviewerController = {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }
   },
-};
+}
+
 
 module.exports = PastPaperReviewerController;
