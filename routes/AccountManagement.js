@@ -44,6 +44,14 @@ router.get(
   AccountManagementController.getallsubjectNamebyid
 );
 
+router.get("/getallboards", AccountManagementController.getAllBoards);
+
+router.get("/getsubboards", AccountManagementController.getSubBoardsById);
+router.get(
+  "/userboardsubboardsubject",
+  AccountManagementController.getUserSubjectBoardSubBord
+);
+
 router.get("/getallsubjects", AccountManagementController.getallsubjects);
 
 router.get("/getusers", AccountManagementController.getAllUserByRole);
