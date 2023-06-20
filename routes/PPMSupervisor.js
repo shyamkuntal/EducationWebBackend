@@ -6,6 +6,7 @@ const paginatedSheetResults = require("../middlewares/paginatedSheetForSuperviso
 const router = express.Router();
 
 router.post("/createsheet", PastPaperSupervisorController.CreateSheet);
+
 router.get("/getallboards", PastPaperSupervisorController.getallboards);
 
 router.get(
@@ -28,6 +29,7 @@ router.get("/getallsheets",
   paginatedSheetResults(Sheet), (req, res) => {
   res.json(res.paginatedResults);
 });
+
 router.get(
   "/getsheetsubjects",
   PastPaperSupervisorController.getallsheetsubjects
