@@ -39,6 +39,11 @@ router.get(
   AccountManagementController.getusernoroleweise
 );
 
+router.get(
+  "/getallsubjectNamebyid",
+  AccountManagementController.getallsubjectNamebyid
+);
+
 router.get("/getallsubjects", AccountManagementController.getallsubjects);
 
 router.get("/getusers", AccountManagementController.getAllUserByRole);
