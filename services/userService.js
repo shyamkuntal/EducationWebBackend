@@ -8,6 +8,7 @@ const {
 } = require("../models/User.js");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
+const bcrypt = require("bcrypt");
 
 const createUser = async (Name, userName, email, password, roleId) => {
   try {
@@ -18,6 +19,16 @@ const createUser = async (Name, userName, email, password, roleId) => {
       password,
       roleId,
     });
+
+    return user;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const updateUser = async (dataToBeUpdated, whereQuery) => {
+  try {
+    let user = await User.update(dataToBeUpdated, whereQuery);
 
     return user;
   } catch (err) {
@@ -73,7 +84,7 @@ const checkUserEmailPassword = async (email, password, roleId) => {
         if (await user.validPassword(password, user.password)) {
           return user;
         } else {
-          throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Credentials!");
+          throw new ApiError(httpStatus.BAD_REQUEST, "Invalid password!");
         }
       } else {
         throw new ApiError(
@@ -110,13 +121,15 @@ const checkUserEmail = async (email, roleId) => {
 
 const updatePassword = async (userId, newPassword) => {
   try {
-    console.log(userId, newPassword);
-    let updatePass = await User.findOne({
-      where: { id: userId },
-      attributes: ["id"],
-    }).then((record) => {
-      return record.update({ password: newPassword });
-    });
+    const salt = await bcrypt.genSaltSync(10, "a");
+    let hashedPass = bcrypt.hashSync(newPassword, salt);
+
+    console.log(hashedPass);
+
+    let updatePass = await User.update(
+      { password: hashedPass },
+      { where: { id: userId } }
+    );
     return updatePass;
   } catch (err) {
     throw err;
@@ -150,4 +163,5 @@ module.exports = {
   checkUserEmail,
   createUser,
   findUserSubjectsBoardSubBoard,
+  updateUser,
 };
