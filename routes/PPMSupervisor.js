@@ -9,6 +9,12 @@ router.post("/createsheet", PastPaperSupervisorController.CreateSheet);
 
 router.get("/getallboards", PastPaperSupervisorController.getallboards);
 
+router.get("/getallroles", PastPaperSupervisorController.getallroles);
+
+router.get("/getsheetlogs", PastPaperSupervisorController.getSheetLogs);
+
+router.get("/getusers", PastPaperSupervisorController.getAllUserByRole);
+
 router.get(
   "/:boardId/getallsubboards",
   PastPaperSupervisorController.getallsubboards
