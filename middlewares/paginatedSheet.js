@@ -102,19 +102,6 @@ const paginatedSheetResults = (model, req) => {
             attributes: ["subjectLevelName"],
             required: false,
           },
-<<<<<<< Updated upstream
-          // {
-          //   model: subjectName,
-          //   attributes: ["subjectName"],
-          //   required: false,
-          // },
-=======
-          {
-            model: subjectName,
-            attributes: ["subjectName"],
-            required: false,
-          },
->>>>>>> Stashed changes
         ],
         where: filters,
         limit,

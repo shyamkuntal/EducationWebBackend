@@ -7,11 +7,8 @@ const router = express.Router();
 
 router.post("/createsheet", PastPaperSupervisorController.CreateSheet);
 
-<<<<<<< Updated upstream
 router.post("/updatesheet", PastPaperSupervisorController.UpdateSheet);
 
-=======
->>>>>>> Stashed changes
 router.get("/getallboards", PastPaperSupervisorController.getallboards);
 
 router.get(
@@ -35,7 +32,6 @@ router.get("/getallsheets",
   res.json(res.paginatedResults);
 });
 
-<<<<<<< Updated upstream
 router.get("/getsheetlogs", 
   PastPaperSupervisorController.getSheetLogs
 );
@@ -44,8 +40,6 @@ router.get("/getusers", PastPaperSupervisorController.getAllUserByRole);
 
 router.get("/getallroles", PastPaperSupervisorController.getallroles);
 
-=======
->>>>>>> Stashed changes
 router.get(
   "/getsheetsubjects",
   PastPaperSupervisorController.getallsheetsubjects
