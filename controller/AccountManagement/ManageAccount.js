@@ -306,7 +306,7 @@ const AccountManagementController = {
     }
   },
 
-  async getAllUserByRole(req, res, next) {
+  async getAllUserByRole(req, res) {
     const roleId = req.query.roleId;
     try {
       const users = await User.findAll({

@@ -102,6 +102,11 @@ const paginatedSheetResults = (model, req) => {
             attributes: ["subjectLevelName"],
             required: false,
           },
+          {
+            model: subjectName,
+            attributes: ["subjectName"],
+            required: false,
+          },
         ],
         where: filters,
         limit,

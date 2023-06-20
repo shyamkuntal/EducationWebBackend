@@ -6,9 +6,6 @@ const paginatedSheetResults = require("../middlewares/paginatedSheetForSuperviso
 const router = express.Router();
 
 router.post("/createsheet", PastPaperSupervisorController.CreateSheet);
-
-router.post("/updatesheet", PastPaperSupervisorController.UpdateSheet);
-
 router.get("/getallboards", PastPaperSupervisorController.getallboards);
 
 router.get(
@@ -31,15 +28,6 @@ router.get("/getallsheets",
   paginatedSheetResults(Sheet), (req, res) => {
   res.json(res.paginatedResults);
 });
-
-router.get("/getsheetlogs", 
-  PastPaperSupervisorController.getSheetLogs
-);
-
-router.get("/getusers", PastPaperSupervisorController.getAllUserByRole);
-
-router.get("/getallroles", PastPaperSupervisorController.getallroles);
-
 router.get(
   "/getsheetsubjects",
   PastPaperSupervisorController.getallsheetsubjects
