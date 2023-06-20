@@ -7,18 +7,28 @@ const PPMReviewer = require("./PastPaperReviewer.js");
 const PastPaperUploader = require("./PastPaperUploader.js");
 const PublicRoutes = require("./PublicRoutes.js");
 const Auth = require("./Auth.js");
+<<<<<<< Updated upstream
 const {
   AuthSuperadmin,
   AuthPastPaper,
   AuthSupervisor,
 } = require("../middlewares/authentication.js");
+=======
+const { AuthSuperadmin, AuthPastPaper, AuthSupervisor } = require("../middlewares/authentication.js");
+>>>>>>> Stashed changes
 
 const router = express.Router();
 router.use("/auth", Auth);
 router.use("/boardmanagement", AuthSuperadmin(), BoardRouters);
+<<<<<<< Updated upstream
 router.use("/subjectmanagement", AuthSupervisor(), SubjectRouters);
 router.use("/ppmsupervisor", PPMSupervisor);
 router.use("/ppmreviewer", PPMReviewer);
+=======
+router.use("/subjectmanagement", SubjectRouters);
+router.use("/ppmsupervisor", AuthSupervisor() ,PPMSupervisor);
+router.use("/ppmreviewer",  PPMReviewer);
+>>>>>>> Stashed changes
 router.use("/accountmanagement", AccountManagement);
 router.use("/ppuploader", AuthPastPaper(), PastPaperUploader);
 router.use("/public", PublicRoutes);

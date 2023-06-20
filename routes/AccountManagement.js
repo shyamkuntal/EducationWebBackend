@@ -41,17 +41,21 @@ router.get(
 
 router.get("/getallsubjects", AccountManagementController.getallsubjects);
 
+<<<<<<< Updated upstream
 router.get(
   "/getallsubjectNamebyid",
   AccountManagementController.getallsubjectNamebyid
 );
 
+=======
+>>>>>>> Stashed changes
 router.get("/getusers", AccountManagementController.getAllUserByRole);
 
 // router.get(
 //   "/:getsupervisorinfo",
 //   AccountManagementController.getSupervisorInfo
 // );
+<<<<<<< Updated upstream
 router.get("/getallboards", AccountManagementController.getAllBoards);
 
 router.get("/getsubboards", AccountManagementController.getSubBoardsById);
@@ -60,6 +64,8 @@ router.get(
   "/userboardsubboardsubject",
   AccountManagementController.getUserSubjectBoardSubBord
 );
+=======
+>>>>>>> Stashed changes
 
 router.patch("/toggleactivate", AccountManagementController.toggleActivateUser);
 

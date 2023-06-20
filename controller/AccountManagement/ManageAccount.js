@@ -306,7 +306,11 @@ const AccountManagementController = {
     }
   },
 
+<<<<<<< Updated upstream
   async getAllUserByRole(req, res, next) {
+=======
+  async getAllUserByRole(req, res) {
+>>>>>>> Stashed changes
     const roleId = req.query.roleId;
     try {
       const users = await User.findAll({
