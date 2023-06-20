@@ -276,12 +276,8 @@ const PastPaperSupervisorController = {
         return res.status(404).json({ message: "sheet not found" });
       }
 
-<<<<<<< Updated upstream
       sheet.isPublished = !(sheet.isPublished);
       sheet.isSpam = false;
-=======
-      sheet.isPublished = true;
->>>>>>> Stashed changes
       await sheet.save();
 
       return res.json({ status: 200, sheet });
