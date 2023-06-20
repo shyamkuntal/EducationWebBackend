@@ -7,7 +7,6 @@ const getPaginatedReviewerSheets = (model) => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-
     const filters = {};
     // later on reviewer id will be coming through checkvalidrole middleware
     filters.assignedToUserId = req.query.reviewerId;
@@ -29,8 +28,6 @@ const getPaginatedReviewerSheets = (model) => {
     if (req.query.search) {
       filters.year = { [Op.iLike]: `%${req.query.search}%` };
     }
-
-    console.log(filters);
 
     if (req.query.time === "today") {
       filters.createdAt = {

@@ -1,5 +1,11 @@
 const { Op, Sequelize } = require("sequelize");
-const { User, Roles } = require("../models/User.js");
+const {
+  User,
+  Roles,
+  UserSubjectMapping,
+  UserBoardMapping,
+  UserSubBoardMapping,
+} = require("../models/User.js");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
 
@@ -57,7 +63,7 @@ const findByRoleName = async (roleName) => {
 const checkUserEmailPassword = async (email, password, roleId) => {
   try {
     let user = await User.findOne({
-      where: { email: email },
+      where: { email: email, roleId: roleId },
       include: [{ model: Roles, attributes: ["roleName"] }],
       nest: true,
     });
@@ -67,7 +73,7 @@ const checkUserEmailPassword = async (email, password, roleId) => {
         if (await user.validPassword(password, user.password)) {
           return user;
         } else {
-          throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Password!");
+          throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Credentials!");
         }
       } else {
         throw new ApiError(
@@ -76,7 +82,7 @@ const checkUserEmailPassword = async (email, password, roleId) => {
         );
       }
     } else {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Email!");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Email does not exist!");
     }
   } catch (err) {
     throw err;
@@ -92,10 +98,6 @@ const checkUserEmail = async (email, roleId) => {
     });
 
     if (user) {
-      console.log(user);
-      console.log(user.roleId);
-      console.log(roleId);
-
       throw new ApiError(
         httpStatus.BAD_REQUEST,
         "EmailId already exists for this role!"
@@ -121,6 +123,24 @@ const updatePassword = async (userId, newPassword) => {
   }
 };
 
+const findUserSubjectsBoardSubBoard = async (id) => {
+  try {
+    let userDetails = await User.findOne({
+      where: { id: id },
+      attributes: ["id", "Name", "email", "userName", "roleId"],
+      include: [
+        { model: UserBoardMapping, attributes: ["boardID"] },
+        { model: UserSubBoardMapping, attributes: ["subBoardId"] },
+        { model: UserSubjectMapping, attributes: ["subjectNameIds", "userId"] },
+      ],
+    });
+
+    return userDetails;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   finduser,
   checkUserEmailPassword,
@@ -129,4 +149,5 @@ module.exports = {
   updatePassword,
   checkUserEmail,
   createUser,
+  findUserSubjectsBoardSubBoard,
 };

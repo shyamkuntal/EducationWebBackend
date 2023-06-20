@@ -134,8 +134,6 @@ const AuthController = {
             user.password
           );
 
-        console.log(validateToken);
-
         if (validateToken) {
           let updateNewPassword = await services.userService.updatePassword(
             validateToken.id,

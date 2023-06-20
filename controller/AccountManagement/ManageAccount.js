@@ -17,10 +17,14 @@ const httpStatus = require("http-status");
 const {
   getSubBoardsSchema,
   createAccountSchema,
+  editAccountSchema,
+  getSubjectNameByIdSchema,
+  toggleActivateUserSchema,
+  getUserBoardSubBoardSubjectSchema,
 } = require("../../validations/AccountManagementValidation.js");
 
 const AccountManagementController = {
-  async createUserRole(req, res) {
+  async createUserRole(req, res, next) {
     const roles = [
       roleNames.Superadmin,
       roleNames.Supervisor,
@@ -37,12 +41,12 @@ const AccountManagementController = {
         }))
       );
       return res.status(200).json({ role });
-    } catch (error) {
-      return res.status(500).json({ msg: error.message });
+    } catch (err) {
+      next(err);
     }
   },
 
-  async getallroles(req, res) {
+  async getallroles(req, res, next) {
     const roleId = req.params.roleId;
     try {
       const roles = await Roles.findAll({
@@ -51,12 +55,12 @@ const AccountManagementController = {
       return res.status(200).json({
         roles: roles,
       });
-    } catch (error) {
-      return res.status(500).json({ msg: error.message });
+    } catch (err) {
+      next(err);
     }
   },
 
-  async getallrolesbyRole(req, res) {
+  async getallrolesbyRole(req, res, next) {
     const roleId = req.params.roleId;
     try {
       const roles = await Roles.findAll({
@@ -83,8 +87,8 @@ const AccountManagementController = {
       return res.status(200).json({
         roles: avialableRoles,
       });
-    } catch (error) {
-      return res.status(500).json({ msg: error.message });
+    } catch (err) {
+      next(err);
     }
   },
 
@@ -153,70 +157,76 @@ const AccountManagementController = {
     }
   },
 
-  async editUser(req, res) {
-    const {
-      userId,
-      Name,
-      userName,
-      password,
-      boardIds,
-      subboardIds,
-      qualifications,
-      subjects,
-    } = req.body;
-
+  async editUser(req, res, next) {
     try {
-      const user = await User.findByPk(userId);
+      let values = await editAccountSchema.validateAsync(req.body);
+
+      console.log(values);
+      const user = await User.findByPk(values.userId);
 
       if (!user) {
-        return res.status(404).json({ msg: "User not found" });
+        return res
+          .status(httpStatus.BAD_REQUEST)
+          .send({ message: "User not found" });
       }
 
       // Update user details
-      user.Name = Name;
-      user.userName = userName;
-      user.password = password;
+      user.Name = values.Name;
+      user.userName = values.userName;
 
       await user.save();
 
+      if (values.password && values.password.length > 1) {
+        console.log(values.password);
+        console.log("in pass chnage");
+        await services.userService.updatePassword(
+          values.userId,
+          values.password
+        );
+      }
+
       // Update board mapping entries
-      await UserBoardMapping.destroy({ where: { userId } });
-      if (boardIds && boardIds.length > 0) {
-        const boardmapping = boardIds.map((boardId) => ({
-          userId,
+      await UserBoardMapping.destroy({ where: { userId: values.userId } });
+      if (values.boardIds && values.boardIds.length > 0) {
+        const boardmapping = values.boardIds.map((boardId) => ({
+          userId: values.userId,
           boardID: boardId,
         }));
 
         await UserBoardMapping.bulkCreate(boardmapping);
       }
 
-      await UserSubBoardMapping.destroy({ where: { userId } });
+      await UserSubBoardMapping.destroy({ where: { userId: values.userId } });
       // Update subboard mapping entries
-      if (subboardIds && subboardIds.length > 0) {
-        const subboardmapping = subboardIds.map((subboardId) => ({
-          userId,
-          subBoardID: subboardId,
+      if (values.subBoardIds && values.subBoardIds.length > 0) {
+        const subboardmapping = values.subBoardIds.map((subboardId) => ({
+          userId: values.userId,
+          subBoardId: subboardId,
         }));
 
         await UserSubBoardMapping.bulkCreate(subboardmapping);
       }
 
-      await UserQualificationMapping.destroy({ where: { userId } });
-      // Update qualification mapping entries
-      if (qualifications && qualifications.length > 0) {
-        const qmapping = qualifications.map((range) => ({
-          userId,
-          gradeQualification: range,
-        }));
+      if (values.qualifications) {
+        await UserQualificationMapping.destroy({
+          where: { userId: values.userId },
+        });
+        // Update qualification mapping entries
+        if (values.qualifications && values.qualifications.length > 0) {
+          const qmapping = values.qualifications.map((range) => ({
+            userId: values.userId,
+            gradeQualification: range,
+          }));
 
-        await UserQualificationMapping.bulkCreate(qmapping);
+          await UserQualificationMapping.bulkCreate(qmapping);
+        }
       }
 
-      await UserSubjectMapping.destroy({ where: { userId } });
+      await UserSubjectMapping.destroy({ where: { userId: values.userId } });
       // Update subject mapping entries
-      if (subjects && subjects.length > 0) {
-        const subjectmapping = subjects.map((subjectId) => ({
-          userId,
+      if (values.subjectsIds && values.subjectsIds.length > 0) {
+        const subjectmapping = values.subjectsIds.map((subjectId) => ({
+          userId: values.userId,
           subjectNameIds: subjectId,
         }));
 
@@ -224,12 +234,12 @@ const AccountManagementController = {
       }
 
       return res.status(200).json({ user });
-    } catch (error) {
-      return res.status(500).json({ msg: error.message });
+    } catch (err) {
+      next(err);
     }
   },
 
-  async getusernoroleweise(req, res) {
+  async getusernoroleweise(req, res, next) {
     try {
       const roleId = req.query.roleId;
 
@@ -262,32 +272,39 @@ const AccountManagementController = {
         }
       });
 
-      // const summary = results.map((result) => {
-      //   const { roleId, totalUsers } = result.dataValues;
-      //   return { roleId, totalUsers };
-      // });
-
-      // summary.forEach((item) => {
-      //   console.log(`Role ID: ${item.roleId} - ${item.totalUsers} users`);
-      // });
       return res.status(200).json({ avialableRoles });
-    } catch (error) {
-      return res.status(500).json({ msg: error.message });
+    } catch (err) {
+      next(err);
     }
   },
 
-  async getallsubjects(req, res) {
+  async getallsubjects(req, res, next) {
     try {
       const subjects = await subjectName.findAll({
         attributes: ["id", "subjectName"],
       });
       return res.status(200).json({ subjects });
-    } catch (error) {
-      return res.status(500).json({ msg: error.message });
+    } catch (err) {
+      next(err);
+    }
+  },
+  async getallsubjectNamebyid(req, res, next) {
+    try {
+      let values = await getSubjectNameByIdSchema.validateAsync({
+        subjectNameId: req.query.subjectNameId,
+      });
+      let whereQuery = { where: { id: values.subjectNameId } };
+
+      const subjects = await services.subjectService.findSubjectName(
+        whereQuery
+      );
+      return res.status(httpStatus.OK).send(subjects);
+    } catch (err) {
+      next(err);
     }
   },
 
-  async getAllUserByRole(req, res) {
+  async getAllUserByRole(req, res, next) {
     const roleId = req.query.roleId;
     try {
       const users = await User.findAll({
@@ -297,20 +314,20 @@ const AccountManagementController = {
       });
 
       return res.status(200).json({ users });
-    } catch (error) {
-      return res.status(500).json({ msg: error.message });
+    } catch (err) {
+      next(err);
     }
   },
 
-  async toggleActivateUser(req, res) {
+  async toggleActivateUser(req, res, next) {
     try {
-      const id = req.body.id;
-      const user = await User.findByPk(id);
+      let values = await toggleActivateUserSchema.validateAsync(req.body);
+      const user = await User.findByPk(values.userId);
       user.isActive = !user.isActive;
       await user.save();
       return res.status(200).json({ user });
-    } catch (error) {
-      return res.status(500).json({ msg: error.message });
+    } catch (err) {
+      next(err);
     }
   },
   //{ all: true, nested: true }
@@ -344,11 +361,9 @@ const AccountManagementController = {
         userSubboardNames[user.id] = subboardNamesByBoard;
       });
 
-      console.log(userSubboardNames);
-
       return res.status(200).json({ users, userSubboardNames });
-    } catch (error) {
-      return res.status(500).json({ msg: error.message });
+    } catch (err) {
+      next(err);
     }
   },
   async getRoleByName(req, res, next) {
@@ -380,13 +395,26 @@ const AccountManagementController = {
         boardId: req.query.boardId,
       });
 
-      console.log(values.boardId);
-
       let subBoard = await services.boardService.getSubBoardsByBoardId(
         values.boardId
       );
 
       res.status(httpStatus.OK).send(subBoard);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getUserSubjectBoardSubBord(req, res, next) {
+    try {
+      let values = await getUserBoardSubBoardSubjectSchema.validateAsync({
+        userId: req.query.userId,
+      });
+
+      let userDetails =
+        await services.userService.findUserSubjectsBoardSubBoard(values.userId);
+
+      res.status(httpStatus.OK).send(userDetails);
     } catch (err) {
       next(err);
     }

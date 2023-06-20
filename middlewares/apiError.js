@@ -10,8 +10,6 @@ class ApiError extends Error {
 const handleError = (err, res) => {
   const { statusCode, message } = err;
 
-  console.log(err);
-
   res.status(statusCode).send({
     status: "error",
     statusCode,

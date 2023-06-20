@@ -150,6 +150,16 @@ const findSubject = async (whereQuery, include) => {
   }
 };
 
+const findSubjectName = async (whereQuery) => {
+  try {
+    let subjectNameDetails = subjectName.findAll(whereQuery);
+
+    return subjectNameDetails;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const updateSubject = async (dataToBeUpdated, whereQuery) => {
   try {
     let updateSubject = await Subject.update(dataToBeUpdated, whereQuery);
@@ -170,4 +180,5 @@ module.exports = {
   updateSubjectLevels,
   findSubject,
   updateSubject,
+  findSubjectName,
 };
