@@ -12,7 +12,12 @@ const assignReviewerUserToSheetSchema = Joi.object({
   // supervisorComments: Joi.string().max(225).required(),
 });
 
+const getSheetLogsSchema = Joi.object({
+  sheetId: Joi.string().guid().required(),
+});
+
 module.exports = {
   assignUploderUserToSheetSchema,
   assignReviewerUserToSheetSchema,
+  getSheetLogsSchema,
 };

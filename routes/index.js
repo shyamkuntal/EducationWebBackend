@@ -11,13 +11,14 @@ const {
   AuthSuperadmin,
   AuthPastPaper,
   AuthSupervisor,
+  AuthSuperadminSupervisor,
 } = require("../middlewares/authentication.js");
 
 const router = express.Router();
 router.use("/auth", Auth);
 router.use("/boardmanagement", AuthSuperadmin(), BoardRouters);
 router.use("/subjectmanagement", AuthSupervisor(), SubjectRouters);
-router.use("/ppmsupervisor", AuthSupervisor(), PPMSupervisor);
+router.use("/ppmsupervisor", AuthSuperadminSupervisor(), PPMSupervisor);
 router.use("/ppmreviewer", PPMReviewer);
 router.use("/accountmanagement", AccountManagement);
 router.use("/ppuploader", AuthPastPaper(), PastPaperUploader);

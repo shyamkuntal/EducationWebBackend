@@ -146,16 +146,16 @@ const createSheetLog = async (sheetId, assignee, assignedTo, logMessage) => {
   }
 };
 
-const findSheetLog = async (attributes) => {
+const findSheetLog = async (sheetId) => {
   try {
     let sheetLog = await SheetLog.findAll({
-      attributes: attributes,
-    })
-    return sheetLog
+      where: { sheetId: sheetId },
+    });
+    return sheetLog;
   } catch (err) {
     throw err;
   }
-}
+};
 
 const updateSheetStatusForSupervisorAndReviewer = async (
   sheetId,
@@ -320,5 +320,5 @@ module.exports = {
   findRecheckingComments,
   createSheetCheckList,
   findCheckList,
-  findSheetLog
+  findSheetLog,
 };
