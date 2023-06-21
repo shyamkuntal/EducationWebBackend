@@ -65,6 +65,29 @@ const PastPaperSupervisorController = {
     }
   },
 
+
+  async getUserAssignedSubjects (req, res, next) {
+    
+    try {
+      let userId = req.query.userId
+      let userSubject = await services.userService.getUserAssignedSubjects(userId);
+      res.status(httpStatus.OK).send(userSubject)
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  async getSubjectNames(req, res, next) {
+    try {
+      const subjectName = await services.subjectService.getSubjectNames();
+  
+      res.status(httpStatus.OK).send(subjectName);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+
   async getallboards(req, res) {
     try {
       const distinctBoardIds = await Subject.findAll({

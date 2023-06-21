@@ -4,6 +4,7 @@ const PastPaperReviewerController = require("../controller/PastPaperReviewer/Pas
 const upload = require("../config/multer.js");
 const getPaginatedReviewersheets = require("../middlewares/paginatedReviewerSheets");
 
+
 // api/ppmReviewer/getsheets
 router.get("/getsheets", getPaginatedReviewersheets(), (req, res) => {
   res.json(res.paginatedResults);
@@ -44,5 +45,7 @@ router.patch(
 
 // api/ppmReviewer/reportsheeterror
 router.post("/reportsheeterror", PastPaperReviewerController.AddRecheckComment);
+
+router.get("/getuserassignedsubjects", PastPaperReviewerController.getUserAssignedSubjects);
 
 module.exports = router;

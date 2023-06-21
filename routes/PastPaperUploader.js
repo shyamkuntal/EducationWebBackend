@@ -14,6 +14,7 @@ const {
 } = require("../controller/PastPaperUploader/PastPaper.js");
 const paginatedSheetResults = require("../middlewares/paginatedSheet.js");
 const { Sheet } = require("../models/Sheet.js");
+const PastPaperUploaderController = require("../controller/PastPaperUploader/PastPaper.js");
 
 const router = express.Router();
 
@@ -32,6 +33,11 @@ router.get(
 
 router.get("/:userId/getassignedsubjects", getallassignedsheetsubjects);
 
+router.get("/getsubjectnames", PastPaperUploaderController.getsubjectName, (req, res) => {
+  res.json(res);
+});
+
+router.get("/getuserassignedsubjects", PastPaperUploaderController.getUserAssignedSubjects);
 
 router.post(
   "/createpastpaper",

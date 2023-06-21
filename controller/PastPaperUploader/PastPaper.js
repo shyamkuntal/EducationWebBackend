@@ -123,6 +123,11 @@ const PastPaperUploaderController = {
             attributes: ["id", "subjectLevelName", "isArchived"],
             required: false,
           },
+          { 
+            model: Subject, 
+            where: req.query.subjectNameId ? { subjectNameId: req.query.subjectNameId } : {},
+            attributes: ["subjectNameId"] 
+          },
         ],
         where: { assignedToUserId:userId },
       });
@@ -130,6 +135,27 @@ const PastPaperUploaderController = {
       return res.json({ status: 200, AssignedSheets: allAssignedSheeets });
     } catch (error) {
       res.json({ status: 501, message: error.message });
+    }
+  },
+
+  async getUserAssignedSubjects (req, res, next) {
+    
+    try {
+      let userId = req.query.userId
+      let userSubject = await services.userService.getUserAssignedSubjects(userId);
+      res.status(httpStatus.OK).send(userSubject)
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  async getsubjectName(req, res, next) {
+    try {
+      const subjectName = await services.subjectService.getSubjectNames();
+  
+      res.status(httpStatus.OK).send(subjectName);
+    } catch (err) {
+      next(err);
     }
   },
 

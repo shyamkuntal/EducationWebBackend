@@ -7,6 +7,10 @@ const router = express.Router();
 
 router.post("/createsheet", PastPaperSupervisorController.CreateSheet);
 
+router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
+
+router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
+
 router.get("/getallboards", PastPaperSupervisorController.getallboards);
 
 router.get("/getallroles", PastPaperSupervisorController.getallroles);

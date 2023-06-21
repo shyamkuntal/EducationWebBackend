@@ -109,6 +109,11 @@ const paginatedSheetResults = (model, req) => {
             model: Subject,
             attributes: ["id"]
           },
+          { 
+            model: Subject, 
+            where: req.query.subjectNameId ? { subjectNameId: req.query.subjectNameId } : {},
+            attributes: ["subjectNameId"] 
+          },
         ],
         where: filters,
         limit,

@@ -51,6 +51,21 @@ const finduser = async (userId) => {
   }
 };
 
+const getUserAssignedSubjects = async (userId) => {
+  try {
+    const getUserSubjects = await UserSubjectMapping.findAll({
+      where: { userId: userId },
+      raw: true,
+      nest: true,
+    });
+
+    return getUserSubjects;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 const findUserByEmail = async (email) => {
   try {
     let user = await User.findOne({ where: { email: email }, raw: true });
@@ -164,4 +179,5 @@ module.exports = {
   createUser,
   findUserSubjectsBoardSubBoard,
   updateUser,
+  getUserAssignedSubjects
 };

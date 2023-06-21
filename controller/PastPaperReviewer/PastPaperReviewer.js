@@ -36,6 +36,17 @@ const PastPaperReviewerController = {
     }
   },
 
+  async getUserAssignedSubjects (req, res, next) {
+    
+    try {
+      let userId = req.query.userId
+      let userSubject = await services.userService.getUserAssignedSubjects(userId);
+      res.status(httpStatus.OK).send(userSubject)
+    } catch (error) {
+      next(error)
+    }
+  },
+
   async UpdateInprogressSheetStatus(req, res) {
     try {
       let values = await updateSheetStatusSchema.validateAsync(req.body);
@@ -48,6 +59,7 @@ const PastPaperReviewerController = {
         let previousStatus = sheet.statusForReviewer;
 
         // Checking if sheet is assigned to current reviewer
+        
         if (
           assignedTo === values.reviewerId &&
           lifeCycle === CONSTANTS.roleNames.Reviewer
