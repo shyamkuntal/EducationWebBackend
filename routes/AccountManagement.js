@@ -1,10 +1,12 @@
 const express = require("express");
 const AccountManagementController = require("../controller/AccountManagement/ManageAccount.js");
+const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject.js");
 const { route } = require("./PastPaperUploader.js");
 const router = express.Router();
 const pastPaperAccountsSheets = require("../middlewares/pastPaperAccountsSheets.js");
 const reviewerAccountsSheets = require("../middlewares/reviewerAccountsSheets.js");
 const supervisorAccountsSheets = require("../middlewares/supervisorAccountsSheets.js");
+const paginatedSheet = require("../middlewares/paginatedSheet");
 
 router.get("/getpastpaperaccounts", pastPaperAccountsSheets(), (req, res) => {
   res.send(res.paginatedResults);
@@ -17,6 +19,13 @@ router.get("/getrevieweraccounts", reviewerAccountsSheets(), (req, res) => {
 router.get("/getsupervisoraccounts", supervisorAccountsSheets(), (req, res) => {
   res.send(res.paginatedResults);
 });
+
+router.get("/getsheetsbyassignedtouserid", paginatedSheet(), (req, res) =>
+  res.send(res.paginatedResults)
+);
+
+router.get("/getsubjectnames", SubjectManagementController.getsubjectName);
+
 router.post("/createuserrole", AccountManagementController.createUserRole);
 
 router.post("/createuser", AccountManagementController.createUser);

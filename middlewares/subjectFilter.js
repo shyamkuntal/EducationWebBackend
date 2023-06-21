@@ -31,7 +31,6 @@ const paginatedSubjects = (model) => {
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    console.log("filters.........", filters);
     const results = {};
     const count = await Subject.count({ where: filters });
     if (endIndex < count) {

@@ -1,5 +1,9 @@
 const Joi = require("joi");
 
+const getReviewerSheetsSchema = Joi.object({
+  reviewerId: Joi.string().guid().required(),
+});
+
 const updateSheetStatusSchema = Joi.object({
   sheetId: Joi.string().guid().required(),
   reviewerId: Joi.string().guid().required(),
@@ -25,4 +29,5 @@ module.exports = {
   updateSheetStatusSchema,
   reportErrorSchema,
   getRecheckingComments,
+  getReviewerSheetsSchema,
 };
