@@ -10,6 +10,7 @@ const {
 } = require("../../validations/PPMSupervisorValidations.js");
 const httpStatus = require("http-status");
 const { User, Roles } = require("../../models/User.js");
+const { getSubBoardsSchema } = require("../../validations/subjectManagementValidations.js");
 
 const PastPaperSupervisorController = {
   //take care of isarchived and ispublished later
@@ -225,6 +226,33 @@ const PastPaperSupervisorController = {
       return res.json({ status: 200, levels });
     } catch (err) {
       return res.json({ status: 501, error: err.message });
+    }
+  },
+
+  
+  async getAllboards(req, res, next) {
+    try {
+      let attributes = ["id", "boardName", "boardType"];
+      let boards = await services.boardService.findAllBoards(attributes);
+
+      res.status(httpStatus.OK).send(boards);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getAllSubBoards(req, res) {
+    try {
+      let values = await getSubBoardsSchema.validateAsync({
+        boardId: req.query.boardId,
+      });
+
+      let subBoards = await services.boardService.getSubBoardsByBoardId(
+        values.boardId
+      );
+      return res.status(200).json(subBoards);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
     }
   },
 
