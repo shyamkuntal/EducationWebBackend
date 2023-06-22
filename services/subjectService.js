@@ -62,8 +62,8 @@ const bulkCreateSubjectLevels = async (SubjectLevels) => {
 const findSubjectByIds = async (boardId, subBoardId, grade, subjectNameId) => {
   try {
     let subject = await Subject.findOne({
-      where: { boardId, subBoardId, grade, subjectNameId },
-      attributes: ["id"],
+      where: { boardId, subBoardId, grade, subjectNameId, isPublished: true },
+      attributes: ["id", "subjectNameId"],
       raw: true,
     });
     return subject;

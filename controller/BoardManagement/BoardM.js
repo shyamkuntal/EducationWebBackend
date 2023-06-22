@@ -20,6 +20,7 @@ const BoardManagementController = {
     try {
       let values = await addBoardSchema.validateAsync(req.body);
       console.log(values);
+
       //Create a new board entry
       let board = await services.boardService.createBoard(
         values.boardName,
@@ -146,7 +147,6 @@ const BoardManagementController = {
     } catch (err) {
       console.log(err);
       next(err);
-
     }
   },
   async TogglePublishBoard(req, res, next) {
@@ -208,7 +208,6 @@ const BoardManagementController = {
     try {
       let values = await archiveSubBoardsSchema.validateAsync(req.body);
 
-
       // Update sub-boards
       if (values.subBoardIds && values.subBoardIds.length > 0) {
         let archiveSubBoards =
@@ -218,7 +217,6 @@ const BoardManagementController = {
             values.isArchived
           );
 
-        
         if (archiveSubBoards.length > 0) {
           res.status(httpStatus.OK).send({
             message: "Sub-boards Isarchived updated successfully!",
@@ -234,8 +232,6 @@ const BoardManagementController = {
     try {
       let values = await createSubBoardsSchema.validateAsync(req.body);
 
-
-      
       let subBoards = await services.boardService.createSubBoard(
         values.boardId,
         values.subBoardName

@@ -18,7 +18,6 @@ const {
 } = require("../../validations/subjectManagementValidations.js");
 const httpStatus = require("http-status");
 const services = require("../../services/index.js");
-const { updateSubjectLevels } = require("../../services/subjectService.js");
 require("dotenv").config();
 const bucketName = process.env.AWS_BUCKET_NAME;
 
@@ -90,9 +89,9 @@ const SubjectManagementController = {
             subject,
           });
         } else {
-          res
-            .status(httpStatus.BAD_REQUEST)
-            .send({ message: "Subject Name already exists" });
+          res.status(httpStatus.BAD_REQUEST).send({
+            message: `${subjectNameExists.subjectName} Subject Name already exists`,
+          });
         }
       }
 
@@ -136,12 +135,21 @@ const SubjectManagementController = {
             subjectLevelsCreated,
           });
         } else {
-          res
-            .status(httpStatus.BAD_REQUEST)
-            .send({ message: "Subject already exists!" });
+          let whereQuery = {
+            where: { id: subjectExists.subjectNameId },
+            raw: true,
+          };
+          let findSubject = await services.subjectService.findSubjectName(
+            whereQuery
+          );
+
+          res.status(httpStatus.BAD_REQUEST).send({
+            message: `${findSubject[0].subjectName} Subject already exists for this board, subBoard & grade!`,
+          });
         }
       }
     } catch (err) {
+      console.log(err);
       next(err);
     }
   },

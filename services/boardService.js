@@ -27,10 +27,20 @@ const createBoard = async (
 const findAllBoards = async (attributes) => {
   try {
     let boards = await Board.findAll({
-      where: { isArchived: false },
+      where: { isArchived: false, isPublished: true },
       attributes: attributes,
     });
     return boards;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findBoardByName = async (boardName) => {
+  try {
+    let findBoardByName = await Board.findOne({ where: { boardName } });
+
+    return findBoardByName;
   } catch (err) {
     throw err;
   }
@@ -133,4 +143,5 @@ module.exports = {
   updateBoardIsArchived,
   updateSuBoardsIsArchived,
   findAllBoards,
+  findBoardByName,
 };

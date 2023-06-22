@@ -37,7 +37,7 @@ module.exports = Object.freeze({
     CheckListItem10: "Check List Item 10",
   },
   validationRegex: {
-    phoneRegex: /^[2-9]{2}[0-9]{8}/,
+    phoneRegex: /^[2-9]{1}[0-9]{7}/,
     emailRegex: /^\S+@\S+\.\S+$/,
     urlRegex: newFunction(),
   },
