@@ -19,6 +19,8 @@ router.get("/getsheetlogs", PastPaperSupervisorController.getSheetLogs);
 
 router.get("/getusers", PastPaperSupervisorController.getAllUserByRole);
 
+router.get("/getuser", PastPaperSupervisorController.getUsers);
+
 router.get(
   "/:boardId/getallsubboards",
   PastPaperSupervisorController.getallsubboards
@@ -43,6 +45,11 @@ router.get("/getallsheets",
 router.get(
   "/getsheetsubjects",
   PastPaperSupervisorController.getallsheetsubjects
+);
+
+router.get(
+  "/getsubjectnames",
+  PastPaperSupervisorController.getSubjectNames
 );
 
 router.get(

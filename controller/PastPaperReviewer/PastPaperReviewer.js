@@ -8,18 +8,21 @@ const {
 const services = require("../../services/index.js");
 const httpStatus = require("http-status");
 const { generateFileName } = require("../../config/s3.js");
+const { SubBoard, Board } = require("../../models/Board.js");
+const { Subject } = require("../../models/Subject.js");
+const { getSubBoardsSchema } = require("../../validations/subjectManagementValidations.js");
 
 const PastPaperReviewerController = {
 
-  async getsubjectName(req, res, next) {
-    try {
-      const subjectName = await services.subjectService.getSubjectNames();
-  
-      res.status(httpStatus.OK).send(subjectName);
-    } catch (err) {
-      next(err);
-    }
-  },
+async getsubjectName(req, res, next) {
+  try {
+    const subjectName = await services.subjectService.getSubjectNames();
+
+    res.status(httpStatus.OK).send(subjectName);
+  } catch (err) {
+    next(err);
+  }
+},
 
   async getRecheckErrors(req, res) {
     try {
@@ -44,6 +47,46 @@ const PastPaperReviewerController = {
       res.status(httpStatus.OK).send(userSubject)
     } catch (error) {
       next(error)
+    }
+  },
+
+  async getAllboards(req, res, next) {
+    try {
+      const distinctBoardIds = await Subject.findAll({
+        attributes: ["boardId"],
+        group: ["boardId"],
+      });
+
+      const boardIds = distinctBoardIds.map((board) => board.boardId);
+
+      const boards = await Board.findAll({
+        attributes: ["id", "boardName"],
+        where: {
+          id: boardIds,
+        },
+      });
+
+      const boardNames = boards.map((board) => board.dataValues);
+
+      return res.json({ status: 200, boardNames });
+    } catch (err) {
+      return res.json({ status: 501, error: err.message });
+    }
+  },
+   
+  
+  async getAllSubBoards(req, res) {
+    try {
+      let values = await getSubBoardsSchema.validateAsync({
+        boardId: req.query.boardId,
+      });
+
+      let subBoards = await services.boardService.getSubBoardsByBoardId(
+        values.boardId
+      );
+      return res.status(200).json(subBoards);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -265,7 +308,7 @@ const PastPaperReviewerController = {
 
             let uploadFile = await services.sheetService.uploadErrorReportFile(
               fileName,
-              fileObj
+              fileObj,
             );
 
             if (uploadFile) {

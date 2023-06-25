@@ -1,3 +1,4 @@
+const constants = require("../constants/constants.js");
 const { Board, SubBoard } = require("../models/Board.js");
 const { Sheet } = require("../models/Sheet.js");
 const { SubjectLevel, subjectName, Subject } = require("../models/Subject.js");
@@ -33,8 +34,14 @@ const paginatedSheetResults = (model, req) => {
     if (req.query.grade) {
       filters.grade = req.query.grade;
     }
-    if (req.query.subjectLevel) {
-      filters.subjectLevel = req.query.subjectLevel;
+    if (req.query.statusForPastPaper) {
+      filters.statusForPastPaper = req.query.statusForPastPaper;
+    }
+    if (req.query.statusForReviewer) {
+      filters.statusForReviewer = req.query.statusForReviewer;
+    }
+    if (req.query.subjectLevelId) {
+      filters.subjectLevelId = req.query.subjectLevelId;
     }
     if (req.query.year) {
       filters.year = req.query.year;
@@ -43,7 +50,7 @@ const paginatedSheetResults = (model, req) => {
       filters.season = req.query.season;
     }
     if (req.query.varient) {
-      filters.subjectLevel = req.query.season;
+      filters.varient = req.query.varient;
     }
     if (req.query.paperNumber) {
       filters.paperNumber = req.query.paperNumber;

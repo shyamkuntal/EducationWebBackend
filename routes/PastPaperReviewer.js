@@ -2,18 +2,31 @@ const express = require("express");
 const router = express.Router();
 const PastPaperReviewerController = require("../controller/PastPaperReviewer/PastPaperReviewer");
 const upload = require("../config/multer.js");
-const getPaginatedReviewersheets = require("../middlewares/paginatedReviewerSheets");
+// const getPaginatedReviewersheets = require("../middlewares/paginatedReviewerSheets");
+const paginatedSheetResults = require("../middlewares/paginatedSheet.js");
+const { Sheet } = require("../models/Sheet.js");
 
 
 // api/ppmReviewer/getsheets
-router.get("/getsheets", getPaginatedReviewersheets(), (req, res) => {
+// router.get("/getsheets", getPaginatedReviewersheets(), (req, res) => {
+//   res.json(res.paginatedResults);
+// });
+// api/ppmReviewer/getsheets
+router.get("/getallsheets", paginatedSheetResults(Sheet), (req, res) => {
   res.json(res.paginatedResults);
-});
+})
 
 // api/ppmReviewer/getsubjectnames
 router.get("/getsubjectnames", PastPaperReviewerController.getsubjectName, (req, res) => {
   res.json(res);
 });
+
+router.get("/getallboards", PastPaperReviewerController.getAllboards);
+
+router.get(
+  "/getallsubboards",
+  PastPaperReviewerController.getAllSubBoards
+);
 
 // api/ppmReviewer/getrecheckcomments
 router.get("/getrecheckcomments", PastPaperReviewerController.getRecheckErrors);
@@ -37,7 +50,7 @@ router.patch(
 );
 
 // api/ppmReviewer/reportsheeterror
-router.patch(
+router.patch( 
   "/reportsheeterror",
   upload.single("errorReportFile"),
   PastPaperReviewerController.ReportError

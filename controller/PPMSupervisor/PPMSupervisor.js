@@ -256,6 +256,37 @@ const PastPaperSupervisorController = {
     }
   },
 
+  
+  async getsubjectName(req, res, next) {
+    try {
+      const subjectName = await services.subjectService.getSubjectNames();
+  
+      res.status(httpStatus.OK).send(subjectName);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getUsers(req, res, next) {
+
+    const roleId = [
+      "ce4afb0a-91b3-454a-a515-70c3cbb7b69b",
+      "c0ac1044-4d52-4305-b764-02124bd66434"
+    ];
+    try {
+      const users = await User.findAll({
+        attributes: ["id", "Name"],
+        where: { roleId: roleId },
+        // include: { all: true, nested: true },
+      });
+
+      return res.status(200).json({ users });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+
+  },
+
   async getallsheetsubjects(req, res) {
     try {
       const distinctsubjectIds = await Sheet.findAll({

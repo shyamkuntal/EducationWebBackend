@@ -277,9 +277,14 @@ const PastPaperUploaderController = {
         
 
   async SubmitToSupervisor(req, res) {
-    //const assignedToUserId = req.params.userId;
+    // const assignedToUserId = req.params.userId;
     const id = req.params.sheetId;
 
+    // let userData = await services.userService.finduser(
+    //   values.reviewerId,
+    //   CONSTANTS.roleNames.Reviewer
+    // );
+    
     try {
       const sheet = await Sheet.findByPk(id);
       if (sheet.statusForPastPaper !== CONSTANTS.sheetStatuses.Complete) {
@@ -287,7 +292,17 @@ const PastPaperUploaderController = {
           .status(200)
           .json({ msg: "Please mark it as complete first" });
       }
+
       sheet.statusForSupervisor = CONSTANTS.sheetStatuses.Complete;
+
+     // CREATE sheet log for sheet assignment to supervisor
+    //  let createLog = await services.sheetService.createSheetLog(
+    //    id,
+    //    sheetData.supervisor.Name,
+    //    userData.Name,
+    //    CONSTANTS.sheetLogsMessages.pastPaperrAssignToSupervisor
+    //  );
+
       await sheet.save();
       return res.status(201).json({
         message: "Sheet Submitted successfully",
