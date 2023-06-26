@@ -18,11 +18,9 @@ const PastPaperUploaderController = require("../controller/PastPaperUploader/Pas
 
 const router = express.Router();
 
-router.get(
-  "/getassignedsheets",
-  paginatedSheetResults(Sheet),
-  getAssignedSheets
-);
+router.get("/getallsheets", paginatedSheetResults(Sheet), (req, res) => {
+  res.json(res.paginatedResults);
+})
 
 router.get(
   "/:sheetId/getsinglesheet",
@@ -42,9 +40,9 @@ router.get("/getuserassignedsubjects", PastPaperUploaderController.getUserAssign
 router.post(
   "/createpastpaper",
   upload.fields([
-    { name: "image", maxCount: 1 },
     { name: "questionPdf", maxCount: 1 },
     { name: "answerPdf", maxCount: 1 },
+    { name: "image", maxCount: 1 },
   ]),
   createPastPaper
 );
@@ -57,8 +55,20 @@ router.patch("/markitascomplete", Markitascomplete);
 
 router.put("/:ppId/editpastpaper", EditPastPaper);
 
+// api/ppmReviewer/getsubjectnames
+router.get("/getsubjectnames", PastPaperUploaderController.getsubjectName, (req, res) => {
+  res.json(res);
+});
+
 router.get("/:userId/getdatafordashboard",
   paginatedSheetResults(Sheet),
   getdatafordashboard);
+
+  router.get("/getallboards", PastPaperUploaderController.getAllboards);
+
+  router.get(
+    "/getallsubboards",
+    PastPaperUploaderController.getAllSubBoards
+  );
 
 module.exports = router;

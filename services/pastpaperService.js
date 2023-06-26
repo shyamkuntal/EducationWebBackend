@@ -3,18 +3,18 @@ const { PastPaper } = require("../models/PastPaper");
 const createPastPaper = async (
   paperNumber,
   googleLink,
-  imagebanner,
-  answerPdf,
   questionPdf,
+  answerPdf,
+  imagebanner,
   sheetId,
 ) => {
   try {
     const pastPaper = await PastPaper.create({
         paperNumber,
         googleLink,
-        imagebanner,
-        answerPdf,
         questionPdf,
+        answerPdf,
+        imagebanner,
         sheetId
     });
 

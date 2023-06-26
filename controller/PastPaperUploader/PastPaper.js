@@ -8,8 +8,9 @@ const { Sheet } = require("../../models/Sheet.js");
 const { SubjectLevel, subjectName, Subject } = require("../../models/Subject.js");
 const { SubBoard, Board } = require("../../models/Board.js");
 const {createPastPaperSchema} = require("../../validations/PastPaperValidation.js");
-
-const CONSTANTS = require('../../constants/constants.js')
+const httpStatus = require("http-status");
+const CONSTANTS = require('../../constants/constants.js');
+const { getSubBoardsSchema } = require("../../validations/subjectManagementValidations.js");
 
 dotenv.config();
 
@@ -100,6 +101,45 @@ const PastPaperUploaderController = {
       });
     } catch (err) {
       return res.json({ status: 501, error: err.message });
+    }
+  },
+  async getAllboards(req, res, next) {
+    try {
+      const distinctBoardIds = await Subject.findAll({
+        attributes: ["boardId"],
+        group: ["boardId"],
+      });
+
+      const boardIds = distinctBoardIds.map((board) => board.boardId);
+
+      const boards = await Board.findAll({
+        attributes: ["id", "boardName"],
+        where: {
+          id: boardIds,
+        },
+      });
+
+      const boardNames = boards.map((board) => board.dataValues);
+
+      return res.json({ status: 200, boardNames });
+    } catch (err) {
+      return res.json({ status: 501, error: err.message });
+    }
+  },
+   
+  
+  async getAllSubBoards(req, res) {
+    try {
+      let values = await getSubBoardsSchema.validateAsync({
+        boardId: req.query.boardId,
+      });
+
+      let subBoards = await services.boardService.getSubBoardsByBoardId(
+        values.boardId
+      );
+      return res.status(200).json(subBoards);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -194,16 +234,28 @@ const PastPaperUploaderController = {
     }
   },
 
+  async getsubjectName(req, res, next) {
+    try {
+      const subjectName = await services.subjectService.getSubjectNames();
+  
+      res.status(httpStatus.OK).send(subjectName);
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async createPastPaper(req, res, next) {    
+    // console.log(req.files["questionPdf"])
     try {
       let values = await createPastPaperSchema.validateAsync({
         paperNumber: req.body.paperNumber,
         googleLink: req.body.googleLink,
-        image: req.files["image"],
-        questionPdf: req.files["questionPdf"],
-        answerPdf: req.files["answerPdf"],
+        questionPdf: req.files["questionPdf"][0],
+        answerPdf: req.files["answerPdf"][0],
+        image: req.files["image"][0],
         sheetId: req.body.sheetId,
       });
+
       console.log(values)
    
     
@@ -214,10 +266,11 @@ const PastPaperUploaderController = {
 
     // Get the uploaded PDF buffers
     const questionpdfBuffer = req.files["questionPdf"][0].buffer;
+
     const answerpdfBuffer = req.files["answerPdf"][0].buffer;
 
     // Upload the image buffer to S3
-    const imagebanner = generateFileName();
+    const imagebanner = generateFileName(req.files.originalName);
 
     const imageUploadParams = {
       Bucket: bucketName,
@@ -225,8 +278,8 @@ const PastPaperUploaderController = {
       Key: imagebanner,
       ContentType: req.files["image"][0].mimetype,
     };
-    const questionPdf = generateFileName();
-    const answerPdf = generateFileName();
+    const questionPdf = generateFileName(req.files.originalName);
+    const answerPdf = generateFileName(req.files.originalName);
     // Upload each PDF buffer to S3
 
     const quepdfUploadParams = {
