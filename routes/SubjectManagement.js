@@ -49,8 +49,6 @@ router.get("/getallboards", SubjectManagementController.getAllboards);
 
 router.get("/getallsubboards", SubjectManagementController.getAllSubBoards);
 
-router.post("/getsubjectname", SubjectManagementController.getsubjectName);
-
 router.get(
   "/getsubjectbysubjectnameid",
   SubjectManagementController.getSubjectBySubjectNameId

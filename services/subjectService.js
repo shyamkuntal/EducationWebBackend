@@ -72,6 +72,24 @@ const findSubjectByIds = async (boardId, subBoardId, grade, subjectNameId) => {
   }
 };
 
+const findSubjectByIdsForCreation = async (
+  boardId,
+  subBoardId,
+  grade,
+  subjectNameId
+) => {
+  try {
+    let subject = await Subject.findOne({
+      where: { boardId, subBoardId, grade, subjectNameId },
+      attributes: ["id", "subjectNameId"],
+      raw: true,
+    });
+    return subject;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const getSubjectBySubjectNameId = async (subjectNameId) => {
   try {
     let subject = Subject.findOne({
@@ -103,7 +121,7 @@ const findSubjectDetailsByBoardSubBoardGrade = async (
 ) => {
   try {
     let subjectDetails = await Subject.findAll({
-      where: { boardId, subBoardId: subBoardId, grade },
+      where: { boardId, subBoardId: subBoardId, grade, isPublished: true },
       attributes: [
         "id",
         "boardId",
@@ -181,4 +199,5 @@ module.exports = {
   findSubject,
   updateSubject,
   findSubjectName,
+  findSubjectByIdsForCreation,
 };

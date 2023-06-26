@@ -35,7 +35,7 @@ router.put("/edituser", AccountManagementController.editUser);
 router.get("/getallroles", AccountManagementController.getallroles);
 
 router.get(
-  "/:roleId/getallrolesbyrole",
+  "/getallrolesforaddaccount",
   AccountManagementController.getallrolesbyRole
 );
 router.get(

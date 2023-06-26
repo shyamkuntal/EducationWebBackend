@@ -1,4 +1,5 @@
-const { PutObjectCommand } = require("@aws-sdk/client-s3");
+const { PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { generateFileName, s3Client } = require("../../config/s3.js");
 const {
   Subject,
@@ -40,7 +41,7 @@ const SubjectManagementController = {
         // Configure the upload details to send to S3
         const subjectImageName = `${
           process.env.AWS_BUCKET_SUBJECT_IMAGE_FOLDER
-        }/${generateFileName(32, values.image.originalname)}`;
+        }/${generateFileName(values.image.originalname)}`;
         const uploadParams = {
           Bucket: bucketName,
           Body: values.image.buffer,
@@ -99,12 +100,13 @@ const SubjectManagementController = {
       if (values.subjectNameId) {
         // check if subject exists
 
-        let subjectExists = await services.subjectService.findSubjectByIds(
-          values.boardId,
-          values.subBoardId,
-          values.grade,
-          values.subjectNameId
-        );
+        let subjectExists =
+          await services.subjectService.findSubjectByIdsForCreation(
+            values.boardId,
+            values.subBoardId,
+            values.grade,
+            values.subjectNameId
+          );
 
         if (!subjectExists) {
           let subject = await services.subjectService.createSubject({
@@ -333,9 +335,34 @@ const SubjectManagementController = {
   async getsubjectName(req, res, next) {
     try {
       const subjectName = await services.subjectService.getSubjectNames();
+      let subjectDetails = [];
 
-      res.status(httpStatus.OK).send(subjectName);
+      for (let i = 0; i < subjectName.length; i++) {
+        let subject;
+        subject = await services.subjectService.getSubjectBySubjectNameId(
+          subjectName[i].id
+        );
+
+        const getObjectParams = {
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: subject.subjectImage,
+        };
+        const command = new GetObjectCommand(getObjectParams);
+
+        const url = await getSignedUrl(s3Client, command, {
+          expiresIn: 3600,
+        });
+
+        subjectDetails.push({
+          ...subjectName[i].dataValues,
+          subjectImage: subject.subjectImage,
+          subjectImageUrl: url,
+        });
+      }
+
+      res.status(httpStatus.OK).send(subjectDetails);
     } catch (err) {
+      console.log(err);
       next(err);
     }
   },
@@ -376,8 +403,20 @@ const SubjectManagementController = {
         values.subjectNameId
       );
 
-      res.status(httpStatus.OK).send(subject);
+      const getObjectParams = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: subject.subjectImage,
+      };
+
+      const command = new GetObjectCommand(getObjectParams);
+
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+
+      let subjectDetails = { ...subject, subjectImageUrl: url };
+
+      res.status(httpStatus.OK).send(subjectDetails);
     } catch (err) {
+      console.log(err);
       next(err);
     }
   },

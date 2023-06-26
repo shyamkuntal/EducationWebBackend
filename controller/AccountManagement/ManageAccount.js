@@ -22,6 +22,7 @@ const {
   toggleActivateUserSchema,
   getUserBoardSubBoardSubjectSchema,
 } = require("../../validations/AccountManagementValidation.js");
+const CONSTANTS = require("../../constants/constants.js");
 
 const AccountManagementController = {
   async createUserRole(req, res, next) {
@@ -61,31 +62,17 @@ const AccountManagementController = {
   },
 
   async getallrolesbyRole(req, res, next) {
-    const roleId = req.params.roleId;
     try {
       const roles = await Roles.findAll({
         attributes: ["roleName", "id"],
       });
-      const rolesForSupervisor = [
-        "ce4afb0a-91b3-454a-a515-70c3cbb7b69b",
-        "c0ac1044-4d52-4305-b764-02124bd66434",
-      ];
-      const rolesForSuperAdmin = [
-        "ce4afb0a-91b3-454a-a515-70c3cbb7b69b",
-        "c0ac1044-4d52-4305-b764-02124bd66434",
-        "11be6989-f4c7-4646-a474-b5023d937c73",
-      ];
-      if (roleId === "11be6989-f4c7-4646-a474-b5023d937c73") {
-        rolesForSuperAdmin.pop("11be6989-f4c7-4646-a474-b5023d937c73");
-      }
 
-      const avialableRoles = roles.filter((role) => {
-        if (rolesForSuperAdmin.includes(role.id)) {
-          return role;
-        }
-      });
+      let availableRoles = roles.filter(
+        (item) => item.roleName !== CONSTANTS.roleNames.Superadmin
+      );
+
       return res.status(200).json({
-        roles: avialableRoles,
+        roles: availableRoles,
       });
     } catch (err) {
       next(err);

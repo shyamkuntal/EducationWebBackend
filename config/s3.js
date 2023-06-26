@@ -12,9 +12,8 @@ const s3Client = new S3Client({
   },
 });
 
-const generateFileName = (bytes, originalname) => {
-  let fileName = originalname.replace(/_/g, "");
-  return `${crypto.randomBytes(bytes).toString("hex") + "%" + fileName}`;
+const generateFileName = (originalname) => {
+  return `${crypto.randomBytes(16).toString("hex") + "%" + originalname}`;
 };
 
 module.exports = { s3Client, generateFileName };
