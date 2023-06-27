@@ -65,10 +65,7 @@ router.get("/getallsubjects", AccountManagementController.getallsubjects);
 
 router.get("/getusers", AccountManagementController.getAllUserByRole);
 
-// router.get(
-//   "/:getsupervisorinfo",
-//   AccountManagementController.getSupervisorInfo
-// );
+router.get("/getsupervisorinfo", AccountManagementController.getSupervisorInfo);
 
 router.patch("/toggleactivate", AccountManagementController.toggleActivateUser);
 

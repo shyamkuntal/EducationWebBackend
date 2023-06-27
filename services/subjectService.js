@@ -114,14 +114,20 @@ const getSubjectNames = async () => {
   }
 };
 
-const findSubjectDetailsByBoardSubBoardGrade = async (
+const findSubjectDetailsByBoardSubBoardGrade = async ({
   boardId,
   subBoardId,
-  grade
-) => {
+  grade,
+  isPublished,
+}) => {
   try {
     let subjectDetails = await Subject.findAll({
-      where: { boardId, subBoardId: subBoardId, grade, isPublished: true },
+      where: {
+        boardId,
+        subBoardId,
+        grade,
+        isPublished,
+      },
       attributes: [
         "id",
         "boardId",
@@ -140,7 +146,6 @@ const findSubjectDetailsByBoardSubBoardGrade = async (
         },
       ],
     });
-
     return subjectDetails;
   } catch (err) {
     throw err;

@@ -43,6 +43,11 @@ router.get(
   SubjectManagementController.getSubjectDetailsByBoardSubBoardGrade
 );
 
+router.get(
+  "/getsubjectdetailsbyidsnotpublished",
+  SubjectManagementController.getSubjectDetailsByBoardSubBoardGradeNotPublished
+);
+
 router.get("/getsubjectnames", SubjectManagementController.getsubjectName);
 
 router.get("/getallboards", SubjectManagementController.getAllboards);

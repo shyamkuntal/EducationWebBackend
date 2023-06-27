@@ -229,7 +229,7 @@ const SubjectManagementController = {
         const fileBuffer = values.image.buffer;
         subjectImage = `${
           process.env.AWS_BUCKET_SUBJECT_IMAGE_FOLDER
-        }/${generateFileName(32, values.image.originalname)}`;
+        }/${generateFileName(values.image.originalname)}`;
         const uploadParams = {
           Bucket: bucketName,
           Body: fileBuffer,
@@ -337,10 +337,10 @@ const SubjectManagementController = {
       const subjectName = await services.subjectService.getSubjectNames();
       let subjectDetails = [];
 
-      for (let i = 0; i < subjectName.length; i++) {
+      for (const element of subjectName) {
         let subject;
         subject = await services.subjectService.getSubjectBySubjectNameId(
-          subjectName[i].id
+          element.id
         );
 
         const getObjectParams = {
@@ -354,7 +354,7 @@ const SubjectManagementController = {
         });
 
         subjectDetails.push({
-          ...subjectName[i].dataValues,
+          ...element.dataValues,
           subjectImage: subject.subjectImage,
           subjectImageUrl: url,
         });
@@ -430,11 +430,34 @@ const SubjectManagementController = {
       });
 
       let subjectsDetails =
-        await services.subjectService.findSubjectDetailsByBoardSubBoardGrade(
-          values.boardId,
-          values.subBoardId,
-          values.grade
-        );
+        await services.subjectService.findSubjectDetailsByBoardSubBoardGrade({
+          boardId: values.boardId,
+          subBoardId: values.subBoardId,
+          grade: values.grade,
+          isPublished: true,
+        });
+
+      res.status(httpStatus.OK).send(subjectsDetails);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getSubjectDetailsByBoardSubBoardGradeNotPublished(req, res, next) {
+    try {
+      let values = await getSubjectByIds.validateAsync({
+        boardId: req.query.boardId,
+        subBoardId: req.query.subBoardId,
+        grade: req.query.grade,
+      });
+
+      let subjectsDetails =
+        await services.subjectService.findSubjectDetailsByBoardSubBoardGrade({
+          boardId: values.boardId,
+          subBoardId: values.subBoardId,
+          grade: values.grade,
+          isPublished: false,
+        });
 
       res.status(httpStatus.OK).send(subjectsDetails);
     } catch (err) {

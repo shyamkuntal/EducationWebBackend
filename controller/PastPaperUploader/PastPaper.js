@@ -2,7 +2,6 @@ const { PutObjectCommand } = require("@aws-sdk/client-s3");
 const { generateFileName, s3Client } = require("../../config/s3.js");
 const { PastPaper } = require("../../models/PastPaper.js");
 const services = require("../../services/index.js");
-//const { Sheet } = require("../../models/Sheet.js");
 const dotenv = require("dotenv");
 const { Sheet } = require("../../models/Sheet.js");
 const { SubjectLevel, subjectName, Subject } = require("../../models/Subject.js");
@@ -258,9 +257,6 @@ const PastPaperUploaderController = {
 
       console.log(values)
    
-    
-    
-
     // Get the uploaded image buffer
     const imageBuffer = req.files["image"].buffer;
 

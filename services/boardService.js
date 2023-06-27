@@ -1,4 +1,6 @@
 const { UserBoardMapping, SubBoard, Board } = require("../models/Board");
+const httpStatus = require("http-status");
+const { ApiError } = require("../middlewares/apiError.js");
 
 const createBoard = async (
   boardName,
@@ -20,6 +22,9 @@ const createBoard = async (
 
     return board;
   } catch (err) {
+    if (err.name === "SequelizeUniqueConstraintError") {
+      throw new ApiError(httpStatus.BAD_REQUEST, err.errors[0].message);
+    }
     throw err;
   }
 };
@@ -58,7 +63,6 @@ async function findBoardById(boardId) {
 
 const getSubBoardsByBoardId = async (boardId) => {
   try {
-    console.log(boardId);
     let subBoards = await SubBoard.findAll({
       where: { boardId: boardId, isArchived: "false" },
       attributes: ["id", "subBoardName", "boardId", "isArchived"],
@@ -121,14 +125,22 @@ const updateBoardIsArchived = async (boardId, isArchived) => {
 
 const updateSuBoardsIsArchived = async (boardId, subBoardIds, isArchived) => {
   try {
-    console.log(subBoardIds);
     let updateIsArchived = await SubBoard.update(
       { isArchived },
       { where: { id: subBoardIds, boardId } }
     );
-    console.log(updateIsArchived);
 
     return updateIsArchived;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findSubBoardsById = async (subBoardId) => {
+  try {
+    let getSubBoards = await SubBoard.findOne({ where: { id: subBoardId } });
+
+    return getSubBoards;
   } catch (err) {
     throw err;
   }
@@ -144,4 +156,5 @@ module.exports = {
   updateSuBoardsIsArchived,
   findAllBoards,
   findBoardByName,
+  findSubBoardsById,
 };

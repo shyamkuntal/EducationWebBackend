@@ -10,6 +10,7 @@ const Board = db.define("board", {
   boardName: {
     type: Sequelize.STRING,
     allowNull: false,
+    unique: true,
   },
   boardType: {
     type: Sequelize.STRING,

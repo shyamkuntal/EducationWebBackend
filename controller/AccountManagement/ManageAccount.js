@@ -48,7 +48,6 @@ const AccountManagementController = {
   },
 
   async getallroles(req, res, next) {
-    const roleId = req.params.roleId;
     try {
       const roles = await Roles.findAll({
         attributes: ["roleName", "id"],
@@ -88,9 +87,6 @@ const AccountManagementController = {
         values.roleId
       );
 
-      console.log(values);
-      console.log(checkEmail);
-
       let user = await services.userService.createUser(
         values.Name,
         values.userName,
@@ -101,7 +97,6 @@ const AccountManagementController = {
 
       //Create boardmapping entries
       if (values.boardIds && values.boardIds.length > 0) {
-        console.log("in board mapping");
         const boardmapping = values.boardIds.map((boardid) => ({
           userId: user.id,
           boardID: boardid,
@@ -110,7 +105,6 @@ const AccountManagementController = {
         await UserBoardMapping.bulkCreate(boardmapping);
       }
       if (values.subBoardIds && values.subBoardIds.length > 0) {
-        console.log("in subboard mapping");
         const subboardmapping = values.subBoardIds.map((subboardid) => ({
           userId: user.id,
           subBoardId: subboardid,
@@ -129,7 +123,6 @@ const AccountManagementController = {
       }
 
       if (values.subjectsIds && values.subjectsIds.length > 0) {
-        console.log("in subject mapping");
         const subjectmapping = values.subjectsIds.map((subjectid) => ({
           userId: user.id,
           subjectNameIds: subjectid,
@@ -238,8 +231,6 @@ const AccountManagementController = {
 
   async getusernoroleweise(req, res, next) {
     try {
-      const roleId = req.query.roleId;
-
       const results = await User.findAll({
         attributes: [
           "roleId",
@@ -322,9 +313,9 @@ const AccountManagementController = {
   //{ all: true, nested: true }
   async getSupervisorInfo(req, res) {
     try {
-      const roleId = "11be6989-f4c7-4646-a474-b5023d937c73";
+      const userId = "11aa3c49-83e0-4745-acd3-d7d1ca181bf9";
       const users = await User.findAll({
-        where: { roleId },
+        where: { id: userId },
         include: { all: true, nested: true },
       });
 

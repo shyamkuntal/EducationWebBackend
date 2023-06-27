@@ -1,7 +1,13 @@
 const { Sheet } = require("../models/Sheet.js");
-const { User, UserSubjectMapping } = require("../models/User.js");
-const { userService } = require("../services/index.js");
+const {
+  User,
+  UserSubjectMapping,
+  UserBoardMapping,
+  UserSubBoardMapping,
+} = require("../models/User.js");
+const services = require("../services/index.js");
 const CONSTANTS = require("../constants/constants.js");
+const httpStatus = require("http-status");
 
 const reviewerAccountsSheets = () => {
   return async (req, res, next) => {
@@ -13,7 +19,9 @@ const reviewerAccountsSheets = () => {
       filters.boardName = { $regex: req.query.search, $options: "i" };
     }
 
-    let role = await userService.findByRoleName(CONSTANTS.roleNames.Supervisor);
+    let role = await services.userService.findByRoleName(
+      CONSTANTS.roleNames.Supervisor
+    );
 
     if (role) {
       filters.roleId = role.id;
@@ -40,15 +48,16 @@ const reviewerAccountsSheets = () => {
     }
 
     try {
-      console.log(role);
       const pastPaperDetails = await User.findAll({
-        attributes: ["id", "Name", "email", "userName", "isActive"],
+        attributes: ["id", "Name", "email", "userName", "password", "isActive"],
 
         include: [
           {
             model: Sheet,
             attributes: ["id"],
           },
+          { model: UserBoardMapping, attributes: ["boardID"] },
+          { model: UserSubBoardMapping, attributes: ["subBoardId"] },
           {
             model: UserSubjectMapping,
             attributes: ["subjectNameIds"],
@@ -63,7 +72,8 @@ const reviewerAccountsSheets = () => {
       res.paginatedResults = results;
       next();
     } catch (err) {
-      res.status(500).json({ status: 501, error: err.message });
+      console.log(err);
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ error: err.message });
     }
   };
 };
