@@ -35,6 +35,10 @@ router.get("/getsubjectnames", PastPaperUploaderController.getsubjectName, (req,
   res.json(res);
 });
 
+// api/ppmReviewer/getrecheckcomments
+router.get("/getrecheckcomments", PastPaperUploaderController.getRecheckErrors);
+
+
 router.get("/getuserassignedsubjects", PastPaperUploaderController.getUserAssignedSubjects);
 
 router.post(
@@ -47,7 +51,7 @@ router.post(
   createPastPaper
 );
 // router.patch("/:sheetId/changestatus", ChangeStatus);
-router.patch("/:sheetId/submittosupervisor", SubmitToSupervisor);
+router.patch("/submittosupervisor", SubmitToSupervisor);
 
 router.patch("/markitasinprogress", MarkitasInProgress);
 
