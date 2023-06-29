@@ -104,6 +104,7 @@ const PastPaperUploaderController = {
       return res.json({ status: 501, error: err.message });
     }
   },
+  
   async getAllboards(req, res, next) {
     try {
       const distinctBoardIds = await Subject.findAll({
@@ -190,15 +191,15 @@ const PastPaperUploaderController = {
     }
   },
 
-  async getsubjectName(req, res, next) {
-    try {
-      const subjectName = await services.subjectService.getSubjectNames();
+  // async getsubjectName(req, res, next) {
+  //   try {
+  //     const subjectName = await services.subjectService.getSubjectNames();
   
-      res.status(httpStatus.OK).send(subjectName);
-    } catch (err) {
-      next(err);
-    }
-  },
+  //     res.status(httpStatus.OK).send(subjectName);
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // },
 
   async getsinglesheet(req, res) {
     const id = req.params.sheetId;
@@ -240,15 +241,11 @@ const PastPaperUploaderController = {
       const subjectName = await services.subjectService.getSubjectNames();
       let subjectDetails = [];
 
-      for (let i = 0; i < subjectName.length; i++) {
-        let subject;
-        subject = await services.subjectService.getSubjectBySubjectNameId(
-          subjectName[i].id
-        );
+      for (const element of subjectName) {
 
         const getObjectParams = {
           Bucket: process.env.AWS_BUCKET_NAME,
-          Key: subject.subjectImage,
+          Key: element.subjectImage,
         };
         const command = new GetObjectCommand(getObjectParams);
 
@@ -257,8 +254,7 @@ const PastPaperUploaderController = {
         });
 
         subjectDetails.push({
-          ...subjectName[i].dataValues,
-          subjectImage: subject.subjectImage,
+          ...element,
           subjectImageUrl: url,
         });
       }

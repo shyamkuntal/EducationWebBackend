@@ -26,10 +26,6 @@ const Subject = db.define("subject", {
     type: Sequelize.UUID,
     allowNull: false,
   },
-  subjectImage: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
   isArchived: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,

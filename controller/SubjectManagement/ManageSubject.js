@@ -338,14 +338,10 @@ const SubjectManagementController = {
       let subjectDetails = [];
 
       for (const element of subjectName) {
-        let subject;
-        subject = await services.subjectService.getSubjectBySubjectNameId(
-          element.id
-        );
 
         const getObjectParams = {
           Bucket: process.env.AWS_BUCKET_NAME,
-          Key: subject.subjectImage,
+          Key: element.subjectImage,
         };
         const command = new GetObjectCommand(getObjectParams);
 
@@ -354,8 +350,7 @@ const SubjectManagementController = {
         });
 
         subjectDetails.push({
-          ...element.dataValues,
-          subjectImage: subject.subjectImage,
+          ...element,
           subjectImageUrl: url,
         });
       }

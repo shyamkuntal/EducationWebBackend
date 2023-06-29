@@ -31,10 +31,6 @@ router.get(
 
 router.get("/:userId/getassignedsubjects", getallassignedsheetsubjects);
 
-router.get("/getsubjectnames", PastPaperUploaderController.getsubjectName, (req, res) => {
-  res.json(res);
-});
-
 // api/ppmReviewer/getrecheckcomments
 router.get("/getrecheckcomments", PastPaperUploaderController.getRecheckErrors);
 
@@ -60,9 +56,7 @@ router.patch("/markitascomplete", Markitascomplete);
 router.put("/:ppId/editpastpaper", EditPastPaper);
 
 // api/ppmReviewer/getsubjectnames
-router.get("/getsubjectnames", PastPaperUploaderController.getsubjectName, (req, res) => {
-  res.json(res);
-});
+router.get("/getsubjectnames", PastPaperUploaderController.getsubjectName);
 
 router.get("/:userId/getdatafordashboard",
   paginatedSheetResults(Sheet),

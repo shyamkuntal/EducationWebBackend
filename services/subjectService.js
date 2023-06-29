@@ -106,7 +106,8 @@ const getSubjectBySubjectNameId = async (subjectNameId) => {
 const getSubjectNames = async () => {
   try {
     let subjectNames = await subjectName.findAll({
-      attributes: ["id", "subjectName"],
+      attributes: ["id", "subjectName", "subjectImage"],
+      raw: true
     });
     return subjectNames;
   } catch (err) {
