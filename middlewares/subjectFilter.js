@@ -49,13 +49,7 @@ const paginatedSubjects = (model) => {
 
     try {
       const subjects = await Subject.findAll({
-        attributes: [
-          "id",
-          "grade",
-          "subjectImage",
-          "isArchived",
-          "isPublished",
-        ],
+        attributes: ["id", "grade", "isArchived", "isPublished"],
         include: [
           {
             model: SubBoard,

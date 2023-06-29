@@ -107,7 +107,7 @@ const getSubjectNames = async () => {
   try {
     let subjectNames = await subjectName.findAll({
       attributes: ["id", "subjectName", "subjectImage"],
-      raw: true
+      raw: true,
     });
     return subjectNames;
   } catch (err) {
@@ -129,14 +129,7 @@ const findSubjectDetailsByBoardSubBoardGrade = async ({
         grade,
         isPublished,
       },
-      attributes: [
-        "id",
-        "boardId",
-        "subBoardId",
-        "grade",
-        "subjectNameId",
-        "subjectImage",
-      ],
+      attributes: ["id", "boardId", "subBoardId", "grade", "subjectNameId"],
       include: [
         { model: subjectName },
         {

@@ -4,9 +4,15 @@ const { PastPaper } = require("../../models/PastPaper.js");
 const services = require("../../services/index.js");
 const dotenv = require("dotenv");
 const { Sheet } = require("../../models/Sheet.js");
-const { SubjectLevel, subjectName, Subject } = require("../../models/Subject.js");
+const {
+  SubjectLevel,
+  subjectName,
+  Subject,
+} = require("../../models/Subject.js");
 const { SubBoard, Board } = require("../../models/Board.js");
-const {createPastPaperSchema} = require("../../validations/PastPaperValidation.js");
+const {
+  createPastPaperSchema,
+} = require("../../validations/PastPaperValidation.js");
 const httpStatus = require("http-status");
 const CONSTANTS = require('../../constants/constants.js');
 const { getSubBoardsSchema } = require("../../validations/subjectManagementValidations.js");
@@ -29,14 +35,15 @@ const bucketName = process.env.AWS_BUCKET_NAME;
 // };
 
 const PastPaperUploaderController = {
-
   async getdatafordashboard(req, res) {
     try {
       const assignedToUserId = req.params.userId;
       let userId = req.user.id;
-      console.log(assignedToUserId); 
+      console.log(assignedToUserId);
 
-      const sheet = await Sheet.findAll({ where: { assignedToUserId:userId } });
+      const sheet = await Sheet.findAll({
+        where: { assignedToUserId: userId },
+      });
 
       const totalsheet = await Sheet.count({
         where: { assignedToUserId, isSpam: false },
@@ -128,8 +135,7 @@ const PastPaperUploaderController = {
       return res.json({ status: 501, error: err.message });
     }
   },
-   
-  
+
   async getAllSubBoards(req, res) {
     try {
       let values = await getSubBoardsSchema.validateAsync({
@@ -148,7 +154,7 @@ const PastPaperUploaderController = {
   async getAssignedSheets(req, res) {
     const assignedToUserId = req.params.userId;
     let userId = req.user.id;
-    // console.log(assignedToUserId); 
+    // console.log(assignedToUserId);
     try {
       const allAssignedSheeets = await Sheet.findAll({
         include: [
@@ -165,13 +171,15 @@ const PastPaperUploaderController = {
             attributes: ["id", "subjectLevelName", "isArchived"],
             required: false,
           },
-          { 
-            model: Subject, 
-            where: req.query.subjectNameId ? { subjectNameId: req.query.subjectNameId } : {},
-            attributes: ["subjectNameId"] 
+          {
+            model: Subject,
+            where: req.query.subjectNameId
+              ? { subjectNameId: req.query.subjectNameId }
+              : {},
+            attributes: ["subjectNameId"],
           },
         ],
-        where: { assignedToUserId:userId },
+        where: { assignedToUserId: userId },
       });
 
       return res.json({ status: 200, AssignedSheets: allAssignedSheeets });
@@ -180,14 +188,15 @@ const PastPaperUploaderController = {
     }
   },
 
-  async getUserAssignedSubjects (req, res, next) {
-    
+  async getUserAssignedSubjects(req, res, next) {
     try {
-      let userId = req.query.userId
-      let userSubject = await services.userService.getUserAssignedSubjects(userId);
-      res.status(httpStatus.OK).send(userSubject)
+      let userId = req.query.userId;
+      let userSubject = await services.userService.getUserAssignedSubjects(
+        userId
+      );
+      res.status(httpStatus.OK).send(userSubject);
     } catch (error) {
-      next(error)
+      next(error);
     }
   },
 
@@ -205,7 +214,6 @@ const PastPaperUploaderController = {
     const id = req.params.sheetId;
     // const id = req.body.sheetId;
     try {
-
       const sheetinfo = await Sheet.findOne({
         include: [
           {
@@ -227,7 +235,7 @@ const PastPaperUploaderController = {
           //   required: false
           // },
         ],
-        where: { id:id },
+        where: { id: id },
       });
 
       return res.json({ status: 200, sheetinfo });
@@ -300,10 +308,10 @@ const PastPaperUploaderController = {
     // Get the uploaded image buffer
     const imageBuffer = req.files["image"].buffer;
 
-    // Get the uploaded PDF buffers
-    const questionpdfBuffer = req.files["questionPdf"][0].buffer;
+      // Get the uploaded PDF buffers
+      const questionpdfBuffer = req.files["questionPdf"][0].buffer;
 
-    const answerpdfBuffer = req.files["answerPdf"][0].buffer;
+      const answerpdfBuffer = req.files["answerPdf"][0].buffer;
 
     // Upload the image buffer to S3
     const imagebanner = generateFileName(values.image.originalname);

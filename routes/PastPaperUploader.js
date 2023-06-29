@@ -20,7 +20,7 @@ const router = express.Router();
 
 router.get("/getallsheets", paginatedSheetResults(Sheet), (req, res) => {
   res.json(res.paginatedResults);
-})
+});
 
 router.get(
   "/:sheetId/getsinglesheet",
@@ -28,14 +28,16 @@ router.get(
   getsinglesheet
 );
 
-
 router.get("/:userId/getassignedsubjects", getallassignedsheetsubjects);
 
 // api/ppmReviewer/getrecheckcomments
 router.get("/getrecheckcomments", PastPaperUploaderController.getRecheckErrors);
 
 
-router.get("/getuserassignedsubjects", PastPaperUploaderController.getUserAssignedSubjects);
+router.get(
+  "/getuserassignedsubjects",
+  PastPaperUploaderController.getUserAssignedSubjects
+);
 
 router.post(
   "/createpastpaper",
@@ -44,7 +46,7 @@ router.post(
     { name: "answerPdf", maxCount: 1 },
     { name: "image", maxCount: 1 },
   ]),
-  createPastPaper
+  PastPaperUploaderController.createPastPaper
 );
 // router.patch("/:sheetId/changestatus", ChangeStatus);
 router.patch("/submittosupervisor", SubmitToSupervisor);
@@ -58,15 +60,14 @@ router.put("/:ppId/editpastpaper", EditPastPaper);
 // api/ppmReviewer/getsubjectnames
 router.get("/getsubjectnames", PastPaperUploaderController.getsubjectName);
 
-router.get("/:userId/getdatafordashboard",
+router.get(
+  "/:userId/getdatafordashboard",
   paginatedSheetResults(Sheet),
-  getdatafordashboard);
+  getdatafordashboard
+);
 
-  router.get("/getallboards", PastPaperUploaderController.getAllboards);
+router.get("/getallboards", PastPaperUploaderController.getAllboards);
 
-  router.get(
-    "/getallsubboards",
-    PastPaperUploaderController.getAllSubBoards
-  );
+router.get("/getallsubboards", PastPaperUploaderController.getAllSubBoards);
 
 module.exports = router;
