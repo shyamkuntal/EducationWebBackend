@@ -261,6 +261,15 @@ const BoardManagementController = {
       next(err);
     }
   },
+
+  async getAllBoards(req, res, next) {
+    try {
+      let allBoards = await services.boardService.findAllBoards();
+      res.status(httpStatus.OK).send(allBoards);
+    } catch (err) {
+      next(err);
+    }
+  },
   async deleteBoard(req, res, next) {
     try {
     } catch (err) {}

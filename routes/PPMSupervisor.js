@@ -7,7 +7,10 @@ const router = express.Router();
 
 router.post("/createsheet", PastPaperSupervisorController.CreateSheet);
 
-router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
+router.get(
+  "/getuserassignedsubjects",
+  PastPaperSupervisorController.getUserAssignedSubjects
+);
 
 router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
@@ -33,12 +36,9 @@ router.get(
   "/:boardId/:SubBoardId/:grade/getallsubjects",
   PastPaperSupervisorController.getallsubjects
 );
-router.get(
-  "/:subjectid/getalllevels",
-  PastPaperSupervisorController.getalllevels
-);
-router.get("/getallsheets", 
-  paginatedSheetResults(Sheet), (req, res) => {
+router.get("/getalllevels", PastPaperSupervisorController.getalllevels);
+
+router.get("/getallsheets", paginatedSheetResults(Sheet), (req, res) => {
   res.json(res.paginatedResults);
 });
 
@@ -47,19 +47,10 @@ router.get(
   PastPaperSupervisorController.getallsheetsubjects
 );
 
-router.get(
-  "/getsubjectnames",
-  PastPaperSupervisorController.getSubjectNames
-);
+router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
-router.get(
-  "/getallsubboards",
-  PastPaperSupervisorController.getAllSubBoards
-);
-router.get(
-  "/getallboards",
-  PastPaperSupervisorController.getAllboards
-);
+router.get("/getallsubboards", PastPaperSupervisorController.getAllSubBoards);
+router.get("/getallboards", PastPaperSupervisorController.getAllboards);
 
 router.get("/:sheetid/getsheet/", PastPaperSupervisorController.getsinglesheet);
 

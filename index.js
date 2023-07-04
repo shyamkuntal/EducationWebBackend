@@ -12,9 +12,10 @@ const { convertToApiError, handleError } = require("./middlewares/apiError.js");
 
 const app = express();
 app.use(express.json());
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URLS,
     methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Authorization", "Content-Type"],
     credentials: true,

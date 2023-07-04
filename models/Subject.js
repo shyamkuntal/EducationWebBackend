@@ -57,6 +57,7 @@ const SubjectLevel = db.define("subjectLevel", {
   subjectLevelName: {
     type: Sequelize.STRING,
     allowNull: false,
+    unique: true,
   },
   isArchived: {
     type: Sequelize.BOOLEAN,
@@ -87,6 +88,10 @@ const subjectName = db.define("subjectName", {
     primaryKey: true,
   },
   subjectName: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  subjectImage: {
     type: Sequelize.STRING,
     allowNull: false,
   },

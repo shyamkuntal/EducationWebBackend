@@ -14,10 +14,14 @@ const {
   createPastPaperSchema,
 } = require("../../validations/PastPaperValidation.js");
 const httpStatus = require("http-status");
-const CONSTANTS = require('../../constants/constants.js');
-const { getSubBoardsSchema } = require("../../validations/subjectManagementValidations.js");
+const CONSTANTS = require("../../constants/constants.js");
+const {
+  getSubBoardsSchema,
+} = require("../../validations/subjectManagementValidations.js");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const { getRecheckingComments } = require("../../validations/PPMReviewerValidation.js");
+const {
+  getRecheckingComments,
+} = require("../../validations/PPMReviewerValidation.js");
 
 dotenv.config();
 
@@ -111,7 +115,7 @@ const PastPaperUploaderController = {
       return res.json({ status: 501, error: err.message });
     }
   },
-  
+
   async getAllboards(req, res, next) {
     try {
       const distinctBoardIds = await Subject.findAll({
@@ -203,7 +207,6 @@ const PastPaperUploaderController = {
   // async getsubjectName(req, res, next) {
   //   try {
   //     const subjectName = await services.subjectService.getSubjectNames();
-  
   //     res.status(httpStatus.OK).send(subjectName);
   //   } catch (err) {
   //     next(err);
@@ -250,7 +253,6 @@ const PastPaperUploaderController = {
       let subjectDetails = [];
 
       for (const element of subjectName) {
-
         const getObjectParams = {
           Bucket: process.env.AWS_BUCKET_NAME,
           Key: element.subjectImage,
@@ -274,7 +276,6 @@ const PastPaperUploaderController = {
     }
   },
 
-  
   async getRecheckErrors(req, res) {
     try {
       let reqVariables = { sheetId: req.query.sheetId };
@@ -290,7 +291,7 @@ const PastPaperUploaderController = {
     }
   },
 
-  async createPastPaper(req, res, next) {    
+  async createPastPaper(req, res, next) {
     // console.log(req.files["questionPdf"])
     try {
       let values = await createPastPaperSchema.validateAsync({
@@ -302,47 +303,57 @@ const PastPaperUploaderController = {
         sheetId: req.body.sheetId,
       });
 
-      // console.log(values)
-      // console.log(values.image.originalname)
-   
-    // Get the uploaded image buffer
-    const imageBuffer = req.files["image"].buffer;
+      // Get the uploaded image buffer
+      const imageBuffer = req.files["image"].buffer;
 
       // Get the uploaded PDF buffers
       const questionpdfBuffer = req.files["questionPdf"][0].buffer;
 
       const answerpdfBuffer = req.files["answerPdf"][0].buffer;
 
-    // Upload the image buffer to S3
-    const imagebanner = generateFileName(values.image.originalname);
+      // Upload the image buffer to S3
+      const imagebanner = generateFileName(values.image.originalname);
 
-    const imageUploadParams = {
-      Bucket: bucketName,
-      Body: imageBuffer,
-      Key: imagebanner,
-      ContentType: req.files["image"][0].mimetype,
-    };
-    const questionPdf = generateFileName(values.questionPdf.originalname);
+      const imageBannerKey =
+        process.env.AWS_BUCKET_SUBJECT_PASTPAPER_IMAGE_BANNER_FOLDER +
+        "/" +
+        imagebanner;
 
-    const answerPdf = generateFileName(values.answerPdf.originalname);
-    // Upload each PDF buffer to S3
-    const questionKey = "pastpaperquestions" + "/" + questionPdf
-    const quepdfUploadParams = {
-      Bucket: bucketName,
-      Body: questionpdfBuffer,
-      Key: questionKey,
-      ContentType: req.files["questionPdf"][0].mimetype,
-    };
-    
-    const answerKey = "pastpaperanswers" + "/" + answerPdf
-    const anspdfUploadParams = {
-      Bucket: bucketName,
-      Body: answerpdfBuffer,
-      Key: answerKey,
-      ContentType: req.files["answerPdf"][0].mimetype,
-    };
-    // console.log(anspdfUploadParams)
-    // console.log(quepdfUploadParams)
+      const imageUploadParams = {
+        Bucket: bucketName,
+        Body: imageBuffer,
+        Key: imageBannerKey,
+        ContentType: req.files["image"][0].mimetype,
+      };
+      const questionPdf = generateFileName(values.questionPdf.originalname);
+
+      const answerPdf = generateFileName(values.answerPdf.originalname);
+      // Upload each PDF buffer to S3
+      const questionKey =
+        process.env.AWS_BUCKET_SUBJECT_PASTPAPER_QUESTIONS_FOLDER +
+        "/" +
+        questionPdf;
+
+      const quepdfUploadParams = {
+        Bucket: bucketName,
+        Body: questionpdfBuffer,
+        Key: questionKey,
+        ContentType: req.files["questionPdf"][0].mimetype,
+      };
+
+      const answerKey =
+        process.env.AWS_BUCKET_SUBJECT_PASTPAPER_ANSWERS_FOLDER +
+        "/" +
+        answerPdf;
+
+      const anspdfUploadParams = {
+        Bucket: bucketName,
+        Body: answerpdfBuffer,
+        Key: answerKey,
+        ContentType: req.files["answerPdf"][0].mimetype,
+      };
+      // console.log(anspdfUploadParams)
+      // console.log(quepdfUploadParams)
       // Upload the image buffer to S3
       await s3Client.send(new PutObjectCommand(imageUploadParams));
 
@@ -355,10 +366,10 @@ const PastPaperUploaderController = {
       let pastpaper = await services.pastpaperService.createPastPaper(
         values.paperNumber,
         values.googleLink,
-        values.questionPdf.fieldname,
-        values.answerPdf.fieldname,
-        values.image.fieldname,
-        values.sheetId,
+        questionKey,
+        answerKey,
+        imageBannerKey,
+        values.sheetId
       );
 
       const id = values.sheetId;
@@ -372,11 +383,10 @@ const PastPaperUploaderController = {
         pastpaper,
       });
     } catch (err) {
-      console.log(err)
-      next(err)
+      console.log(err);
+      next(err);
     }
-},
-        
+  },
 
   async SubmitToSupervisor(req, res, next) {
     // const assignedToUserId = req.params.userId;
@@ -386,11 +396,11 @@ const PastPaperUploaderController = {
     //   values.reviewerId,
     //   CONSTANTS.roleNames.Reviewer
     // );
-    
-    console.log(id)
+
+    console.log(id);
     try {
       const sheet = await Sheet.findByPk(id);
-      console.log(sheet)
+      console.log(sheet);
       if (sheet.statusForPastPaper !== CONSTANTS.sheetStatuses.Complete) {
         return res
           .status(200)
@@ -398,13 +408,13 @@ const PastPaperUploaderController = {
       }
 
       sheet.statusForSupervisor = CONSTANTS.sheetStatuses.Complete;
-     // CREATE sheet log for sheet assignment to supervisor
-    //  let createLog = await services.sheetService.createSheetLog(
-    //    id,
-    //    sheetData.supervisor.Name,
-    //    userData.Name,
-    //    CONSTANTS.sheetLogsMessages.pastPaperrAssignToSupervisor
-    //  );
+      // CREATE sheet log for sheet assignment to supervisor
+      //  let createLog = await services.sheetService.createSheetLog(
+      //    id,
+      //    sheetData.supervisor.Name,
+      //    userData.Name,
+      //    CONSTANTS.sheetLogsMessages.pastPaperrAssignToSupervisor
+      //  );
 
       await sheet.save();
       return res.status(201).json({
@@ -412,8 +422,8 @@ const PastPaperUploaderController = {
         sheet,
       });
     } catch (err) {
-    console.log(err)
-    next(err)
+      console.log(err);
+      next(err);
       // return res.json({ status: 501, error: err.message });
     }
   },

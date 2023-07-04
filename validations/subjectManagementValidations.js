@@ -53,6 +53,10 @@ const getSingleSubjectById = Joi.object({
   grade: Joi.string().max(50).required(),
 });
 
+const getSubjectLevelBySubjectId = Joi.object({
+  subjectId: Joi.string().guid().required(),
+});
+
 const togglePublishSubject = Joi.object({
   subjectIds: Joi.array().items(Joi.string().guid().required()),
   isPublished: Joi.boolean().required(),
@@ -88,6 +92,7 @@ module.exports = {
   getSubjectNameSugesstionsSchema,
   getSubjectBySubjectNameId,
   getSubjectByIds,
+  getSubjectLevelBySubjectId,
   archiveSubjectsLevels,
   getSingleSubjectById,
   togglePublishSubject,

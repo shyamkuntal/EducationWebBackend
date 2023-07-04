@@ -24,10 +24,11 @@ const createSubject = async ({
   }
 };
 
-const createSubjectName = async (subjectNameValue) => {
+const createSubjectName = async ({ subjectNameValue, subjectImage }) => {
   try {
     let subjectNameid = await subjectName.create({
       subjectName: subjectNameValue,
+      subjectImage,
     });
 
     return subjectNameid;
@@ -52,6 +53,19 @@ const findBySubjectNameInUniqueSubjectNames = async (subjectNameValue) => {
 const bulkCreateSubjectLevels = async (SubjectLevels) => {
   try {
     let subjectLevels = await SubjectLevel.bulkCreate(SubjectLevels);
+
+    return subjectLevels;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findSubjectLevels = async (whereQuery, attributes) => {
+  try {
+    let subjectLevels = await SubjectLevel.findAll({
+      where: whereQuery,
+      attributes,
+    });
 
     return subjectLevels;
   } catch (err) {
@@ -199,4 +213,5 @@ module.exports = {
   updateSubject,
   findSubjectName,
   findSubjectByIdsForCreation,
+  findSubjectLevels,
 };

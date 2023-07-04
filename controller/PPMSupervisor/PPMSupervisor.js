@@ -10,7 +10,10 @@ const {
 } = require("../../validations/PPMSupervisorValidations.js");
 const httpStatus = require("http-status");
 const { User, Roles } = require("../../models/User.js");
-const { getSubBoardsSchema } = require("../../validations/subjectManagementValidations.js");
+const {
+  getSubBoardsSchema,
+  getSubjectLevelBySubjectId,
+} = require("../../validations/subjectManagementValidations.js");
 
 const PastPaperSupervisorController = {
   //take care of isarchived and ispublished later
@@ -212,24 +215,23 @@ const PastPaperSupervisorController = {
     }
   },
 
-  async getalllevels(req, res) {
+  async getalllevels(req, res, next) {
     try {
-      const subjectId = req.params.subjectid;
-      const levels = await SubjectLevel.findAll({
-        attributes: ["subjectLevelName", "id"],
-        where: {
-          subjectId,
-          isArchived: false,
-        },
+      let values = await getSubjectLevelBySubjectId.validateAsync({
+        subjectId: req.query.subjectId,
       });
+      let whereQuery = { subjectId: values.subjectId, isArchived: false };
 
-      return res.json({ status: 200, levels });
+      let subjectLevels = await services.subjectService.findSubjectLevels(
+        whereQuery
+      );
+
+      res.status(httpStatus.OK).send(subjectLevels);
     } catch (err) {
-      return res.json({ status: 501, error: err.message });
+      next(err);
     }
   },
 
-  
   async getAllboards(req, res, next) {
     try {
       let attributes = ["id", "boardName", "boardType"];
@@ -256,11 +258,10 @@ const PastPaperSupervisorController = {
     }
   },
 
-  
   async getsubjectName(req, res, next) {
     try {
       const subjectName = await services.subjectService.getSubjectNames();
-  
+
       res.status(httpStatus.OK).send(subjectName);
     } catch (err) {
       next(err);
@@ -268,10 +269,9 @@ const PastPaperSupervisorController = {
   },
 
   async getUsers(req, res, next) {
-
     const roleId = [
       "ce4afb0a-91b3-454a-a515-70c3cbb7b69b",
-      "c0ac1044-4d52-4305-b764-02124bd66434"
+      "c0ac1044-4d52-4305-b764-02124bd66434",
     ];
     try {
       const users = await User.findAll({
@@ -284,7 +284,6 @@ const PastPaperSupervisorController = {
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
-
   },
 
   async getallsheetsubjects(req, res) {

@@ -42,6 +42,7 @@ const SubjectManagementController = {
         const subjectImageName = `${
           process.env.AWS_BUCKET_SUBJECT_IMAGE_FOLDER
         }/${generateFileName(values.image.originalname)}`;
+        
         const uploadParams = {
           Bucket: bucketName,
           Body: values.image.buffer,
@@ -66,16 +67,18 @@ const SubjectManagementController = {
           : null;
 
         if (subjectNameFromRequest !== subjectNameFetched) {
-          let subjectNameid = await services.subjectService.createSubjectName(
-            values.subjectName
-          );
+          let subjectNameid = await services.subjectService.createSubjectName({
+            subjectNameValue: values.subjectName,
+            subjectImage: subjectImageName,
+          });
+
           let subject = await Subject.create({
             boardId: values.boardId,
             subBoardId: values.subBoardId,
             grade: values.grade,
             subjectNameId: subjectNameid.id,
-            subjectImage: subjectImageName,
           });
+
           // Create sub-board entries
           if (values.subjectLevels && values.subjectLevels.length > 0) {
             const SubjectLevels = values.subjectLevels.map((subjectLevel) => ({
@@ -114,7 +117,6 @@ const SubjectManagementController = {
             subBoardId: values.subBoardId,
             grade: values.grade,
             subjectNameId: values.subjectNameId,
-            subjectImage: values.subjectImage,
           });
 
           //Create sub-board entries
@@ -151,7 +153,6 @@ const SubjectManagementController = {
         }
       }
     } catch (err) {
-      console.log(err);
       next(err);
     }
   },
@@ -332,13 +333,22 @@ const SubjectManagementController = {
     }
   },
 
+  async getSubjectNamesWithOutImageUrl(req, res, next) {
+    try {
+      let subjectNames = await services.subjectService.findSubjectName();
+
+      res.status(httpStatus.OK).send(subjectNames);
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async getsubjectName(req, res, next) {
     try {
       const subjectName = await services.subjectService.getSubjectNames();
       let subjectDetails = [];
 
       for (const element of subjectName) {
-
         const getObjectParams = {
           Bucket: process.env.AWS_BUCKET_NAME,
           Key: element.subjectImage,
@@ -483,6 +493,21 @@ const SubjectManagementController = {
       );
 
       res.status(httpStatus.OK).send(subject);
+    } catch (err) {
+      next(err);
+    }
+  },
+  async getAllSubjectLevels(req, res, next) {
+    try {
+      let whereQuery = { isArchived: false };
+      let attributes = ["id", "subjectLevelName", "subjectId", "isArchived"];
+
+      let subjectLevels = await services.subjectService.findSubjectLevels(
+        whereQuery,
+        attributes
+      );
+
+      res.status(httpStatus.OK).send(subjectLevels);
     } catch (err) {
       next(err);
     }
