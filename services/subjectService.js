@@ -37,6 +37,15 @@ const createSubjectName = async ({ subjectNameValue, subjectImage }) => {
   }
 };
 
+const updateSubjectName = async (dataToBeUpdated, whereQuery) => {
+  try {
+    let update = await subjectName.update(dataToBeUpdated, whereQuery);
+    return update;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const findBySubjectNameInUniqueSubjectNames = async (subjectNameValue) => {
   try {
     let subjectNameExists = await subjectName.findOne({
@@ -174,6 +183,7 @@ const findSubject = async (whereQuery, include) => {
     let subject = await Subject.findOne({
       where: whereQuery,
       include,
+      raw: true,
     });
     return subject;
   } catch (err) {
@@ -214,4 +224,5 @@ module.exports = {
   findSubjectName,
   findSubjectByIdsForCreation,
   findSubjectLevels,
+  updateSubjectName,
 };

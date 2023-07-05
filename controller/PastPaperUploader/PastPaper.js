@@ -304,7 +304,9 @@ const PastPaperUploaderController = {
       });
 
       // Get the uploaded image buffer
-      const imageBuffer = req.files["image"].buffer;
+      const imageBuffer = req.files["image"][0].buffer;
+
+      console.log(req.files["image"]);
 
       // Get the uploaded PDF buffers
       const questionpdfBuffer = req.files["questionPdf"][0].buffer;

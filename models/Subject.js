@@ -57,7 +57,6 @@ const SubjectLevel = db.define("subjectLevel", {
   subjectLevelName: {
     type: Sequelize.STRING,
     allowNull: false,
-    unique: true,
   },
   isArchived: {
     type: Sequelize.BOOLEAN,

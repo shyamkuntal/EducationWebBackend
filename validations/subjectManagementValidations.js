@@ -7,7 +7,7 @@ const createSubjectSchema = Joi.object({
   grade: Joi.string().max(225).required(),
   subjectName: Joi.string().max(225),
   subjectNameId: Joi.string().guid(),
-  subjectImage: Joi.string(),
+  subjectImageId: Joi.string(),
   subjectLevels: Joi.array().items(
     Joi.object({ subjectLevelName: Joi.string().max(225).required() })
   ),
@@ -18,7 +18,15 @@ const createSubjectSchema = Joi.object({
     mimetype: Joi.string(),
     buffer: Joi.any(),
     size: Joi.number(),
-  }),
+  }).allow(null),
+  newImage: Joi.object({
+    fieldname: Joi.string(),
+    originalname: Joi.string(),
+    encoding: Joi.string(),
+    mimetype: Joi.string(),
+    buffer: Joi.any(),
+    size: Joi.number(),
+  }).allow(null),
 });
 
 const getSubBoardsSchema = Joi.object({
@@ -63,7 +71,7 @@ const togglePublishSubject = Joi.object({
 });
 
 const updateSubjectSchema = Joi.object({
-  id: Joi.string().guid().required(),
+  subjectId: Joi.string().guid().required(),
   boardId: Joi.string().guid().required(),
   subBoardId: Joi.string().guid().required(),
   grade: Joi.string().required(),

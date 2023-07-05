@@ -45,7 +45,7 @@ const AuthController = {
     try {
       let auth = req.user;
       let userId = auth.id;
-      console.log(userId);
+   
       let user = await services.userService.finduser(userId);
 
       let userDetailsToBeSent = {
@@ -83,7 +83,7 @@ const AuthController = {
           900
         );
 
-        console.log(token);
+       
 
         // password reset link with jwt to be sent on frontend
         let passResetLink =

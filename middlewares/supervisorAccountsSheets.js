@@ -8,6 +8,7 @@ const {
 const services = require("../services/index.js");
 const CONSTANTS = require("../constants/constants.js");
 const httpStatus = require("http-status");
+const { Board, SubBoard } = require("../models/Board.js");
 
 const reviewerAccountsSheets = () => {
   return async (req, res, next) => {
@@ -48,31 +49,73 @@ const reviewerAccountsSheets = () => {
     }
 
     try {
-      const pastPaperDetails = await User.findAll({
+      const usersDetails = await User.findAll({
         attributes: ["id", "Name", "email", "userName", "password", "isActive"],
 
-        include: [
-          {
-            model: Sheet,
-            attributes: ["id"],
-          },
-          { model: UserBoardMapping, attributes: ["boardID"] },
-          { model: UserSubBoardMapping, attributes: ["subBoardId"] },
-          {
-            model: UserSubjectMapping,
-            attributes: ["subjectNameIds"],
-          },
-        ],
+        raw: true,
         where: filters,
         limit,
         offset: startIndex,
       });
 
-      results.results = pastPaperDetails;
+      console.log(usersDetails);
+
+      let userWithBoardsSubBoards = [];
+
+      for (let i = 0; i < usersDetails.length; i++) {
+        let boards = await UserBoardMapping.findAll({
+          where: { userId: usersDetails[i].id },
+          attributes: ["userId"],
+          include: [{ model: Board, attributes: ["id", "boardName"] }],
+          raw: true,
+          nest: true,
+        });
+
+        let subBoardMappings = await UserSubBoardMapping.findAll({
+          where: { userId: usersDetails[i].id },
+          raw: true,
+        });
+
+        let subjectMappings = await UserSubjectMapping.findAll({
+          where: { userId: usersDetails[i].id },
+          raw: true,
+        });
+
+       
+        let boardDetails = [];
+        for (let j = 0; j < boards.length; j++) {
+          let boardsSubBoards = {
+            ...boards[j],
+            subBoards: [],
+          };
+          let subBoards = await SubBoard.findAll({
+            where: { boardId: boards[j].board.id },
+            attributes: ["id", "subBoardName", "isArchived"],
+            raw: true,
+            nest: true,
+          });
+
+          for (let i = 0; i < subBoards.length; i++) {
+            subBoardMappings.map((item) => {
+              if (item.subBoardId === subBoards[i].id) {
+                boardsSubBoards.subBoards.push(subBoards[i]);
+              }
+            });
+          }
+          boardDetails.push(boardsSubBoards);
+        }
+
+        userWithBoardsSubBoards.push({
+          user: usersDetails[i],
+          boardDetails: boardDetails,
+          subject: subjectMappings,
+        });
+      }
+
+      results.results = userWithBoardsSubBoards;
       res.paginatedResults = results;
       next();
     } catch (err) {
-      console.log(err);
       res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ error: err.message });
     }
   };

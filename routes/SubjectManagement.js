@@ -12,7 +12,10 @@ router.get("/getallsubjects", getPaginatedSubjects(Subject), (req, res) => {
 
 router.post(
   "/createsubject",
-  upload.single("image"),
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "newImage", maxCount: 1 },
+  ]),
   SubjectManagementController.CreateSubject
 );
 

@@ -1,4 +1,8 @@
-const { PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const {
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { generateFileName, s3Client } = require("../../config/s3.js");
 const {
@@ -26,23 +30,31 @@ const SubjectManagementController = {
   async CreateSubject(req, res, next) {
     try {
       // Create a new subject entry
+
+      let image = req.files["image"];
+      let newImage = req.files["newImage"];
+
       let values = await createSubjectSchema.validateAsync({
         boardId: req.body.boardId,
         subBoardId: req.body.subBoardId,
         grade: req.body.grade,
         subjectName: req.body.subjectName,
         subjectNameId: req.body.subjectNameId,
-        subjectImage: req.body.subjectImage,
+        subjectImageId: req.body.subjectImageId,
         subjectLevels: req.body.subjectLevels,
-        image: req.file,
+        image: image ? image[0] : null,
+        newImage: newImage ? newImage[0] : null,
       });
+
+      console.log(values);
+
       // create subject name first if no subjectNameId
       if (!values.subjectNameId) {
         // Configure the upload details to send to S3
         const subjectImageName = `${
           process.env.AWS_BUCKET_SUBJECT_IMAGE_FOLDER
         }/${generateFileName(values.image.originalname)}`;
-        
+
         const uploadParams = {
           Bucket: bucketName,
           Body: values.image.buffer,
@@ -112,6 +124,47 @@ const SubjectManagementController = {
           );
 
         if (!subjectExists) {
+          // change subjectImage in SubjectNames, if newImage is sent from client
+          if (values.newImage) {
+            // Configure the upload details to send to S3
+            const newSubjectImageName = `${
+              process.env.AWS_BUCKET_SUBJECT_IMAGE_FOLDER
+            }/${generateFileName(values.newImage.originalname)}`;
+
+            const uploadNewSubjectImageParams = {
+              Bucket: bucketName,
+              Body: values.newImage.buffer,
+              Key: newSubjectImageName,
+              ContentType: values.newImage.mimetype,
+            };
+
+            console.log(uploadNewSubjectImageParams);
+
+            // Send the upload to S3
+            await s3Client.send(
+              new PutObjectCommand(uploadNewSubjectImageParams)
+            );
+
+            // Deleting previous subject image
+            let deleteSubjectImageParams = {
+              Bucket: bucketName,
+              Key: values.subjectImageId,
+            };
+
+            await s3Client.send(
+              new DeleteObjectCommand(deleteSubjectImageParams)
+            );
+
+            // update SubjectNames Table
+
+            let dataToBeUpdated = { subjectImage: newSubjectImageName };
+            let whereQuery = { where: { id: values.subjectNameId } };
+
+            await services.subjectService.updateSubjectName(
+              dataToBeUpdated,
+              whereQuery
+            );
+          }
           let subject = await services.subjectService.createSubject({
             boardId: values.boardId,
             subBoardId: values.subBoardId,
@@ -153,63 +206,14 @@ const SubjectManagementController = {
         }
       }
     } catch (err) {
+      console.log(err);
       next(err);
     }
   },
-
-  async TogglePublishSubject(req, res, next) {
-    try {
-      let values = await togglePublishSubject.validateAsync(req.body);
-
-      let dataToBeUpdated = {
-        isPublished: values.isPublished,
-      };
-      let whereQuery = { where: { id: values.subjectIds } };
-
-      let updatedSubjects = await services.subjectService.updateSubject(
-        dataToBeUpdated,
-        whereQuery
-      );
-
-      res.status(httpStatus.OK).send({
-        message: `${updatedSubjects[0]} subjects updated successfully!`,
-      });
-    } catch (err) {
-      next(err);
-    }
-  },
-
-  async ToggleArchiveLevel(req, res, next) {
-    try {
-      // Update sub-boards
-      let values = await archiveSubjectsLevels.validateAsync(req.body);
-      let dataTobeUpdated = { isArchived: values.isArchived };
-      let whereQuery = {
-        where: { id: values.levelsId, subjectId: values.subjectId },
-      };
-
-      let updateSubjectLevels;
-      if (values.levelsId && values.levelsId.length > 0) {
-        updateSubjectLevels = await services.subjectService.updateSubjectLevels(
-          dataTobeUpdated,
-          whereQuery
-        );
-      }
-
-      if (updateSubjectLevels.length >= 1) {
-        res
-          .status(httpStatus.OK)
-          .send({ message: "levels archived successfully" });
-      }
-    } catch (err) {
-      next(err);
-    }
-  },
-
   async UpdateSubject(req, res, next) {
     try {
       let values = await updateSubjectSchema.validateAsync({
-        id: req.body.id,
+        subjectId: req.body.subjectId,
         boardId: req.body.boardId,
         subBoardId: req.body.subBoardId,
         grade: req.body.grade,
@@ -219,18 +223,28 @@ const SubjectManagementController = {
       });
 
       // Find subject by ID
-      const subject = await Subject.findByPk(values.id);
+      const subject = await services.subjectService.findSubject({
+        id: values.subjectId,
+      });
+
       if (!Subject) {
         return res.status(404).json({ message: "Subject not found" });
       }
+      let whereQuery = { where: { id: subject.subjectNameId }, raw: true };
+      const subjectName = await services.subjectService.findSubjectName(
+        whereQuery
+      );
+      console.log(subject);
+      console.log(subjectName);
 
       // Configure the upload details to send to S3
-      let subjectImage = subject.subjectImage;
+
       if (values.image) {
         const fileBuffer = values.image.buffer;
-        subjectImage = `${
+        let subjectImage = `${
           process.env.AWS_BUCKET_SUBJECT_IMAGE_FOLDER
         }/${generateFileName(values.image.originalname)}`;
+
         const uploadParams = {
           Bucket: bucketName,
           Body: fileBuffer,
@@ -238,10 +252,27 @@ const SubjectManagementController = {
           ContentType: req.file.mimetype,
         };
 
-        console.log("in image");
         // Send the upload to S3
         await s3Client.send(new PutObjectCommand(uploadParams));
+
         // delete previous image below
+        let deleteImageParams = {
+          Bucket: bucketName,
+          Key: subjectName[0].subjectImage,
+        };
+
+        await s3Client.send(new DeleteObjectCommand(deleteImageParams));
+
+        // Update Image in SubjectNames
+        let dataToBeUpdatedForSubjectName = {
+          subjectImage: subjectImage,
+        };
+        let whereQueryForSubjectName = { where: { id: subject.subjectNameId } };
+
+        await services.subjectService.updateSubjectName(
+          dataToBeUpdatedForSubjectName,
+          whereQueryForSubjectName
+        );
 
         // Update subject details
 
@@ -250,7 +281,6 @@ const SubjectManagementController = {
           subBoardId: subject.subBoardId,
           grade: subject.grade,
           subjectNameId: subject.subjectNameId,
-          subjectImage: subjectImage,
         };
 
         let whereQuery = {
@@ -262,7 +292,7 @@ const SubjectManagementController = {
           },
         };
 
-        let updatedSubject = await services.subjectService.updateSubject(
+        await services.subjectService.updateSubject(
           dataToBeUpdated,
           whereQuery
         );
@@ -321,6 +351,55 @@ const SubjectManagementController = {
     }
   },
 
+  async TogglePublishSubject(req, res, next) {
+    try {
+      let values = await togglePublishSubject.validateAsync(req.body);
+
+      let dataToBeUpdated = {
+        isPublished: values.isPublished,
+      };
+      let whereQuery = { where: { id: values.subjectIds } };
+
+      let updatedSubjects = await services.subjectService.updateSubject(
+        dataToBeUpdated,
+        whereQuery
+      );
+
+      res.status(httpStatus.OK).send({
+        message: `${updatedSubjects[0]} subjects updated successfully!`,
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async ToggleArchiveLevel(req, res, next) {
+    try {
+      // Update sub-boards
+      let values = await archiveSubjectsLevels.validateAsync(req.body);
+      let dataTobeUpdated = { isArchived: values.isArchived };
+      let whereQuery = {
+        where: { id: values.levelsId, subjectId: values.subjectId },
+      };
+
+      let updateSubjectLevels;
+      if (values.levelsId && values.levelsId.length > 0) {
+        updateSubjectLevels = await services.subjectService.updateSubjectLevels(
+          dataTobeUpdated,
+          whereQuery
+        );
+      }
+
+      if (updateSubjectLevels.length >= 1) {
+        res
+          .status(httpStatus.OK)
+          .send({ message: "levels archived successfully" });
+      }
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async createsubjectName(req, res) {
     try {
       const name = req.body.subjectName;
@@ -367,7 +446,6 @@ const SubjectManagementController = {
 
       res.status(httpStatus.OK).send(subjectDetails);
     } catch (err) {
-      console.log(err);
       next(err);
     }
   },
