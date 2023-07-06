@@ -1,4 +1,8 @@
-const { PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const {
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} = require("@aws-sdk/client-s3");
 const { generateFileName, s3Client } = require("../../config/s3.js");
 const { PastPaper } = require("../../models/PastPaper.js");
 const services = require("../../services/index.js");
@@ -12,12 +16,18 @@ const {
 const { SubBoard, Board } = require("../../models/Board.js");
 const {
   createPastPaperSchema,
+  assignSupervisorUserToSheetSchema,
+  editPastPaperSchema,
 } = require("../../validations/PastPaperValidation.js");
+
 const httpStatus = require("http-status");
+
 const CONSTANTS = require("../../constants/constants.js");
+
 const {
   getSubBoardsSchema,
 } = require("../../validations/subjectManagementValidations.js");
+
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const {
   getRecheckingComments,
@@ -292,7 +302,6 @@ const PastPaperUploaderController = {
   },
 
   async createPastPaper(req, res, next) {
-    // console.log(req.files["questionPdf"])
     try {
       let values = await createPastPaperSchema.validateAsync({
         paperNumber: req.body.paperNumber,
@@ -306,8 +315,6 @@ const PastPaperUploaderController = {
       // Get the uploaded image buffer
       const imageBuffer = req.files["image"][0].buffer;
 
-      console.log(req.files["image"]);
-
       // Get the uploaded PDF buffers
       const questionpdfBuffer = req.files["questionPdf"][0].buffer;
 
@@ -317,7 +324,7 @@ const PastPaperUploaderController = {
       const imagebanner = generateFileName(values.image.originalname);
 
       const imageBannerKey =
-        process.env.AWS_BUCKET_SUBJECT_PASTPAPER_IMAGE_BANNER_FOLDER +
+        process.env.AWS_BUCKET_PASTPAPER_IMAGE_BANNER_FOLDER +
         "/" +
         imagebanner;
 
@@ -332,9 +339,7 @@ const PastPaperUploaderController = {
       const answerPdf = generateFileName(values.answerPdf.originalname);
       // Upload each PDF buffer to S3
       const questionKey =
-        process.env.AWS_BUCKET_SUBJECT_PASTPAPER_QUESTIONS_FOLDER +
-        "/" +
-        questionPdf;
+        process.env.AWS_BUCKET_PASTPAPER_QUESTIONS_FOLDER + "/" + questionPdf;
 
       const quepdfUploadParams = {
         Bucket: bucketName,
@@ -344,9 +349,7 @@ const PastPaperUploaderController = {
       };
 
       const answerKey =
-        process.env.AWS_BUCKET_SUBJECT_PASTPAPER_ANSWERS_FOLDER +
-        "/" +
-        answerPdf;
+        process.env.AWS_BUCKET_PASTPAPER_ANSWERS_FOLDER + "/" + answerPdf;
 
       const anspdfUploadParams = {
         Bucket: bucketName,
@@ -354,8 +357,7 @@ const PastPaperUploaderController = {
         Key: answerKey,
         ContentType: req.files["answerPdf"][0].mimetype,
       };
-      // console.log(anspdfUploadParams)
-      // console.log(quepdfUploadParams)
+
       // Upload the image buffer to S3
       await s3Client.send(new PutObjectCommand(imageUploadParams));
 
@@ -391,42 +393,83 @@ const PastPaperUploaderController = {
   },
 
   async SubmitToSupervisor(req, res, next) {
-    // const assignedToUserId = req.params.userId;
-    const id = req.body.sheetId;
-
-    // let userData = await services.userService.finduser(
-    //   values.reviewerId,
-    //   CONSTANTS.roleNames.Reviewer
-    // );
-
-    console.log(id);
     try {
-      const sheet = await Sheet.findByPk(id);
-      console.log(sheet);
-      if (sheet.statusForPastPaper !== CONSTANTS.sheetStatuses.Complete) {
-        return res
-          .status(200)
-          .json({ msg: "Please mark it as complete first" });
+      let values = await assignSupervisorUserToSheetSchema.validateAsync(
+        req.body
+      );
+
+      let userData = await services.userService.finduser(
+        values.pastPaperId,
+        CONSTANTS.roleNames.PastPaper
+      );
+
+      let sheetData = await services.sheetService.findSheetAndUser(
+        values.sheetId
+      );
+
+      let responseMessage = {
+        assinedUserToSheet: "",
+        UpdateSheetStatus: "",
+        sheetLog: "",
+      };
+
+      if (userData && sheetData) {
+        // Checking if sheet is already assingned to supervisor
+        if (sheetData.assignedToUserId === sheetData.supervisorId) {
+          res.status(httpStatus.BAD_REQUEST).send({
+            message: "Sheet already assigned to supervisor",
+          });
+        } else {
+          // Checking if sheet status is complete for reviewer
+          if (
+            sheetData.statusForPastPaper !== CONSTANTS.sheetStatuses.Complete
+          ) {
+            res.status(httpStatus.BAD_REQUEST).send({
+              message: "Please mark it as complete first",
+            });
+          } else {
+            //UPDATE sheet assignment & sheet status
+            let sheetStatusToBeUpdated = {
+              statusForSupervisor: CONSTANTS.sheetStatuses.Complete,
+            };
+
+            let updateAssignAndStatus =
+              await services.sheetService.assignSupervisorToSheetAndUpdateStatus(
+                sheetData.id,
+                sheetData.supervisorId,
+                sheetStatusToBeUpdated.statusForSupervisor
+              );
+
+            if (updateAssignAndStatus.length > 0) {
+              responseMessage.assinedUserToSheet =
+                "Sheet assigned to supervisor successfully";
+              responseMessage.UpdateSheetStatus =
+                "Sheet Statuses updated successfully";
+            }
+
+            // CREATE sheet log for sheet assignment to supervisor
+            let createLog = await services.sheetService.createSheetLog(
+              sheetData.id,
+              sheetData.supervisor.Name,
+              userData.Name,
+              CONSTANTS.sheetLogsMessages.pastPaperrAssignToSupervisor
+            );
+
+            if (createLog) {
+              responseMessage.sheetLog =
+                "Log record for assignment to supervisor added successfully";
+            }
+
+            res.status(httpStatus.OK).send({ message: responseMessage });
+          }
+        }
+      } else {
+        res
+          .status(httpStatus.BAD_REQUEST)
+          .send({ message: "Wrong user Id or Sheet Id" });
       }
-
-      sheet.statusForSupervisor = CONSTANTS.sheetStatuses.Complete;
-      // CREATE sheet log for sheet assignment to supervisor
-      //  let createLog = await services.sheetService.createSheetLog(
-      //    id,
-      //    sheetData.supervisor.Name,
-      //    userData.Name,
-      //    CONSTANTS.sheetLogsMessages.pastPaperrAssignToSupervisor
-      //  );
-
-      await sheet.save();
-      return res.status(201).json({
-        message: "Sheet Submitted successfully",
-        sheet,
-      });
     } catch (err) {
-      console.log(err);
-      next(err);
-      // return res.json({ status: 501, error: err.message });
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }
   },
 
@@ -490,11 +533,175 @@ const PastPaperUploaderController = {
     }
   },
 
-  async EditPastPaper(req, res) {
+  async EditPastPaper(req, res, next) {
     try {
-      res.send({});
+      let questionFile = req.files["newQuestionPaper"];
+      let answerFile = req.files["newAnswerPaper"];
+      let imageBannerFile = req.files["newImageBanner"];
+
+      let values = await editPastPaperSchema.validateAsync({
+        ...req.body,
+        newQuestionPaper: questionFile ? questionFile[0] : null,
+        newAnswerPaper: answerFile ? answerFile[0] : null,
+        newImageBanner: imageBannerFile ? imageBannerFile[0] : null,
+      });
+
+      let pastPaper = await services.pastpaperService.findPastPaper({
+        where: { id: values.pastPaperId },
+        raw: true,
+      });
+
+      if (pastPaper.length > 0) {
+        let newQuestionPaperKey = "";
+        let newAnswerPaperKey = "";
+        let newImageBannerKey = "";
+
+        let dataToBeUpdated = {
+          paperNumber: values.paperNumber,
+        };
+        if (values.newQuestionPaper) {
+          // Files Buffers
+          const newQuestionPaperBuffer = values.newQuestionPaper.buffer;
+
+          // Generate File Names
+          const newQuestionPaperName = generateFileName(
+            values.newQuestionPaper.originalname
+          );
+
+          //Add Folder S3 Folder Names to file Names
+          newQuestionPaperKey =
+            process.env.AWS_BUCKET_PASTPAPER_QUESTIONS_FOLDER +
+            "/" +
+            newQuestionPaperName;
+
+          //Upload Parameters for all files
+          const newQuestionPaperUploadParams = {
+            Bucket: bucketName,
+            Body: newQuestionPaperBuffer,
+            Key: newQuestionPaperKey,
+            ContentType: values.newQuestionPaper.mimetype,
+          };
+
+          await s3Client.send(
+            new PutObjectCommand(newQuestionPaperUploadParams)
+          );
+
+          dataToBeUpdated.questionPdf = newQuestionPaperKey;
+
+          // Deleting Previous Pastpaper Files
+
+          let deleteQuestionPaperParams = {
+            Bucket: bucketName,
+            Key: pastPaper[0].questionPdf,
+          };
+
+          await s3Client.send(
+            new DeleteObjectCommand(deleteQuestionPaperParams)
+          );
+        }
+
+        if (values.newAnswerPaper) {
+          // Files Buffers
+
+          const newAnswerPaperBuffer = values.newAnswerPaper.buffer;
+
+          // Generate File Names
+
+          const newAnswerPaperName = generateFileName(
+            values.newAnswerPaper.originalname
+          );
+
+          //Add Folder S3 Folder Names to file Names
+
+          newAnswerPaperKey =
+            process.env.AWS_BUCKET_PASTPAPER_ANSWERS_FOLDER +
+            "/" +
+            newAnswerPaperName;
+
+          //Upload Parameters for all files
+
+          const newAnswerPaperUploadParams = {
+            Bucket: bucketName,
+            Body: newAnswerPaperBuffer,
+            Key: newAnswerPaperKey,
+            ContentType: values.newAnswerPaper.mimetype,
+          };
+
+          await s3Client.send(new PutObjectCommand(newAnswerPaperUploadParams));
+          dataToBeUpdated.answerPdf = newAnswerPaperKey;
+
+          // Deleting Previous Pastpaper Files
+          let deleteAnswerPaperParams = {
+            Bucket: bucketName,
+            Key: pastPaper[0].answerPdf,
+          };
+
+          await s3Client.send(new DeleteObjectCommand(deleteAnswerPaperParams));
+        }
+
+        if (values.newImageBanner) {
+          // Files Buffers
+
+          const newImageBannerBuffer = values.newImageBanner.buffer;
+
+          // Generate File Names
+
+          const newImageBannerName = generateFileName(
+            values.newImageBanner.originalname
+          );
+
+          //Add Folder S3 Folder Names to file Names
+
+          newImageBannerKey =
+            process.env.AWS_BUCKET_PASTPAPER_IMAGE_BANNER_FOLDER +
+            "/" +
+            newImageBannerName;
+
+          //Upload Parameters for all files
+
+          const newImageBannerUploadParams = {
+            Bucket: bucketName,
+            Body: newImageBannerBuffer,
+            Key: newImageBannerKey,
+            ContentType: values.newImageBanner.mimetype,
+          };
+
+          await s3Client.send(new PutObjectCommand(newImageBannerUploadParams));
+
+          dataToBeUpdated.imagebanner = newImageBannerKey;
+
+          // Deleting Previous Pastpaper Files
+          let deleteImageBannerParams = {
+            Bucket: bucketName,
+            Key: pastPaper[0].imagebanner,
+          };
+
+          await s3Client.send(new DeleteObjectCommand(deleteImageBannerParams));
+        }
+
+        // Update PastPaper
+
+        let whereQuery = {
+          where: { id: values.pastPaperId },
+        };
+
+        let updatePastPaper = await services.pastpaperService.updatePastPaper(
+          dataToBeUpdated,
+          whereQuery
+        );
+
+        console.log(updatePastPaper);
+        res
+          .status(httpStatus.OK)
+          .send({ message: "PastPaper Updated Successfully!" });
+      } else {
+        res
+          .status(httpStatus.BAD_REQUEST)
+          .send({ message: "PastPaper not found!" });
+      }
     } catch (err) {
-      return res.json({ status: 501, error: err.message });
+      console.log(err);
+      next(err);
     }
   },
 };

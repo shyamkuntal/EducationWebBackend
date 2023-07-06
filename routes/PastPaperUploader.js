@@ -33,7 +33,6 @@ router.get("/:userId/getassignedsubjects", getallassignedsheetsubjects);
 // api/ppmReviewer/getrecheckcomments
 router.get("/getrecheckcomments", PastPaperUploaderController.getRecheckErrors);
 
-
 router.get(
   "/getuserassignedsubjects",
   PastPaperUploaderController.getUserAssignedSubjects
@@ -55,7 +54,15 @@ router.patch("/markitasinprogress", MarkitasInProgress);
 
 router.patch("/markitascomplete", Markitascomplete);
 
-router.put("/:ppId/editpastpaper", EditPastPaper);
+router.put(
+  "/editpastpaper",
+  upload.fields([
+    { name: "newQuestionPaper", maxCount: 1 },
+    { name: "newAnswerPaper", maxCount: 1 },
+    { name: "newImageBanner", maxCount: 1 },
+  ]),
+  EditPastPaper
+);
 
 // api/ppmReviewer/getsubjectnames
 router.get("/getsubjectnames", PastPaperUploaderController.getsubjectName);

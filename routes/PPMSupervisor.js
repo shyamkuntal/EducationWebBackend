@@ -70,4 +70,5 @@ router.patch(
   PastPaperSupervisorController.AssignSheetToReviewer
 );
 
+router.get("/getpastpaper", PastPaperSupervisorController.getPastPaper);
 module.exports = router;

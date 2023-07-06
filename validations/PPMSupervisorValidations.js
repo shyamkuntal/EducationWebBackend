@@ -16,8 +16,13 @@ const getSheetLogsSchema = Joi.object({
   sheetId: Joi.string().guid().required(),
 });
 
+const getPastPaperSchema = Joi.object({
+  pastPaperId: Joi.string().guid().required(),
+});
+
 module.exports = {
   assignUploderUserToSheetSchema,
   assignReviewerUserToSheetSchema,
   getSheetLogsSchema,
+  getPastPaperSchema,
 };

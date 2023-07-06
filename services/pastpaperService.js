@@ -6,16 +6,16 @@ const createPastPaper = async (
   questionPdf,
   answerPdf,
   imagebanner,
-  sheetId,
+  sheetId
 ) => {
   try {
     const pastPaper = await PastPaper.create({
-        paperNumber,
-        googleLink,
-        questionPdf,
-        answerPdf,
-        imagebanner,
-        sheetId
+      paperNumber,
+      googleLink,
+      questionPdf,
+      answerPdf,
+      imagebanner,
+      sheetId,
     });
 
     return pastPaper;
@@ -24,7 +24,28 @@ const createPastPaper = async (
   }
 };
 
+const updatePastPaper = async (dataToBeUpdated, whereQuery) => {
+  try {
+    let updatedPastPaper = await PastPaper.update(dataToBeUpdated, whereQuery);
+
+    return updatedPastPaper;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findPastPaper = async (whereQuery) => {
+  try {
+    let pastPaper = await PastPaper.findAll(whereQuery);
+
+    return pastPaper;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
-    createPastPaper,
-  };
-  
+  createPastPaper,
+  updatePastPaper,
+  findPastPaper,
+};

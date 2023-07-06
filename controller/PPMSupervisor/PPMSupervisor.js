@@ -7,6 +7,7 @@ const {
   assignUploderUserToSheetSchema,
   assignReviewerUserToSheetSchema,
   getSheetLogsSchema,
+  getPastPaperSchema,
 } = require("../../validations/PPMSupervisorValidations.js");
 const httpStatus = require("http-status");
 const { User, Roles } = require("../../models/User.js");
@@ -592,6 +593,67 @@ const PastPaperSupervisorController = {
       }
     } catch (err) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
+    }
+  },
+
+  async getPastPaper(req, res, next) {
+    try {
+      let values = await getPastPaperSchema.validateAsync({
+        pastPaperId: req.query.pastPaperId,
+      });
+
+      let pastPaper = await services.pastpaperService.findPastPaper({
+        where: { id: values.pastPaperId },
+        attributes: ["id", "questionPdf", "answerPdf", "imagebanner"],
+        raw: true,
+      });
+
+      const getQuestionPaperParams = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: pastPaper[0].questionPdf,
+      };
+
+      const getImageBannerParams = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: pastPaper[0].answerPdf,
+      };
+
+      const getAnswerPaperParams = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: pastPaper[0].imagebanner,
+      };
+
+      // get question paper
+      const questionPapercommand = new GetObjectCommand(getQuestionPaperParams);
+      const questionPaperUrl = await getSignedUrl(
+        s3Client,
+        questionPapercommand,
+        {
+          expiresIn: 3600,
+        }
+      );
+
+      // get answer paper
+      const answerPapercommand = new GetObjectCommand(getAnswerPaperParams);
+      const answerPaperUrl = await getSignedUrl(s3Client, answerPapercommand, {
+        expiresIn: 3600,
+      });
+
+      // get image banner
+      const imageBannercommand = new GetObjectCommand(getImageBannerParams);
+      const imageBannerUrl = await getSignedUrl(s3Client, imageBannercommand, {
+        expiresIn: 3600,
+      });
+
+      res.status(httpStatus.OK).send({
+        ...pastPaper[0],
+        questionPdfUrl: questionPaperUrl,
+        answerPdfUrl: answerPaperUrl,
+        imageBannerUrl: imageBannerUrl,
+      });
+    } catch (err) {
+      console.log(err);
+      next(err);
     }
   },
 };
