@@ -14,6 +14,9 @@ const {
   getSubBoardsSchema,
   getSubjectLevelBySubjectId,
 } = require("../../validations/subjectManagementValidations.js");
+const { GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { s3Client } = require("../../config/s3.js");
 
 const PastPaperSupervisorController = {
   //take care of isarchived and ispublished later
@@ -117,9 +120,28 @@ const PastPaperSupervisorController = {
   async getSubjectNames(req, res, next) {
     try {
       const subjectName = await services.subjectService.getSubjectNames();
+      let subjectDetails = [];
 
-      res.status(httpStatus.OK).send(subjectName);
+      for (const element of subjectName) {
+        const getObjectParams = {
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: element.subjectImage,
+        };
+        const command = new GetObjectCommand(getObjectParams);
+
+        const url = await getSignedUrl(s3Client, command, {
+          expiresIn: 3600,
+        });
+
+        subjectDetails.push({
+          ...element,
+          subjectImageUrl: url,
+        });
+      }
+
+      res.status(httpStatus.OK).send(subjectDetails);
     } catch (err) {
+      console.log(err);
       next(err);
     }
   },
@@ -255,16 +277,6 @@ const PastPaperSupervisorController = {
       return res.status(200).json(subBoards);
     } catch (error) {
       return res.status(500).json({ message: error.message });
-    }
-  },
-
-  async getsubjectName(req, res, next) {
-    try {
-      const subjectName = await services.subjectService.getSubjectNames();
-
-      res.status(httpStatus.OK).send(subjectName);
-    } catch (err) {
-      next(err);
     }
   },
 

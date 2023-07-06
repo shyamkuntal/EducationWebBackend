@@ -10,7 +10,7 @@ const paginatedSheetResults = (model, req) => {
     const limit = parseInt(req.query.limit) || 10;
     const filters = {
       isArchived: false,
-      isPublished: false,
+      // isPublished: true,
     };
 
     if (req.query.isSpam) {
@@ -27,6 +27,9 @@ const paginatedSheetResults = (model, req) => {
     }
     if (req.query.boardId) {
       filters.boardId = req.query.boardId;
+    }
+    if (req.query.subjectId) {
+      filters.subjectId = req.query.subjectId;
     }
     if (req.query.subBoardId) {
       filters.subBoardId = req.query.subBoardId;

@@ -47,8 +47,6 @@ router.get(
   PastPaperSupervisorController.getallsheetsubjects
 );
 
-router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
-
 router.get("/getallsubboards", PastPaperSupervisorController.getAllSubBoards);
 router.get("/getallboards", PastPaperSupervisorController.getAllboards);
 

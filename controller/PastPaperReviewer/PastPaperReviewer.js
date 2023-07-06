@@ -7,19 +7,40 @@ const {
 } = require("../../validations/PPMReviewerValidation.js");
 const services = require("../../services/index.js");
 const httpStatus = require("http-status");
-const { generateFileName } = require("../../config/s3.js");
+const { generateFileName, s3Client } = require("../../config/s3.js");
 const { SubBoard, Board } = require("../../models/Board.js");
 const { Subject } = require("../../models/Subject.js");
 const { getSubBoardsSchema } = require("../../validations/subjectManagementValidations.js");
+const { GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const PastPaperReviewerController = {
 
 async getsubjectName(req, res, next) {
   try {
     const subjectName = await services.subjectService.getSubjectNames();
+    let subjectDetails = [];
 
-    res.status(httpStatus.OK).send(subjectName);
+    for (const element of subjectName) {
+      const getObjectParams = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: element.subjectImage,
+      };
+      const command = new GetObjectCommand(getObjectParams);
+
+      const url = await getSignedUrl(s3Client, command, {
+        expiresIn: 3600,
+      });
+
+      subjectDetails.push({
+        ...element,
+        subjectImageUrl: url,
+      });
+    }
+
+    res.status(httpStatus.OK).send(subjectDetails);
   } catch (err) {
+    console.log(err);
     next(err);
   }
 },
