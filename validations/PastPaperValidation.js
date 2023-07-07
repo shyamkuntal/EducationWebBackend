@@ -39,7 +39,7 @@ const assignSupervisorUserToSheetSchema = Joi.object({
 });
 
 const editPastPaperSchema = Joi.object({
-  pastPaperId: Joi.string().guid().required(),
+  sheetId: Joi.string().guid().required(),
   paperNumber: Joi.number().required(),
   googleLink: Joi.string().regex(CONSTANTS.validationRegex.urlRegex).required(),
   newQuestionPaper: Joi.object({

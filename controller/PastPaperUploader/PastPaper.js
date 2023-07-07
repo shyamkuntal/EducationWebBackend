@@ -547,7 +547,7 @@ const PastPaperUploaderController = {
       });
 
       let pastPaper = await services.pastpaperService.findPastPaper({
-        where: { id: values.pastPaperId },
+        where: { sheetId: values.sheetId },
         raw: true,
       });
 
@@ -682,7 +682,7 @@ const PastPaperUploaderController = {
         // Update PastPaper
 
         let whereQuery = {
-          where: { id: values.pastPaperId },
+          where: { id: pastPaper[0].id },
         };
 
         let updatePastPaper = await services.pastpaperService.updatePastPaper(

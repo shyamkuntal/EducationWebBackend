@@ -629,58 +629,76 @@ const PastPaperSupervisorController = {
   async getPastPaper(req, res, next) {
     try {
       let values = await getPastPaperSchema.validateAsync({
-        pastPaperId: req.query.pastPaperId,
+        sheetId: req.query.sheetId,
       });
 
       let pastPaper = await services.pastpaperService.findPastPaper({
-        where: { id: values.pastPaperId },
+        where: { sheetId: values.sheetId },
         attributes: ["id", "questionPdf", "answerPdf", "imagebanner"],
         raw: true,
       });
 
-      const getQuestionPaperParams = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: pastPaper[0].questionPdf,
-      };
+      console.log(pastPaper);
 
-      const getImageBannerParams = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: pastPaper[0].answerPdf,
-      };
+      if (pastPaper.length > 0) {
+        const getQuestionPaperParams = {
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: pastPaper[0].questionPdf,
+        };
 
-      const getAnswerPaperParams = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: pastPaper[0].imagebanner,
-      };
+        const getImageBannerParams = {
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: pastPaper[0].answerPdf,
+        };
 
-      // get question paper
-      const questionPapercommand = new GetObjectCommand(getQuestionPaperParams);
-      const questionPaperUrl = await getSignedUrl(
-        s3Client,
-        questionPapercommand,
-        {
-          expiresIn: 3600,
-        }
-      );
+        const getAnswerPaperParams = {
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: pastPaper[0].imagebanner,
+        };
 
-      // get answer paper
-      const answerPapercommand = new GetObjectCommand(getAnswerPaperParams);
-      const answerPaperUrl = await getSignedUrl(s3Client, answerPapercommand, {
-        expiresIn: 3600,
-      });
+        // get question paper
+        const questionPapercommand = new GetObjectCommand(
+          getQuestionPaperParams
+        );
+        const questionPaperUrl = await getSignedUrl(
+          s3Client,
+          questionPapercommand,
+          {
+            expiresIn: 3600,
+          }
+        );
 
-      // get image banner
-      const imageBannercommand = new GetObjectCommand(getImageBannerParams);
-      const imageBannerUrl = await getSignedUrl(s3Client, imageBannercommand, {
-        expiresIn: 3600,
-      });
+        // get answer paper
+        const answerPapercommand = new GetObjectCommand(getAnswerPaperParams);
+        const answerPaperUrl = await getSignedUrl(
+          s3Client,
+          answerPapercommand,
+          {
+            expiresIn: 3600,
+          }
+        );
 
-      res.status(httpStatus.OK).send({
-        ...pastPaper[0],
-        questionPdfUrl: questionPaperUrl,
-        answerPdfUrl: answerPaperUrl,
-        imageBannerUrl: imageBannerUrl,
-      });
+        // get image banner
+        const imageBannercommand = new GetObjectCommand(getImageBannerParams);
+        const imageBannerUrl = await getSignedUrl(
+          s3Client,
+          imageBannercommand,
+          {
+            expiresIn: 3600,
+          }
+        );
+
+        res.status(httpStatus.OK).send({
+          ...pastPaper[0],
+          questionPdfUrl: questionPaperUrl,
+          answerPdfUrl: answerPaperUrl,
+          imageBannerUrl: imageBannerUrl,
+        });
+      } else {
+        res
+          .status(httpStatus.BAD_REQUEST)
+          .send({ message: "Past Paper not found" });
+      }
     } catch (err) {
       console.log(err);
       next(err);

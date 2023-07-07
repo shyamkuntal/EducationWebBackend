@@ -17,7 +17,7 @@ const getSheetLogsSchema = Joi.object({
 });
 
 const getPastPaperSchema = Joi.object({
-  pastPaperId: Joi.string().guid().required(),
+  sheetId: Joi.string().guid().required(),
 });
 
 module.exports = {
