@@ -9,7 +9,7 @@ const assignUploderUserToSheetSchema = Joi.object({
 const assignReviewerUserToSheetSchema = Joi.object({
   sheetId: Joi.string().guid().required(),
   reviewerId: Joi.string().guid().required(),
-  // supervisorComments: Joi.string().max(225).required(),
+  supervisorComments: Joi.string().max(225),
 });
 
 const getSheetLogsSchema = Joi.object({

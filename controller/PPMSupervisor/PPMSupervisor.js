@@ -447,6 +447,8 @@ const PastPaperSupervisorController = {
         values.sheetId
       );
 
+      let Comment = values.supervisorComments;
+
       let responseMessage = {
         assinedUserToSheet: "",
         UpdateSheetStatus: "",
@@ -478,6 +480,7 @@ const PastPaperSupervisorController = {
               sheetStatusToBeUpdated.statusForPastPaper
             );
 
+
           if (updateAssignAndLifeCycleAndStatus.length > 0) {
             responseMessage.assinedUserToSheet =
               "Sheet assigned to past paper and lifeCycle updated successfully";
@@ -485,6 +488,18 @@ const PastPaperSupervisorController = {
               "Sheet Statuses updated successfully";
           }
 
+          // updating supervisor comments
+          if (Comment) {
+            let updateComment = await services.sheetService.updateSupervisorComments(
+              sheetData.id,
+              Comment,
+              "PastPaper"
+            )
+            if(updateComment){
+              responseMessage.updateComment =
+              "Supervisor comment added successfully";
+            }
+          }
           // CREATE sheet log for sheet assignment to past paper uploader
 
           let createLog = await services.sheetService.createSheetLog(
@@ -523,6 +538,8 @@ const PastPaperSupervisorController = {
         values.sheetId
       );
 
+      let Comment = values.supervisorComments;
+
       let responseMessage = {
         assinedUserToSheet: "",
         UpdateSheetStatus: "",
@@ -551,7 +568,20 @@ const PastPaperSupervisorController = {
               sheetStatusToBeUpdated.statusForSupervisor,
               sheetStatusToBeUpdated.statusForReviewer
             );
-
+          
+          // updating supervisor comments
+          if (Comment) {
+            let updateComment = await services.sheetService.updateSupervisorComments(
+              sheetData.id,
+              Comment,
+              "Reviewer"
+            )
+            if(updateComment){
+              responseMessage.updateComment =
+              "Supervisor comment added successfully";
+            }
+          }
+     
           if (updateAssignAndUpdateLifeCycle.length > 0) {
             responseMessage.assinedUserToSheet =
               "Sheet assigned to reviewer and lifeCycle updated successfully";

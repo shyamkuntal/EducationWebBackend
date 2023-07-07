@@ -379,7 +379,7 @@ const PastPaperUploaderController = {
       const id = values.sheetId;
       const sheet = await Sheet.findByPk(id);
 
-      sheet.statusForPastPaper = "Inprogress";
+      sheet.statusForPastPaper = CONSTANTS.sheetStatuses.InProgress;
       await sheet.save();
 
       return res.status(201).json({

@@ -324,7 +324,7 @@ async getsubjectName(req, res, next) {
           // checking if erorr Report exists, adding if does not exists
           if (sheetData.errorReport === null) {
             // uploading error report file
-            let fileName = generateFileName(32, req.file.originalname);
+            let fileName = generateFileName(values.file.originalname);
             let fileObj = req.file;
 
             let uploadFile = await services.sheetService.uploadErrorReportFile(

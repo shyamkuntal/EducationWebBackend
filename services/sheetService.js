@@ -100,6 +100,35 @@ const assignUserToSheetAndUpdateLifeCycleAndStatuses = async (
   }
 };
 
+const updateSupervisorComments = async (sheetId, comment, user) => {
+
+  if(user === CONSTANTS.roleNames.PastPaper){
+    try {
+      let updateComment = await Sheet.update(
+        {
+          supervisorCommentToPastPaper: comment
+        },
+        { where: { id: sheetId } }
+      )
+      return updateComment
+    } catch (error) {
+        throw error
+    }
+  }else{
+    try {
+      let updateComment = await Sheet.update(
+        {
+          supervisorCommentToReviewer: comment
+        },
+        { where: { id: sheetId } }
+      )
+      return updateComment
+    } catch (error) {
+        throw error
+    }
+  }
+}
+
 const assignSupervisorToSheetAndUpdateStatus = async (
   sheetId,
   userId,
@@ -194,10 +223,13 @@ const updateSheetStatusForReviewer = async (sheetId, statusForReviewer) => {
 
 const uploadErrorReportFile = async (fileName, fileObj) => {
   try {
+
+    const errorImageKey = process.env.AWS_BUCKET_PASTPAPER_ERROR_REPORT_IMAGES_FOLDER + "/" + fileName;
+
     const imageUploadParams = {
       Bucket: process.env.AWS_BUCKET_NAME,
       Body: fileObj.buffer,
-      Key: fileName,
+      Key: errorImageKey,
       ContentType: fileObj.mimetype,
     };
 
@@ -321,4 +353,5 @@ module.exports = {
   createSheetCheckList,
   findCheckList,
   findSheetLog,
+  updateSupervisorComments
 };
