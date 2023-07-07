@@ -5,6 +5,7 @@ const upload = require("../config/multer.js");
 // const getPaginatedReviewersheets = require("../middlewares/paginatedReviewerSheets");
 const paginatedSheetResults = require("../middlewares/paginatedSheet.js");
 const { Sheet } = require("../models/Sheet.js");
+const PastPaperSupervisorController = require("../controller/PPMSupervisor/PPMSupervisor");
 
 
 // api/ppmReviewer/getsheets
@@ -56,6 +57,7 @@ router.patch(
   PastPaperReviewerController.ReportError
 );
 
+router.get("/getpastpaper", PastPaperSupervisorController.getPastPaper);
 // api/ppmReviewer/reportsheeterror
 router.post("/reportsheeterror", PastPaperReviewerController.AddRecheckComment);
 

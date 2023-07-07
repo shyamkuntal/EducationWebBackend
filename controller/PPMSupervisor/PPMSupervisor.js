@@ -638,7 +638,7 @@ const PastPaperSupervisorController = {
         raw: true,
       });
 
-      console.log(pastPaper);
+      // console.log(pastPaper);
 
       if (pastPaper.length > 0) {
         const getQuestionPaperParams = {

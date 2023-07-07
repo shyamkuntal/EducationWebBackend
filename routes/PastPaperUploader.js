@@ -15,6 +15,7 @@ const {
 const paginatedSheetResults = require("../middlewares/paginatedSheet.js");
 const { Sheet } = require("../models/Sheet.js");
 const PastPaperUploaderController = require("../controller/PastPaperUploader/PastPaper.js");
+const PastPaperSupervisorController = require("../controller/PPMSupervisor/PPMSupervisor.js");
 
 const router = express.Router();
 
@@ -63,6 +64,9 @@ router.put(
   ]),
   EditPastPaper
 );
+
+
+router.get("/getpastpaper", PastPaperSupervisorController.getPastPaper);
 
 // api/ppmReviewer/getsubjectnames
 router.get("/getsubjectnames", PastPaperUploaderController.getsubjectName);

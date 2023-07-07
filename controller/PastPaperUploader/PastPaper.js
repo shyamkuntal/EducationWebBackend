@@ -546,6 +546,7 @@ const PastPaperUploaderController = {
         newImageBanner: imageBannerFile ? imageBannerFile[0] : null,
       });
 
+
       let pastPaper = await services.pastpaperService.findPastPaper({
         where: { sheetId: values.sheetId },
         raw: true,
