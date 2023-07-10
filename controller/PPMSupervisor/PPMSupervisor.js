@@ -648,12 +648,12 @@ const PastPaperSupervisorController = {
 
         const getImageBannerParams = {
           Bucket: process.env.AWS_BUCKET_NAME,
-          Key: pastPaper[0].answerPdf,
+          Key: pastPaper[0].imagebanner,
         };
 
         const getAnswerPaperParams = {
           Bucket: process.env.AWS_BUCKET_NAME,
-          Key: pastPaper[0].imagebanner,
+          Key: pastPaper[0].answerPdf,
         };
 
         // get question paper
@@ -691,7 +691,7 @@ const PastPaperSupervisorController = {
         res.status(httpStatus.OK).send({
           ...pastPaper[0],
           questionPdfUrl: questionPaperUrl,
-          answerPdfUrl: answerPaperUrl,
+          answerPdfUrl:  answerPaperUrl,
           imageBannerUrl: imageBannerUrl,
         });
       } else {
