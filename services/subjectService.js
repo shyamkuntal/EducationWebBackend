@@ -183,7 +183,6 @@ const findSubject = async (whereQuery, include) => {
     let subject = await Subject.findOne({
       where: whereQuery,
       include,
-      raw: true,
     });
     return subject;
   } catch (err) {
