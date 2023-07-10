@@ -82,6 +82,7 @@ const Roles = db.define("roles", {
     type: Sequelize.STRING,
     enum: roles,
     allowNull: false,
+    unique: true,
   },
 });
 

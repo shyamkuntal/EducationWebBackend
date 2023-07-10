@@ -32,21 +32,12 @@ router.post("/createuser", AccountManagementController.createUser);
 
 router.put("/edituser", AccountManagementController.editUser);
 
-router.get("/getallroles", AccountManagementController.getallroles);
-
 router.get(
   "/getallrolesforaddaccount",
   AccountManagementController.getallrolesbyRole
 );
-router.get(
-  "/getrolebyname/:roleName",
-  AccountManagementController.getRoleByName
-);
 
-router.get(
-  "/alluserrolenumber",
-  AccountManagementController.getusernoroleweise
-);
+router.get("/getuserCount", AccountManagementController.getUserCount);
 
 router.get(
   "/getallsubjectNamebyid",

@@ -17,7 +17,7 @@ const editBoardSchema = Joi.object({
   id: Joi.string().guid().required(),
   boardName: Joi.string().max(50).required(),
   boardType: Joi.string().max(50).required(),
-  contact: Joi.string().regex(CONSTANTS.validationRegex.phoneRegex).required(),
+  contact: Joi.number().required(),
   email: Joi.string().email().required(),
   website: Joi.string().regex(CONSTANTS.validationRegex.urlRegex).required(),
   address: Joi.string().max(225).required(),

@@ -34,14 +34,16 @@ const AccountManagementController = {
       roleNames.Teacher,
       roleNames.Pricer,
       roleNames.Uploader2,
+      roleNames.DataGenerator,
     ];
     try {
-      const role = await Roles.bulkCreate(
-        roles.map((roleName) => ({
-          roleName,
-        }))
-      );
-      return res.status(200).json({ role });
+      let rolesToBeCreated = roles.map((roleName) => ({
+        roleName,
+      }));
+
+      let role = await services.userService.bulkCreateRoles(rolesToBeCreated);
+
+      res.status(httpStatus.OK).send(role);
     } catch (err) {
       next(err);
     }
@@ -82,10 +84,7 @@ const AccountManagementController = {
     try {
       let values = await createAccountSchema.validateAsync(req.body);
 
-      let checkEmail = await services.userService.checkUserEmail(
-        values.email,
-        values.roleId
-      );
+      await services.userService.checkUserEmail(values.email, values.roleId);
 
       let user = await services.userService.createUser(
         values.Name,
@@ -102,7 +101,7 @@ const AccountManagementController = {
           boardID: boardid,
         }));
 
-        await UserBoardMapping.bulkCreate(boardmapping);
+        await services.userService.bulkCreateUserBoardMappings(boardmapping);
       }
       if (values.subBoardIds && values.subBoardIds.length > 0) {
         const subboardmapping = values.subBoardIds.map((subboardid) => ({
@@ -110,7 +109,9 @@ const AccountManagementController = {
           subBoardId: subboardid,
         }));
 
-        await UserSubBoardMapping.bulkCreate(subboardmapping);
+        await services.userService.bulkCreateUserSubBoardMappings(
+          subboardmapping
+        );
       }
 
       if (values.qualifications && values.qualifications.length > 0) {
@@ -119,7 +120,9 @@ const AccountManagementController = {
           gradeQualification: range,
         }));
 
-        await UserQualificationMapping.bulkCreate(qmapping);
+        await services.userService.bulkCreateUserQualificationMappings(
+          qmapping
+        );
       }
 
       if (values.subjectsIds && values.subjectsIds.length > 0) {
@@ -128,7 +131,9 @@ const AccountManagementController = {
           subjectNameIds: subjectid,
         }));
 
-        await UserSubjectMapping.bulkCreate(subjectmapping);
+        await services.userService.bulkCreateUserSubjectMappings(
+          subjectmapping
+        );
       }
 
       res.status(httpStatus.OK).send({ user });
@@ -229,7 +234,7 @@ const AccountManagementController = {
     }
   },
 
-  async getusernoroleweise(req, res, next) {
+  async getUserCount(req, res, next) {
     try {
       const results = await User.findAll({
         attributes: [

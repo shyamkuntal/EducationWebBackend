@@ -10,6 +10,19 @@ const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
 const bcrypt = require("bcrypt");
 
+const bulkCreateRoles = async (rolesArray) => {
+  try {
+    let bulkCreateRoles = await Roles.bulkCreate(rolesArray, {
+      returning: ["id", "roleName"],
+      updateOnDuplicate: ["roleName"],
+    });
+
+    return bulkCreateRoles;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const createUser = async (Name, userName, email, password, roleId) => {
   try {
     let user = await User.create({
@@ -65,7 +78,6 @@ const getUserAssignedSubjects = async (userId) => {
   }
 };
 
-
 const findUserByEmail = async (email) => {
   try {
     let user = await User.findOne({ where: { email: email }, raw: true });
@@ -120,13 +132,14 @@ const checkUserEmail = async (email, roleId) => {
     let user = await User.findOne({
       where: { email: email, roleId: roleId },
       include: [{ model: Roles, attributes: ["roleName"] }],
+      raw: true,
       nest: true,
     });
 
     if (user) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,
-        "EmailId already exists for this role!"
+        "Email Id already exists for this role!"
       );
     }
   } catch (err) {
@@ -169,6 +182,42 @@ const findUserSubjectsBoardSubBoard = async (id) => {
   }
 };
 
+const bulkCreateUserBoardMappings = async (boardmapping) => {
+  try {
+    let bulkCreate = await UserBoardMapping.bulkCreate(boardmapping);
+    return bulkCreate;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const bulkCreateUserSubBoardMappings = async (subboardmapping) => {
+  try {
+    let bulkCreate = await UserSubBoardMapping.bulkCreate(subboardmapping);
+    return bulkCreate;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const bulkCreateUserQualificationMappings = async (qmapping) => {
+  try {
+    let bulkCreate = await UserQualificationMapping.bulkCreate(qmapping);
+    return bulkCreate;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const bulkCreateUserSubjectMappings = async (subjectmapping) => {
+  try {
+    let bulkCreate = await UserSubjectMapping.bulkCreate(subjectmapping);
+    return bulkCreate;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   finduser,
   checkUserEmailPassword,
@@ -179,5 +228,10 @@ module.exports = {
   createUser,
   findUserSubjectsBoardSubBoard,
   updateUser,
-  getUserAssignedSubjects
+  getUserAssignedSubjects,
+  bulkCreateUserBoardMappings,
+  bulkCreateUserSubBoardMappings,
+  bulkCreateUserQualificationMappings,
+  bulkCreateUserSubjectMappings,
+  bulkCreateRoles,
 };

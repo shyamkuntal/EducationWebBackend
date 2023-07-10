@@ -1,4 +1,9 @@
-const { UserBoardMapping, SubBoard, Board } = require("../models/Board");
+const {
+  SubBoard,
+  Board,
+  UserBoardMapping,
+  UserSubBoardMapping,
+} = require("../models/Board");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
 
@@ -145,6 +150,7 @@ const findSubBoardsById = async (subBoardId) => {
     throw err;
   }
 };
+
 module.exports = {
   getSubBoardsByBoardId,
   createSubBoard,

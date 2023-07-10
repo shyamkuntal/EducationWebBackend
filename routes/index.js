@@ -20,7 +20,7 @@ router.use("/boardmanagement", AuthSuperadmin(), BoardRouters);
 router.use("/subjectmanagement", AuthSupervisor(), SubjectRouters);
 router.use("/ppmsupervisor", AuthSuperadminSupervisor(), PPMSupervisor);
 router.use("/ppmreviewer", PPMReviewer);
-router.use("/accountmanagement", AccountManagement);
+router.use("/accountmanagement", AuthSuperadminSupervisor(), AccountManagement);
 router.use("/ppuploader", AuthPastPaper(), PastPaperUploader);
 router.use("/public", PublicRoutes);
 

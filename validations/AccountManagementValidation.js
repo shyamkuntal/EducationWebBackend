@@ -13,6 +13,7 @@ const createAccountSchema = Joi.object({
   boardIds: Joi.array().items(Joi.string().uuid().required()),
   subBoardIds: Joi.array().items(Joi.string().uuid().required()),
   subjectsIds: Joi.array().items(Joi.string().uuid().required()),
+  qualifications: Joi.array().items(Joi.string()),
 });
 
 const editAccountSchema = Joi.object({
