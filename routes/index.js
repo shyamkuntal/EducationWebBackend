@@ -2,6 +2,7 @@ const express = require("express");
 const BoardRouters = require("./BoardManagement.js");
 const SubjectRouters = require("./SubjectManagement.js");
 const PPMSupervisor = require("./PPMSupervisor.js");
+const PaperNumber = require("./PaperNumberManagement.js");
 const AccountManagement = require("./AccountManagement.js");
 const PPMReviewer = require("./PastPaperReviewer.js");
 const PastPaperUploader = require("./PastPaperUploader.js");
@@ -23,5 +24,6 @@ router.use("/ppmreviewer", PPMReviewer);
 router.use("/accountmanagement", AuthSuperadminSupervisor(), AccountManagement);
 router.use("/ppuploader", AuthPastPaper(), PastPaperUploader);
 router.use("/public", PublicRoutes);
+router.use("/pnmanagement", AuthSupervisor(), PaperNumber);
 
 module.exports = router;

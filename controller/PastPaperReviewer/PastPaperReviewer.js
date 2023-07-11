@@ -402,10 +402,19 @@ async getsubjectName(req, res, next) {
     try {
       let values = await reportErrorSchema.validateAsync(req.body);
 
+      let userData = await services.userService.finduser(
+        values.reviewerId,
+        CONSTANTS.roleNames.Reviewer
+      );
+
       // checking sheet
       let sheetData = await services.sheetService.findSheetAndUser(
         values.sheetId
       );
+
+      let responseMessage = {
+        message: { errorReport: "", sheetLog: "" },
+      };
 
       if (sheetData) {
         // Checking is reviewer is assigned to sheet
@@ -418,8 +427,40 @@ async getsubjectName(req, res, next) {
               values.recheckComment
             );
 
+            let statusTobeUpdated = {
+              statusForReviwer: CONSTANTS.sheetStatuses.Complete,
+              statusForSupervsior: CONSTANTS.sheetStatuses.Complete,
+              isSpam: true,
+            };
+
+            let updateErrorReport =
+              await services.sheetService.addRecheckErrorAndUpdate(
+                values.sheetId,
+                sheetData.supervisorId,
+                statusTobeUpdated.statusForReviwer,
+                statusTobeUpdated.isSpam,
+              );
+
+              if (updateErrorReport.length > 0) {
+                responseMessage.message.errorReport =
+                  "Error Report updated successfully!";
+              }
+
+              let createLog = await services.sheetService.createSheetLog(
+                sheetData.id,
+                sheetData.supervisor.Name,
+                userData.Name,
+                CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisorErrorReport
+              );
+  
+              if (createLog) {
+                responseMessage.message.sheetLog =
+                  "Log record for assignment to supervisor added successfully";
+              }
+
             res.status(httpStatus.OK).send({
               message: "Recheking error added successfully!",
+              responseMessage,
               addError,
             });
           } else {

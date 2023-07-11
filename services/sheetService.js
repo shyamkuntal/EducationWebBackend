@@ -282,8 +282,22 @@ const addRecheckError = async (sheetId, recheckComment) => {
       sheetId: sheetId,
       reviewerRecheckComment: recheckComment,
     });
-
     return createRecheckComment;
+  } catch (err) {
+    throw err;
+  }
+};
+const addRecheckErrorAndUpdate = async (sheetId, supervisorId, statusForReviewer, isSpam) => {
+  try {
+    let updateErrorReport = await Sheet.update(
+      {
+        assignedToUserId: supervisorId,
+        statusForReviewer: statusForReviewer,
+        isSpam: isSpam,
+      },
+      { where: { id: sheetId } }
+    );
+    return updateErrorReport;
   } catch (err) {
     throw err;
   }
@@ -349,6 +363,7 @@ module.exports = {
   uploadErrorReportFile,
   updateErrorReportAndAssignToSupervisor,
   addRecheckError,
+  addRecheckErrorAndUpdate,
   findRecheckingComments,
   createSheetCheckList,
   findCheckList,
