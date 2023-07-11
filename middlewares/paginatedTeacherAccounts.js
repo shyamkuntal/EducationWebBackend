@@ -4,13 +4,14 @@ const {
   UserSubjectMapping,
   UserBoardMapping,
   UserSubBoardMapping,
+  UserQualificationMapping,
 } = require("../models/User.js");
 const services = require("../services/index.js");
 const CONSTANTS = require("../constants/constants.js");
 const httpStatus = require("http-status");
 const { Board, SubBoard } = require("../models/Board.js");
 
-const reviewerAccountsSheets = () => {
+const paginatedTeacherAccounts = () => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -21,7 +22,7 @@ const reviewerAccountsSheets = () => {
     }
 
     let role = await services.userService.findByRoleName(
-      CONSTANTS.roleNames.Supervisor
+      CONSTANTS.roleNames.Teacher
     );
 
     if (role) {
@@ -58,8 +59,6 @@ const reviewerAccountsSheets = () => {
         offset: startIndex,
       });
 
-      console.log(usersDetails);
-
       let userWithBoardsSubBoards = [];
 
       for (let i = 0; i < usersDetails.length; i++) {
@@ -78,10 +77,16 @@ const reviewerAccountsSheets = () => {
 
         let subjectMappings = await UserSubjectMapping.findAll({
           where: { userId: usersDetails[i].id },
+          attributes: ["id", "subjectNameIds", "userId"],
           raw: true,
         });
 
-       
+        let qualificationMappings = await UserQualificationMapping.findAll({
+          where: { userId: usersDetails[i].id },
+          attributes: ["id", "gradeQualification"],
+          raw: true,
+        });
+
         let boardDetails = [];
         for (let j = 0; j < boards.length; j++) {
           let boardsSubBoards = {
@@ -89,7 +94,7 @@ const reviewerAccountsSheets = () => {
             subBoards: [],
           };
           let subBoards = await SubBoard.findAll({
-            where: { boardId: boards[j].board.id },
+            where: { boardId: boards[j].board.id, isArchived: false },
             attributes: ["id", "subBoardName", "isArchived"],
             raw: true,
             nest: true,
@@ -109,6 +114,7 @@ const reviewerAccountsSheets = () => {
           user: usersDetails[i],
           boardDetails: boardDetails,
           subject: subjectMappings,
+          qualification: qualificationMappings,
         });
       }
 
@@ -121,4 +127,4 @@ const reviewerAccountsSheets = () => {
   };
 };
 
-module.exports = reviewerAccountsSheets;
+module.exports = paginatedTeacherAccounts;

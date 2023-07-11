@@ -86,6 +86,8 @@ const AccountManagementController = {
 
       await services.userService.checkUserEmail(values.email, values.roleId);
 
+      let role = await services.userService.findRoleById(values.roleId);
+
       let user = await services.userService.createUser(
         values.Name,
         values.userName,
@@ -94,7 +96,7 @@ const AccountManagementController = {
         values.roleId
       );
 
-      //Create boardmapping entries
+      // Create boardmapping entries
       if (values.boardIds && values.boardIds.length > 0) {
         const boardmapping = values.boardIds.map((boardid) => ({
           userId: user.id,
@@ -114,8 +116,12 @@ const AccountManagementController = {
         );
       }
 
-      if (values.qualifications && values.qualifications.length > 0) {
-        const qmapping = qualifications.map((range) => ({
+      if (
+        values.qualifications &&
+        values.qualifications.length > 0 &&
+        role.roleName === CONSTANTS.roleNames.Teacher
+      ) {
+        const qmapping = values.qualifications.map((range) => ({
           userId: user.id,
           gradeQualification: range,
         }));
@@ -138,6 +144,7 @@ const AccountManagementController = {
 
       res.status(httpStatus.OK).send({ user });
     } catch (err) {
+      console.log(err);
       next(err);
     }
   },
@@ -381,7 +388,8 @@ const AccountManagementController = {
       });
 
       let subBoard = await services.boardService.getSubBoardsByBoardId(
-        values.boardId
+        values.boardId,
+        values.isArchived
       );
 
       res.status(httpStatus.OK).send(subBoard);

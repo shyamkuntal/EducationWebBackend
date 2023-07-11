@@ -3,7 +3,7 @@ const { User, UserSubjectMapping } = require("../models/User.js");
 const { userService } = require("../services/index.js");
 const CONSTANTS = require("../constants/constants.js");
 
-const pastPaperAccountsSheets = () => {
+const paginatedDataGeneratorAccounts = () => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -13,7 +13,9 @@ const pastPaperAccountsSheets = () => {
       filters.boardName = { $regex: req.query.search, $options: "i" };
     }
 
-    let role = await userService.findByRoleName(CONSTANTS.roleNames.PastPaper);
+    let role = await userService.findByRoleName(
+      CONSTANTS.roleNames.DataGenerator
+    );
 
     if (role) {
       filters.roleId = role.id;
@@ -68,4 +70,4 @@ const pastPaperAccountsSheets = () => {
   };
 };
 
-module.exports = pastPaperAccountsSheets;
+module.exports = paginatedDataGeneratorAccounts;

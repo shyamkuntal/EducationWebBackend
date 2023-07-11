@@ -6,7 +6,7 @@ const {
   getReviewerSheetsSchema,
 } = require("../validations/PPMReviewerValidation.js");
 
-const getPaginatedReviewerSheets = (model) => {
+const paginatedReviewerSheets = (model) => {
   return async (req, res, next) => {
     try {
       let values = await getReviewerSheetsSchema.validateAsync({
@@ -146,4 +146,4 @@ const getPaginatedReviewerSheets = (model) => {
   };
 };
 
-module.exports = getPaginatedReviewerSheets;
+module.exports = paginatedReviewerSheets;

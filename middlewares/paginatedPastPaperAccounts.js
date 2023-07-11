@@ -3,7 +3,7 @@ const { User, UserSubjectMapping } = require("../models/User.js");
 const { userService } = require("../services/index.js");
 const CONSTANTS = require("../constants/constants.js");
 
-const reviewerAccountsSheets = () => {
+const paginatedPastPaperAccounts = () => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -13,7 +13,7 @@ const reviewerAccountsSheets = () => {
       filters.boardName = { $regex: req.query.search, $options: "i" };
     }
 
-    let role = await userService.findByRoleName(CONSTANTS.roleNames.Reviewer);
+    let role = await userService.findByRoleName(CONSTANTS.roleNames.PastPaper);
 
     if (role) {
       filters.roleId = role.id;
@@ -68,4 +68,4 @@ const reviewerAccountsSheets = () => {
   };
 };
 
-module.exports = reviewerAccountsSheets;
+module.exports = paginatedPastPaperAccounts;

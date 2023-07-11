@@ -5,6 +5,7 @@ const {
   UserSubjectMapping,
   UserBoardMapping,
   UserSubBoardMapping,
+  UserQualificationMapping,
 } = require("../models/User.js");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
@@ -91,6 +92,16 @@ const findUserByEmail = async (email) => {
 const findByRoleName = async (roleName) => {
   try {
     let role = Roles.findOne({ where: { roleName: roleName }, raw: true });
+
+    return role;
+  } catch (err) {
+    throw error;
+  }
+};
+
+const findRoleById = async (roleId) => {
+  try {
+    let role = Roles.findOne({ where: { id: roleId }, raw: true });
 
     return role;
   } catch (err) {
@@ -234,4 +245,5 @@ module.exports = {
   bulkCreateUserQualificationMappings,
   bulkCreateUserSubjectMappings,
   bulkCreateRoles,
+  findRoleById,
 };

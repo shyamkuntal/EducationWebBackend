@@ -66,10 +66,10 @@ async function findBoardById(boardId) {
   }
 }
 
-const getSubBoardsByBoardId = async (boardId) => {
+const getSubBoardsByBoardId = async (boardId, isArchived) => {
   try {
     let subBoards = await SubBoard.findAll({
-      where: { boardId: boardId, isArchived: "false" },
+      where: { boardId: boardId, isArchived: false },
       attributes: ["id", "subBoardName", "boardId", "isArchived"],
       raw: true,
     });
