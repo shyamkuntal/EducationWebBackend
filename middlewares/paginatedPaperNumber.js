@@ -37,6 +37,9 @@ const paginatedPaperNumberSheet = (model, req) => {
     if (req.query.grade) {
       filters.grade = req.query.grade;
     }
+    if (req.query.statusForDataGenerator) {
+      filters.statusForDataGenerator = req.query.statusForDataGenerator;
+    }
     if (req.query.statusForReviewer) {
       filters.statusForReviewer = req.query.statusForReviewer;
     }
@@ -86,11 +89,13 @@ const paginatedPaperNumberSheet = (model, req) => {
           "grade",
           "subjectId",
           "resources",
+          "description",
           "lifeCycle",
           "supervisorId",
           "reviewerId",
           "assignedToUserId",
           "statusForSupervisor",
+          "statusForDataGenerator",
           "statusForReviewer",
           "errorReport",
           "errorReportImg",

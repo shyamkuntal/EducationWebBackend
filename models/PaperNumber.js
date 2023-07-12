@@ -53,6 +53,10 @@ const PaperNumberSheet = db.define("paperNumberSheet", {
     type: Sequelize.UUID,
     allowNull: true,
   },
+  statusForDataGenerator: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
   statusForSupervisor: {
     type: Sequelize.STRING,
     allowNull: true,
@@ -182,6 +186,18 @@ const PaperNumber = db.define("paperNumber", {
     paperNumber: {
       type: Sequelize.STRING,
       allowNull: true,
+    },
+    errorReport: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    isError: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
+    isArchive: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
     },
   }); 
   

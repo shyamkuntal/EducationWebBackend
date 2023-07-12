@@ -18,12 +18,11 @@ const PaperNumberSheetController = {
                 description: req.body.description,
                 supervisorId: req.body.supervisorId
             });
-            console.log(values)
+            // console.log(values)
 
             const paperNumberSheet = await PaperNumberSheet.create(values);
 
-            return res.json({
-                status: 200,
+            return res.status(httpStatus.OK).send({
                 paperNumberSheet,
             });
         } catch (err) {
@@ -59,8 +58,7 @@ const PaperNumberSheetController = {
             // Save the updated PaperNumberSheet
             await paperNumberSheet.save();
 
-            return res.json({
-                status: 200,
+            return res.status(httpStatus.OK).send({
                 message: "PaperNumberSheet Updated Successfully",
                 paperNumberSheet,
             });
@@ -98,7 +96,7 @@ const PaperNumberSheetController = {
                         return createdPaperNumber;
                     })
                 );
-                return res.status(200).json({ paperNumber: createdPaperNumbers });
+                return res.status(httpStatus.OK).send({ paperNumber: createdPaperNumbers });
             }
 
         } catch (error) {
@@ -110,7 +108,7 @@ const PaperNumberSheetController = {
     async getAllPaperNumber(req, res, next) {
         try {
             const paperNumbers = await PaperNumber.findAll();
-            res.status(200).json(paperNumbers);
+            res.status(httpStatus.OK).send(paperNumbers);
         } catch (error) {
             next(error)
             console.error('Error retrieving PaperNumbers:', error);
@@ -128,17 +126,21 @@ const PaperNumberSheetController = {
 
             if (!findPaperNumber) {
                 return res.status(404).json({ error: 'PaperNumber not found' });
-              }
-            
+            }
+
             await findPaperNumber.save()
 
-            res.status(200).json({ message: 'PaperNumber updated successfully' });
+            res.status(httpStatus.OK).send({ message: 'PaperNumber updated successfully' });
         } catch (error) {
             console.error('Error updating PaperNumber:', error);
             next(error)
             res.status(500).json({ error: 'Failed to update PaperNumber' });
         }
     }
+
+    // async submitToDataGenerator(res, res, next){
+
+    // }
 }
 
 module.exports = PaperNumberSheetController;
