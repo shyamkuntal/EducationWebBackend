@@ -4,7 +4,7 @@ const { Sheet } = require("../models/Sheet.js");
 const { SubjectLevel, Subject } = require("../models/Subject.js");
 const { User } = require("../models/User.js");
 
-const paginatedSheetResults = (model, req) => {
+const paginatedSheetResults = (req) => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -142,9 +142,7 @@ const paginatedSheetResults = (model, req) => {
           },
           {
             model: Subject,
-            where: req.query.subjectNameId
-              ? { subjectNameId: req.query.subjectNameId }
-              : {},
+            where: req.query.subjectNameId ? { subjectNameId: req.query.subjectNameId } : {},
           },
           {
             model: User,

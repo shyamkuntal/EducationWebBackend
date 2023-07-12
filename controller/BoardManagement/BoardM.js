@@ -41,9 +41,7 @@ const BoardManagementController = {
           boardId: board.id, // Associate the sub-board with the created board
         }));
 
-        createSubBoards = await services.boardService.bulkCreateSubBoards(
-          subBoards
-        );
+        createSubBoards = await services.boardService.bulkCreateSubBoards(subBoards);
       }
 
       return res.status(httpStatus.CREATED).send({
@@ -59,11 +57,9 @@ const BoardManagementController = {
   async GetSubBoards(req, res, next) {
     try {
       let values = await getSubBoardsSchema.validateAsync({
-        boardId: req.params.boardId,
+        boardId: req.query.boardId,
       });
-      let subBoards = await services.boardService.getSubBoardsByBoardId(
-        values.boardId
-      );
+      let subBoards = await services.boardService.getSubBoardsByBoardId(values.boardId);
 
       res.status(httpStatus.OK).send({ subBoards: subBoards });
     } catch (err) {
@@ -97,25 +93,20 @@ const BoardManagementController = {
         });
 
         // Map the existing sub-boards to their IDs
-        const existingSubBoardIds = existingSubBoards.map(
-          (subBoard) => subBoard.id
-        );
+        const existingSubBoardIds = existingSubBoards.map((subBoard) => subBoard.id);
 
         // Filter out the sub-boards to be updated
         const subBoardsToUpdate = values.subBoards.filter(
-          (subBoardData) =>
-            subBoardData.id && existingSubBoardIds.includes(subBoardData.id)
+          (subBoardData) => subBoardData.id && existingSubBoardIds.includes(subBoardData.id)
         );
 
         // Create new sub-boards and update existing sub-boards
-        const subBoardsToCreateOrUpdate = values.subBoards.map(
-          (subBoardData) => ({
-            id: subBoardData.id || uuidv4(),
-            subBoardName: subBoardData.subBoardName,
-            isArchived: subBoardData.isArchived || false,
-            boardId: values.id,
-          })
-        );
+        const subBoardsToCreateOrUpdate = values.subBoards.map((subBoardData) => ({
+          id: subBoardData.id || uuidv4(),
+          subBoardName: subBoardData.subBoardName,
+          isArchived: subBoardData.isArchived || false,
+          boardId: values.id,
+        }));
         // Bulk create/update the sub-boards
         await SubBoard.bulkCreate(subBoardsToCreateOrUpdate, {
           updateOnDuplicate: ["subBoardName", "isArchived"],
@@ -155,19 +146,16 @@ const BoardManagementController = {
       const board = await services.boardService.findBoardById(values.boardId);
 
       if (!board) {
-        return res
-          .status(httpStatus.NOT_FOUND)
-          .json({ message: "Board not found" });
+        return res.status(httpStatus.NOT_FOUND).json({ message: "Board not found" });
       }
 
       if (board.isPublished === values.isPublished) {
         res.status(httpStatus.OK).send({ message: "Board publish updated!" });
       } else {
-        let updateIsPublished =
-          await services.boardService.updateBoardIsPublished(
-            board.id,
-            values.isPublished
-          );
+        let updateIsPublished = await services.boardService.updateBoardIsPublished(
+          board.id,
+          values.isPublished
+        );
 
         if (updateIsPublished.length > 0) {
           res.status(httpStatus.OK).send({ message: "Board publish updated!" });
@@ -190,11 +178,10 @@ const BoardManagementController = {
       if (board.isArchived === values.isArchived) {
         res.status(httpStatus.OK).send({ message: "Board archive updated!" });
       } else {
-        let updateIsArchived =
-          await services.boardService.updateBoardIsArchived(
-            values.boardId,
-            values.isArchived
-          );
+        let updateIsArchived = await services.boardService.updateBoardIsArchived(
+          values.boardId,
+          values.isArchived
+        );
 
         if (updateIsArchived.length > 0) {
           res.status(httpStatus.OK).send({ message: "Board archive updated!" });
@@ -210,12 +197,11 @@ const BoardManagementController = {
 
       // Update sub-boards
       if (values.subBoardIds && values.subBoardIds.length > 0) {
-        let archiveSubBoards =
-          await services.boardService.updateSuBoardsIsArchived(
-            values.boardId,
-            values.subBoardIds,
-            values.isArchived
-          );
+        let archiveSubBoards = await services.boardService.updateSuBoardsIsArchived(
+          values.boardId,
+          values.subBoardIds,
+          values.isArchived
+        );
 
         if (archiveSubBoards.length > 0) {
           res.status(httpStatus.OK).send({
@@ -250,9 +236,7 @@ const BoardManagementController = {
 
       let getboard = await services.boardService.findBoardById(values.boardId);
 
-      let getSubBoards = await services.boardService.getSubBoardsByBoardId(
-        values.boardId
-      );
+      let getSubBoards = await services.boardService.getSubBoardsByBoardId(values.boardId);
 
       getboard.subBoards = getSubBoards;
 

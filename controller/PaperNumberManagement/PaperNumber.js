@@ -1,9 +1,12 @@
 const { Board, SubBoard } = require("../../models/Board.js");
-const { PaperNumberSheet, PaperNumber } = require("../../models/PaperNumber.js")
+const { PaperNumberSheet, PaperNumber } = require("../../models/PaperNumber.js");
 const services = require("../../services/index.js");
 const httpStatus = require("http-status");
 const { User, Roles } = require("../../models/User.js");
-const { createPaperNumberSheetSchema, EditPaperNumberSheetSchema } = require("../../validations/PaperNumber.js")
+const {
+  createPaperNumberSheetSchema,
+  EditPaperNumberSheetSchema,
+} = require("../../validations/PaperNumberValidations.js");
 
 const PaperNumberSheetController = {
     //take care of isarchived and ispublished later
@@ -20,7 +23,7 @@ const PaperNumberSheetController = {
             });
             // console.log(values)
 
-            const paperNumberSheet = await PaperNumberSheet.create(values);
+      const paperNumberSheet = await PaperNumberSheet.create(values);
 
             return res.status(httpStatus.OK).send({
                 paperNumberSheet,
@@ -31,32 +34,32 @@ const PaperNumberSheetController = {
         }
     },
 
-    async UpdatePaperNumberSheet(req, res, next) {
-        try {
-            let values = await EditPaperNumberSheetSchema.validateAsync({
-                paperNumberSheetId: req.body.paperNumberSheetId,
-                boardId: req.body.boardId,
-                subBoardId: req.body.subBoardId,
-                grade: req.body.grade,
-                subjectId: req.body.subjectId,
-                resources: req.body.resources,
-                description: req.body.description,
-                supervisorId: req.body.supervisorId
-            });
+  async UpdatePaperNumberSheet(req, res, next) {
+    try {
+      let values = await EditPaperNumberSheetSchema.validateAsync({
+        paperNumberSheetId: req.body.paperNumberSheetId,
+        boardId: req.body.boardId,
+        subBoardId: req.body.subBoardId,
+        grade: req.body.grade,
+        subjectId: req.body.subjectId,
+        resources: req.body.resources,
+        description: req.body.description,
+        supervisorId: req.body.supervisorId,
+      });
 
-            // Find the sheet with the given ID
-            const paperNumberSheet = await PaperNumberSheet.findByPk(values.paperNumberSheetId);
-            // Update the sheet's values with the provided data
-            paperNumberSheet.boardId = values.boardId;
-            paperNumberSheet.subBoardId = values.subBoardId;
-            paperNumberSheet.grade = values.grade;
-            paperNumberSheet.subjectId = values.subjectId;
-            paperNumberSheet.resources = values.resources;
-            paperNumberSheet.description = values.description;
-            paperNumberSheet.supervisorId = values.supervisorId;
+      // Find the sheet with the given ID
+      const paperNumberSheet = await PaperNumberSheet.findByPk(values.paperNumberSheetId);
+      // Update the sheet's values with the provided data
+      paperNumberSheet.boardId = values.boardId;
+      paperNumberSheet.subBoardId = values.subBoardId;
+      paperNumberSheet.grade = values.grade;
+      paperNumberSheet.subjectId = values.subjectId;
+      paperNumberSheet.resources = values.resources;
+      paperNumberSheet.description = values.description;
+      paperNumberSheet.supervisorId = values.supervisorId;
 
-            // Save the updated PaperNumberSheet
-            await paperNumberSheet.save();
+      // Save the updated PaperNumberSheet
+      await paperNumberSheet.save();
 
             return res.status(httpStatus.OK).send({
                 message: "PaperNumberSheet Updated Successfully",
@@ -68,15 +71,15 @@ const PaperNumberSheetController = {
         }
     },
 
-    async createPaperNumber(req, res, next) {
-        try {
-            const { paperNumberSheetId, paperNumber } = req.body;
+  async createPaperNumber(req, res, next) {
+    try {
+      const { paperNumberSheetId, paperNumber } = req.body;
 
-            // Find the PaperNumberSheet 
-            const paperNumberSheet = await PaperNumberSheet.findByPk(paperNumberSheetId);
-            if (!paperNumberSheet) {
-                return res.status(404).json({ error: 'PaperNumberSheet not found' });
-            }
+      // Find the PaperNumberSheet
+      const paperNumberSheet = await PaperNumberSheet.findByPk(paperNumberSheetId);
+      if (!paperNumberSheet) {
+        return res.status(404).json({ error: "PaperNumberSheet not found" });
+      }
 
             // Create PaperNumbers
             // if single paperNumber
@@ -116,13 +119,13 @@ const PaperNumberSheetController = {
         }
     },
 
-    async EditPaperNumber(req, res, next) {
-        const { paperNumberId, paperNumber } = req.body;
+  async EditPaperNumber(req, res, next) {
+    const { paperNumberId, paperNumber } = req.body;
 
-        try {
-            // Find the PaperNumber with the given ID
-            const findPaperNumber = await PaperNumber.findByPk(paperNumberId);
-            findPaperNumber.paperNumber = paperNumber
+    try {
+      // Find the PaperNumber with the given ID
+      const findPaperNumber = await PaperNumber.findByPk(paperNumberId);
+      findPaperNumber.paperNumber = paperNumber;
 
             if (!findPaperNumber) {
                 return res.status(404).json({ error: 'PaperNumber not found' });
@@ -144,4 +147,3 @@ const PaperNumberSheetController = {
 }
 
 module.exports = PaperNumberSheetController;
-

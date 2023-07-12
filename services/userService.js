@@ -175,7 +175,7 @@ const updatePassword = async (userId, newPassword) => {
   }
 };
 
-const findUserSubjectsBoardSubBoard = async (id) => {
+const findUserSubjectsBoardSubBoardQualification = async (id) => {
   try {
     let userDetails = await User.findOne({
       where: { id: id },
@@ -184,6 +184,10 @@ const findUserSubjectsBoardSubBoard = async (id) => {
         { model: UserBoardMapping, attributes: ["boardID"] },
         { model: UserSubBoardMapping, attributes: ["subBoardId"] },
         { model: UserSubjectMapping, attributes: ["subjectNameIds", "userId"] },
+        {
+          model: UserQualificationMapping,
+          attributes: ["id", "gradeQualification", "userId"],
+        },
       ],
     });
 
@@ -237,7 +241,7 @@ module.exports = {
   updatePassword,
   checkUserEmail,
   createUser,
-  findUserSubjectsBoardSubBoard,
+  findUserSubjectsBoardSubBoardQualification,
   updateUser,
   getUserAssignedSubjects,
   bulkCreateUserBoardMappings,

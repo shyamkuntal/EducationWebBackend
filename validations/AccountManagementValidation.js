@@ -25,6 +25,7 @@ const editAccountSchema = Joi.object({
   boardIds: Joi.array().items(Joi.string().uuid().required()),
   subBoardIds: Joi.array().items(Joi.string().uuid().required()),
   subjectsIds: Joi.array().items(Joi.string().uuid().required()),
+  qualifications: Joi.array().items(Joi.string()),
 });
 
 const getSubjectNameByIdSchema = Joi.object({

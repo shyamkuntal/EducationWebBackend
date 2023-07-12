@@ -398,14 +398,16 @@ const AccountManagementController = {
     }
   },
 
-  async getUserSubjectBoardSubBord(req, res, next) {
+  async getUserSubjectBoardSubBordQualification(req, res, next) {
     try {
       let values = await getUserBoardSubBoardSubjectSchema.validateAsync({
         userId: req.query.userId,
       });
 
       let userDetails =
-        await services.userService.findUserSubjectsBoardSubBoard(values.userId);
+        await services.userService.findUserSubjectsBoardSubBoardQualification(
+          values.userId
+        );
 
       res.status(httpStatus.OK).send(userDetails);
     } catch (err) {
