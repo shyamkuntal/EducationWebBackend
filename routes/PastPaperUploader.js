@@ -13,17 +13,16 @@ const {
   getSingleAssignedSheet,
 } = require("../controller/PastPaperUploader/PastPaper.js");
 const paginatedSheetResults = require("../middlewares/paginatedSheet.js");
-const { Sheet } = require("../models/Sheet.js");
 const PastPaperUploaderController = require("../controller/PastPaperUploader/PastPaper.js");
 const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor.js");
 
 const router = express.Router();
 
-router.get("/getallsheets", paginatedSheetResults(Sheet), (req, res) => {
+router.get("/getallsheets", paginatedSheetResults(), (req, res) => {
   res.json(res.paginatedResults);
 });
 
-router.get("/:sheetId/getsinglesheet", paginatedSheetResults(Sheet), getsinglesheet);
+router.get("/:sheetId/getsinglesheet", paginatedSheetResults(), getsinglesheet);
 
 router.get("/getassignedsubjects", PastPaperUploaderController.getPastPaperAssignedSubjects);
 
@@ -62,7 +61,7 @@ router.get("/getpastpaper", PastPaperSupervisorController.getPastPaper);
 // api/ppmReviewer/getsubjectnames
 router.get("/getsubjectnames", PastPaperUploaderController.getsubjectName);
 
-router.get("/:userId/getdatafordashboard", paginatedSheetResults(Sheet), getdatafordashboard);
+router.get("/:userId/getdatafordashboard", paginatedSheetResults(), getdatafordashboard);
 
 router.get("/getallboards", PastPaperUploaderController.getAllboards);
 

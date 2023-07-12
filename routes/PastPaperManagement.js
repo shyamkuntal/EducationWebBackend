@@ -1,6 +1,5 @@
 const express = require("express");
 const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor");
-const { Sheet } = require("../models/Sheet.js");
 const paginatedSheetResults = require("../middlewares/paginatedSheet.js");
 
 const router = express.Router();
@@ -26,7 +25,7 @@ router.get("/:boardId/:SubBoardId/getallgrades", PastPaperSupervisorController.g
 router.get("/:boardId/:SubBoardId/:grade/getallsubjects", PastPaperSupervisorController.getallsubjects);
 router.get("/getalllevels", PastPaperSupervisorController.getalllevels);
 
-router.get("/getallsheets", paginatedSheetResults(Sheet), (req, res) => {
+router.get("/getallsheets", paginatedSheetResults(), (req, res) => {
   res.json(res.paginatedResults);
 });
 

@@ -1,7 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const bcrypt = require("bcrypt");
-const { Sheet } = require("./Sheet");
 const { Board, SubBoard } = require("./Board");
 const { subjectName } = require("./Subject");
 const gradeRange = ["1-5", "6-8", "9-10", "11-12"];
@@ -198,12 +197,6 @@ UserSubjectMapping.sync().then(() => {
   console.log("UsersubjectMapping created");
 });
 
-// User.hasMany(Sheet, { foreignKey: "assignedToUserId" });
-// SubBoard.belongsTo(Board, {
-//   foreignKey: { name: "boardId" },
-// });
-
-//SubBoard.hasMany(Subject, { foreignKey: 'subBoardId' });
 
 module.exports = {
   User,

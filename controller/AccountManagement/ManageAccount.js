@@ -9,8 +9,6 @@ const {
 const { roleNames } = require("../../constants/constants.js");
 const { Sequelize } = require("sequelize");
 const { subjectName } = require("../../models/Subject.js");
-const { Sheet } = require("../../models/Sheet.js");
-const { SubBoard, Board } = require("../../models/Board.js");
 const services = require("../../services");
 const { findRoleByNameSchema } = require("../../validations/RoleValidation.js");
 const httpStatus = require("http-status");
