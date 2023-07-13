@@ -29,6 +29,7 @@ const User = db.define(
     userName: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true,
     },
     email: {
       type: Sequelize.STRING,
@@ -196,7 +197,6 @@ UserSubjectMapping.belongsTo(User, { foreignKey: "userId" });
 UserSubjectMapping.sync().then(() => {
   console.log("UsersubjectMapping created");
 });
-
 
 module.exports = {
   User,

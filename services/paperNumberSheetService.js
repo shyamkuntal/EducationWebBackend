@@ -1,14 +1,76 @@
-const { PaperNumberSheet, PaperNumberSheetLog, PaperNumberSheetCheckList } = require("../models/PaperNumber");
+const {
+  PaperNumberSheet,
+  PaperNumberSheetLog,
+  PaperNumberSheetCheckList,
+} = require("../models/PaperNumber");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
 const { User } = require("../models/User");
 const CONSTANTS = require("../constants/constants");
 
-const findPaperNumberSheetByPk = async (pk) => {
+const findPaperNumberSheetByPk = async (paperNumberSheetId) => {
   try {
-    let sheet = await PaperNumberSheet.findByPk(pk);
+    let sheet = await PaperNumberSheet.findByPk(paperNumberSheetId);
 
     return sheet;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findPaperNumberWithUser = async (paperNumberSheetId) => {
+  try {
+    let sheet = await PaperNumberSheet.findOne({
+      where: { id: paperNumberSheetId },
+      include: [{ model: User, as: "supervisor" }],
+      raw: true,
+      nest: true,
+    });
+
+    return sheet;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const createPaperNumberSheetLog = async (dataToBeCreated) => {
+  try {
+    let createSheetLog = await PaperNumberSheetLog.create(dataToBeCreated);
+    return createSheetLog;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const uploadPaperNumberErrorReportFile = async (fileName, fileObj) => {
+  try {
+    const errorImageKey =
+      process.env.AWS_BUCKET_PAPERNUMBER_ERROR_REPORT_IMAGES_FOLDER + "/" + fileName;
+
+    const imageUploadParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Body: fileObj.buffer,
+      Key: errorImageKey,
+      ContentType: fileObj.mimetype,
+    };
+
+    let fileUpload = await s3Client.send(new PutObjectCommand(imageUploadParams));
+
+    if (fileUpload.$metadata.httpStatusCode === httpStatus.OK) {
+      return fileName;
+    } else {
+      false;
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+const updatePaperNumberSheet = async (dataToBeUpdated, whereQuery) => {
+  try {
+    let updateStatus = await PaperNumberSheet.update(dataToBeUpdated, whereQuery);
+
+    return updateStatus;
   } catch (err) {
     throw err;
   }
@@ -27,7 +89,6 @@ const findSheetAndUser = async (paperNumberSheetId) => {
       raw: true,
       nest: true,
     });
-
     return findSheet;
   } catch (err) {
     throw err;
@@ -47,13 +108,11 @@ const updatePNSheetStatusForSupervisorAndReviewer = async (
       },
       { where: { id: paperNumberSheetId } }
     );
-
     return updateStatus;
   } catch (err) {
     throw err;
   }
 };
-
 const assignUserToSheetAndUpdateLifeCycleAndStatuses = async (
   paperNumberSheetId,
   userId,
@@ -73,10 +132,8 @@ const assignUserToSheetAndUpdateLifeCycleAndStatuses = async (
         },
         { where: { id: paperNumberSheetId } }
       );
-
       return assignSheetAndStatus;
     }
-
     if (lifeCycleName === CONSTANTS.roleNames.Reviewer) {
       let assignSheetAndStatus = await PaperNumberSheet.update(
         {
@@ -88,43 +145,39 @@ const assignUserToSheetAndUpdateLifeCycleAndStatuses = async (
         },
         { where: { id: paperNumberSheetId } }
       );
-
       return assignSheetAndStatus;
     }
   } catch (err) {
     throw err;
   }
 };
-
 const updateSupervisorComments = async (paperNumberSheetId, comment, user) => {
-
-  if(user === CONSTANTS.roleNames.PastPaper){
+  if (user === CONSTANTS.roleNames.PastPaper) {
     try {
       let updateComment = await PaperNumberSheet.update(
         {
-          supervisorCommentToDataGenerator: comment
+          supervisorCommentToDataGenerator: comment,
         },
         { where: { id: paperNumberSheetId } }
-      )
-      return updateComment
+      );
+      return updateComment;
     } catch (error) {
-        throw error
+      throw error;
     }
-  }else{
+  } else {
     try {
       let updateComment = await PaperNumberSheet.update(
         {
-          supervisorCommentToReviewer: comment
+          supervisorCommentToReviewer: comment,
         },
         { where: { id: paperNumberSheetId } }
-      )
-      return updateComment
+      );
+      return updateComment;
     } catch (error) {
-        throw error
+      throw error;
     }
   }
 };
-
 const createSheetLog = async (paperNumberSheetId, assignee, assignedTo, logMessage) => {
   try {
     let createLog = await PaperNumberSheetLog.create({
@@ -133,7 +186,6 @@ const createSheetLog = async (paperNumberSheetId, assignee, assignedTo, logMessa
       assignedTo,
       logMessage,
     });
-
     return createLog;
   } catch (err) {
     throw err;
@@ -151,7 +203,6 @@ const findCheckList = async (paperNumberSheetId) => {
     throw err;
   }
 };
-
 const createSheetCheckList = async (paperNumberSheetId) => {
   try {
     let checkList = [
@@ -166,7 +217,6 @@ const createSheetCheckList = async (paperNumberSheetId) => {
       { paperNumberSheetId: paperNumberSheetId, label: CONSTANTS.sheetCheckList.CheckListItem9 },
       { paperNumberSheetId: paperNumberSheetId, label: CONSTANTS.sheetCheckList.CheckListItem10 },
     ];
-
     let bulkCreateCheckList = await PaperNumberSheetCheckList.bulkCreate(checkList);
     return bulkCreateCheckList;
   } catch (err) {
@@ -174,4 +224,17 @@ const createSheetCheckList = async (paperNumberSheetId) => {
   }
 };
 
-module.exports = { findPaperNumberSheetByPk, updatePNSheetStatusForSupervisorAndReviewer, findSheetAndUser, assignUserToSheetAndUpdateLifeCycleAndStatuses, updateSupervisorComments, createSheetLog, findCheckList, createSheetCheckList };
+module.exports = {
+  findPaperNumberSheetByPk,
+  updatePNSheetStatusForSupervisorAndReviewer,
+  findSheetAndUser,
+  assignUserToSheetAndUpdateLifeCycleAndStatuses,
+  updateSupervisorComments,
+  createSheetLog,
+  findCheckList,
+  createSheetCheckList,
+  createPaperNumberSheetLog,
+  uploadPaperNumberErrorReportFile,
+  updatePaperNumberSheet,
+  findPaperNumberWithUser,
+};

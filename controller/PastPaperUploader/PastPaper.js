@@ -6,7 +6,11 @@ const dotenv = require("dotenv");
 const { Sheet } = require("../../models/Sheet.js");
 const { SubjectLevel, subjectName, Subject } = require("../../models/Subject.js");
 const { SubBoard, Board } = require("../../models/Board.js");
-const { createPastPaperSchema, assignSupervisorUserToSheetSchema, editPastPaperSchema } = require("../../validations/PastPaperValidation.js");
+const {
+  createPastPaperSchema,
+  assignSupervisorUserToSheetSchema,
+  editPastPaperSchema,
+} = require("../../validations/PastPaperValidation.js");
 
 const httpStatus = require("http-status");
 
@@ -20,17 +24,6 @@ const { getRecheckingComments } = require("../../validations/PPMReviewerValidati
 dotenv.config();
 
 const bucketName = process.env.AWS_BUCKET_NAME;
-// export const getAssignedSheets = async (req, res) => {
-//   const assignedTo = req.params.userId;
-//   console.log(assignedTo);
-//   try {
-//     const allAssignedSheeets = await Sheet.findAll({ where: { assignedTo } });
-
-//     return res.json({ status: 200, AssignedSheets: allAssignedSheeets });
-//   } catch (error) {
-//     res.json({ status: 501, message: error.message });
-//   }
-// };
 
 const PastPaperUploaderController = {
   async getdatafordashboard(req, res) {
@@ -110,43 +103,6 @@ const PastPaperUploaderController = {
     }
   },
 
-  async getAllboards(req, res, next) {
-    try {
-      const distinctBoardIds = await Subject.findAll({
-        attributes: ["boardId"],
-        group: ["boardId"],
-      });
-
-      const boardIds = distinctBoardIds.map((board) => board.boardId);
-
-      const boards = await Board.findAll({
-        attributes: ["id", "boardName"],
-        where: {
-          id: boardIds,
-        },
-      });
-
-      const boardNames = boards.map((board) => board.dataValues);
-
-      return res.json({ status: 200, boardNames });
-    } catch (err) {
-      return res.json({ status: 501, error: err.message });
-    }
-  },
-
-  async getAllSubBoards(req, res) {
-    try {
-      let values = await getSubBoardsSchema.validateAsync({
-        boardId: req.query.boardId,
-      });
-
-      let subBoards = await services.boardService.getSubBoardsByBoardId(values.boardId);
-      return res.status(200).json(subBoards);
-    } catch (error) {
-      return res.status(500).json({ message: error.message });
-    }
-  },
-
   async getAssignedSheets(req, res) {
     const assignedToUserId = req.params.userId;
     let userId = req.user.id;
@@ -192,15 +148,6 @@ const PastPaperUploaderController = {
     }
   },
 
-  // async getsubjectName(req, res, next) {
-  //   try {
-  //     const subjectName = await services.subjectService.getSubjectNames();
-  //     res.status(httpStatus.OK).send(subjectName);
-  //   } catch (err) {
-  //     next(err);
-  //   }
-  // },
-
   async getsinglesheet(req, res) {
     const id = req.params.sheetId;
     // const id = req.body.sheetId;
@@ -232,35 +179,6 @@ const PastPaperUploaderController = {
       return res.json({ status: 200, sheetinfo });
     } catch (err) {
       return res.json({ status: 501, error: err.message });
-    }
-  },
-
-  async getsubjectName(req, res, next) {
-    try {
-      const subjectName = await services.subjectService.getSubjectNames();
-      let subjectDetails = [];
-
-      for (const element of subjectName) {
-        const getObjectParams = {
-          Bucket: process.env.AWS_BUCKET_NAME,
-          Key: element.subjectImage,
-        };
-        const command = new GetObjectCommand(getObjectParams);
-
-        const url = await getSignedUrl(s3Client, command, {
-          expiresIn: 3600,
-        });
-
-        subjectDetails.push({
-          ...element,
-          subjectImageUrl: url,
-        });
-      }
-
-      res.status(httpStatus.OK).send(subjectDetails);
-    } catch (err) {
-      console.log(err);
-      next(err);
     }
   },
 
@@ -300,7 +218,8 @@ const PastPaperUploaderController = {
       // Upload the image buffer to S3
       const imagebanner = generateFileName(values.image.originalname);
 
-      const imageBannerKey = process.env.AWS_BUCKET_PASTPAPER_IMAGE_BANNER_FOLDER + "/" + imagebanner;
+      const imageBannerKey =
+        process.env.AWS_BUCKET_PASTPAPER_IMAGE_BANNER_FOLDER + "/" + imagebanner;
 
       const imageUploadParams = {
         Bucket: bucketName,
@@ -339,7 +258,14 @@ const PastPaperUploaderController = {
       // Upload the answer PDF buffer to S3
       await s3Client.send(new PutObjectCommand(anspdfUploadParams));
 
-      let pastpaper = await services.pastpaperService.createPastPaper(values.paperNumber, values.googleLink, questionKey, answerKey, imageBannerKey, values.sheetId);
+      let pastpaper = await services.pastpaperService.createPastPaper(
+        values.paperNumber,
+        values.googleLink,
+        questionKey,
+        answerKey,
+        imageBannerKey,
+        values.sheetId
+      );
 
       const id = values.sheetId;
       const sheet = await Sheet.findByPk(id);
@@ -361,7 +287,10 @@ const PastPaperUploaderController = {
     try {
       let values = await assignSupervisorUserToSheetSchema.validateAsync(req.body);
 
-      let userData = await services.userService.finduser(values.pastPaperId, CONSTANTS.roleNames.PastPaper);
+      let userData = await services.userService.finduser(
+        values.pastPaperId,
+        CONSTANTS.roleNames.PastPaper
+      );
 
       let sheetData = await services.sheetService.findSheetAndUser(values.sheetId);
 
@@ -389,7 +318,12 @@ const PastPaperUploaderController = {
               statusForSupervisor: CONSTANTS.sheetStatuses.Complete,
             };
 
-            let updateAssignAndStatus = await services.sheetService.assignSupervisorToSheetAndUpdateStatus(sheetData.id, sheetData.supervisorId, sheetStatusToBeUpdated.statusForSupervisor);
+            let updateAssignAndStatus =
+              await services.sheetService.assignSupervisorToSheetAndUpdateStatus(
+                sheetData.id,
+                sheetData.supervisorId,
+                sheetStatusToBeUpdated.statusForSupervisor
+              );
 
             if (updateAssignAndStatus.length > 0) {
               responseMessage.assinedUserToSheet = "Sheet assigned to supervisor successfully";
@@ -397,10 +331,16 @@ const PastPaperUploaderController = {
             }
 
             // CREATE sheet log for sheet assignment to supervisor
-            let createLog = await services.sheetService.createSheetLog(sheetData.id, sheetData.supervisor.Name, userData.Name, CONSTANTS.sheetLogsMessages.pastPaperrAssignToSupervisor);
+            let createLog = await services.sheetService.createSheetLog(
+              sheetData.id,
+              sheetData.supervisor.Name,
+              userData.Name,
+              CONSTANTS.sheetLogsMessages.pastPaperrAssignToSupervisor
+            );
 
             if (createLog) {
-              responseMessage.sheetLog = "Log record for assignment to supervisor added successfully";
+              responseMessage.sheetLog =
+                "Log record for assignment to supervisor added successfully";
             }
 
             res.status(httpStatus.OK).send({ message: responseMessage });
@@ -448,16 +388,6 @@ const PastPaperUploaderController = {
     }
   },
 
-  async getPastPaperAssignedSubjects(req, res, next) {
-    try {
-      let userId = req.query.userId;
-      let userSubject = await services.userService.getUserAssignedSubjects(userId);
-      res.status(httpStatus.OK).send(userSubject);
-    } catch (error) {
-      next(error);
-    }
-  },
-
   async EditPastPaper(req, res, next) {
     try {
       let questionFile = req.files["newQuestionPaper"];
@@ -492,7 +422,8 @@ const PastPaperUploaderController = {
           const newQuestionPaperName = generateFileName(values.newQuestionPaper.originalname);
 
           //Add Folder S3 Folder Names to file Names
-          newQuestionPaperKey = process.env.AWS_BUCKET_PASTPAPER_QUESTIONS_FOLDER + "/" + newQuestionPaperName;
+          newQuestionPaperKey =
+            process.env.AWS_BUCKET_PASTPAPER_QUESTIONS_FOLDER + "/" + newQuestionPaperName;
 
           //Upload Parameters for all files
           const newQuestionPaperUploadParams = {
@@ -527,7 +458,8 @@ const PastPaperUploaderController = {
 
           //Add Folder S3 Folder Names to file Names
 
-          newAnswerPaperKey = process.env.AWS_BUCKET_PASTPAPER_ANSWERS_FOLDER + "/" + newAnswerPaperName;
+          newAnswerPaperKey =
+            process.env.AWS_BUCKET_PASTPAPER_ANSWERS_FOLDER + "/" + newAnswerPaperName;
 
           //Upload Parameters for all files
 
@@ -561,7 +493,8 @@ const PastPaperUploaderController = {
 
           //Add Folder S3 Folder Names to file Names
 
-          newImageBannerKey = process.env.AWS_BUCKET_PASTPAPER_IMAGE_BANNER_FOLDER + "/" + newImageBannerName;
+          newImageBannerKey =
+            process.env.AWS_BUCKET_PASTPAPER_IMAGE_BANNER_FOLDER + "/" + newImageBannerName;
 
           //Upload Parameters for all files
 
@@ -591,7 +524,10 @@ const PastPaperUploaderController = {
           where: { id: pastPaper[0].id },
         };
 
-        let updatePastPaper = await services.pastpaperService.updatePastPaper(dataToBeUpdated, whereQuery);
+        let updatePastPaper = await services.pastpaperService.updatePastPaper(
+          dataToBeUpdated,
+          whereQuery
+        );
 
         console.log(updatePastPaper);
         res.status(httpStatus.OK).send({ message: "PastPaper Updated Successfully!" });

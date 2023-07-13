@@ -7,42 +7,9 @@ const {
 } = require("../../validations/PPMReviewerValidation.js");
 const services = require("../../services/index.js");
 const httpStatus = require("http-status");
-const { generateFileName, s3Client } = require("../../config/s3.js");
-const { SubBoard, Board } = require("../../models/Board.js");
-const { Subject } = require("../../models/Subject.js");
-const { getSubBoardsSchema } = require("../../validations/subjectManagementValidations.js");
-const { GetObjectCommand } = require("@aws-sdk/client-s3");
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { generateFileName } = require("../../config/s3.js");
 
 const PastPaperReviewerController = {
-  async getsubjectName(req, res, next) {
-    try {
-      const subjectName = await services.subjectService.getSubjectNames();
-      let subjectDetails = [];
-
-      for (const element of subjectName) {
-        const getObjectParams = {
-          Bucket: process.env.AWS_BUCKET_NAME,
-          Key: element.subjectImage,
-        };
-        const command = new GetObjectCommand(getObjectParams);
-
-        const url = await getSignedUrl(s3Client, command, {
-          expiresIn: 3600,
-        });
-
-        subjectDetails.push({
-          ...element,
-          subjectImageUrl: url,
-        });
-      }
-
-      res.status(httpStatus.OK).send(subjectDetails);
-    } catch (err) {
-      next(err);
-    }
-  },
-
   async getRecheckErrors(req, res, next) {
     try {
       let reqVariables = { sheetId: req.query.sheetId };
@@ -54,16 +21,6 @@ const PastPaperReviewerController = {
       res.status(httpStatus.OK).send(recheckingComments);
     } catch (err) {
       next(err);
-    }
-  },
-
-  async getUserAssignedSubjects(req, res, next) {
-    try {
-      let userId = req.query.userId;
-      let userSubject = await services.userService.getUserAssignedSubjects(userId);
-      res.status(httpStatus.OK).send(userSubject);
-    } catch (error) {
-      next(error);
     }
   },
 
@@ -236,6 +193,7 @@ const PastPaperReviewerController = {
         ...req.body,
         file: req.file,
       };
+
       let responseMessage = {
         message: { errorReport: "", errorReportFileUpload: "", sheetLog: "" },
       };
@@ -295,8 +253,8 @@ const PastPaperReviewerController = {
 
             let createLog = await services.sheetService.createSheetLog(
               sheetData.id,
-              sheetData.supervisor.Name,
-              userData.Name,
+              sheetData.supervisor.userName,
+              userData.userName,
               CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisorErrorReport
             );
 
@@ -316,7 +274,6 @@ const PastPaperReviewerController = {
         res.status(httpStatus.BAD_REQUEST).send({ message: "Invalid sheetId" });
       }
     } catch (err) {
-      console.log(err);
       next(err);
     }
   },

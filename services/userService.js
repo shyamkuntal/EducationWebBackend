@@ -125,10 +125,7 @@ const checkUserEmailPassword = async (email, password, roleId) => {
           throw new ApiError(httpStatus.BAD_REQUEST, "Invalid password!");
         }
       } else {
-        throw new ApiError(
-          httpStatus.BAD_REQUEST,
-          "Access Denied, Invalid Role!"
-        );
+        throw new ApiError(httpStatus.BAD_REQUEST, "Access Denied, Invalid Role!");
       }
     } else {
       throw new ApiError(httpStatus.BAD_REQUEST, "Email does not exist!");
@@ -148,9 +145,26 @@ const checkUserEmail = async (email, roleId) => {
     });
 
     if (user) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Email Id already exists for this role!");
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+const checkUserName = async (userName, roleId) => {
+  try {
+    let user = await User.findOne({
+      where: { userName: userName, roleId: roleId },
+      include: [{ model: Roles, attributes: ["roleName"] }],
+      raw: true,
+      nest: true,
+    });
+
+    if (user) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,
-        "Email Id already exists for this role!"
+        "User Name taken for this role, Please choose a different User Name"
       );
     }
   } catch (err) {
@@ -165,10 +179,7 @@ const updatePassword = async (userId, newPassword) => {
 
     console.log(hashedPass);
 
-    let updatePass = await User.update(
-      { password: hashedPass },
-      { where: { id: userId } }
-    );
+    let updatePass = await User.update({ password: hashedPass }, { where: { id: userId } });
     return updatePass;
   } catch (err) {
     throw err;
@@ -250,4 +261,5 @@ module.exports = {
   bulkCreateUserSubjectMappings,
   bulkCreateRoles,
   findRoleById,
+  checkUserName,
 };

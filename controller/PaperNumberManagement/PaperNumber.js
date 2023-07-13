@@ -1,4 +1,3 @@
-const { Board, SubBoard } = require("../../models/Board.js");
 const { PaperNumberSheet, PaperNumber } = require("../../models/PaperNumber.js");
 const services = require("../../services/index.js");
 const httpStatus = require("http-status");
@@ -7,36 +6,37 @@ const CONSTANTS = require("../../constants/constants.js");
 const {
   createPaperNumberSheetSchema,
   EditPaperNumberSheetSchema,
+  getPaperNumberByPaperNumberSheetSchema,
   assignDataGeneratorUserToSheetSchema,
   assignReviewerUserToSheetSchema,
 } = require("../../validations/PaperNumberValidations.js");
 const constants = require("../../constants/constants.js");
 
 const PaperNumberSheetController = {
-    //take care of isarchived and ispublished later
-    async CreatePaperNumberSheet(req, res, next) {
-        try {
-            let values = await createPaperNumberSheetSchema.validateAsync({
-                boardId: req.body.boardId,
-                subBoardId: req.body.subBoardId,
-                grade: req.body.grade,
-                subjectId: req.body.subjectId,
-                resources: req.body.resources,
-                description: req.body.description,
-                supervisorId: req.body.supervisorId
-            });
-            // console.log(values)
+  //take care of isarchived and ispublished later
+  async CreatePaperNumberSheet(req, res, next) {
+    try {
+      let values = await createPaperNumberSheetSchema.validateAsync({
+        boardId: req.body.boardId,
+        subBoardId: req.body.subBoardId,
+        grade: req.body.grade,
+        subjectId: req.body.subjectId,
+        resources: req.body.resources,
+        description: req.body.description,
+        supervisorId: req.body.supervisorId,
+      });
+      // console.log(values)
 
       const paperNumberSheet = await PaperNumberSheet.create(values);
 
-            return res.status(httpStatus.OK).send({
-                paperNumberSheet,
-            });
-        } catch (err) {
-            next(err);
-            console.log(err)
-        }
-    },
+      return res.status(httpStatus.OK).send({
+        paperNumberSheet,
+      });
+    } catch (err) {
+      next(err);
+      console.log(err);
+    }
+  },
 
     async UpdatePaperNumberSheet(req, res, next) {
     try {
@@ -112,16 +112,32 @@ const PaperNumberSheetController = {
         }
       },
 
-    async getAllPaperNumber(req, res, next) {
-        try {
-            const paperNumbers = await PaperNumber.findAll();
-            res.status(httpStatus.OK).send(paperNumbers);
-        } catch (error) {
-            next(error)
-            console.error('Error retrieving PaperNumbers:', error);
-            res.status(500).json({ error: 'Failed to retrieve PaperNumbers' });
-        }
-    },
+  async getAllPaperNumber(req, res, next) {
+    try {
+      const paperNumbers = await PaperNumber.findAll();
+      res.status(httpStatus.OK).send(paperNumbers);
+    } catch (error) {
+      next(error);
+      console.error("Error retrieving PaperNumbers:", error);
+      res.status(500).json({ error: "Failed to retrieve PaperNumbers" });
+    }
+  },
+
+  async getPaperNumberByPaperNumberSheet(req, res, next) {
+    try {
+      let values = await getPaperNumberByPaperNumberSheetSchema.validateAsync({
+        paperNumberSheetId: req.query.paperNumberSheetId,
+      });
+
+      let whereQuery = { where: { paperNumberSheetId: values.paperNumberSheetId }, raw: true };
+
+      let paperNumber = await services.paperNumberService.findPaperNumber(whereQuery);
+
+      res.status(httpStatus.OK).send(paperNumber);
+    } catch (err) {
+      next(err);
+    }
+  },
 
     async EditPaperNumber(req, res, next) {
     const { paperNumberId, paperNumber } = req.body;
@@ -131,11 +147,11 @@ const PaperNumberSheetController = {
       const findPaperNumber = await PaperNumber.findByPk(paperNumberId);
       findPaperNumber.paperNumber = paperNumber;
 
-            if (!findPaperNumber) {
-                return res.status(404).json({ error: 'PaperNumber not found' });
-            }
+      if (!findPaperNumber) {
+        return res.status(404).json({ error: "PaperNumber not found" });
+      }
 
-            await findPaperNumber.save()
+      await findPaperNumber.save();
 
             res.status(httpStatus.OK).send({ message: 'PaperNumber updated successfully' });
         } catch (error) {

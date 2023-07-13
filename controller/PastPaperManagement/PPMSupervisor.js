@@ -6,6 +6,7 @@ const services = require("../../services/index.js");
 const {
   assignUploderUserToSheetSchema,
   assignReviewerUserToSheetSchema,
+  getUserAssignedSubjectsSchema,
   getSheetLogsSchema,
   getPastPaperSchema,
 } = require("../../validations/PPMSupervisorValidations.js");
@@ -108,10 +109,10 @@ const PastPaperSupervisorController = {
 
   async getUserAssignedSubjects(req, res, next) {
     try {
-      let userId = req.query.userId;
-      let userSubject = await services.userService.getUserAssignedSubjects(
-        userId
-      );
+      let values = await getUserAssignedSubjectsSchema.validateAsync({ userId: req.query.userId });
+
+      let userSubject = await services.userService.getUserAssignedSubjects(values.userId);
+
       res.status(httpStatus.OK).send(userSubject);
     } catch (error) {
       next(error);
@@ -142,7 +143,6 @@ const PastPaperSupervisorController = {
 
       res.status(httpStatus.OK).send(subjectDetails);
     } catch (err) {
-      console.log(err);
       next(err);
     }
   },
@@ -178,9 +178,7 @@ const PastPaperSupervisorController = {
         attributes: ["subBoardId"],
         group: ["subBoardId"],
       });
-      const subboardIds = distinctSubBoardIds.map(
-        (subboard) => subboard.SubBoardId
-      );
+      const subboardIds = distinctSubBoardIds.map((subboard) => subboard.SubBoardId);
       const subboards = await SubBoard.findAll({
         attributes: ["id", "subBoardName"],
         where: {
@@ -245,9 +243,7 @@ const PastPaperSupervisorController = {
       });
       let whereQuery = { subjectId: values.subjectId, isArchived: false };
 
-      let subjectLevels = await services.subjectService.findSubjectLevels(
-        whereQuery
-      );
+      let subjectLevels = await services.subjectService.findSubjectLevels(whereQuery);
 
       res.status(httpStatus.OK).send(subjectLevels);
     } catch (err) {
@@ -272,9 +268,7 @@ const PastPaperSupervisorController = {
         boardId: req.query.boardId,
       });
 
-      let subBoards = await services.boardService.getSubBoardsByBoardId(
-        values.boardId
-      );
+      let subBoards = await services.boardService.getSubBoardsByBoardId(values.boardId);
       return res.status(200).json(subBoards);
     } catch (error) {
       return res.status(500).json({ message: error.message });
@@ -360,9 +354,7 @@ const PastPaperSupervisorController = {
       let values = await getSheetLogsSchema.validateAsync({
         sheetId: req.query.sheetId,
       });
-      const sheetLogs = await services.sheetService.findSheetLog(
-        values.sheetId
-      );
+      const sheetLogs = await services.sheetService.findSheetLog(values.sheetId);
       res.status(httpStatus.OK).send({ sheetLogs: sheetLogs });
     } catch (error) {
       next(error);
@@ -447,9 +439,7 @@ const PastPaperSupervisorController = {
         CONSTANTS.roleNames.PastPaper
       );
 
-      let sheetData = await services.sheetService.findSheetAndUser(
-        values.sheetId
-      );
+      let sheetData = await services.sheetService.findSheetAndUser(values.sheetId);
 
       let Comment = values.supervisorComments;
 
@@ -484,12 +474,10 @@ const PastPaperSupervisorController = {
               sheetStatusToBeUpdated.statusForPastPaper
             );
 
-
           if (updateAssignAndLifeCycleAndStatus.length > 0) {
             responseMessage.assinedUserToSheet =
               "Sheet assigned to past paper and lifeCycle updated successfully";
-            responseMessage.UpdateSheetStatus =
-              "Sheet Statuses updated successfully";
+            responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
           }
 
           // updating supervisor comments
@@ -498,10 +486,9 @@ const PastPaperSupervisorController = {
               sheetData.id,
               Comment,
               "PastPaper"
-            )
-            if(updateComment){
-              responseMessage.updateComment =
-              "Supervisor comment added successfully";
+            );
+            if (updateComment) {
+              responseMessage.updateComment = "Supervisor comment added successfully";
             }
           }
           // CREATE sheet log for sheet assignment to past paper uploader
@@ -521,9 +508,7 @@ const PastPaperSupervisorController = {
           res.status(httpStatus.OK).send({ message: responseMessage });
         }
       } else {
-        res
-          .status(httpStatus.BAD_REQUEST)
-          .send({ message: "Wrong user Id or Sheet Id" });
+        res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Sheet Id" });
       }
     } catch (err) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
@@ -532,15 +517,11 @@ const PastPaperSupervisorController = {
 
   async AssignSheetToReviewer(req, res) {
     try {
-      let values = await assignReviewerUserToSheetSchema.validateAsync(
-        req.body
-      );
+      let values = await assignReviewerUserToSheetSchema.validateAsync(req.body);
       // userData can later on come from middleware
       let userData = await services.userService.finduser(values.reviewerId);
 
-      let sheetData = await services.sheetService.findSheetAndUser(
-        values.sheetId
-      );
+      let sheetData = await services.sheetService.findSheetAndUser(values.sheetId);
 
       let Comment = values.supervisorComments;
 
@@ -554,9 +535,7 @@ const PastPaperSupervisorController = {
         // Checking if sheet is already assigned to past paper reviewer
 
         if (sheetData.assignedToUserId === userData.id) {
-          res
-            .status(httpStatus.OK)
-            .send({ message: "sheet already assigned to reviewer" });
+          res.status(httpStatus.OK).send({ message: "sheet already assigned to reviewer" });
         } else {
           //UPDATE sheet assignment & life cycle & sheet status
           let sheetStatusToBeUpdated = {
@@ -572,25 +551,23 @@ const PastPaperSupervisorController = {
               sheetStatusToBeUpdated.statusForSupervisor,
               sheetStatusToBeUpdated.statusForReviewer
             );
-          
+
           // updating supervisor comments
           if (Comment) {
             let updateComment = await services.sheetService.updateSupervisorComments(
               sheetData.id,
               Comment,
               "Reviewer"
-            )
-            if(updateComment){
-              responseMessage.updateComment =
-              "Supervisor comment added successfully";
+            );
+            if (updateComment) {
+              responseMessage.updateComment = "Supervisor comment added successfully";
             }
           }
-     
+
           if (updateAssignAndUpdateLifeCycle.length > 0) {
             responseMessage.assinedUserToSheet =
               "Sheet assigned to reviewer and lifeCycle updated successfully";
-            responseMessage.UpdateSheetStatus =
-              "Sheet Statuses updated successfully";
+            responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
           }
 
           // CREATE sheet log for sheet assignment to past paper uploader
@@ -607,12 +584,12 @@ const PastPaperSupervisorController = {
           }
 
           // Create Sheet CheckList
-          let checkForPreviousCheckList =
-            await services.sheetService.findCheckList(sheetData.id);
+          let checkForPreviousCheckList = await services.sheetService.findCheckList(sheetData.id);
 
           if (checkForPreviousCheckList.length <= 0) {
-            let createSheetCheckList =
-              await services.sheetService.createSheetCheckList(sheetData.id);
+            let createSheetCheckList = await services.sheetService.createSheetCheckList(
+              sheetData.id
+            );
             if (createSheetCheckList.length > 0) {
               responseMessage.CheckList = "Check List Created!";
             }
@@ -621,9 +598,7 @@ const PastPaperSupervisorController = {
           res.status(httpStatus.OK).send({ message: responseMessage });
         }
       } else {
-        res
-          .status(httpStatus.BAD_REQUEST)
-          .send({ mesage: "Wrong user Id or Sheet Id" });
+        res.status(httpStatus.BAD_REQUEST).send({ mesage: "Wrong user Id or Sheet Id" });
       }
     } catch (err) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
@@ -661,47 +636,31 @@ const PastPaperSupervisorController = {
         };
 
         // get question paper
-        const questionPapercommand = new GetObjectCommand(
-          getQuestionPaperParams
-        );
-        const questionPaperUrl = await getSignedUrl(
-          s3Client,
-          questionPapercommand,
-          {
-            expiresIn: 3600,
-          }
-        );
+        const questionPapercommand = new GetObjectCommand(getQuestionPaperParams);
+        const questionPaperUrl = await getSignedUrl(s3Client, questionPapercommand, {
+          expiresIn: 3600,
+        });
 
         // get answer paper
         const answerPapercommand = new GetObjectCommand(getAnswerPaperParams);
-        const answerPaperUrl = await getSignedUrl(
-          s3Client,
-          answerPapercommand,
-          {
-            expiresIn: 3600,
-          }
-        );
+        const answerPaperUrl = await getSignedUrl(s3Client, answerPapercommand, {
+          expiresIn: 3600,
+        });
 
         // get image banner
         const imageBannercommand = new GetObjectCommand(getImageBannerParams);
-        const imageBannerUrl = await getSignedUrl(
-          s3Client,
-          imageBannercommand,
-          {
-            expiresIn: 3600,
-          }
-        );
+        const imageBannerUrl = await getSignedUrl(s3Client, imageBannercommand, {
+          expiresIn: 3600,
+        });
 
         res.status(httpStatus.OK).send({
           ...pastPaper[0],
           questionPdfUrl: questionPaperUrl,
-          answerPdfUrl:  answerPaperUrl,
+          answerPdfUrl: answerPaperUrl,
           imageBannerUrl: imageBannerUrl,
         });
       } else {
-        res
-          .status(httpStatus.BAD_REQUEST)
-          .send({ message: "Past Paper not found" });
+        res.status(httpStatus.BAD_REQUEST).send({ message: "Past Paper not found" });
       }
     } catch (err) {
       console.log(err);

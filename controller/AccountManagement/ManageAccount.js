@@ -66,9 +66,7 @@ const AccountManagementController = {
         attributes: ["roleName", "id"],
       });
 
-      let availableRoles = roles.filter(
-        (item) => item.roleName !== CONSTANTS.roleNames.Superadmin
-      );
+      let availableRoles = roles.filter((item) => item.roleName !== CONSTANTS.roleNames.Superadmin);
 
       return res.status(200).json({
         roles: availableRoles,
@@ -83,6 +81,8 @@ const AccountManagementController = {
       let values = await createAccountSchema.validateAsync(req.body);
 
       await services.userService.checkUserEmail(values.email, values.roleId);
+
+      await services.userService.checkUserName(values.userName, values.roleId);
 
       let role = await services.userService.findRoleById(values.roleId);
 
@@ -109,9 +109,7 @@ const AccountManagementController = {
           subBoardId: subboardid,
         }));
 
-        await services.userService.bulkCreateUserSubBoardMappings(
-          subboardmapping
-        );
+        await services.userService.bulkCreateUserSubBoardMappings(subboardmapping);
       }
 
       if (
@@ -124,9 +122,7 @@ const AccountManagementController = {
           gradeQualification: range,
         }));
 
-        await services.userService.bulkCreateUserQualificationMappings(
-          qmapping
-        );
+        await services.userService.bulkCreateUserQualificationMappings(qmapping);
       }
 
       if (values.subjectsIds && values.subjectsIds.length > 0) {
@@ -135,9 +131,7 @@ const AccountManagementController = {
           subjectNameIds: subjectid,
         }));
 
-        await services.userService.bulkCreateUserSubjectMappings(
-          subjectmapping
-        );
+        await services.userService.bulkCreateUserSubjectMappings(subjectmapping);
       }
 
       res.status(httpStatus.OK).send({ user });
@@ -155,9 +149,7 @@ const AccountManagementController = {
       const user = await User.findByPk(values.userId);
 
       if (!user) {
-        return res
-          .status(httpStatus.BAD_REQUEST)
-          .send({ message: "User not found" });
+        return res.status(httpStatus.BAD_REQUEST).send({ message: "User not found" });
       }
 
       // Update user details
@@ -179,10 +171,7 @@ const AccountManagementController = {
       await services.userService.updateUser(dataToBeUpdated, whereQuery);
 
       if (values.password && values.password.length > 1) {
-        await services.userService.updatePassword(
-          values.userId,
-          values.password
-        );
+        await services.userService.updatePassword(values.userId, values.password);
       }
 
       // Update board mapping entries
@@ -242,10 +231,7 @@ const AccountManagementController = {
   async getUserCount(req, res, next) {
     try {
       const results = await User.findAll({
-        attributes: [
-          "roleId",
-          [Sequelize.fn("count", Sequelize.col("user.id")), "totalUsers"],
-        ],
+        attributes: ["roleId", [Sequelize.fn("count", Sequelize.col("user.id")), "totalUsers"]],
         include: [
           {
             model: Roles,
@@ -257,10 +243,7 @@ const AccountManagementController = {
 
       let userCount = {};
 
-      results.map(
-        (item) =>
-          (userCount[item.role.roleName + "Count"] = item.dataValues.totalUsers)
-      );
+      results.map((item) => (userCount[item.role.roleName + "Count"] = item.dataValues.totalUsers));
 
       return res.status(200).json(userCount);
     } catch (err) {
@@ -285,9 +268,7 @@ const AccountManagementController = {
       });
       let whereQuery = { where: { id: values.subjectNameId } };
 
-      const subjects = await services.subjectService.findSubjectName(
-        whereQuery
-      );
+      const subjects = await services.subjectService.findSubjectName(whereQuery);
       return res.status(httpStatus.OK).send(subjects);
     } catch (err) {
       next(err);
@@ -402,10 +383,9 @@ const AccountManagementController = {
         userId: req.query.userId,
       });
 
-      let userDetails =
-        await services.userService.findUserSubjectsBoardSubBoardQualification(
-          values.userId
-        );
+      let userDetails = await services.userService.findUserSubjectsBoardSubBoardQualification(
+        values.userId
+      );
 
       res.status(httpStatus.OK).send(userDetails);
     } catch (err) {

@@ -7,7 +7,6 @@ const {
   SubmitToSupervisor,
   Markitascomplete,
   MarkitasInProgress,
-  getallassignedsheetsubjects,
   EditPastPaper,
   getdatafordashboard,
   getSingleAssignedSheet,
@@ -15,6 +14,7 @@ const {
 const paginatedSheetResults = require("../middlewares/paginatedSheet.js");
 const PastPaperUploaderController = require("../controller/PastPaperUploader/PastPaper.js");
 const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor.js");
+const BoardManagementController = require("../controller/BoardManagement/BoardM.js");
 
 const router = express.Router();
 
@@ -24,11 +24,9 @@ router.get("/getallsheets", paginatedSheetResults(), (req, res) => {
 
 router.get("/:sheetId/getsinglesheet", paginatedSheetResults(), getsinglesheet);
 
-router.get("/getassignedsubjects", PastPaperUploaderController.getPastPaperAssignedSubjects);
+router.get("/getassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
 
 router.get("/getrecheckcomments", PastPaperUploaderController.getRecheckErrors);
-
-router.get("/getuserassignedsubjects", PastPaperUploaderController.getUserAssignedSubjects);
 
 router.post(
   "/createpastpaper",
@@ -59,12 +57,12 @@ router.put(
 router.get("/getpastpaper", PastPaperSupervisorController.getPastPaper);
 
 // api/ppmReviewer/getsubjectnames
-router.get("/getsubjectnames", PastPaperUploaderController.getsubjectName);
+router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
 router.get("/:userId/getdatafordashboard", paginatedSheetResults(), getdatafordashboard);
 
-router.get("/getallboards", PastPaperUploaderController.getAllboards);
+router.get("/getallboards", BoardManagementController.getAllBoards);
 
-router.get("/getallsubboards", PastPaperUploaderController.getAllSubBoards);
+router.get("/getallsubboards", BoardManagementController.GetSubBoards);
 
 module.exports = router;

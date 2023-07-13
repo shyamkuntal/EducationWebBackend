@@ -39,4 +39,15 @@ const assignReviewerUserToSheetSchema = Joi.object({
   supervisorComments: Joi.string().max(225),
 });
 
-module.exports = { createPaperNumberSheetSchema, EditPaperNumberSheetSchema, assignDataGeneratorUserToSheetSchema, assignReviewerUserToSheetSchema };
+const getPaperNumberByPaperNumberSheetSchema = Joi.object({
+  paperNumberSheetId: Joi.string().guid().required(),
+});
+
+module.exports = {
+  createPaperNumberSheetSchema,
+  EditPaperNumberSheetSchema,
+  assignDataGeneratorUserToSheetSchema,
+  assignReviewerUserToSheetSchema,
+  getPaperNumberByPaperNumberSheetSchema,
+  CreatePaperNumber,
+};

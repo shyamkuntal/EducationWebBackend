@@ -151,7 +151,7 @@ const PaperNumberSheetCheckList = db.define("PaperNumberSheetCheckList", {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
-}); 
+});
 
 PaperNumberSheetCheckList.sync().then(() => {
   console.log("SpamPaperNumberSheetRecheckComments created");
@@ -179,39 +179,45 @@ PaperNumberSheetLog.sync().then(() => {
 PaperNumberSheetLog.belongsTo(PaperNumberSheet, { foreignKey: "paperNumberSheetId" });
 
 const PaperNumber = db.define("paperNumber", {
-    id: {
-      type: Sequelize.UUID,
-      defaultValue: Sequelize.UUIDV4,
-      primaryKey: true,
-    },
-    paperNumberSheetId: {
-      type: Sequelize.UUID,
-      allowNull: false,
-    },
-    paperNumber: {
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
-    errorReport: {
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
-    isError: {
-      type: Sequelize.BOOLEAN,
-      defaultValue: false,
-    },
-    isArchive: {
-      type: Sequelize.BOOLEAN,
-      defaultValue: false,
-    },
-  }); 
-  
-  PaperNumber.sync().then(() => {
-    console.log("PaperNumber created");
-  });
-  
-  PaperNumber.belongsTo(PaperNumberSheet, {
-    foreignKey: "paperNumberSheetId",
-  });
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
+  paperNumberSheetId: {
+    type: Sequelize.UUID,
+    allowNull: false,
+  },
+  paperNumber: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  errorReport: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  isError: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  isArchive: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+});
 
-module.exports = { PaperNumberSheet, PaperNumberSheetLog, SpamPaperNumberSheetRecheckComments, PaperNumberSheetCheckList, PaperNumber };
+PaperNumber.sync().then(() => {
+  console.log("PaperNumber created");
+});
+
+PaperNumber.belongsTo(PaperNumberSheet, {
+  foreignKey: "paperNumberSheetId",
+});
+
+module.exports = {
+  PaperNumberSheet,
+  PaperNumberSheetLog,
+  SpamPaperNumberSheetRecheckComments,
+  PaperNumberSheetCheckList,
+  PaperNumber,
+};

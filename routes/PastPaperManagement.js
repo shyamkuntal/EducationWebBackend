@@ -22,7 +22,10 @@ router.get("/getuser", PastPaperSupervisorController.getUsers);
 
 router.get("/:boardId/getallsubboards", PastPaperSupervisorController.getallsubboards);
 router.get("/:boardId/:SubBoardId/getallgrades", PastPaperSupervisorController.getallgrades);
-router.get("/:boardId/:SubBoardId/:grade/getallsubjects", PastPaperSupervisorController.getallsubjects);
+router.get(
+  "/:boardId/:SubBoardId/:grade/getallsubjects",
+  PastPaperSupervisorController.getallsubjects
+);
 router.get("/getalllevels", PastPaperSupervisorController.getalllevels);
 
 router.get("/getallsheets", paginatedSheetResults(), (req, res) => {

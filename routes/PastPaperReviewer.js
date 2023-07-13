@@ -3,6 +3,7 @@ const router = express.Router();
 const PastPaperReviewerController = require("../controller/PastPaperReviewer/PastPaperReviewer");
 const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor");
 const BoardManagementController = require("../controller/BoardManagement/BoardM");
+
 const upload = require("../config/multer.js");
 const paginatedSheetResults = require("../middlewares/paginatedSheet.js");
 
@@ -12,9 +13,7 @@ router.get("/getallsheets", paginatedSheetResults(), (req, res) => {
 });
 
 // api/ppmreviewer/getsubjectnames
-router.get("/getsubjectnames", PastPaperReviewerController.getsubjectName, (req, res) => {
-  res.json(res);
-});
+router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
 // api/ppmreviewer/getallboards
 router.get("/getallboards", BoardManagementController.getAllBoards);
@@ -47,10 +46,10 @@ router.patch(
 // api/ppmreviewer/getpastpaper
 router.get("/getpastpaper", PastPaperSupervisorController.getPastPaper);
 
-// api/ppmreviewer/reportsheeterror
-router.post("/reportsheeterror", PastPaperReviewerController.AddRecheckComment);
+// api/ppmreviewer/reportrecheckerror
+router.post("/reportrecheckerror", PastPaperReviewerController.AddRecheckComment);
 
 // api/ppmreviewer/getuserassignedsubjects
-router.get("/getuserassignedsubjects", PastPaperReviewerController.getUserAssignedSubjects);
+router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
 
 module.exports = router;

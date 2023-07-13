@@ -1,10 +1,43 @@
 const Joi = require("joi");
 
 const updateSheetStatusSchema = Joi.object({
-  sheetId: Joi.string().guid().required(),
+  paperNumberSheetId: Joi.string().guid().required(),
+  reviewerId: Joi.string().guid().required(),
+});
+
+const addErrorReportSchema = Joi.object({
+  paperNumberSheetId: Joi.string().guid().required(),
+  reviewerId: Joi.string().guid().required(),
+  comment: Joi.string().max(225).required(),
+  errorReport: Joi.string().max(225).required(),
+  errorReportFile: Joi.object({
+    fieldname: Joi.string(),
+    originalname: Joi.string(),
+    encoding: Joi.string(),
+    mimetype: Joi.string(),
+    buffer: Joi.any(),
+    size: Joi.number(),
+  }),
+});
+
+const addErrorToPaperNumbersSchema = Joi.object({
+  paperNumberErrors: Joi.array().items(
+    Joi.object({
+      id: Joi.string().guid().required(),
+      isError: Joi.boolean().required(),
+      errorReport: Joi.string().max(225).required().allow(null),
+    })
+  ),
+});
+
+const submitSheetToSupervisorSchema = Joi.object({
+  paperNumberSheetId: Joi.string().guid().required(),
   reviewerId: Joi.string().guid().required(),
 });
 
 module.exports = {
+  submitSheetToSupervisorSchema,
+  addErrorToPaperNumbersSchema,
   updateSheetStatusSchema,
+  addErrorReportSchema,
 };
