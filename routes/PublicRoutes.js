@@ -21,7 +21,7 @@ router.get("/getpastpapers", paginatedPastPaperResults(), (req, res) => {
 router.get("/getallboards", BoardManagementController.getAllBoards);
 
 // /api/public/getsubboards
-router.get("/getsubboards/", BoardManagementController.GetSubBoards);
+router.get("/getsubboards", BoardManagementController.GetSubBoards);
 
 // /api/public/getsubjectNames
 router.get("/getsubjectnames", SubjectManagementController.getSubjectNamesWithOutImageUrl);
