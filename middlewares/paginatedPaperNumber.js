@@ -16,6 +16,9 @@ const paginatedPaperNumberSheet = (model, req) => {
     if (req.query.isSpam) {
       filters.isSpam = req.query.isSpam;
     }
+    if (req.query.isArchived) {
+      filters.isArchived = req.query.isArchived;
+    }
     if (req.query.isPublished) {
       filters.isPublished = req.query.isPublished;
     }
@@ -43,11 +46,9 @@ const paginatedPaperNumberSheet = (model, req) => {
     if (req.query.statusForReviewer) {
       filters.statusForReviewer = req.query.statusForReviewer;
     }
-
     if (req.query.search) {
       filters.boardName = { $regex: req.query.search, $options: "i" };
     }
-
     if (req.query.time === "today") {
       filters.createdAt = {
         [Op.gte]: today,

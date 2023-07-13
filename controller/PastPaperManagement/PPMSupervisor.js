@@ -285,7 +285,11 @@ const PastPaperSupervisorController = {
     const roleId = [
       "ce4afb0a-91b3-454a-a515-70c3cbb7b69b",
       "c0ac1044-4d52-4305-b764-02124bd66434",
+      "d8c85c70-e492-4bef-9c61-16c295ce1cb4",
+      "b6e9d917-f5e4-4268-a364-cfb715439fbb",
+      "9ce70cfd-632b-49f6-8cdc-842dc30f1aaa",
     ];
+    
     try {
       const users = await User.findAll({
         attributes: ["id", "Name"],

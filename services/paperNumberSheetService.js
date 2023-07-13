@@ -1,6 +1,8 @@
-const { PaperNumberSheet } = require("../models/PaperNumber");
+const { PaperNumberSheet, PaperNumberSheetLog, PaperNumberSheetCheckList } = require("../models/PaperNumber");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
+const { User } = require("../models/User");
+const CONSTANTS = require("../constants/constants");
 
 const findPaperNumberSheetByPk = async (pk) => {
   try {
@@ -12,8 +14,28 @@ const findPaperNumberSheetByPk = async (pk) => {
   }
 };
 
+const findSheetAndUser = async (paperNumberSheetId) => {
+  try {
+    let findSheet = PaperNumberSheet.findOne({
+      where: { id: paperNumberSheetId },
+      include: [
+        {
+          model: User,
+          as: "supervisor",
+        },
+      ],
+      raw: true,
+      nest: true,
+    });
+
+    return findSheet;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const updatePNSheetStatusForSupervisorAndReviewer = async (
-  sheetId,
+  paperNumberSheetId,
   statusForSupervisor,
   statusForReviewer
 ) => {
@@ -23,7 +45,7 @@ const updatePNSheetStatusForSupervisorAndReviewer = async (
         statusForSupervisor: statusForSupervisor,
         statusForReviewer: statusForReviewer,
       },
-      { where: { id: sheetId } }
+      { where: { id: paperNumberSheetId } }
     );
 
     return updateStatus;
@@ -32,4 +54,124 @@ const updatePNSheetStatusForSupervisorAndReviewer = async (
   }
 };
 
-module.exports = { findPaperNumberSheetByPk, updatePNSheetStatusForSupervisorAndReviewer };
+const assignUserToSheetAndUpdateLifeCycleAndStatuses = async (
+  paperNumberSheetId,
+  userId,
+  lifeCycleName,
+  statusForSupervisor,
+  statusForDownStreamUser
+) => {
+  try {
+    if (lifeCycleName === CONSTANTS.roleNames.DataGenerator) {
+      let assignSheetAndStatus = await PaperNumberSheet.update(
+        {
+          assignedToUserId: userId,
+          dataGeneratorId: userId,
+          lifeCycle: lifeCycleName,
+          statusForSupervisor,
+          statusForDataGenerator: statusForDownStreamUser,
+        },
+        { where: { id: paperNumberSheetId } }
+      );
+
+      return assignSheetAndStatus;
+    }
+
+    if (lifeCycleName === CONSTANTS.roleNames.Reviewer) {
+      let assignSheetAndStatus = await PaperNumberSheet.update(
+        {
+          assignedToUserId: userId,
+          reviewerId: userId,
+          lifeCycle: lifeCycleName,
+          statusForSupervisor,
+          statusForReviewer: statusForDownStreamUser,
+        },
+        { where: { id: paperNumberSheetId } }
+      );
+
+      return assignSheetAndStatus;
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+const updateSupervisorComments = async (paperNumberSheetId, comment, user) => {
+
+  if(user === CONSTANTS.roleNames.PastPaper){
+    try {
+      let updateComment = await PaperNumberSheet.update(
+        {
+          supervisorCommentToDataGenerator: comment
+        },
+        { where: { id: paperNumberSheetId } }
+      )
+      return updateComment
+    } catch (error) {
+        throw error
+    }
+  }else{
+    try {
+      let updateComment = await PaperNumberSheet.update(
+        {
+          supervisorCommentToReviewer: comment
+        },
+        { where: { id: paperNumberSheetId } }
+      )
+      return updateComment
+    } catch (error) {
+        throw error
+    }
+  }
+};
+
+const createSheetLog = async (paperNumberSheetId, assignee, assignedTo, logMessage) => {
+  try {
+    let createLog = await PaperNumberSheetLog.create({
+      paperNumberSheetId,
+      assignee,
+      assignedTo,
+      logMessage,
+    });
+
+    return createLog;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findCheckList = async (paperNumberSheetId) => {
+  try {
+    let findCheckList = await PaperNumberSheetCheckList.findAll({
+      paperNumberSheetId: paperNumberSheetId,
+      raw: true,
+    });
+    return findCheckList;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const createSheetCheckList = async (paperNumberSheetId) => {
+  try {
+    let checkList = [
+      { paperNumberSheetId: paperNumberSheetId, label: CONSTANTS.sheetCheckList.CheckListItem1 },
+      { paperNumberSheetId: paperNumberSheetId, label: CONSTANTS.sheetCheckList.CheckListItem2 },
+      { paperNumberSheetId: paperNumberSheetId, label: CONSTANTS.sheetCheckList.CheckListItem3 },
+      { paperNumberSheetId: paperNumberSheetId, label: CONSTANTS.sheetCheckList.CheckListItem4 },
+      { paperNumberSheetId: paperNumberSheetId, label: CONSTANTS.sheetCheckList.CheckListItem5 },
+      { paperNumberSheetId: paperNumberSheetId, label: CONSTANTS.sheetCheckList.CheckListItem6 },
+      { paperNumberSheetId: paperNumberSheetId, label: CONSTANTS.sheetCheckList.CheckListItem7 },
+      { paperNumberSheetId: paperNumberSheetId, label: CONSTANTS.sheetCheckList.CheckListItem8 },
+      { paperNumberSheetId: paperNumberSheetId, label: CONSTANTS.sheetCheckList.CheckListItem9 },
+      { paperNumberSheetId: paperNumberSheetId, label: CONSTANTS.sheetCheckList.CheckListItem10 },
+    ];
+
+    let bulkCreateCheckList = await PaperNumberSheetCheckList.bulkCreate(checkList);
+    return bulkCreateCheckList;
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports = { findPaperNumberSheetByPk, updatePNSheetStatusForSupervisorAndReviewer, findSheetAndUser, assignUserToSheetAndUpdateLifeCycleAndStatuses, updateSupervisorComments, createSheetLog, findCheckList, createSheetCheckList };

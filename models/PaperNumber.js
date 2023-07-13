@@ -45,6 +45,10 @@ const PaperNumberSheet = db.define("paperNumberSheet", {
     type: Sequelize.UUID,
     allowNull: false,
   },
+  dataGeneratorId: {
+    type: Sequelize.UUID,
+    allowNull: true,
+  },
   reviewerId: {
     type: Sequelize.UUID,
     allowNull: true,
@@ -69,6 +73,7 @@ const PaperNumberSheet = db.define("paperNumberSheet", {
   errorReportImg: { type: Sequelize.STRING, allowNull: true },
   reviewerCommentToSupervisor: { type: Sequelize.STRING, allowNull: true },
   supervisorCommentToReviewer: { type: Sequelize.STRING, allowNull: true },
+  supervisorCommentToDataGenerator: { type: Sequelize.STRING, allowNull: true },
   isSpam: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,

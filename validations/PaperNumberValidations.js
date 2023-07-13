@@ -27,4 +27,16 @@ const CreatePaperNumber = Joi.object({
   paperNumber: Joi.string().required(),
 });
 
-module.exports = { createPaperNumberSheetSchema, EditPaperNumberSheetSchema };
+const assignDataGeneratorUserToSheetSchema = Joi.object({
+  paperNumberSheetId: Joi.string().guid().required(),
+  dataGeneratorId: Joi.string().guid().required(),
+  supervisorComments: Joi.string().max(225),
+});
+
+const assignReviewerUserToSheetSchema = Joi.object({
+  paperNumberSheetId: Joi.string().guid().required(),
+  reviewerId: Joi.string().guid().required(),
+  supervisorComments: Joi.string().max(225),
+});
+
+module.exports = { createPaperNumberSheetSchema, EditPaperNumberSheetSchema, assignDataGeneratorUserToSheetSchema, assignReviewerUserToSheetSchema };

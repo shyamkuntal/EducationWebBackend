@@ -19,6 +19,7 @@ module.exports = Object.freeze({
   },
   sheetLogsMessages: {
     supervisorAssignToPastPaper: " Assign sheet to past paper uploader ",
+    supervisorAssignToDataGenerator: " Assign sheet to Data Generator ",
     supervisorAssignToReviewer: " Assign task to reviewer ",
     reviewerAssignToSupervisor: "Completed sheet review and assigned back to",
     pastPaperrAssignToSupervisor: "Completed sheet assigned back to ",
