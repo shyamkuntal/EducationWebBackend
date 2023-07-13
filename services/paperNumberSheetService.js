@@ -18,21 +18,6 @@ const findPaperNumberSheetByPk = async (paperNumberSheetId) => {
   }
 };
 
-const findPaperNumberWithUser = async (paperNumberSheetId) => {
-  try {
-    let sheet = await PaperNumberSheet.findOne({
-      where: { id: paperNumberSheetId },
-      include: [{ model: User, as: "supervisor" }],
-      raw: true,
-      nest: true,
-    });
-
-    return sheet;
-  } catch (err) {
-    throw err;
-  }
-};
-
 const createPaperNumberSheetLog = async (dataToBeCreated) => {
   try {
     let createSheetLog = await PaperNumberSheetLog.create(dataToBeCreated);
@@ -95,24 +80,6 @@ const findSheetAndUser = async (paperNumberSheetId) => {
   }
 };
 
-const updatePNSheetStatusForSupervisorAndReviewer = async (
-  paperNumberSheetId,
-  statusForSupervisor,
-  statusForReviewer
-) => {
-  try {
-    let updateStatus = await PaperNumberSheet.update(
-      {
-        statusForSupervisor: statusForSupervisor,
-        statusForReviewer: statusForReviewer,
-      },
-      { where: { id: paperNumberSheetId } }
-    );
-    return updateStatus;
-  } catch (err) {
-    throw err;
-  }
-};
 const assignUserToSheetAndUpdateLifeCycleAndStatuses = async (
   paperNumberSheetId,
   userId,
@@ -226,7 +193,6 @@ const createSheetCheckList = async (paperNumberSheetId) => {
 
 module.exports = {
   findPaperNumberSheetByPk,
-  updatePNSheetStatusForSupervisorAndReviewer,
   findSheetAndUser,
   assignUserToSheetAndUpdateLifeCycleAndStatuses,
   updateSupervisorComments,
@@ -236,5 +202,4 @@ module.exports = {
   createPaperNumberSheetLog,
   uploadPaperNumberErrorReportFile,
   updatePaperNumberSheet,
-  findPaperNumberWithUser,
 };

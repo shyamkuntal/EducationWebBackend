@@ -283,7 +283,7 @@ const PastPaperSupervisorController = {
       "b6e9d917-f5e4-4268-a364-cfb715439fbb",
       "9ce70cfd-632b-49f6-8cdc-842dc30f1aaa",
     ];
-    
+
     try {
       const users = await User.findAll({
         attributes: ["id", "Name"],
@@ -459,20 +459,20 @@ const PastPaperSupervisorController = {
         } else {
           //UPDATE sheet assignment & life cycle & sheet status
 
-          let sheetStatusToBeUpdated = {
+          let dataToBeUpdated = {
+            assignedToUserId: userData.id,
+            pastPaperId: userData.id,
+            lifeCycle: CONSTANTS.roleNames.PastPaper,
             statusForSupervisor: CONSTANTS.sheetStatuses.NotStarted,
             statusForPastPaper: CONSTANTS.sheetStatuses.NotStarted,
-            statusForReviewer: null,
           };
 
-          let updateAssignAndLifeCycleAndStatus =
-            await services.sheetService.assignUserToSheetAndUpdateLifeCycleAndStatuses(
-              sheetData.id,
-              userData.id,
-              CONSTANTS.roleNames.PastPaper,
-              sheetStatusToBeUpdated.statusForSupervisor,
-              sheetStatusToBeUpdated.statusForPastPaper
-            );
+          let whereQuery = { where: { id: sheetData.id } };
+
+          let updateAssignAndLifeCycleAndStatus = await services.sheetService.updateSheet(
+            dataToBeUpdated,
+            whereQuery
+          );
 
           if (updateAssignAndLifeCycleAndStatus.length > 0) {
             responseMessage.assinedUserToSheet =
@@ -538,19 +538,21 @@ const PastPaperSupervisorController = {
           res.status(httpStatus.OK).send({ message: "sheet already assigned to reviewer" });
         } else {
           //UPDATE sheet assignment & life cycle & sheet status
-          let sheetStatusToBeUpdated = {
+
+          let dataToBeUpdated = {
+            assignedToUserId: userData.id,
+            reviewerId: userData.id,
+            lifeCycle: CONSTANTS.roleNames.Reviewer,
             statusForSupervisor: CONSTANTS.sheetStatuses.NotStarted,
             statusForReviewer: CONSTANTS.sheetStatuses.NotStarted,
           };
 
-          let updateAssignAndUpdateLifeCycle =
-            await services.sheetService.assignUserToSheetAndUpdateLifeCycleAndStatuses(
-              sheetData.id,
-              userData.id,
-              CONSTANTS.roleNames.Reviewer,
-              sheetStatusToBeUpdated.statusForSupervisor,
-              sheetStatusToBeUpdated.statusForReviewer
-            );
+          let whereQuery = { where: { id: sheetData.id } };
+
+          let updateAssignAndUpdateLifeCycle = await services.sheetService.updateSheet(
+            dataToBeUpdated,
+            whereQuery
+          );
 
           // updating supervisor comments
           if (Comment) {

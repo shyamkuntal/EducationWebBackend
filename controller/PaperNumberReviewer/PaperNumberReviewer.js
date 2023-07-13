@@ -82,7 +82,7 @@ const PaperNumberReviewerController = {
         CONSTANTS.roleNames.Reviewer
       );
 
-      let paperNumberSheetData = await services.paperNumberSheetService.findPaperNumberWithUser(
+      let paperNumberSheetData = await services.paperNumberSheetService.findSheetAndUser(
         values.paperNumberSheetId
       );
 
@@ -177,7 +177,7 @@ const PaperNumberReviewerController = {
         CONSTANTS.roleNames.Reviewer
       );
 
-      let paperNumberSheetData = await services.paperNumberSheetService.findPaperNumberWithUser(
+      let paperNumberSheetData = await services.paperNumberSheetService.findSheetAndUser(
         values.paperNumberSheetId
       );
 

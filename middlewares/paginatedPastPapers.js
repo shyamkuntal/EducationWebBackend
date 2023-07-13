@@ -205,51 +205,33 @@ const paginatedPastPaperResults = (model, req) => {
               Key: pastPapers[i].imagebanner,
             };
 
-            const getImageBannerCommand = new GetObjectCommand(
-              getImageBannerObjectParams
-            );
+            const getImageBannerCommand = new GetObjectCommand(getImageBannerObjectParams);
 
-            const imageBannerUrl = await getSignedUrl(
-              s3Client,
-              getImageBannerCommand,
-              {
-                expiresIn: 3600,
-              }
-            );
+            const imageBannerUrl = await getSignedUrl(s3Client, getImageBannerCommand, {
+              expiresIn: 3600,
+            });
 
             const getQuesPaperObjectParams = {
               Bucket: process.env.AWS_BUCKET_NAME,
               Key: pastPapers[i].questionPdf,
             };
 
-            const getQuesPaperCommand = new GetObjectCommand(
-              getQuesPaperObjectParams
-            );
+            const getQuesPaperCommand = new GetObjectCommand(getQuesPaperObjectParams);
 
-            const quesPaperUrl = await getSignedUrl(
-              s3Client,
-              getQuesPaperCommand,
-              {
-                expiresIn: 3600,
-              }
-            );
+            const quesPaperUrl = await getSignedUrl(s3Client, getQuesPaperCommand, {
+              expiresIn: 3600,
+            });
 
             const getAnsPaperObjectParams = {
               Bucket: process.env.AWS_BUCKET_NAME,
               Key: pastPapers[i].ansPdf,
             };
 
-            const getAnsPaperCommand = new GetObjectCommand(
-              getAnsPaperObjectParams
-            );
+            const getAnsPaperCommand = new GetObjectCommand(getAnsPaperObjectParams);
 
-            const ansPaperUrl = await getSignedUrl(
-              s3Client,
-              getAnsPaperCommand,
-              {
-                expiresIn: 3600,
-              }
-            );
+            const ansPaperUrl = await getSignedUrl(s3Client, getAnsPaperCommand, {
+              expiresIn: 3600,
+            });
             pastPapersWithSubjects.push({
               ...pastPapers[i],
               subject: fetchSubject,
@@ -300,43 +282,29 @@ const paginatedPastPaperResults = (model, req) => {
             Key: pastPapers[i].imagebanner,
           };
 
-          const getImageBannerCommand = new GetObjectCommand(
-            getImageBannerObjectParams
-          );
+          const getImageBannerCommand = new GetObjectCommand(getImageBannerObjectParams);
 
-          const imageBannerUrl = await getSignedUrl(
-            s3Client,
-            getImageBannerCommand,
-            {
-              expiresIn: 3600,
-            }
-          );
+          const imageBannerUrl = await getSignedUrl(s3Client, getImageBannerCommand, {
+            expiresIn: 3600,
+          });
 
           const getQuesPaperObjectParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Key: pastPapers[i].questionPdf,
           };
 
-          const getQuesPaperCommand = new GetObjectCommand(
-            getQuesPaperObjectParams
-          );
+          const getQuesPaperCommand = new GetObjectCommand(getQuesPaperObjectParams);
 
-          const quesPaperUrl = await getSignedUrl(
-            s3Client,
-            getQuesPaperCommand,
-            {
-              expiresIn: 3600,
-            }
-          );
+          const quesPaperUrl = await getSignedUrl(s3Client, getQuesPaperCommand, {
+            expiresIn: 3600,
+          });
 
           const getAnsPaperObjectParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Key: pastPapers[i].answerPdf,
           };
 
-          const getAnsPaperCommand = new GetObjectCommand(
-            getAnsPaperObjectParams
-          );
+          const getAnsPaperCommand = new GetObjectCommand(getAnsPaperObjectParams);
 
           const ansPaperUrl = await getSignedUrl(s3Client, getAnsPaperCommand, {
             expiresIn: 3600,

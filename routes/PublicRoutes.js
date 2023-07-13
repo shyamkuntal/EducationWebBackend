@@ -10,10 +10,7 @@ const AccountManagementController = require("../controller/AccountManagement/Man
 router.get("/getallroles", AccountManagementController.getallroles);
 
 // /api/public/getrolebyname/:roleName
-router.get(
-  "/getrolebyname/:roleName",
-  AccountManagementController.getRoleByName
-);
+router.get("/getrolebyname/:roleName", AccountManagementController.getRoleByName);
 
 // /api/public/getpastpapers
 router.get("/getpastpapers", paginatedPastPaperResults(), (req, res) => {
@@ -24,18 +21,12 @@ router.get("/getpastpapers", paginatedPastPaperResults(), (req, res) => {
 router.get("/getallboards", BoardManagementController.getAllBoards);
 
 // /api/public/getsubboards
-router.get("/getsubboards/:boardId", BoardManagementController.GetSubBoards);
+router.get("/getsubboards/", BoardManagementController.GetSubBoards);
 
 // /api/public/getsubjectNames
-router.get(
-  "/getsubjectnames",
-  SubjectManagementController.getSubjectNamesWithOutImageUrl
-);
+router.get("/getsubjectnames", SubjectManagementController.getSubjectNamesWithOutImageUrl);
 
 // /api/public/getallsubjectlevels
-router.get(
-  "/getallsubjectlevels",
-  SubjectManagementController.getAllSubjectLevels
-);
+router.get("/getallsubjectlevels", SubjectManagementController.getAllSubjectLevels);
 
 module.exports = router;

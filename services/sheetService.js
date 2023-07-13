@@ -1,10 +1,5 @@
 const { Op, Sequelize } = require("sequelize");
-const {
-  Sheet,
-  SheetLog,
-  SpamSheetRecheckComments,
-  SheetCheckList,
-} = require("../models/Sheet.js");
+const { Sheet, SheetLog, SpamSheetRecheckComments, SheetCheckList } = require("../models/Sheet.js");
 const { User } = require("../models/User.js");
 const CONSTANTS = require("../constants/constants.js");
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
@@ -58,82 +53,46 @@ const checkSheetAssignmentId = async (sheetId, userId) => {
     throw err;
   }
 };
-const assignUserToSheetAndUpdateLifeCycleAndStatuses = async (
-  sheetId,
-  userId,
-  lifeCycleName,
-  statusForSupervisor,
-  statusForDownStreamUser
-) => {
+
+const updateSheet = async (dataToBeUpdated, whereQuery) => {
   try {
-    if (lifeCycleName === CONSTANTS.roleNames.PastPaper) {
-      let assignSheetAndStatus = await Sheet.update(
-        {
-          assignedToUserId: userId,
-          pastPaperId: userId,
-          lifeCycle: lifeCycleName,
-          statusForSupervisor,
-          statusForPastPaper: statusForDownStreamUser,
-        },
-        { where: { id: sheetId } }
-      );
+    let updatedSheet = await Sheet.update(dataToBeUpdated, whereQuery);
 
-      return assignSheetAndStatus;
-    }
-
-    if (lifeCycleName === CONSTANTS.roleNames.Reviewer) {
-      let assignSheetAndStatus = await Sheet.update(
-        {
-          assignedToUserId: userId,
-          reviewerId: userId,
-          lifeCycle: lifeCycleName,
-          statusForSupervisor,
-          statusForReviewer: statusForDownStreamUser,
-        },
-        { where: { id: sheetId } }
-      );
-
-      return assignSheetAndStatus;
-    }
+    return updatedSheet;
   } catch (err) {
     throw err;
   }
 };
 
 const updateSupervisorComments = async (sheetId, comment, user) => {
-
-  if(user === CONSTANTS.roleNames.PastPaper){
+  if (user === CONSTANTS.roleNames.PastPaper) {
     try {
       let updateComment = await Sheet.update(
         {
-          supervisorCommentToPastPaper: comment
+          supervisorCommentToPastPaper: comment,
         },
         { where: { id: sheetId } }
-      )
-      return updateComment
+      );
+      return updateComment;
     } catch (error) {
-        throw error
+      throw error;
     }
-  }else{
+  } else {
     try {
       let updateComment = await Sheet.update(
         {
-          supervisorCommentToReviewer: comment
+          supervisorCommentToReviewer: comment,
         },
         { where: { id: sheetId } }
-      )
-      return updateComment
+      );
+      return updateComment;
     } catch (error) {
-        throw error
+      throw error;
     }
   }
-}
+};
 
-const assignSupervisorToSheetAndUpdateStatus = async (
-  sheetId,
-  userId,
-  statusForSupervisor
-) => {
+const assignSupervisorToSheetAndUpdateStatus = async (sheetId, userId, statusForSupervisor) => {
   try {
     let assignSheetAndStatus = await Sheet.update(
       {
@@ -223,8 +182,8 @@ const updateSheetStatusForReviewer = async (sheetId, statusForReviewer) => {
 
 const uploadErrorReportFile = async (fileName, fileObj) => {
   try {
-
-    const errorImageKey = process.env.AWS_BUCKET_PASTPAPER_ERROR_REPORT_IMAGES_FOLDER + "/" + fileName;
+    const errorImageKey =
+      process.env.AWS_BUCKET_PASTPAPER_ERROR_REPORT_IMAGES_FOLDER + "/" + fileName;
 
     const imageUploadParams = {
       Bucket: process.env.AWS_BUCKET_NAME,
@@ -233,9 +192,7 @@ const uploadErrorReportFile = async (fileName, fileObj) => {
       ContentType: fileObj.mimetype,
     };
 
-    let fileUpload = await s3Client.send(
-      new PutObjectCommand(imageUploadParams)
-    );
+    let fileUpload = await s3Client.send(new PutObjectCommand(imageUploadParams));
 
     if (fileUpload.$metadata.httpStatusCode === httpStatus.OK) {
       return fileName;
@@ -354,7 +311,7 @@ module.exports = {
   findSheet,
   findSheetAndUser,
   checkSheetAssignmentId,
-  assignUserToSheetAndUpdateLifeCycleAndStatuses,
+  updateSheet,
   assignSupervisorToSheetAndUpdateStatus,
   findSheetInSheetStatus,
   createSheetLog,
@@ -368,5 +325,5 @@ module.exports = {
   createSheetCheckList,
   findCheckList,
   findSheetLog,
-  updateSupervisorComments
+  updateSupervisorComments,
 };
