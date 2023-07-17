@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const PaperNumberReviewerController = require("../controller/PaperNumberReviewer/PaperNumberReviewer");
+const DataGeneratorController = require("../controller/DataGenerator/DataGeneratorManagement");
 const PaperNumberManagentController = require("../controller/PaperNumberManagement/PaperNumber");
 const BoardManagementController = require("../controller/BoardManagement/BoardM");
 const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor");
@@ -34,7 +35,7 @@ router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 // api/pnreviewer/getpapernumberbypnsheetid
 router.get(
   "/getpapernumberbypnsheetid",
-  PaperNumberManagentController.getPaperNumberByPaperNumberSheet
+  DataGeneratorController.getPaperNumberByPaperNumberSheet
 );
 
 // api/pnreviewer/adderrorstopapernumbers

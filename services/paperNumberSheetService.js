@@ -118,6 +118,7 @@ const assignUserToSheetAndUpdateLifeCycleAndStatuses = async (
     throw err;
   }
 };
+
 const updateSupervisorComments = async (paperNumberSheetId, comment, user) => {
   if (user === CONSTANTS.roleNames.PastPaper) {
     try {
@@ -145,6 +146,7 @@ const updateSupervisorComments = async (paperNumberSheetId, comment, user) => {
     }
   }
 };
+
 const createSheetLog = async (paperNumberSheetId, assignee, assignedTo, logMessage) => {
   try {
     let createLog = await PaperNumberSheetLog.create({
@@ -170,6 +172,7 @@ const findCheckList = async (paperNumberSheetId) => {
     throw err;
   }
 };
+
 const createSheetCheckList = async (paperNumberSheetId) => {
   try {
     let checkList = [

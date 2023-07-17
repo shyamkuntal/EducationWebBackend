@@ -25,6 +25,7 @@ module.exports = Object.freeze({
     pastPaperrAssignToSupervisor: "Completed sheet assigned back to ",
     reviewerAssignToSupervisorErrorReport:
       "found an error in the sheet and send back to",
+      DataGeneratorAssignToSupervisor:"Completed sheet assigned back to", 
   },
   sheetCheckList: {
     CheckListItem1: "Check List Item 1",
