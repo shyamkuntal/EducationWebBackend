@@ -10,15 +10,13 @@ const {
   createPastPaperSchema,
   assignSupervisorUserToSheetSchema,
   editPastPaperSchema,
+  getErrorReportFileSchema,
 } = require("../../validations/PastPaperValidation.js");
 
 const httpStatus = require("http-status");
 
 const CONSTANTS = require("../../constants/constants.js");
 
-const { getSubBoardsSchema } = require("../../validations/subjectManagementValidations.js");
-
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { getRecheckingComments } = require("../../validations/PPMReviewerValidation.js");
 
 dotenv.config();
@@ -529,13 +527,32 @@ const PastPaperUploaderController = {
           whereQuery
         );
 
-        console.log(updatePastPaper);
         res.status(httpStatus.OK).send({ message: "PastPaper Updated Successfully!" });
       } else {
         res.status(httpStatus.BAD_REQUEST).send({ message: "PastPaper not found!" });
       }
     } catch (err) {
-      console.log(err);
+      next(err);
+    }
+  },
+
+  async getErrorReportFiles(req, res, next) {
+    try {
+      let values = await getErrorReportFileSchema.validateAsync({ sheetId: req.query.sheetId });
+
+      let sheetData = await services.sheetService.findSheet(values.sheetId);
+
+      if (sheetData) {
+        let fileUrl = await services.sheetService.getFilesUrlFromS3(sheetData.errorReportImg);
+
+        res.status(200).send({
+          errorReportFile: sheetData.errorReportImg,
+          errorReportFileUrl: fileUrl,
+        });
+      } else {
+        res.status(httpStatus.BAD_REQUEST).send({ message: "Sheet not found!" });
+      }
+    } catch (err) {
       next(err);
     }
   },

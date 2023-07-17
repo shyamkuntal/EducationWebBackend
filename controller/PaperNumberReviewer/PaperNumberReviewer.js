@@ -5,6 +5,9 @@ const {
   addErrorReportSchema,
   addErrorToPaperNumbersSchema,
   submitSheetToSupervisorSchema,
+  addRecheckCommentSchema,
+  getRecheckingCommentsSchema,
+  getErrorReportFilesSchema,
 } = require("../../validations/PaperNumberReviewerValidations.js");
 const CONSTANTS = require("../../constants/constants.js");
 const { generateFileName } = require("../../config/s3.js");
@@ -91,7 +94,10 @@ const PaperNumberReviewerController = {
         if (userData.id === paperNumberSheetData.assignedToUserId) {
           // checking if erorr Report exists, adding if does not exists
           if (paperNumberSheetData.isSpam !== true) {
-            let fileName = generateFileName(values.errorReportFile.originalname);
+            let fileName =
+              process.env.AWS_BUCKET_PAPERNUMBER_ERROR_REPORT_IMAGES_FOLDER +
+              "/" +
+              generateFileName(values.errorReportFile.originalname);
 
             let uploadFile =
               await services.paperNumberSheetService.uploadPaperNumberErrorReportFile(
@@ -270,6 +276,194 @@ const PaperNumberReviewerController = {
         if (addPaperNumberErrors.length > 0) {
           res.status(httpStatus.OK).send({ message: "Added Error Report to paperNumbers" });
         }
+      }
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async addRecheckComment(req, res, next) {
+    try {
+      let values = await addRecheckCommentSchema.validateAsync(req.body);
+
+      let userData = await services.userService.finduser(
+        values.reviewerId,
+        CONSTANTS.roleNames.Reviewer
+      );
+
+      // checking sheet
+      let paperNumberSheetData = await services.paperNumberSheetService.findSheetAndUser(
+        values.paperNumberSheetId
+      );
+
+      let responseMessage = {
+        message: { errorReport: "", sheetLog: "" },
+      };
+
+      if (userData && paperNumberSheetData) {
+        // Checking is reviewer is assigned to sheet
+        if (paperNumberSheetData.assignedToUserId === values.reviewerId) {
+          // checking if sheet is spam, adding recheck error only if sheet is spam
+          if (paperNumberSheetData.isSpam) {
+            // adding recheck error
+
+            let dataToBeCreated = {
+              paperNumberSheetId: values.paperNumberSheetId,
+              reviewerRecheckComment: values.recheckComment,
+            };
+            let addError = await services.paperNumberSheetService.createRecheckComment(
+              dataToBeCreated
+            );
+
+            // Update paperNumberSheet statuses and assignment
+            let dataToBeUpdated = {
+              assignedToUserId: paperNumberSheetData.supervisorId,
+              statusForReviewer: CONSTANTS.sheetStatuses.Complete,
+              isSpam: true,
+            };
+
+            let whereQuery = { where: { id: values.paperNumberSheetId } };
+
+            let updatePaperNumberSheetData =
+              await services.paperNumberSheetService.updatePaperNumberSheet(
+                dataToBeUpdated,
+                whereQuery
+              );
+
+            if (updatePaperNumberSheetData.length > 0) {
+              responseMessage.message.errorReport = "Error Report updated successfully!";
+            }
+
+            let dataToBeCreatedForLogs = {
+              paperNumberSheetId: values.paperNumberSheetId,
+              assignee: userData.userName,
+              assignedTo: paperNumberSheetData.supervisor.userName,
+              logMessage: CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisorErrorReport,
+            };
+
+            let createLog = await services.paperNumberSheetService.createPaperNumberSheetLog(
+              dataToBeCreatedForLogs
+            );
+
+            if (createLog) {
+              responseMessage.message.sheetLog =
+                "Log record for assignment to supervisor added successfully";
+            }
+
+            res.status(httpStatus.OK).send({
+              message: "Recheking error added successfully!",
+              responseMessage,
+              addError,
+            });
+          } else {
+            res.status(httpStatus.BAD_REQUEST).send({
+              message: "Cannot add recheck error, sheet not in spam state",
+            });
+          }
+        } else {
+          res.status(httpStatus.BAD_REQUEST).send({ message: "Reviewer Not assigned to sheet" });
+        }
+      } else {
+        res.status(httpStatus.BAD_REQUEST).send({ message: "Invalid paperNumberSheetId" });
+      }
+
+      console.log(values);
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  },
+  async getRecheckComment(req, res, next) {
+    try {
+      let values = await getRecheckingCommentsSchema.validateAsync({
+        paperNumberSheetId: req.query.paperNumberSheetId,
+      });
+
+      console.log(values);
+
+      let getRecheckComments = await services.paperNumberSheetService.findRecheckingComments(
+        values.paperNumberSheetId
+      );
+
+      res.status(httpStatus.OK).send(getRecheckComments);
+    } catch (err) {
+      next(err);
+    }
+  },
+  async updateCompleteSheetStatus(req, res, next) {
+    try {
+      let values = await updateSheetStatusSchema.validateAsync(req.body);
+
+      console.log(values);
+
+      // checking sheet
+      let paperNumberSheetData = await services.paperNumberSheetService.findSheetAndUser(
+        values.paperNumberSheetId
+      );
+
+      if (paperNumberSheetData) {
+        let assignedTo = paperNumberSheetData.assignedToUserId;
+        let lifeCycle = paperNumberSheetData.lifeCycle;
+        let previousStatus = paperNumberSheetData.statusForReviewer;
+
+        // Checking if sheet is assigned to current reviewer
+        if (assignedTo === values.reviewerId && lifeCycle === CONSTANTS.roleNames.Reviewer) {
+          if (previousStatus !== CONSTANTS.sheetStatuses.Complete) {
+            let dataToBeUpdated = {
+              statusForReviewer: CONSTANTS.sheetStatuses.Complete,
+            };
+
+            let whereQuery = { where: { id: paperNumberSheetData.id } };
+
+            let updateCompleteStatus =
+              await services.paperNumberSheetService.updatePaperNumberSheet(
+                dataToBeUpdated,
+                whereQuery
+              );
+
+            if (updateCompleteStatus.length > 0) {
+              res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
+            }
+          } else {
+            res
+              .status(httpStatus.BAD_REQUEST)
+              .send({ message: "Current sheet status is already Complete" });
+          }
+        } else {
+          res
+            .status(httpStatus.BAD_REQUEST)
+            .send({ message: "Current sheet status is already Complete" });
+        }
+      } else {
+        res.status(httpStatus.BAD_REQUEST).send({ message: "Invalid sheetId" });
+      }
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  },
+
+  async getErrorReportFile(req, res, next) {
+    try {
+      let values = await getErrorReportFilesSchema.validateAsync({
+        paperNumberSheetId: req.query.paperNumberSheetId,
+      });
+
+      let paperNumberSheetData = await services.paperNumberSheetService.findPaperNumberSheetByPk(
+        values.paperNumberSheetId
+      );
+
+      if (paperNumberSheetData) {
+        let fileUrl = await services.paperNumberSheetService.getFilesUrlFromS3(
+          paperNumberSheetData.dataValues.errorReportImg
+        );
+
+        res.status(200).send({
+          errorReportFile: paperNumberSheetData.dataValues.errorReportImg,
+          errorReportFileUrl: fileUrl,
+        });
+      } else {
+        res.status(httpStatus.BAD_REQUEST).send({ message: "Sheet not found!" });
       }
     } catch (err) {
       next(err);

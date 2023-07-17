@@ -2,8 +2,9 @@ const { Op, Sequelize } = require("sequelize");
 const { Sheet, SheetLog, SpamSheetRecheckComments, SheetCheckList } = require("../models/Sheet.js");
 const { User } = require("../models/User.js");
 const CONSTANTS = require("../constants/constants.js");
-const { PutObjectCommand } = require("@aws-sdk/client-s3");
 const { s3Client } = require("../config/s3.js");
+const { PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const httpStatus = require("http-status");
 require("dotenv").config();
 
@@ -45,8 +46,6 @@ const checkSheetAssignmentId = async (sheetId, userId) => {
       where: { [Op.and]: [{ id: sheetId }, { assignedToUserId: userId }] },
       raw: true,
     });
-
-    console.log(checkId);
 
     return checkId;
   } catch (err) {
@@ -145,50 +144,12 @@ const findSheetLog = async (sheetId) => {
   }
 };
 
-const updateSheetStatusForSupervisorAndReviewer = async (
-  sheetId,
-  statusForSupervisor,
-  statusForReviewer
-) => {
-  try {
-    let updateStatus = await Sheet.update(
-      {
-        statusForSupervisor: statusForSupervisor,
-        statusForReviewer: statusForReviewer,
-      },
-      { where: { id: sheetId } }
-    );
-
-    return updateStatus;
-  } catch (err) {
-    throw err;
-  }
-};
-
-const updateSheetStatusForReviewer = async (sheetId, statusForReviewer) => {
-  try {
-    let updateStatus = await Sheet.update(
-      {
-        statusForReviewer: statusForReviewer,
-      },
-      { where: { id: sheetId } }
-    );
-
-    return updateStatus;
-  } catch (err) {
-    throw err;
-  }
-};
-
 const uploadErrorReportFile = async (fileName, fileObj) => {
   try {
-    const errorImageKey =
-      process.env.AWS_BUCKET_PASTPAPER_ERROR_REPORT_IMAGES_FOLDER + "/" + fileName;
-
     const imageUploadParams = {
       Bucket: process.env.AWS_BUCKET_NAME,
       Body: fileObj.buffer,
-      Key: errorImageKey,
+      Key: fileName,
       ContentType: fileObj.mimetype,
     };
 
@@ -199,35 +160,6 @@ const uploadErrorReportFile = async (fileName, fileObj) => {
     } else {
       false;
     }
-  } catch (err) {
-    throw err;
-  }
-};
-const updateErrorReportAndAssignToSupervisor = async (
-  sheetId,
-  supervisorId,
-  statusForSupervisor,
-  statusForReviewer,
-  isSpam,
-  errorReport,
-  comment,
-  fileName
-) => {
-  try {
-    let updateErrorReport = await Sheet.update(
-      {
-        assignedToUserId: supervisorId,
-        statusForReviewer: statusForReviewer,
-        statusForSupervisor: statusForSupervisor,
-        isSpam: isSpam,
-        errorReport: errorReport,
-        reviewerCommentToSupervisor: comment,
-        errorReportImg: fileName,
-      },
-      { where: { id: sheetId } }
-    );
-
-    return updateErrorReport;
   } catch (err) {
     throw err;
   }
@@ -244,27 +176,12 @@ const addRecheckError = async (sheetId, recheckComment) => {
     throw err;
   }
 };
-const addRecheckErrorAndUpdate = async (sheetId, supervisorId, statusForReviewer, isSpam) => {
-  try {
-    let updateErrorReport = await Sheet.update(
-      {
-        assignedToUserId: supervisorId,
-        statusForReviewer: statusForReviewer,
-        isSpam: isSpam,
-      },
-      { where: { id: sheetId } }
-    );
-    return updateErrorReport;
-  } catch (err) {
-    throw err;
-  }
-};
 
 const findRecheckingComments = async (sheetId) => {
   try {
-    let findRecheckComments = await SpamSheetRecheckComments.findAll({
+    let findRecheckComments = await SpamSheetRecheckComments.findOne({
       where: { sheetId: sheetId },
-      order: [["createdAt", "ASC"]],
+      order: [["createdAt", "DESC"]],
       raw: true,
     });
     return findRecheckComments;
@@ -307,6 +224,26 @@ const createSheetCheckList = async (sheetId) => {
   }
 };
 
+const getFilesUrlFromS3 = async (fileName) => {
+  try {
+    console.log(fileName);
+    let getFilesParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: fileName,
+    };
+
+    const getAnsPaperCommand = new GetObjectCommand(getFilesParams);
+
+    const fileUrl = await getSignedUrl(s3Client, getAnsPaperCommand, {
+      expiresIn: 3600,
+    });
+
+    return fileUrl;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   findSheet,
   findSheetAndUser,
@@ -315,15 +252,12 @@ module.exports = {
   assignSupervisorToSheetAndUpdateStatus,
   findSheetInSheetStatus,
   createSheetLog,
-  updateSheetStatusForSupervisorAndReviewer,
-  updateSheetStatusForReviewer,
   uploadErrorReportFile,
-  updateErrorReportAndAssignToSupervisor,
   addRecheckError,
-  addRecheckErrorAndUpdate,
   findRecheckingComments,
   createSheetCheckList,
   findCheckList,
   findSheetLog,
   updateSupervisorComments,
+  getFilesUrlFromS3,
 };

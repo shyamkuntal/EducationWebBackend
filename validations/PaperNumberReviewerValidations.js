@@ -30,14 +30,31 @@ const addErrorToPaperNumbersSchema = Joi.object({
   ),
 });
 
+const addRecheckCommentSchema = Joi.object({
+  paperNumberSheetId: Joi.string().guid().required(),
+  reviewerId: Joi.string().guid().required(),
+  recheckComment: Joi.string().max(225).required(),
+});
+
 const submitSheetToSupervisorSchema = Joi.object({
   paperNumberSheetId: Joi.string().guid().required(),
   reviewerId: Joi.string().guid().required(),
 });
 
+const getErrorReportFilesSchema = Joi.object({
+  paperNumberSheetId: Joi.string().guid().required(),
+});
+
+const getRecheckingCommentsSchema = Joi.object({
+  paperNumberSheetId: Joi.string().guid().required(),
+});
+
 module.exports = {
   submitSheetToSupervisorSchema,
   addErrorToPaperNumbersSchema,
+  addRecheckCommentSchema,
   updateSheetStatusSchema,
   addErrorReportSchema,
+  getRecheckingCommentsSchema,
+  getErrorReportFilesSchema,
 };

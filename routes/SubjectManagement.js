@@ -19,27 +19,14 @@ router.post(
   SubjectManagementController.CreateSubject
 );
 
-router.put(
-  "/updatesubject",
-  upload.single("image"),
-  SubjectManagementController.UpdateSubject
-);
+router.put("/updatesubject", upload.single("image"), SubjectManagementController.UpdateSubject);
 
-router.patch(
-  "/togglepublishsubject",
-  SubjectManagementController.TogglePublishSubject
-);
+router.patch("/togglepublishsubject", SubjectManagementController.TogglePublishSubject);
 
 //router.patch("/:id/togglearchivesubject", ToggleArchiveSubject);
-router.patch(
-  "/togglearchiveSubjectLevels",
-  SubjectManagementController.ToggleArchiveLevel
-);
+router.patch("/togglearchiveSubjectLevels", SubjectManagementController.ToggleArchiveLevel);
 
-router.post(
-  "/createsubjectname",
-  SubjectManagementController.createsubjectName
-);
+router.post("/createsubjectname", SubjectManagementController.createsubjectName);
 
 router.get(
   "/getsubjectdetailsbyids",
@@ -57,13 +44,12 @@ router.get("/getallboards", SubjectManagementController.getAllboards);
 
 router.get("/getallsubboards", SubjectManagementController.getAllSubBoards);
 
-router.get(
-  "/getsubjectbysubjectnameid",
-  SubjectManagementController.getSubjectBySubjectNameId
-);
+router.get("/getsubjectbysubjectnameid", SubjectManagementController.getSubjectBySubjectNameId);
 
 router.get(
   "/getsubjectdetails",
   SubjectManagementController.getSubjectDetailsByBoardSubBoardGradeSubjectNameId
 );
+
+router.get("/getsubjectnamebyid", SubjectManagementController.getSubjectNameById);
 module.exports = router;

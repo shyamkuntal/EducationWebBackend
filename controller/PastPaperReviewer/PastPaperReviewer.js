@@ -5,7 +5,7 @@ const {
   reportErrorSchema,
   getRecheckingComments,
 } = require("../../validations/PPMReviewerValidation.js");
-const services = require("../../services/index.js");
+const services = require("../../services/index");
 const httpStatus = require("http-status");
 const { generateFileName } = require("../../config/s3.js");
 
@@ -44,12 +44,17 @@ const PastPaperReviewerController = {
               statusForReviewer: CONSTANTS.sheetStatuses.InProgress,
             };
 
-            let updateInprogressStatus =
-              await services.sheetService.updateSheetStatusForSupervisorAndReviewer(
-                sheet.id,
-                statusToBeUpdated.statusForSupervisor,
-                statusToBeUpdated.statusForReviewer
-              );
+            let dataToBeUpdated = {
+              statusForSupervisor: CONSTANTS.sheetStatuses.InProgress,
+              statusForReviewer: CONSTANTS.sheetStatuses.InProgress,
+            };
+
+            let whereQuery = { where: { id: sheet.id } };
+
+            let updateInprogressStatus = await services.sheetService.updateSheet(
+              dataToBeUpdated,
+              whereQuery
+            );
 
             if (updateInprogressStatus.length > 0) {
               res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
@@ -86,13 +91,15 @@ const PastPaperReviewerController = {
         // Checking if sheet is assigned to current reviewer
         if (assignedTo === values.reviewerId && lifeCycle === CONSTANTS.roleNames.Reviewer) {
           if (previousStatus !== CONSTANTS.sheetStatuses.Complete) {
-            let statusToBeUpdated = {
+            let dataToBeUpdated = {
               statusForReviewer: CONSTANTS.sheetStatuses.Complete,
             };
 
-            let updateCompleteStatus = await services.sheetService.updateSheetStatusForReviewer(
-              sheet.id,
-              statusToBeUpdated.statusForReviewer
+            let whereQuery = { where: { id: sheet.id } };
+
+            let updateCompleteStatus = await services.sheetService.updateSheet(
+              dataToBeUpdated,
+              whereQuery
             );
 
             if (updateCompleteStatus.length > 0) {
@@ -214,7 +221,10 @@ const PastPaperReviewerController = {
           // checking if erorr Report exists, adding if does not exists
           if (sheetData.errorReport === null) {
             // uploading error report file
-            let fileName = generateFileName(values.file.originalname);
+            let fileName =
+              process.env.AWS_BUCKET_PASTPAPER_ERROR_REPORT_IMAGES_FOLDER +
+              "/" +
+              generateFileName(values.file.originalname);
             let fileObj = req.file;
 
             let uploadFile = await services.sheetService.uploadErrorReportFile(fileName, fileObj);
@@ -227,23 +237,22 @@ const PastPaperReviewerController = {
             // updating error report, adding reviewer comments,updating sheetStatuses,setting IsSpam to true
             //  error report img and assigning to supervisor
 
-            let statusTobeUpdated = {
+            let dataToBeUpdated = {
+              assignedToUserId: sheetData.supervisorId,
               statusForReviwer: CONSTANTS.sheetStatuses.Complete,
               statusForSupervsior: CONSTANTS.sheetStatuses.Complete,
               isSpam: true,
+              errorReport: values.errorReport,
+              reviewerCommentToSupervisor: values.comment,
+              errorReportImg: fileName,
             };
 
-            let updateErrorReport =
-              await services.sheetService.updateErrorReportAndAssignToSupervisor(
-                values.sheetId,
-                sheetData.supervisorId,
-                statusTobeUpdated.statusForReviwer,
-                statusTobeUpdated.statusForSupervsior,
-                statusTobeUpdated.isSpam,
-                values.errorReport,
-                values.comment,
-                fileName
-              );
+            let whereQuery = { where: { id: values.sheetId } };
+
+            let updateErrorReport = await services.sheetService.updateSheet(
+              dataToBeUpdated,
+              whereQuery
+            );
 
             if (updateErrorReport.length > 0) {
               responseMessage.message.errorReport = "Error Report updated successfully!";
@@ -274,6 +283,7 @@ const PastPaperReviewerController = {
         res.status(httpStatus.BAD_REQUEST).send({ message: "Invalid sheetId" });
       }
     } catch (err) {
+      console.log(err);
       next(err);
     }
   },
@@ -305,17 +315,17 @@ const PastPaperReviewerController = {
               values.recheckComment
             );
 
-            let statusTobeUpdated = {
-              statusForReviwer: CONSTANTS.sheetStatuses.Complete,
-              statusForSupervsior: CONSTANTS.sheetStatuses.Complete,
+            let dataToBeUpdated = {
+              assignedToUserId: sheetData.supervisorId,
+              statusForReviewer: CONSTANTS.sheetStatuses.Complete,
               isSpam: true,
             };
 
-            let updateErrorReport = await services.sheetService.addRecheckErrorAndUpdate(
-              values.sheetId,
-              sheetData.supervisorId,
-              statusTobeUpdated.statusForReviwer,
-              statusTobeUpdated.isSpam
+            let whereQuery = { where: { id: values.sheetId } };
+
+            let updateErrorReport = await services.sheetService.updateSheet(
+              dataToBeUpdated,
+              whereQuery
             );
 
             if (updateErrorReport.length > 0) {
@@ -324,8 +334,8 @@ const PastPaperReviewerController = {
 
             let createLog = await services.sheetService.createSheetLog(
               sheetData.id,
-              sheetData.supervisor.Name,
-              userData.Name,
+              sheetData.supervisor.userName,
+              userData.userName,
               CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisorErrorReport
             );
 

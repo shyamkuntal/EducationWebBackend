@@ -94,6 +94,10 @@ const updateSubjectSchema = Joi.object({
   }),
 });
 
+const getSubjectNameByIdSchema = Joi.object({
+  subjectNameId: Joi.string().guid().required(),
+});
+
 module.exports = {
   createSubjectSchema,
   getSubBoardsSchema,
@@ -105,4 +109,5 @@ module.exports = {
   getSingleSubjectById,
   togglePublishSubject,
   updateSubjectSchema,
+  getSubjectNameByIdSchema,
 };

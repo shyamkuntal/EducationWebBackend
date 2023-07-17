@@ -465,6 +465,7 @@ const PastPaperSupervisorController = {
             lifeCycle: CONSTANTS.roleNames.PastPaper,
             statusForSupervisor: CONSTANTS.sheetStatuses.NotStarted,
             statusForPastPaper: CONSTANTS.sheetStatuses.NotStarted,
+            supervisorCommentToPastPaper: values.supervisorComments,
           };
 
           let whereQuery = { where: { id: sheetData.id } };
@@ -478,19 +479,9 @@ const PastPaperSupervisorController = {
             responseMessage.assinedUserToSheet =
               "Sheet assigned to past paper and lifeCycle updated successfully";
             responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
+            responseMessage.updateComment = "Supervisor comment added successfully";
           }
 
-          // updating supervisor comments
-          if (Comment) {
-            let updateComment = await services.sheetService.updateSupervisorComments(
-              sheetData.id,
-              Comment,
-              "PastPaper"
-            );
-            if (updateComment) {
-              responseMessage.updateComment = "Supervisor comment added successfully";
-            }
-          }
           // CREATE sheet log for sheet assignment to past paper uploader
 
           let createLog = await services.sheetService.createSheetLog(
@@ -523,8 +514,6 @@ const PastPaperSupervisorController = {
 
       let sheetData = await services.sheetService.findSheetAndUser(values.sheetId);
 
-      let Comment = values.supervisorComments;
-
       let responseMessage = {
         assinedUserToSheet: "",
         UpdateSheetStatus: "",
@@ -545,6 +534,7 @@ const PastPaperSupervisorController = {
             lifeCycle: CONSTANTS.roleNames.Reviewer,
             statusForSupervisor: CONSTANTS.sheetStatuses.NotStarted,
             statusForReviewer: CONSTANTS.sheetStatuses.NotStarted,
+            supervisorCommentToReviewer: values.supervisorComments,
           };
 
           let whereQuery = { where: { id: sheetData.id } };
@@ -554,22 +544,11 @@ const PastPaperSupervisorController = {
             whereQuery
           );
 
-          // updating supervisor comments
-          if (Comment) {
-            let updateComment = await services.sheetService.updateSupervisorComments(
-              sheetData.id,
-              Comment,
-              "Reviewer"
-            );
-            if (updateComment) {
-              responseMessage.updateComment = "Supervisor comment added successfully";
-            }
-          }
-
           if (updateAssignAndUpdateLifeCycle.length > 0) {
             responseMessage.assinedUserToSheet =
               "Sheet assigned to reviewer and lifeCycle updated successfully";
             responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
+            responseMessage.updateComment = "Supervisor comment added successfully";
           }
 
           // CREATE sheet log for sheet assignment to past paper uploader

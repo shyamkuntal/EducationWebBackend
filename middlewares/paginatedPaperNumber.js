@@ -117,13 +117,13 @@ const paginatedPaperNumberSheet = (model, req) => {
           },
           {
             model: Subject,
-            where: req.query.subjectNameId
-              ? { subjectNameId: req.query.subjectNameId }
-              : {},
+            where: req.query.subjectNameId ? { subjectNameId: req.query.subjectNameId } : {},
+            attributes: ["id", "boardId", "subBoardId", "grade", "subjectNameId"],
           },
           {
             model: User,
             attributes: ["Name"],
+            as: "supervisor",
           },
         ],
         where: filters,

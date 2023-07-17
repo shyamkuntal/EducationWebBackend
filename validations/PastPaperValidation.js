@@ -68,8 +68,13 @@ const editPastPaperSchema = Joi.object({
   }).allow(null),
 });
 
+const getErrorReportFileSchema = Joi.object({
+  sheetId: Joi.string().guid().required(),
+});
+
 module.exports = {
   createPastPaperSchema,
   assignSupervisorUserToSheetSchema,
   editPastPaperSchema,
+  getErrorReportFileSchema,
 };

@@ -5,6 +5,7 @@ const DataGeneratorController = require("../controller/DataGenerator/DataGenerat
 const PaperNumberManagentController = require("../controller/PaperNumberManagement/PaperNumber");
 const BoardManagementController = require("../controller/BoardManagement/BoardM");
 const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor");
+const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject");
 const paginatedPaperNumberSheet = require("../middlewares/paginatedPaperNumber");
 
 const upload = require("../config/multer.js");
@@ -48,6 +49,22 @@ router.patch(
   PaperNumberReviewerController.reportSheetError
 );
 
+// api/pnreviewer/addrecheckcomment
+router.post("/addrecheckcomment", PaperNumberReviewerController.addRecheckComment);
+
+// api/pnreviewer/getrecheckcomment
+router.get("/getrecheckcomment", PaperNumberReviewerController.getRecheckComment);
+
+// api/pnreviewer/updatecompletestatus
+router.patch("/updatecompletestatus", PaperNumberReviewerController.updateCompleteSheetStatus);
+
+// api/pnreviewer/submitsheettosupervisor
 router.patch("/submitsheettosupervisor", PaperNumberReviewerController.submitSheetToSupervisor);
+
+// api/pnreviewer/geterrorreportfile
+router.get("/geterrorreportfile", PaperNumberReviewerController.getErrorReportFile);
+
+// api/pnreviewer/getsubjectnamebyid
+router.get("/getsubjectnamebyid", SubjectManagementController.getSubjectNameById);
 
 module.exports = router;

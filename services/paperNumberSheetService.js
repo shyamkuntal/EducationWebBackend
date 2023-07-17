@@ -2,11 +2,15 @@ const {
   PaperNumberSheet,
   PaperNumberSheetLog,
   PaperNumberSheetCheckList,
+  SpamPaperNumberSheetRecheckComments,
 } = require("../models/PaperNumber");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
 const { User } = require("../models/User");
 const CONSTANTS = require("../constants/constants");
+const { s3Client } = require("../config/s3");
+const { PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const findPaperNumberSheetByPk = async (paperNumberSheetId) => {
   try {
@@ -29,13 +33,10 @@ const createPaperNumberSheetLog = async (dataToBeCreated) => {
 
 const uploadPaperNumberErrorReportFile = async (fileName, fileObj) => {
   try {
-    const errorImageKey =
-      process.env.AWS_BUCKET_PAPERNUMBER_ERROR_REPORT_IMAGES_FOLDER + "/" + fileName;
-
     const imageUploadParams = {
       Bucket: process.env.AWS_BUCKET_NAME,
       Body: fileObj.buffer,
-      Key: errorImageKey,
+      Key: fileName,
       ContentType: fileObj.mimetype,
     };
 
@@ -51,11 +52,54 @@ const uploadPaperNumberErrorReportFile = async (fileName, fileObj) => {
   }
 };
 
+const getFilesUrlFromS3 = async (fileName) => {
+  try {
+    console.log(fileName);
+    let getFilesParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: fileName,
+    };
+
+    const getAnsPaperCommand = new GetObjectCommand(getFilesParams);
+
+    const fileUrl = await getSignedUrl(s3Client, getAnsPaperCommand, {
+      expiresIn: 3600,
+    });
+
+    return fileUrl;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const updatePaperNumberSheet = async (dataToBeUpdated, whereQuery) => {
   try {
     let updateStatus = await PaperNumberSheet.update(dataToBeUpdated, whereQuery);
 
     return updateStatus;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const createRecheckComment = async (dataToBeCreated) => {
+  try {
+    let recheckComment = await SpamPaperNumberSheetRecheckComments.create(dataToBeCreated);
+
+    return recheckComment;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findRecheckingComments = async (paperNumberSheetId) => {
+  try {
+    let findRecheckComments = await SpamPaperNumberSheetRecheckComments.findOne({
+      where: { paperNumberSheetId },
+      order: [["createdAt", "DESC"]],
+      raw: true,
+    });
+    return findRecheckComments;
   } catch (err) {
     throw err;
   }
@@ -205,4 +249,7 @@ module.exports = {
   createPaperNumberSheetLog,
   uploadPaperNumberErrorReportFile,
   updatePaperNumberSheet,
+  createRecheckComment,
+  findRecheckingComments,
+  getFilesUrlFromS3,
 };

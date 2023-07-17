@@ -56,7 +56,6 @@ router.put(
 
 router.get("/getpastpaper", PastPaperSupervisorController.getPastPaper);
 
-// api/ppmReviewer/getsubjectnames
 router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
 router.get("/:userId/getdatafordashboard", paginatedSheetResults(), getdatafordashboard);
@@ -64,5 +63,7 @@ router.get("/:userId/getdatafordashboard", paginatedSheetResults(), getdataforda
 router.get("/getallboards", BoardManagementController.getAllBoards);
 
 router.get("/getallsubboards", BoardManagementController.GetSubBoards);
+
+router.get("/geterrorreportfiles", PastPaperUploaderController.getErrorReportFiles);
 
 module.exports = router;
