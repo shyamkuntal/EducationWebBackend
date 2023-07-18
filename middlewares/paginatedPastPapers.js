@@ -13,6 +13,7 @@ const paginatedPastPaperResults = (model, req) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     let subjectNameFilter = req.query.subjectNameId;
+
     const filtersForSheet = {};
 
     if (req.query.isPublished) {
@@ -170,15 +171,16 @@ const paginatedPastPaperResults = (model, req) => {
 
       let pastPapersWithSubjects = [];
 
+
       // Filter for SubjectName
-      if (subjectNameFilter) {
+      if (subjectNameFilter?.length > 0) {
         for (let i = 0; i < pastPapers.length; i++) {
           let fetchSheet = await Sheet.findOne({
             where: { subjectId: pastPapers[i].sheet.subjectId },
             include: [
               {
                 model: Subject,
-                where: { subjectNameId: req.query.subjectNameId },
+                where: { subjectNameId: subjectNameFilter },
                 attributes: ["id", "subjectNameId"],
               },
               {
@@ -189,6 +191,7 @@ const paginatedPastPaperResults = (model, req) => {
             nest: true,
           });
 
+
           let fetchSubject;
           if (fetchSheet !== null) {
             fetchSubject = await Subject.findOne({
@@ -197,6 +200,7 @@ const paginatedPastPaperResults = (model, req) => {
               raw: true,
               nest: true,
             });
+
 
             // fetch Signed urls for pastPapers
 
@@ -224,7 +228,7 @@ const paginatedPastPaperResults = (model, req) => {
 
             const getAnsPaperObjectParams = {
               Bucket: process.env.AWS_BUCKET_NAME,
-              Key: pastPapers[i].ansPdf,
+              Key: pastPapers[i].answerPdf,
             };
 
             const getAnsPaperCommand = new GetObjectCommand(getAnsPaperObjectParams);
