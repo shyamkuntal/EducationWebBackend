@@ -366,10 +366,7 @@ const PaperNumberReviewerController = {
       } else {
         res.status(httpStatus.BAD_REQUEST).send({ message: "Invalid paperNumberSheetId" });
       }
-
-      console.log(values);
     } catch (err) {
-      console.log(err);
       next(err);
     }
   },

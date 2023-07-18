@@ -12,21 +12,13 @@ const paginatedPricerAccounts = require("../middlewares/paginatedPricerAccounts.
 const paginatedUploader2Accounts = require("../middlewares/paginatedUploader2Accounts.js");
 const paginatedSheet = require("../middlewares/paginatedSheet");
 
-router.get(
-  "/getpastpaperaccounts",
-  paginatedPastPaperAccounts(),
-  (req, res) => {
-    res.send(res.paginatedResults);
-  }
-);
+router.get("/getpastpaperaccounts", paginatedPastPaperAccounts(), (req, res) => {
+  res.send(res.paginatedResults);
+});
 
-router.get(
-  "/getuploader2accounts",
-  paginatedUploader2Accounts(),
-  (req, res) => {
-    res.send(res.paginatedResults);
-  }
-);
+router.get("/getuploader2accounts", paginatedUploader2Accounts(), (req, res) => {
+  res.send(res.paginatedResults);
+});
 
 router.get("/getrevieweraccounts", paginatedReviewerAccounts(), (req, res) => {
   res.send(res.paginatedResults);
@@ -36,21 +28,13 @@ router.get("/getpriceraccounts", paginatedPricerAccounts(), (req, res) => {
   res.send(res.paginatedResults);
 });
 
-router.get(
-  "/getdatageneratoraccounts",
-  paginatedDataGeneratorAccounts(),
-  (req, res) => {
-    res.send(res.paginatedResults);
-  }
-);
+router.get("/getdatageneratoraccounts", paginatedDataGeneratorAccounts(), (req, res) => {
+  res.send(res.paginatedResults);
+});
 
-router.get(
-  "/getsupervisoraccounts",
-  paginatedSupervisorAccounts(),
-  (req, res) => {
-    res.send(res.paginatedResults);
-  }
-);
+router.get("/getsupervisoraccounts", paginatedSupervisorAccounts(), (req, res) => {
+  res.send(res.paginatedResults);
+});
 
 router.get("/getteacheraccounts", paginatedTeacherAccounts(), (req, res) => {
   res.send(res.paginatedResults);
@@ -68,17 +52,11 @@ router.post("/createuser", AccountManagementController.createUser);
 
 router.put("/edituser", AccountManagementController.editUser);
 
-router.get(
-  "/getallrolesforaddaccount",
-  AccountManagementController.getallrolesbyRole
-);
+router.get("/getallrolesforaddaccount", AccountManagementController.getallrolesbyRole);
 
 router.get("/getuserCount", AccountManagementController.getUserCount);
 
-router.get(
-  "/getallsubjectNamebyid",
-  AccountManagementController.getallsubjectNamebyid
-);
+router.get("/getallsubjectNamebyid", AccountManagementController.getallsubjectNamebyid);
 
 router.get("/getallboards", AccountManagementController.getAllBoards);
 
