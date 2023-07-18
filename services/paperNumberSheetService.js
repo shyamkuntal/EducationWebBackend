@@ -238,6 +238,18 @@ const createSheetCheckList = async (paperNumberSheetId) => {
   }
 };
 
+const findSheetLog = async (paperNumberSheetId) => {
+  try {
+    let sheetLog = await PaperNumberSheetLog.findAll({
+      where: { paperNumberSheetId: paperNumberSheetId },
+    });
+    return sheetLog;
+  } catch (err) {
+    throw err;
+  }
+};
+
+
 module.exports = {
   findPaperNumberSheetByPk,
   findSheetAndUser,
@@ -252,4 +264,5 @@ module.exports = {
   createRecheckComment,
   findRecheckingComments,
   getFilesUrlFromS3,
+  findSheetLog
 };

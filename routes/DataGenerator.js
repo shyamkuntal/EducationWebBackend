@@ -6,6 +6,7 @@ const DataGeneratorController = require("../controller/DataGenerator/DataGenerat
 const paginatedPaperNumberSheet = require("../middlewares/paginatedPaperNumber.js");
 const { PaperNumberSheet } = require("../models/PaperNumber.js");
 const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject.js");
+const PaperNumberReviewerController = require("../controller/PaperNumberReviewer/PaperNumberReviewer.js");
 
 const router = express.Router();
 
@@ -20,9 +21,9 @@ router.get(
 
 router.post("/createpapernumber", DataGeneratorController.createPaperNumber);
 
-router.put("/updatepapernumber", DataGeneratorController.EditPaperNumber);
+router.patch("/updatepapernumber", DataGeneratorController.EditPaperNumber);
 
-router.delete("/deletepapernumber", DataGeneratorController.deletePaperNumber);
+router.post("/deletepapernumber", DataGeneratorController.deletePaperNumber);
 
 router.get("/getallPaperNumber", DataGeneratorController.getAllPaperNumber);
 
@@ -44,8 +45,6 @@ router.get(
     SubjectManagementController.getSubjectBySubjectNameId
 );
 
-router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
-
 router.patch("/submittosupervisor", DataGeneratorController.SubmitToSupervisor);
 
 router.patch("/markitasinprogress", DataGeneratorController.MarkitasInProgress);
@@ -53,5 +52,11 @@ router.patch("/markitasinprogress", DataGeneratorController.MarkitasInProgress);
 router.patch("/markitascomplete", DataGeneratorController.Markitascomplete);
 
 router.get("/getallpapernumber", DataGeneratorController.getAllPaperNumber);
+
+// api/pnreviewer/getrecheckcomment
+router.get("/getrecheckcomment", DataGeneratorController.getRecheckComment);
+
+// api/pnreviewer/geterrorreportfile
+router.get("/geterrorreportfile", PaperNumberReviewerController.getErrorReportFile);
 
 module.exports = router; 

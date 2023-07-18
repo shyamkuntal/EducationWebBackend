@@ -7,6 +7,7 @@ const {
     getPaperNumberByPaperNumberSheetSchema,
 } = require("../../validations/PaperNumberValidations.js");
 const { assignSheetToSupervisorSchema } = require("../../validations/DataGeneratorValidations.js");
+const { getRecheckingCommentsSchema } = require("../../validations/PaperNumberReviewerValidations.js");
 
 const DataGeneratorController = {
     //take care of isarchived and ispublished later
@@ -98,38 +99,41 @@ const DataGeneratorController = {
 
     async EditPaperNumber(req, res, next) {
         try {
-            const { paperNumberSheetId, paperNumbers } = req.body;
-        
-            // Find the PaperNumberSheet
-            const paperNumberSheet = await PaperNumberSheet.findByPk(paperNumberSheetId);
-            if (!paperNumberSheet) {
-              return res.status(404).json({ error: "PaperNumberSheet not found" });
-            }
-        
-            // Update PaperNumbers
-            const updatedPaperNumbers = await Promise.all(
-              paperNumbers.map(async (paperNumber) => {
-                const existingPaperNumber = await PaperNumber.findOne({
-                  where: {
-                    paperNumberSheetId,
-                    paperNumber: paperNumber.paperNumber,
-                  },
-                });
-                  // Update the existing PaperNumber if it exists
-                  existingPaperNumber.paperNumber = paperNumber.paperNumber;
-                  return existingPaperNumber.save();
-                
-              })
-            );
-        
-
-            res.status(httpStatus.OK).send({ message: 'PaperNumber updated successfully' });
+          const { paperNumberSheetId, textFields } = req.body;
+      
+          // Find the PaperNumberSheet
+          const paperNumberSheet = await PaperNumberSheet.findByPk(paperNumberSheetId);
+          if (!paperNumberSheet) {
+            return res.status(404).json({ error: "PaperNumberSheet not found" });
+          }
+      
+          // Update PaperNumbers
+          const updatedPaperNumbers = await Promise.all(
+            textFields.map(async (field) => {
+              const { id, paperName } = field;
+              const existingPaperNumber = await PaperNumber.findOne({
+                where: {
+                  paperNumberSheetId,
+                  id,
+                },
+              });
+      
+              if (!existingPaperNumber) {
+                return res.status(404).json({ error: `PaperNumber not found for ID ${id}` });
+              }
+      
+              existingPaperNumber.paperNumber = paperName;
+              return existingPaperNumber.save();
+            })
+          );
+      
+          res.status(httpStatus.OK).send({ message: 'PaperNumber updated successfully', updatedPaperNumbers });
         } catch (error) {
-            console.error('Error updating PaperNumber:', error);
-            next(error)
-            res.status(500).json({ error: 'Failed to update PaperNumber' });
+          console.error('Error updating PaperNumber:', error);
+          next(error);
+          res.status(500).json({ error: 'Failed to update PaperNumber' });
         }
-    },
+      },
 
     async SubmitToSupervisor(req, res, next) {
         try {
@@ -232,6 +236,24 @@ const DataGeneratorController = {
             return res.json({ status: 501, error: err.message });
         }
     },
+
+    async getRecheckComment(req, res, next) {
+        try {
+          let values = await getRecheckingCommentsSchema.validateAsync({
+            paperNumberSheetId: req.query.paperNumberSheetId,
+          });
+    
+          console.log(values);
+    
+          let getRecheckComments = await services.paperNumberSheetService.findRecheckingComments(
+            values.paperNumberSheetId 
+          );
+    
+          res.status(httpStatus.OK).send(getRecheckComments);
+        } catch (err) {
+          next(err);
+        }
+      },
 
 }
 

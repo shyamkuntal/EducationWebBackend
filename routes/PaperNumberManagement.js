@@ -22,6 +22,8 @@ router.patch("/assignsheettoreviewer", PaperNumberSheetController.AssignSheetToR
 
 router.patch("/togglepublish", PaperNumberSheetController.TogglePublishSheet);
 
+router.get("/getsheetlogs", PaperNumberSheetController.getSheetLogs);
+
 
 
 module.exports = router;

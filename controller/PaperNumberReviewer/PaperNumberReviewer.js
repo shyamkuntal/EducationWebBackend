@@ -373,23 +373,7 @@ const PaperNumberReviewerController = {
       next(err);
     }
   },
-  async getRecheckComment(req, res, next) {
-    try {
-      let values = await getRecheckingCommentsSchema.validateAsync({
-        paperNumberSheetId: req.query.paperNumberSheetId,
-      });
 
-      console.log(values);
-
-      let getRecheckComments = await services.paperNumberSheetService.findRecheckingComments(
-        values.paperNumberSheetId
-      );
-
-      res.status(httpStatus.OK).send(getRecheckComments);
-    } catch (err) {
-      next(err);
-    }
-  },
   async updateCompleteSheetStatus(req, res, next) {
     try {
       let values = await updateSheetStatusSchema.validateAsync(req.body);
@@ -466,6 +450,7 @@ const PaperNumberReviewerController = {
         res.status(httpStatus.BAD_REQUEST).send({ message: "Sheet not found!" });
       }
     } catch (err) {
+      console.log(err) 
       next(err);
     }
   },

@@ -11,6 +11,7 @@ const {
   assignReviewerUserToSheetSchema,
 } = require("../../validations/PaperNumberValidations.js");
 const constants = require("../../constants/constants.js");
+const { getSheetLogsSchema } = require("../../validations/PPMSupervisorValidations.js");
 
 const PaperNumberSheetController = {
   //take care of isarchived and ispublished later
@@ -166,6 +167,19 @@ const PaperNumberSheetController = {
     } catch (err) {
       console.log(err)
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
+    }
+  },
+
+  async getSheetLogs(req, res, next) {
+    try {
+      let values = {
+        paperNumberSheetId: req.query.paperNumberSheetId,
+      };
+      const sheetLogs = await services.paperNumberSheetService.findSheetLog(values.paperNumberSheetId);
+      res.status(httpStatus.OK).send({ sheetLogs: sheetLogs });
+    } catch (error) {
+      console.log(error)
+      next(error); 
     }
   },
 

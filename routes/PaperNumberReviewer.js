@@ -52,9 +52,6 @@ router.patch(
 // api/pnreviewer/addrecheckcomment
 router.post("/addrecheckcomment", PaperNumberReviewerController.addRecheckComment);
 
-// api/pnreviewer/getrecheckcomment
-router.get("/getrecheckcomment", PaperNumberReviewerController.getRecheckComment);
-
 // api/pnreviewer/updatecompletestatus
 router.patch("/updatecompletestatus", PaperNumberReviewerController.updateCompleteSheetStatus);
 

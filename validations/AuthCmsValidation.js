@@ -15,7 +15,7 @@ const CmsResetPasswordSchema = Joi.object({
   token: Joi.string().required(),
   newPassword: Joi.string().required(),
 });
-
+   
 module.exports = {
   CmsLoginSchema,
   CmsSendResetPasswordEmailSchema,
