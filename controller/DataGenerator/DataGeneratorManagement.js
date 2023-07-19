@@ -110,7 +110,7 @@ const DataGeneratorController = {
           // Update PaperNumbers
           const updatedPaperNumbers = await Promise.all(
             textFields.map(async (field) => {
-              const { id, paperName } = field;
+              const { id, paperNumber } = field;
               const existingPaperNumber = await PaperNumber.findOne({
                 where: {
                   paperNumberSheetId,
@@ -122,7 +122,7 @@ const DataGeneratorController = {
                 return res.status(404).json({ error: `PaperNumber not found for ID ${id}` });
               }
       
-              existingPaperNumber.paperNumber = paperName;
+              existingPaperNumber.paperNumber = paperNumber;
               return existingPaperNumber.save();
             })
           );

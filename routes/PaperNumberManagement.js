@@ -3,6 +3,8 @@ const PaperNumberSheetController = require("../controller/PaperNumberManagement/
 const { PaperNumberSheet } = require("../models/PaperNumber");
 const paginatedPaperNumberSheet = require("../middlewares/paginatedPaperNumber");
 const DataGeneratorController = require("../controller/DataGenerator/DataGeneratorManagement");
+const PaperNumberReviewerController = require("../controller/PaperNumberReviewer/PaperNumberReviewer");
+const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor");
 
 const router = express.Router();
 
@@ -24,6 +26,15 @@ router.patch("/togglepublish", PaperNumberSheetController.TogglePublishSheet);
 
 router.get("/getsheetlogs", PaperNumberSheetController.getSheetLogs);
 
+router.get(
+  "/getpapernumberbypnsheetid",
+  DataGeneratorController.getPaperNumberByPaperNumberSheet
+);
+
+// api/pnreviewer/geterrorreportfile
+router.get("/geterrorreportfile", PaperNumberReviewerController.getErrorReportFile);
+
+router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
 
 module.exports = router;
