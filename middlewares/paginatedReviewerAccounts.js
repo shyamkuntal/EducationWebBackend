@@ -2,7 +2,7 @@ const { Sheet } = require("../models/PastPaperSheet.js");
 const { User, UserSubjectMapping } = require("../models/User.js");
 const { userService } = require("../services/index.js");
 const CONSTANTS = require("../constants/constants.js");
-const { PaperNumberSheet } = require("../models/PaperNumber.js");
+const { PaperNumberSheet } = require("../models/PaperNumberSheet.js");
 
 const reviewerAccounts = () => {
   return async (req, res, next) => {
