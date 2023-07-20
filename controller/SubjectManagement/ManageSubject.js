@@ -52,7 +52,7 @@ const SubjectManagementController = {
           Bucket: bucketName,
           Body: values.image.buffer,
           Key: subjectImageName,
-          ContentType: req.file.mimetype,
+          ContentType: values.image.mimetype,
         };
 
         // Send the upload to S3

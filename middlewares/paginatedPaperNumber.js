@@ -82,7 +82,7 @@ const paginatedPaperNumberSheet = (model, req) => {
     }
 
     try {
-      const subjects = await PaperNumberSheet.findAll({
+      const paperNumberSheets = await PaperNumberSheet.findAll({
         attributes: [
           "id",
           "boardId",
@@ -131,9 +131,14 @@ const paginatedPaperNumberSheet = (model, req) => {
         where: filters,
         limit,
         offset: startIndex,
+        raw: true,
+        nest: true,
       });
 
-      results.results = subjects;
+      results.results = paperNumberSheets;
+      results.results.forEach((object) => {
+        object.sheetType = "PaperNumber";
+      });
       res.paginatedResults = results;
       next();
     } catch (err) {

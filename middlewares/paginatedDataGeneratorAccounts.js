@@ -2,6 +2,7 @@ const { Sheet } = require("../models/Sheet.js");
 const { User, UserSubjectMapping } = require("../models/User.js");
 const { userService } = require("../services/index.js");
 const CONSTANTS = require("../constants/constants.js");
+const { PaperNumberSheet } = require("../models/PaperNumber.js");
 
 const paginatedDataGeneratorAccounts = () => {
   return async (req, res, next) => {
@@ -13,9 +14,7 @@ const paginatedDataGeneratorAccounts = () => {
       filters.boardName = { $regex: req.query.search, $options: "i" };
     }
 
-    let role = await userService.findByRoleName(
-      CONSTANTS.roleNames.DataGenerator
-    );
+    let role = await userService.findByRoleName(CONSTANTS.roleNames.DataGenerator);
 
     if (role) {
       filters.roleId = role.id;
@@ -49,6 +48,10 @@ const paginatedDataGeneratorAccounts = () => {
         include: [
           {
             model: Sheet,
+            attributes: ["id"],
+          },
+          {
+            model: PaperNumberSheet,
             attributes: ["id"],
           },
           {

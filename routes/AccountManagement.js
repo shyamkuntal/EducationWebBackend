@@ -10,6 +10,7 @@ const paginatedDataGeneratorAccounts = require("../middlewares/paginatedDataGene
 const paginatedTeacherAccounts = require("../middlewares/paginatedTeacherAccounts.js");
 const paginatedPricerAccounts = require("../middlewares/paginatedPricerAccounts.js");
 const paginatedUploader2Accounts = require("../middlewares/paginatedUploader2Accounts.js");
+const paginatedPaperNumberSheet = require("../middlewares/paginatedPaperNumber");
 const paginatedSheet = require("../middlewares/paginatedSheet");
 
 router.get("/getpastpaperaccounts", paginatedPastPaperAccounts(), (req, res) => {
@@ -41,6 +42,10 @@ router.get("/getteacheraccounts", paginatedTeacherAccounts(), (req, res) => {
 });
 
 router.get("/getsheetsbyassignedtouserid", paginatedSheet(), (req, res) =>
+  res.send(res.paginatedResults)
+);
+
+router.get("/getpapernumbersheetsbyassignedtouserid", paginatedPaperNumberSheet(), (req, res) =>
   res.send(res.paginatedResults)
 );
 
