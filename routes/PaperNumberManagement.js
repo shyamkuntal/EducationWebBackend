@@ -1,6 +1,6 @@
 const express = require("express");
 const PaperNumberSheetController = require("../controller/PaperNumberManagement/PaperNumber");
-const { PaperNumberSheet } = require("../models/PaperNumber");
+const { PaperNumberSheet } = require("../models/PaperNumberSheet");
 const paginatedPaperNumberSheet = require("../middlewares/paginatedPaperNumber");
 const DataGeneratorController = require("../controller/DataGenerator/DataGeneratorManagement");
 const PaperNumberReviewerController = require("../controller/PaperNumberReviewer/PaperNumberReviewer");

@@ -1,5 +1,10 @@
 const { Op, Sequelize } = require("sequelize");
-const { Sheet, SheetLog, SpamSheetRecheckComments, SheetCheckList } = require("../models/Sheet.js");
+const {
+  Sheet,
+  SheetLog,
+  SpamSheetRecheckComments,
+  SheetCheckList,
+} = require("../models/PastPaperSheet.js");
 const { User } = require("../models/User.js");
 const CONSTANTS = require("../constants/constants.js");
 const { s3Client } = require("../config/s3.js");

@@ -1,4 +1,4 @@
-const { PaperNumber } = require("../models/PaperNumber");
+const { PaperNumber } = require("../models/PaperNumberSheet");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
 

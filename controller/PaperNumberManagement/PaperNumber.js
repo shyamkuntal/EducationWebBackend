@@ -1,4 +1,4 @@
-const { PaperNumberSheet, PaperNumber } = require("../../models/PaperNumber.js");
+const { PaperNumberSheet, PaperNumber } = require("../../models/PaperNumberSheet.js");
 const services = require("../../services/index.js");
 const httpStatus = require("http-status");
 const { User, Roles } = require("../../models/User.js");

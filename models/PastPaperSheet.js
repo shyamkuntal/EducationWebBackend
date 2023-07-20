@@ -6,7 +6,7 @@ const { User, Roles } = require("./User.js");
 const { sheetModelConstants } = require("../constants/constants.js");
 const grades = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
-const Sheet = db.define("sheet", {
+const Sheet = db.define("PastPaperSheet", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -43,8 +43,12 @@ const Sheet = db.define("sheet", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  paperNumberId: {
+    type: Sequelize.UUID,
+    allowNull: false,
+  },
   paperNumber: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING,
     allowNull: false,
   },
   resources: {
@@ -133,7 +137,7 @@ Sheet.belongsTo(User, {
   as: "supervisor",
 });
 
-const SpamSheetRecheckComments = db.define("SpamSheetRecheckComments", {
+const SpamSheetRecheckComments = db.define("PastPaperSpamSheetRecheckComments", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -151,7 +155,7 @@ SpamSheetRecheckComments.belongsTo(Sheet, {
   foreignKey: "sheetId",
 });
 
-const SheetCheckList = db.define("SheetCheckList", {
+const SheetCheckList = db.define("PastPaperSheetCheckList", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -178,7 +182,7 @@ SheetCheckList.belongsTo(Sheet, {
   foreignKey: "sheetId",
 });
 
-const SheetLog = db.define("sheetLog", {
+const SheetLog = db.define("PastPapersheetLog", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,

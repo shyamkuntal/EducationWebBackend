@@ -1,6 +1,6 @@
 const constants = require("../constants/constants.js");
 const { Board, SubBoard } = require("../models/Board.js");
-const { Sheet } = require("../models/Sheet.js");
+const { Sheet } = require("../models/PastPaperSheet.js");
 const { SubjectLevel, Subject } = require("../models/Subject.js");
 const { User } = require("../models/User.js");
 

@@ -3,7 +3,8 @@ const {
   PaperNumberSheetLog,
   PaperNumberSheetCheckList,
   SpamPaperNumberSheetRecheckComments,
-} = require("../models/PaperNumber");
+  PaperNumber,
+} = require("../models/PaperNumberSheet");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
 const { User } = require("../models/User");
@@ -249,6 +250,39 @@ const findSheetLog = async (paperNumberSheetId) => {
   }
 };
 
+const findPaperNumberbyBoardSubBoardGradeSubject = async ({
+  boardId,
+  subBoardId,
+  grade,
+  subjectId,
+}) => {
+  try {
+    let paperNumberSheetDetails = await PaperNumberSheet.findOne({
+      where: {
+        boardId,
+        subBoardId,
+        grade,
+        subjectId,
+        isSpam: false,
+        isArchived: false,
+        isPublished: true,
+      },
+    });
+
+    // finding PaperNumber by pastPaperId
+
+    let paperNumberDetails = await PaperNumber.findAll({
+      where: {
+        paperNumberSheetId: paperNumberSheetDetails.id,
+        isArchive: false,
+      },
+    });
+
+    return paperNumberDetails;
+  } catch (err) {
+    throw err;
+  }
+};
 
 module.exports = {
   findPaperNumberSheetByPk,
@@ -264,5 +298,6 @@ module.exports = {
   createRecheckComment,
   findRecheckingComments,
   getFilesUrlFromS3,
-  findSheetLog
+  findSheetLog,
+  findPaperNumberbyBoardSubBoardGradeSubject,
 };

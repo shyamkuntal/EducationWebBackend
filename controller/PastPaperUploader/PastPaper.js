@@ -3,7 +3,7 @@ const { generateFileName, s3Client } = require("../../config/s3.js");
 const { PastPaper } = require("../../models/PastPaper.js");
 const services = require("../../services/index.js");
 const dotenv = require("dotenv");
-const { Sheet } = require("../../models/Sheet.js");
+const { Sheet } = require("../../models/PastPaperSheet.js");
 const { SubjectLevel, subjectName, Subject } = require("../../models/Subject.js");
 const { SubBoard, Board } = require("../../models/Board.js");
 const {

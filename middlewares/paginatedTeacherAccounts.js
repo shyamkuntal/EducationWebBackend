@@ -1,4 +1,4 @@
-const { Sheet } = require("../models/Sheet.js");
+const { Sheet } = require("../models/PastPaperSheet.js");
 const {
   User,
   UserSubjectMapping,

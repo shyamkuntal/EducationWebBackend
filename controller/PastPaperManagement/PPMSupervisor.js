@@ -1,5 +1,5 @@
 const { Board, SubBoard } = require("../../models/Board.js");
-const { Sheet, SheetLog } = require("../../models/Sheet.js");
+const { Sheet, SheetLog } = require("../../models/PastPaperSheet.js");
 const CONSTANTS = require("../../constants/constants.js");
 const { Subject, SubjectLevel } = require("../../models/Subject.js");
 const services = require("../../services/index.js");
@@ -33,6 +33,7 @@ const PastPaperSupervisorController = {
         year,
         season,
         varient,
+        paperNumberId,
         paperNumber,
         resources,
         supervisorId,
@@ -47,6 +48,7 @@ const PastPaperSupervisorController = {
         year,
         season,
         varient,
+        paperNumberId,
         paperNumber,
         resources,
         supervisorId,
@@ -390,6 +392,28 @@ const PastPaperSupervisorController = {
     }
   },
 
+  async getPaperNumberbyBoardSubBoardGradeSubject(req, res, next) {
+    try {
+      let values = {
+        boardId: req.query.boardId,
+        subBoardId: req.query.subBoardId,
+        grade: req.query.grade,
+        subjectId: req.query.subjectId,
+      };
+      let paperNumberDetails =
+        await services.paperNumberSheetService.findPaperNumberbyBoardSubBoardGradeSubject({
+          boardId: values.boardId,
+          subBoardId: values.subBoardId,
+          grade: values.grade,
+          subjectId: values.subjectId,
+        });
+
+      res.status(httpStatus.OK).send(paperNumberDetails);
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async TogglePublishSheet(req, res) {
     const id = req.params.sheetid;
     // const isPublished = req.body.isPublished;
@@ -649,5 +673,6 @@ const PastPaperSupervisorController = {
     }
   },
 };
+
 
 module.exports = PastPaperSupervisorController;

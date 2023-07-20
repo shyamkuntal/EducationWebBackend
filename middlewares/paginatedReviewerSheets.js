@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const { Board, SubBoard } = require("../models/Board.js");
-const { Sheet, SpamSheetRecheckComments } = require("../models/Sheet.js");
+const { Sheet, SpamSheetRecheckComments } = require("../models/PastPaperSheet.js");
 const { SubjectLevel, Subject } = require("../models/Subject.js");
 const {
   getReviewerSheetsSchema,

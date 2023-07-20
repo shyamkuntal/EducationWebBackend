@@ -1,6 +1,6 @@
 const { Sequelize } = require("sequelize");
 const db = require("../config/database");
-const { Sheet } = require("./Sheet");
+const { Sheet } = require("./PastPaperSheet");
 
 const PastPaper = db.define("pastPaper", {
   id: {

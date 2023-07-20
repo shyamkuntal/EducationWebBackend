@@ -4,7 +4,7 @@ const PastPaperSupervisorController = require("../controller/PastPaperManagement
 const BoardManagementController = require("../controller/BoardManagement/BoardM.js");
 const DataGeneratorController = require("../controller/DataGenerator/DataGeneratorManagement.js");
 const paginatedPaperNumberSheet = require("../middlewares/paginatedPaperNumber.js");
-const { PaperNumberSheet } = require("../models/PaperNumber.js");
+const { PaperNumberSheet } = require("../models/PaperNumberSheet.js");
 const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject.js");
 const PaperNumberReviewerController = require("../controller/PaperNumberReviewer/PaperNumberReviewer.js");
 
