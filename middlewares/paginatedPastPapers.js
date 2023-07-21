@@ -171,7 +171,6 @@ const paginatedPastPaperResults = (model, req) => {
 
       let pastPapersWithSubjects = [];
 
-
       // Filter for SubjectName
       if (subjectNameFilter?.length > 0) {
         for (let i = 0; i < pastPapers.length; i++) {
@@ -191,7 +190,6 @@ const paginatedPastPaperResults = (model, req) => {
             nest: true,
           });
 
-
           let fetchSubject;
           if (fetchSheet !== null) {
             fetchSubject = await Subject.findOne({
@@ -200,7 +198,6 @@ const paginatedPastPaperResults = (model, req) => {
               raw: true,
               nest: true,
             });
-
 
             // fetch Signed urls for pastPapers
 
@@ -250,8 +247,9 @@ const paginatedPastPaperResults = (model, req) => {
         }
       } else {
         for (let i = 0; i < pastPapers.length; i++) {
+          console.log(pastPapers[i]);
           let fetchSheetWithoutSubjectName = await Sheet.findOne({
-            where: { subjectId: pastPapers[i].sheet.subjectId },
+            where: { subjectId: pastPapers[i].PastPaperSheet.subjectId },
             include: [
               {
                 model: Subject,
