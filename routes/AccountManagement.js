@@ -66,10 +66,8 @@ router.get("/getallsubjectNamebyid", AccountManagementController.getallsubjectNa
 router.get("/getallboards", AccountManagementController.getAllBoards);
 
 router.get("/getsubboards", AccountManagementController.getSubBoardsById);
-router.get(
-  "/getuserboardsubboardsubjectqualification",
-  AccountManagementController.getUserSubjectBoardSubBordQualification
-);
+
+router.get("/getallusermappings", AccountManagementController.getAllUserMappings);
 
 router.get("/getallsubjects", AccountManagementController.getallsubjects);
 

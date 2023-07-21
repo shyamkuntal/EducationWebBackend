@@ -14,6 +14,7 @@ const createAccountSchema = Joi.object({
   subBoardIds: Joi.array().items(Joi.string().uuid().required()),
   subjectsIds: Joi.array().items(Joi.string().uuid().required()),
   qualifications: Joi.array().items(Joi.string()),
+  modules: Joi.array().items(Joi.string().max(50)),
 });
 
 const editAccountSchema = Joi.object({
@@ -26,6 +27,7 @@ const editAccountSchema = Joi.object({
   subBoardIds: Joi.array().items(Joi.string().uuid().required()),
   subjectsIds: Joi.array().items(Joi.string().uuid().required()),
   qualifications: Joi.array().items(Joi.string()),
+  modules: Joi.array().items(Joi.string()),
 });
 
 const getSubjectNameByIdSchema = Joi.object({

@@ -5,6 +5,7 @@ const {
   UserSubBoardMapping,
   UserQualificationMapping,
   UserSubjectMapping,
+  UserModuleMapping,
 } = require("../../models/User.js");
 const { roleNames } = require("../../constants/constants.js");
 const { Sequelize } = require("sequelize");
@@ -95,43 +96,64 @@ const AccountManagementController = {
       );
 
       // Create boardmapping entries
-      if (values.boardIds && values.boardIds.length > 0) {
-        const boardmapping = values.boardIds.map((boardid) => ({
-          userId: user.id,
-          boardID: boardid,
-        }));
+      // if (values.boardIds && values.boardIds.length > 0) {
+      //   const boardmapping = values.boardIds.map((boardid) => ({
+      //     userId: user.id,
+      //     boardID: boardid,
+      //   }));
 
-        await services.userService.bulkCreateUserBoardMappings(boardmapping);
-      }
-      if (values.subBoardIds && values.subBoardIds.length > 0) {
-        const subboardmapping = values.subBoardIds.map((subboardid) => ({
-          userId: user.id,
-          subBoardId: subboardid,
-        }));
+      //   await services.userService.bulkCreateUserBoardMappings(boardmapping);
+      // }
+      // if (values.subBoardIds && values.subBoardIds.length > 0) {
+      //   const subboardmapping = values.subBoardIds.map((subboardid) => ({
+      //     userId: user.id,
+      //     subBoardId: subboardid,
+      //   }));
 
-        await services.userService.bulkCreateUserSubBoardMappings(subboardmapping);
-      }
+      //   await services.userService.bulkCreateUserSubBoardMappings(subboardmapping);
+      // }
+
+      // if (
+      //   values.qualifications &&
+      //   values.qualifications.length > 0 &&
+      //   role.roleName === CONSTANTS.roleNames.Teacher
+      // ) {
+      //   const qmapping = values.qualifications.map((range) => ({
+      //     userId: user.id,
+      //     gradeQualification: range,
+      //   }));
+
+      //   await services.userService.bulkCreateUserQualificationMappings(qmapping);
+      // }
+
+      // if (values.subjectsIds && values.subjectsIds.length > 0) {
+      //   const subjectmapping = values.subjectsIds.map((subjectid) => ({
+      //     userId: user.id,
+      //     subjectNameIds: subjectid,
+      //   }));
+
+      //   await services.userService.bulkCreateUserSubjectMappings(subjectmapping);
+      // }
 
       if (
-        values.qualifications &&
-        values.qualifications.length > 0 &&
-        role.roleName === CONSTANTS.roleNames.Teacher
+        values.modules &&
+        values.modules.length > 0 &&
+        role.roleName === CONSTANTS.roleNames.Reviewer
       ) {
-        const qmapping = values.qualifications.map((range) => ({
-          userId: user.id,
-          gradeQualification: range,
-        }));
+        let moduleMappings = [];
 
-        await services.userService.bulkCreateUserQualificationMappings(qmapping);
-      }
+        for (let element of values.modules) {
+          if (CONSTANTS.modules.includes(element)) {
+            moduleMappings.push({
+              userId: user.id,
+              module: element,
+            });
+          }
+        }
 
-      if (values.subjectsIds && values.subjectsIds.length > 0) {
-        const subjectmapping = values.subjectsIds.map((subjectid) => ({
-          userId: user.id,
-          subjectNameIds: subjectid,
-        }));
-
-        await services.userService.bulkCreateUserSubjectMappings(subjectmapping);
+        if (moduleMappings.length > 0) {
+          await services.userService.bulkCreateUserModuleMappings(moduleMappings);
+        }
       }
 
       res.status(httpStatus.OK).send({ user });
@@ -174,9 +196,9 @@ const AccountManagementController = {
         await services.userService.updatePassword(values.userId, values.password);
       }
 
-      // Update board mapping entries
-      await UserBoardMapping.destroy({ where: { userId: values.userId } });
       if (values.boardIds && values.boardIds.length > 0) {
+        await UserBoardMapping.destroy({ where: { userId: values.userId } });
+        // Update board mapping entries
         const boardmapping = values.boardIds.map((boardId) => ({
           userId: values.userId,
           boardID: boardId,
@@ -185,9 +207,9 @@ const AccountManagementController = {
         await UserBoardMapping.bulkCreate(boardmapping);
       }
 
-      await UserSubBoardMapping.destroy({ where: { userId: values.userId } });
-      // Update subboard mapping entries
       if (values.subBoardIds && values.subBoardIds.length > 0) {
+        await UserSubBoardMapping.destroy({ where: { userId: values.userId } });
+        // Update subboard mapping entries
         const subboardmapping = values.subBoardIds.map((subboardId) => ({
           userId: values.userId,
           subBoardId: subboardId,
@@ -196,30 +218,40 @@ const AccountManagementController = {
         await UserSubBoardMapping.bulkCreate(subboardmapping);
       }
 
-      if (values.qualifications) {
+      if (values.qualifications && values.qualifications.length > 0) {
         await UserQualificationMapping.destroy({
           where: { userId: values.userId },
         });
         // Update qualification mapping entries
-        if (values.qualifications && values.qualifications.length > 0) {
-          const qmapping = values.qualifications.map((range) => ({
-            userId: values.userId,
-            gradeQualification: range,
-          }));
+        const qmapping = values.qualifications.map((range) => ({
+          userId: values.userId,
+          gradeQualification: range,
+        }));
 
-          await UserQualificationMapping.bulkCreate(qmapping);
-        }
+        await UserQualificationMapping.bulkCreate(qmapping);
       }
 
-      await UserSubjectMapping.destroy({ where: { userId: values.userId } });
-      // Update subject mapping entries
       if (values.subjectsIds && values.subjectsIds.length > 0) {
+        await UserSubjectMapping.destroy({ where: { userId: values.userId } });
+        // Update subject mapping entries
+
         const subjectmapping = values.subjectsIds.map((subjectId) => ({
           userId: values.userId,
           subjectNameIds: subjectId,
         }));
 
         await UserSubjectMapping.bulkCreate(subjectmapping);
+      }
+
+      if (values.modules && values.modules) {
+        await UserModuleMapping.destroy({ where: { userId: values.userId } });
+
+        const modulemapping = values.modules.map((module) => ({
+          userId: values.userId,
+          module: module,
+        }));
+
+        await services.userService.bulkCreateUserModuleMappings(modulemapping);
       }
 
       return res.status(200).json({ user });
@@ -377,15 +409,14 @@ const AccountManagementController = {
     }
   },
 
-  async getUserSubjectBoardSubBordQualification(req, res, next) {
+  async getAllUserMappings(req, res, next) {
     try {
       let values = await getUserBoardSubBoardSubjectSchema.validateAsync({
         userId: req.query.userId,
       });
 
-      let userDetails = await services.userService.findUserSubjectsBoardSubBoardQualification(
-        values.userId
-      );
+      let userDetails =
+        await services.userService.findUserSubjectsBoardSubBoardQualificationModules(values.userId);
 
       res.status(httpStatus.OK).send(userDetails);
     } catch (err) {

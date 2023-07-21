@@ -3,7 +3,7 @@ const db = require("../config/database");
 const bcrypt = require("bcrypt");
 const { Board, SubBoard } = require("./Board");
 const { subjectName } = require("./Subject");
-const gradeRange = ["1-5", "6-8", "9-10", "11-12"];
+const { grades, roleNames, modules } = require("../constants/constants");
 const roles = [
   "Uploader2",
   "Teacher",
@@ -155,8 +155,8 @@ const UserQualificationMapping = db.define("userqualificationmapping", {
     primaryKey: true,
   },
   gradeQualification: {
-    type: Sequelize.STRING,
-    enum: gradeRange,
+    type: Sequelize.ENUM,
+    values: grades,
     allowNull: false,
   },
   userId: {
@@ -200,6 +200,29 @@ UserSubjectMapping.sync().then(() => {
   console.log("UsersubjectMapping created");
 });
 
+const UserModuleMapping = db.define("usermodulemapping", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
+  module: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  userId: {
+    type: Sequelize.UUID,
+    allowNull: false,
+  },
+});
+
+User.hasMany(UserModuleMapping, { foreignKey: "userId" });
+UserModuleMapping.belongsTo(User, { foreignKey: "userId" });
+
+UserModuleMapping.sync().then(() => {
+  console.log("UserModuleMapping created");
+});
+
 module.exports = {
   User,
   Roles,
@@ -207,4 +230,5 @@ module.exports = {
   UserSubBoardMapping,
   UserBoardMapping,
   UserSubjectMapping,
+  UserModuleMapping,
 };

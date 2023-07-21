@@ -6,6 +6,7 @@ const {
   UserBoardMapping,
   UserSubBoardMapping,
   UserQualificationMapping,
+  UserModuleMapping,
 } = require("../models/User.js");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
@@ -105,7 +106,7 @@ const findRoleById = async (roleId) => {
 
     return role;
   } catch (err) {
-    throw error;
+    throw err;
   }
 };
 
@@ -186,7 +187,7 @@ const updatePassword = async (userId, newPassword) => {
   }
 };
 
-const findUserSubjectsBoardSubBoardQualification = async (id) => {
+const findUserSubjectsBoardSubBoardQualificationModules = async (id) => {
   try {
     let userDetails = await User.findOne({
       where: { id: id },
@@ -198,6 +199,10 @@ const findUserSubjectsBoardSubBoardQualification = async (id) => {
         {
           model: UserQualificationMapping,
           attributes: ["id", "gradeQualification", "userId"],
+        },
+        {
+          model: UserModuleMapping,
+          attributes: ["id", "module", "userId"],
         },
       ],
     });
@@ -244,6 +249,15 @@ const bulkCreateUserSubjectMappings = async (subjectmapping) => {
   }
 };
 
+const bulkCreateUserModuleMappings = async (moduleMappings) => {
+  try {
+    let bulkCreateModuleMappings = await UserModuleMapping.bulkCreate(moduleMappings);
+    return bulkCreateModuleMappings;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   finduser,
   checkUserEmailPassword,
@@ -252,7 +266,7 @@ module.exports = {
   updatePassword,
   checkUserEmail,
   createUser,
-  findUserSubjectsBoardSubBoardQualification,
+  findUserSubjectsBoardSubBoardQualificationModules,
   updateUser,
   getUserAssignedSubjects,
   bulkCreateUserBoardMappings,
@@ -262,4 +276,5 @@ module.exports = {
   bulkCreateRoles,
   findRoleById,
   checkUserName,
+  bulkCreateUserModuleMappings,
 };
