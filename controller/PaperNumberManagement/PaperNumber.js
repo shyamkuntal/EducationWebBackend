@@ -136,7 +136,7 @@ const PaperNumberSheetController = {
             let updateComment = await services.paperNumberSheetService.updateSupervisorComments(
               sheetData.id,
               Comment,
-              "PastPaper"
+              "DataGenerator"
             )
             if (updateComment) {
               responseMessage.updateComment =
@@ -272,6 +272,7 @@ const PaperNumberSheetController = {
           }
 
           res.status(httpStatus.OK).send({ message: responseMessage });
+          console.log(responseMessage)
         }
       } else {
         res

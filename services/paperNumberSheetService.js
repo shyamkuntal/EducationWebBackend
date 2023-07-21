@@ -164,12 +164,12 @@ const assignUserToSheetAndUpdateLifeCycleAndStatuses = async (
   }
 };
 
-const updateSupervisorComments = async (paperNumberSheetId, comment, user) => {
-  if (user === CONSTANTS.roleNames.PastPaper) {
+const updateSupervisorComments = async (paperNumberSheetId, Comment, user) => {
+  if (user === CONSTANTS.roleNames.DataGenerator) {
     try {
       let updateComment = await PaperNumberSheet.update(
         {
-          supervisorCommentToDataGenerator: comment,
+          supervisorCommentToDataGenerator: Comment,
         },
         { where: { id: paperNumberSheetId } }
       );
@@ -181,7 +181,7 @@ const updateSupervisorComments = async (paperNumberSheetId, comment, user) => {
     try {
       let updateComment = await PaperNumberSheet.update(
         {
-          supervisorCommentToReviewer: comment,
+          supervisorCommentToReviewer: Comment,
         },
         { where: { id: paperNumberSheetId } }
       );

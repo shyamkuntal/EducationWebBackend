@@ -109,12 +109,14 @@ const UserBoardMapping = db.define("userboardmapping", {
 });
 
 UserBoardMapping.belongsTo(User, { foreignKey: "userId" });
+
 UserBoardMapping.belongsTo(Board, {
   foreignKey: "boardID",
   targetKey: "id",
   schema: "boards",
 });
 User.hasMany(UserBoardMapping, { foreignKey: "userId" });
+
 UserBoardMapping.sync().then(() => {
   console.log("UserBoardMapping created");
 });
