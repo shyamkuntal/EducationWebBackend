@@ -3,8 +3,9 @@ const db = require("../config/database");
 const { Board, SubBoard } = require("./Board.js");
 const { Subject } = require("./Subject.js");
 const { User } = require("./User.js");
+const CONSTANTS = require("../constants/constants");
 
-const grades = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+const grades = CONSTANTS.grades;
 
 const TopicTask = db.define("topicTask", {
   id: {
@@ -37,6 +38,14 @@ const TopicTask = db.define("topicTask", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  lifeCycle: {
+    type: Sequelize.STRING,
+    defaultValue: CONSTANTS.sheetModelConstants.defaultSheetLifeCycle,
+  },
+  supervisorId: {
+    type: Sequelize.UUID,
+    allowNull: true,
+  },
   dataGeneratorId: {
     type: Sequelize.UUID,
     allowNull: true,
@@ -44,6 +53,39 @@ const TopicTask = db.define("topicTask", {
   reviewerId: {
     type: Sequelize.UUID,
     allowNull: true,
+  },
+  assignedToUserId: {
+    type: Sequelize.UUID,
+    allowNull: true,
+  },
+  statusForDataGenerator: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  statusForSupervisor: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  statusForReviewer: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  errorReport: { type: Sequelize.STRING, allowNull: true },
+  errorReportImg: { type: Sequelize.STRING, allowNull: true },
+  reviewerCommentToSupervisor: { type: Sequelize.STRING, allowNull: true },
+  supervisorCommentToReviewer: { type: Sequelize.STRING, allowNull: true },
+  supervisorCommentToDataGenerator: { type: Sequelize.STRING, allowNull: true },
+  isSpam: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  isArchived: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  isPublished: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
   },
 });
 
@@ -61,6 +103,11 @@ TopicTask.belongsTo(Board, {
 
 TopicTask.belongsTo(Subject, {
   foreignKey: { name: "subjectId" },
+});
+
+TopicTask.belongsTo(User, {
+  foreignKey: { name: "supervisorId" },
+  as: "supervisor",
 });
 
 TopicTask.belongsTo(User, {

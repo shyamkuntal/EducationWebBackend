@@ -1,12 +1,11 @@
 const express = require("express");
 const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject.js");
-const { Subject } = require("../models/Subject.js");
 const getPaginatedSubjects = require("../middlewares/subjectFilter.js");
 const upload = require("../config/multer.js");
 
 const router = express.Router();
 
-router.get("/getallsubjects", getPaginatedSubjects(Subject), (req, res) => {
+router.get("/getallsubjects", getPaginatedSubjects(), (req, res) => {
   res.json(res.paginatedResults);
 });
 

@@ -20,7 +20,7 @@ TaskTopicMapping.belongsTo(TopicTask, {
 });
 TaskTopicMapping.belongsTo(Topic, {
   foreignKey: { name: "topicId" },
-})
+});
 
 TaskTopicMapping.sync().then(() => {
   console.log("TaskTopic Created");

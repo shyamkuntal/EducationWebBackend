@@ -7,3 +7,4 @@ module.exports.subjectService = require("./subjectService.js");
 module.exports.pastpaperService = require("./pastpaperService.js");
 module.exports.paperNumberSheetService = require("./paperNumberSheetService.js");
 module.exports.paperNumberService = require("./paperNumberService.js");
+module.exports.topicTaskService = require("./TopicTaskServices");

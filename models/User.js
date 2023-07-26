@@ -155,8 +155,8 @@ const UserQualificationMapping = db.define("userqualificationmapping", {
     primaryKey: true,
   },
   gradeQualification: {
-    type: Sequelize.ENUM,
-    values: grades,
+    type: Sequelize.STRING,
+    enum: grades,
     allowNull: false,
   },
   userId: {

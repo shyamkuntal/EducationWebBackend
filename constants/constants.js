@@ -1,6 +1,6 @@
 module.exports = Object.freeze({
   sheetModelConstants: {
-    defaultSheet: "Not Assigned",
+    defaultSheetLifeCycle: "Not Assigned",
   },
   roleNames: {
     Uploader2: "Uploader2",

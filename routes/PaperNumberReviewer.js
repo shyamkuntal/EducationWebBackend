@@ -34,10 +34,7 @@ router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssi
 router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
 // api/pnreviewer/getpapernumberbypnsheetid
-router.get(
-  "/getpapernumberbypnsheetid",
-  DataGeneratorController.getPaperNumberByPaperNumberSheet
-);
+router.get("/getpapernumberbypnsheetid", DataGeneratorController.getPaperNumberByPaperNumberSheet);
 
 // api/pnreviewer/adderrorstopapernumbers
 router.patch("/adderrorstopapernumbers", PaperNumberReviewerController.addErrorsToPaperNumbers);
