@@ -103,6 +103,7 @@ const paginatedTopicTasks = () => {
           "supervisorCommentToDataGenerator",
           "isSpam",
           "isArchived",
+          "isPublished",
         ],
         include: [
           {
