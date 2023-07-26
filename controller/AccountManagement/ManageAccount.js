@@ -96,44 +96,44 @@ const AccountManagementController = {
       );
 
       // Create boardmapping entries
-      // if (values.boardIds && values.boardIds.length > 0) {
-      //   const boardmapping = values.boardIds.map((boardid) => ({
-      //     userId: user.id,
-      //     boardID: boardid,
-      //   }));
+      if (values.boardIds && values.boardIds.length > 0) {
+        const boardmapping = values.boardIds.map((boardid) => ({
+          userId: user.id,
+          boardID: boardid,
+        }));
 
-      //   await services.userService.bulkCreateUserBoardMappings(boardmapping);
-      // }
-      // if (values.subBoardIds && values.subBoardIds.length > 0) {
-      //   const subboardmapping = values.subBoardIds.map((subboardid) => ({
-      //     userId: user.id,
-      //     subBoardId: subboardid,
-      //   }));
+        await services.userService.bulkCreateUserBoardMappings(boardmapping);
+      }
+      if (values.subBoardIds && values.subBoardIds.length > 0) {
+        const subboardmapping = values.subBoardIds.map((subboardid) => ({
+          userId: user.id,
+          subBoardId: subboardid,
+        }));
 
-      //   await services.userService.bulkCreateUserSubBoardMappings(subboardmapping);
-      // }
+        await services.userService.bulkCreateUserSubBoardMappings(subboardmapping);
+      }
 
-      // if (
-      //   values.qualifications &&
-      //   values.qualifications.length > 0 &&
-      //   role.roleName === CONSTANTS.roleNames.Teacher
-      // ) {
-      //   const qmapping = values.qualifications.map((range) => ({
-      //     userId: user.id,
-      //     gradeQualification: range,
-      //   }));
+      if (
+        values.qualifications &&
+        values.qualifications.length > 0 &&
+        role.roleName === CONSTANTS.roleNames.Teacher
+      ) {
+        const qmapping = values.qualifications.map((range) => ({
+          userId: user.id,
+          gradeQualification: range,
+        }));
 
-      //   await services.userService.bulkCreateUserQualificationMappings(qmapping);
-      // }
+        await services.userService.bulkCreateUserQualificationMappings(qmapping);
+      }
 
-      // if (values.subjectsIds && values.subjectsIds.length > 0) {
-      //   const subjectmapping = values.subjectsIds.map((subjectid) => ({
-      //     userId: user.id,
-      //     subjectNameIds: subjectid,
-      //   }));
+      if (values.subjectsIds && values.subjectsIds.length > 0) {
+        const subjectmapping = values.subjectsIds.map((subjectid) => ({
+          userId: user.id,
+          subjectNameIds: subjectid,
+        }));
 
-      //   await services.userService.bulkCreateUserSubjectMappings(subjectmapping);
-      // }
+        await services.userService.bulkCreateUserSubjectMappings(subjectmapping);
+      }
 
       if (
         values.modules &&
