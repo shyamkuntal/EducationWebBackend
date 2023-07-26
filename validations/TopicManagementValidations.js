@@ -11,4 +11,21 @@ const createTopicTaskSchema = Joi.object({
   supervisorId: Joi.string().guid(),
 });
 
-module.exports = { createTopicTaskSchema };
+const createTopicSchema = Joi.object({
+  topicTaskId: Joi.string().guid(),
+  name: Joi.string(),
+});
+
+const createSubTopicSchema = Joi.object({
+  topicTaskId: Joi.string().guid(),
+  topicId: Joi.string().guid(),
+  name: Joi.string(),
+});
+
+const createVocabularySchema = Joi.object({
+  topicTaskId: Joi.string().guid(),
+  topicId: Joi.string().guid(),
+  name: Joi.string(),
+});
+
+module.exports = { createTopicTaskSchema, createTopicSchema, createSubTopicSchema, createVocabularySchema };

@@ -5,6 +5,11 @@ const { TopicTask } = require("./TopicTask");
 const { Vocabulary } = require("./Vocabulary");
 
 const TaskTopicMapping = db.define("taskTopicMapping", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
   topicTaskId: {
     type: Sequelize.UUID,
     allowNull: false,
@@ -27,6 +32,11 @@ TaskTopicMapping.sync().then(() => {
 });
 
 const TaskSubTopicMapping = db.define("taskSubTopicMapping", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
   topicTaskId: {
     type: Sequelize.UUID,
     allowNull: false,
@@ -49,6 +59,11 @@ TaskSubTopicMapping.sync().then(() => {
 });
 
 const TaskVocabularyMapping = db.define("taskVocabularyMapping", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
   topicTaskId: {
     type: Sequelize.UUID,
     allowNull: false,

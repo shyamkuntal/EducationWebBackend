@@ -1,8 +1,10 @@
-const { createTopicTaskSchema } = require("../../validations/TopicManagementValidations");
+const { createTopicTaskSchema, createTopicSchema } = require("../../validations/TopicManagementValidations");
 const services = require("../../services/index");
 const httpStatus = require("http-status");
+const { createTopic } = require("../../services/TopicTaskServices");
 
 const TopicManagementController = {
+
   async createTopicTask(req, res, next) {
     try {
       let values = await createTopicTaskSchema.validateAsync(req.body);
@@ -26,6 +28,9 @@ const TopicManagementController = {
       next(err);
     }
   },
+
+
+
 };
 
 module.exports = TopicManagementController;

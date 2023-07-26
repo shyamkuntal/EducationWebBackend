@@ -8,3 +8,4 @@ module.exports.pastpaperService = require("./pastpaperService.js");
 module.exports.paperNumberSheetService = require("./paperNumberSheetService.js");
 module.exports.paperNumberService = require("./paperNumberService.js");
 module.exports.topicTaskService = require("./TopicTaskServices");
+module.exports.topicService = require("./topicService.js");

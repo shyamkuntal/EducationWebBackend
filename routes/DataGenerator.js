@@ -7,6 +7,7 @@ const paginatedPaperNumberSheet = require("../middlewares/paginatedPaperNumber.j
 const { PaperNumberSheet } = require("../models/PaperNumberSheet.js");
 const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject.js");
 const PaperNumberReviewerController = require("../controller/PaperNumberReviewer/PaperNumberReviewer.js");
+const paginatedTopicTasks = require("../middlewares/paginatedTopicTasks.js");
 
 const router = express.Router();
 
@@ -58,5 +59,17 @@ router.get("/getrecheckcomment", DataGeneratorController.getRecheckComment);
 
 // api/pnreviewer/geterrorreportfile
 router.get("/geterrorreportfile", PaperNumberReviewerController.getErrorReportFile);
+
+// /api/topicmanagement/getalltopictasks
+router.get("/getalltopictasks", paginatedTopicTasks(), (req, res) => {
+    res.json(res.paginatedResults);
+});
+
+router.post("/createtopic", DataGeneratorController.createTopic);
+
+router.post("/createsubtopic", DataGeneratorController.createSubTopic);
+
+router.post("/createvocabulary", DataGeneratorController.createVocabulary);
+
 
 module.exports = router; 

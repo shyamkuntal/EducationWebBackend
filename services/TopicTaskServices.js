@@ -2,6 +2,8 @@ const { Op, Sequelize, where } = require("sequelize");
 const { TopicTask } = require("../models/TopicTask");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
+const { Topic, SubTopic } = require("../models/Topic");
+const { Vocabulary } = require("../models/Vocabulary");
 
 const createTopicTask = async ({
   boardId,
@@ -49,4 +51,46 @@ const checkTopicTask = async ({ boardId, subBoardId, grade, subjectId }) => {
   }
 };
 
-module.exports = { createTopicTask, checkTopicTask };
+const createTopic = async ({
+  name
+}) => {
+  try {
+    let topic = await Topic.create({
+      name
+    });
+
+    return topic;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const createSubTopic = async ({
+  name
+}) => {
+  try {
+    let subtopic = await SubTopic.create({
+      name
+    });
+
+    return subtopic;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const createVocabulary = async ({
+  name
+}) => {
+  try {
+    let vocabulary = await Vocabulary.create({
+      name
+    });
+
+    return vocabulary;
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports = { createTopicTask, checkTopicTask, createTopic, createSubTopic, createVocabulary };

@@ -106,6 +106,7 @@ const paginatedPaperNumberSheet = (model, req) => {
           "supervisorCommentToDataGenerator",
           "isSpam",
           "isArchived",
+          "isPublished"
         ],
         include: [
           {

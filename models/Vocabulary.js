@@ -11,6 +11,18 @@ const Vocabulary = db.define("vocabulary", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  errorReport: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  isError: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  isArchive: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 Vocabulary.sync().then(() => {
