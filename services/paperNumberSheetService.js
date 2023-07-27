@@ -55,7 +55,6 @@ const uploadPaperNumberErrorReportFile = async (fileName, fileObj) => {
 
 const getFilesUrlFromS3 = async (fileName) => {
   try {
-    console.log(fileName);
     let getFilesParams = {
       Bucket: process.env.AWS_BUCKET_NAME,
       Key: fileName,

@@ -120,4 +120,67 @@ TopicTask.belongsTo(User, {
   as: "reviewer",
 });
 
-module.exports = { TopicTask };
+const SpamTopicTaskRecheckComments = db.define("spamTopicTaskRecheckComments", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
+  topicTaskId: { type: Sequelize.UUID, allowNull: false },
+  reviewerRecheckComment: { type: Sequelize.STRING, allowNull: true },
+});
+
+SpamTopicTaskRecheckComments.sync().then(() => {
+  console.log("SpamPaperNumberSheetRecheckComments created");
+});
+
+SpamTopicTaskRecheckComments.belongsTo(TopicTask, {
+  foreignKey: "topicTaskId",
+});
+
+const TopicTaskCheckList = db.define("topicTaskCheckList", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
+  topicTaskId: {
+    type: Sequelize.UUID,
+    allowNull: false,
+  },
+  label: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  isChecked: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+});
+
+TopicTaskCheckList.sync().then(() => {
+  console.log("topicTaskCheckList created");
+});
+
+TopicTaskCheckList.belongsTo(TopicTask, {
+  foreignKey: "topicTaskId",
+});
+
+const TopicTaskLog = db.define("topicTaskLogs", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
+  topicTaskId: { type: Sequelize.UUID, allowNull: false },
+  assignee: { type: Sequelize.STRING, allowNull: false },
+  assignedTo: { type: Sequelize.STRING, allowNull: false },
+  logMessage: { type: Sequelize.STRING, allowNull: false },
+});
+
+TopicTaskLog.sync().then(() => {
+  console.log("paperNumberSheetLog created");
+});
+TopicTaskLog.belongsTo(TopicTask, { foreignKey: "topicTaskId" });
+
+module.exports = { TopicTask, TopicTaskCheckList, SpamTopicTaskRecheckComments, TopicTaskLog };

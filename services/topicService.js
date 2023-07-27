@@ -1,12 +1,10 @@
 const { Topic, SubTopic } = require("../models/Topic");
 const { Vocabulary } = require("../models/Vocabulary");
 
-const createTopic = async ({
-  name
-}) => {
+const createTopic = async ({ name }) => {
   try {
     let topic = await Topic.create({
-      name
+      name,
     });
 
     return topic;
@@ -15,12 +13,10 @@ const createTopic = async ({
   }
 };
 
-const createSubTopic = async ({
-  name
-}) => {
+const createSubTopic = async ({ name }) => {
   try {
     let subtopic = await SubTopic.create({
-      name
+      name,
     });
 
     return subtopic;
@@ -29,12 +25,10 @@ const createSubTopic = async ({
   }
 };
 
-const createVocabulary = async ({
-  name
-}) => {
+const createVocabulary = async ({ name }) => {
   try {
     let vocabulary = await Vocabulary.create({
-      name
+      name,
     });
 
     return vocabulary;
@@ -43,4 +37,13 @@ const createVocabulary = async ({
   }
 };
 
-module.exports = { createTopic, createSubTopic, createVocabulary };
+const findAllTopics = async () => {
+  try {
+    let topics = await Topic.findAll();
+    return topics;
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports = { createTopic, createSubTopic, createVocabulary, findAllTopics };

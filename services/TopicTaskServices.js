@@ -1,9 +1,11 @@
 const { Op, Sequelize, where } = require("sequelize");
-const { TopicTask } = require("../models/TopicTask");
+const { TopicTask, TopicTaskLog } = require("../models/TopicTask");
+const { TaskTopicMapping } = require("../models/TopicTaskMapping");
+const { Topic, SubTopic, SubTopicMapping, VocabularyMapping } = require("../models/Topic");
+const { Vocabulary } = require("../models/Vocabulary");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
-const { Topic, SubTopic } = require("../models/Topic");
-const { Vocabulary } = require("../models/Vocabulary");
+const { User } = require("../models/User");
 
 const createTopicTask = async ({
   boardId,
@@ -31,6 +33,15 @@ const createTopicTask = async ({
   }
 };
 
+const findTopicTasks = async (whereQuery) => {
+  try {
+    let tasks = await TopicTask.findAll(whereQuery);
+    return tasks;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const checkTopicTask = async ({ boardId, subBoardId, grade, subjectId }) => {
   try {
     let checkTask = await TopicTask.findOne({
@@ -44,53 +55,106 @@ const checkTopicTask = async ({ boardId, subBoardId, grade, subjectId }) => {
     });
 
     if (checkTask) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task already exists!");
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Topic Task already exists with given parameters!"
+      );
     }
   } catch (err) {
     throw err;
   }
 };
 
-const createTopic = async ({
-  name
-}) => {
+const updateTopicTask = async (dataToBeUpdated, whereQuery) => {
   try {
-    let topic = await Topic.create({
-      name
-    });
+    let updatedTopicTask = await TopicTask.update(dataToBeUpdated, whereQuery);
 
-    return topic;
+    return updatedTopicTask;
   } catch (err) {
     throw err;
   }
 };
 
-const createSubTopic = async ({
-  name
-}) => {
+const findTopicTaskAndUser = async (topicTaskId) => {
   try {
-    let subtopic = await SubTopic.create({
-      name
+    let task = await TopicTask.findOne({
+      where: { id: topicTaskId },
+      include: [{ model: User, as: "supervisor" }],
+      raw: true,
+      nest: true,
     });
-
-    return subtopic;
+    return task;
   } catch (err) {
     throw err;
   }
 };
 
-const createVocabulary = async ({
-  name
-}) => {
+const createTopicTaskLog = async (topicTaskId, assignee, assignedTo, logMessage) => {
   try {
-    let vocabulary = await Vocabulary.create({
-      name
-    });
+    let taskLog = await TopicTaskLog.create({ topicTaskId, assignee, assignedTo, logMessage });
 
-    return vocabulary;
+    return taskLog;
   } catch (err) {
     throw err;
   }
 };
 
-module.exports = { createTopicTask, checkTopicTask, createTopic, createSubTopic, createVocabulary };
+const findTopicTaskMappingsByTaskId = async (topicTaskId) => {
+  try {
+    let mappings = await TaskTopicMapping.findAll({
+      where: { topicTaskId },
+      attributes: ["topicTaskId", "topicId"],
+      include: [
+        { model: Topic, attributes: ["id", "name", "errorReport", "isError", "isArchived"] },
+      ],
+      raw: true,
+      nest: true,
+    });
+    return mappings;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findSubTopicMappingsByTopicId = async (topicId) => {
+  try {
+    let mappings = await SubTopicMapping.findAll({
+      where: { topicId },
+      attributes: ["topicId"],
+      include: [
+        { model: SubTopic, attributes: ["id", "name", "errorReport", "isError", "isArchived"] },
+      ],
+    });
+
+    return mappings;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findVocabMappingsByTopicId = async (topicId) => {
+  try {
+    let mappings = await VocabularyMapping.findAll({
+      where: { topicId },
+      attributes: ["topicId"],
+      include: [
+        { model: Vocabulary, attributes: ["id", "name", "errorReport", "isError", "isArchived"] },
+      ],
+    });
+    return mappings;
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports = {
+  createTopicTask,
+  findTopicTasks,
+  checkTopicTask,
+  updateTopicTask,
+  findTopicTaskAndUser,
+  createTopicTaskLog,
+  findTopicTaskMappingsByTaskId,
+  findSubTopicMappingsByTopicId,
+  findVocabMappingsByTopicId,
+};

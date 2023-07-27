@@ -154,7 +154,7 @@ const PaperNumberSheetCheckList = db.define("PaperNumberSheetCheckList", {
 });
 
 PaperNumberSheetCheckList.sync().then(() => {
-  console.log("SpamPaperNumberSheetRecheckComments created");
+  console.log("PaperNumberSheetCheckList created");
 });
 
 PaperNumberSheetCheckList.belongsTo(PaperNumberSheet, {

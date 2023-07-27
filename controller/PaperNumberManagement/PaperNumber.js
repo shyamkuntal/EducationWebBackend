@@ -72,7 +72,7 @@ const PaperNumberSheetController = {
       });
     } catch (err) {
       next(err);
-      console.log(err)
+      console.log(err);
     }
   },
 
@@ -80,7 +80,6 @@ const PaperNumberSheetController = {
     try {
       let values = await assignDataGeneratorUserToSheetSchema.validateAsync(req.body);
 
-      // userData can later on come from middleware
       let userData = await services.userService.finduser(
         values.dataGeneratorId,
         constants.roleNames.DataGenerator
@@ -102,9 +101,7 @@ const PaperNumberSheetController = {
         // Checking if sheet is already assigned to Data Generator
 
         if (sheetData.assignedToUserId === userData.id) {
-          res
-            .status(httpStatus.OK)
-            .send({ mesage: "sheet already assigned to Data Generator" });
+          res.status(httpStatus.OK).send({ mesage: "sheet already assigned to Data Generator" });
         } else {
           //UPDATE sheet assignment & life cycle & sheet status
 
@@ -123,12 +120,10 @@ const PaperNumberSheetController = {
               sheetStatusToBeUpdated.statusForDataGenerator
             );
 
-
           if (updateAssignAndLifeCycleAndStatus.length > 0) {
             responseMessage.assinedUserToSheet =
               "Sheet assigned to Data Generator and lifeCycle updated successfully";
-            responseMessage.UpdateSheetStatus =
-              "Sheet Statuses updated successfully";
+            responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
           }
 
           // updating supervisor comments
@@ -137,10 +132,9 @@ const PaperNumberSheetController = {
               sheetData.id,
               Comment,
               "DataGenerator"
-            )
+            );
             if (updateComment) {
-              responseMessage.updateComment =
-                "Supervisor comment added successfully";
+              responseMessage.updateComment = "Supervisor comment added successfully";
             }
           }
           // CREATE sheet log for sheet assignment to past paper uploader
@@ -160,12 +154,10 @@ const PaperNumberSheetController = {
           res.status(httpStatus.OK).send({ message: responseMessage });
         }
       } else {
-        res
-          .status(httpStatus.BAD_REQUEST)
-          .send({ message: "Wrong user Id or Sheet Id" });
+        res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Sheet Id" });
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }
   },
@@ -175,19 +167,19 @@ const PaperNumberSheetController = {
       let values = {
         paperNumberSheetId: req.query.paperNumberSheetId,
       };
-      const sheetLogs = await services.paperNumberSheetService.findSheetLog(values.paperNumberSheetId);
+      const sheetLogs = await services.paperNumberSheetService.findSheetLog(
+        values.paperNumberSheetId
+      );
       res.status(httpStatus.OK).send({ sheetLogs: sheetLogs });
     } catch (error) {
-      console.log(error)
-      next(error); 
+      console.log(error);
+      next(error);
     }
   },
 
   async AssignSheetToReviewer(req, res, next) {
     try {
-      let values = await assignReviewerUserToSheetSchema.validateAsync(
-        req.body
-      );
+      let values = await assignReviewerUserToSheetSchema.validateAsync(req.body);
       // userData can later on come from middleware
       let userData = await services.userService.finduser(values.reviewerId);
 
@@ -207,9 +199,7 @@ const PaperNumberSheetController = {
         // Checking if sheet is already assigned to past paper reviewer
 
         if (sheetData.assignedToUserId === userData.id) {
-          res
-            .status(httpStatus.OK)
-            .send({ message: "sheet already assigned to reviewer" });
+          res.status(httpStatus.OK).send({ message: "sheet already assigned to reviewer" });
         } else {
           //UPDATE sheet assignment & life cycle & sheet status
           let sheetStatusToBeUpdated = {
@@ -232,18 +222,16 @@ const PaperNumberSheetController = {
               sheetData.id,
               Comment,
               "Reviewer"
-            )
+            );
             if (updateComment) {
-              responseMessage.updateComment =
-                "Supervisor comment added successfully";
+              responseMessage.updateComment = "Supervisor comment added successfully";
             }
           }
 
           if (updateAssignAndUpdateLifeCycle.length > 0) {
             responseMessage.assinedUserToSheet =
               "Sheet assigned to reviewer and lifeCycle updated successfully";
-            responseMessage.UpdateSheetStatus =
-              "Sheet Statuses updated successfully";
+            responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
           }
 
           // CREATE sheet log for sheet assignment to past paper uploader
@@ -260,39 +248,39 @@ const PaperNumberSheetController = {
           }
 
           // Create Sheet CheckList
-          let checkForPreviousCheckList =
-            await services.paperNumberSheetService.findCheckList(sheetData.id);
+          let checkForPreviousCheckList = await services.paperNumberSheetService.findCheckList(
+            sheetData.id
+          );
 
           if (checkForPreviousCheckList.length <= 0) {
-            let createSheetCheckList =
-              await services.paperNumberSheetService.createSheetCheckList(sheetData.id);
+            let createSheetCheckList = await services.paperNumberSheetService.createSheetCheckList(
+              sheetData.id
+            );
             if (createSheetCheckList.length > 0) {
               responseMessage.CheckList = "Check List Created!";
             }
           }
 
           res.status(httpStatus.OK).send({ message: responseMessage });
-          console.log(responseMessage)
+          console.log(responseMessage);
         }
       } else {
-        res
-          .status(httpStatus.BAD_REQUEST)
-          .send({ mesage: "Wrong user Id or Sheet Id" });
+        res.status(httpStatus.BAD_REQUEST).send({ mesage: "Wrong user Id or Sheet Id" });
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }
   },
 
   async TogglePublishSheet(req, res) {
     const id = req.body.id;
-    console.log(id)
+    console.log(id);
     // const isPublished = req.body.isPublished;
 
     try {
       const sheet = await services.paperNumberSheetService.findPaperNumberSheetByPk(id);
-      console.log(sheet)
+      console.log(sheet);
 
       if (!sheet) {
         return res.status(404).json({ message: "sheet not found" });
@@ -307,7 +295,6 @@ const PaperNumberSheetController = {
       return res.status(501).json({ error: err.message });
     }
   },
-
-}
+};
 
 module.exports = PaperNumberSheetController;

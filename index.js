@@ -1,18 +1,14 @@
 const express = require("express");
 const cors = require("cors");
-// import multer from "multer";
 require("dotenv").config();
-const getSignedUrl = require("@aws-sdk/s3-request-presigner");
-const { PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
 const routes = require("./routes/index.js");
 const db = require("./config/database.js");
-const { generateFileName, s3Client } = require("./config/s3.js");
-const upload = require("./config/multer.js");
 const { convertToApiError, handleError } = require("./middlewares/apiError.js");
 
 const app = express();
 app.use(express.json());
 
+// CORS
 app.use(
   cors({
     origin: process.env.CLIENT_URLS,
@@ -26,40 +22,6 @@ app.use(
 db.authenticate()
   .then(() => console.log("Database connected..."))
   .catch((err) => console.log("Error: " + err));
-
-const bucketName = process.env.AWS_BUCKET_NAME;
-
-app.post("/uploadimg", upload.single("image"), async (req, res) => {
-  const fileBuffer = req.file.buffer;
-  console.log(fileBuffer);
-
-  // Configure the upload details to send to S3
-  const fileName = generateFileName();
-  console.log(bucketName);
-  const uploadParams = {
-    Bucket: bucketName,
-    Body: fileBuffer,
-    Key: fileName,
-    ContentType: req.file.mimetype,
-  };
-
-  // Send the upload to S3
-  await s3Client.send(new PutObjectCommand(uploadParams));
-
-  res.send({});
-});
-
-app.get("/getimage", async (req, res) => {
-  const imageName =
-    "88123c7cb235b9494dcbc53d88083d5fa38bbac92cebed1f615a7f891e8ef092";
-  const getObjectParams = {
-    Bucket: bucketName,
-    Key: imageName,
-  };
-  const command = new GetObjectCommand(getObjectParams);
-  const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-  res.send(url);
-});
 
 app.use("/api", routes);
 
