@@ -19,7 +19,7 @@ const Vocabulary = db.define("vocabulary", {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
-  isArchive: {
+  isArchived: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },

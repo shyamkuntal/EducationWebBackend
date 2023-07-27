@@ -22,7 +22,7 @@ const Topic = db.define("topic", {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
-  isArchive: {
+  isArchived: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
@@ -50,7 +50,7 @@ const SubTopic = db.define("subTopic", {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
-  isArchive: {
+  isArchived: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
