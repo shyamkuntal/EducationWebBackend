@@ -67,6 +67,10 @@ const getAllTopicSubTopicVocabSchema = Joi.object({
   grade: Joi.string().allow("").allow(null),
 });
 
+const getTopicTaskLogsSchema = Joi.object({
+  topicTaskId: Joi.string().guid().required(),
+});
+
 module.exports = {
   createTopicTaskSchema,
   updateTopicTaskSchema,
@@ -77,4 +81,5 @@ module.exports = {
   createVocabularySchema,
   getTopicSubTopicVocabByTaskIdSchema,
   getAllTopicSubTopicVocabSchema,
+  getTopicTaskLogsSchema,
 };

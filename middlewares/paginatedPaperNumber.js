@@ -106,7 +106,7 @@ const paginatedPaperNumberSheet = (model, req) => {
           "supervisorCommentToDataGenerator",
           "isSpam",
           "isArchived",
-          "isPublished"
+          "isPublished",
         ],
         include: [
           {
@@ -126,7 +126,7 @@ const paginatedPaperNumberSheet = (model, req) => {
           {
             model: User,
             attributes: ["Name"],
-            as: "supervisor",
+            as: "assignedToUserName",
           },
         ],
         where: filters,

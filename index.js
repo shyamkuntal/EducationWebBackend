@@ -9,14 +9,24 @@ const app = express();
 app.use(express.json());
 
 // CORS
-app.use(
-  cors({
-    origin: process.env.CLIENT_URLS,
-    methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Authorization", "Content-Type"],
-    credentials: true,
-  })
-);
+if (process.env.NODE_ENV === "production") {
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URLS,
+      methods: ["POST", "GET", "PUT", "DELETE"],
+      credentials: true,
+    })
+  );
+} else {
+  app.use(
+    cors({
+      origin: "*",
+      methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
+      allowedHeaders: ["Authorization", "Content-Type"],
+      credentials: true,
+    })
+  );
+}
 
 // Test DB
 db.authenticate()

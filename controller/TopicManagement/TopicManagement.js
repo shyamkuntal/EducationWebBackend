@@ -7,6 +7,7 @@ const {
   assignTaskToReviewerSchema,
   getTopicSubTopicVocabByTaskIdSchema,
   getAllTopicSubTopicVocabSchema,
+  getTopicTaskLogsSchema,
 } = require("../../validations/TopicManagementValidations");
 const CONSTANTS = require("../../constants/constants");
 
@@ -322,6 +323,19 @@ const TopicManagementController = {
         });
       }
       res.status(httpStatus.OK).send(topicSubTopicsVocab);
+    } catch (err) {
+      next(err);
+    }
+  },
+  async getTopiTaskLogs(req, res, next) {
+    try {
+      let values = await getTopicTaskLogsSchema.validateAsync({
+        topicTaskId: req.query.topicTaskId,
+      });
+
+      let logs = await services.topicTaskService.getTaskLogs(values.topicTaskId);
+
+      res.status(httpStatus.OK).send(logs);
     } catch (err) {
       next(err);
     }

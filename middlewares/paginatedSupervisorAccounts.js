@@ -20,9 +20,7 @@ const paginatedSupervisorAccounts = () => {
       filters.boardName = { $regex: req.query.search, $options: "i" };
     }
 
-    let role = await services.userService.findByRoleName(
-      CONSTANTS.roleNames.Supervisor
-    );
+    let role = await services.userService.findByRoleName(CONSTANTS.roleNames.Supervisor);
 
     if (role) {
       filters.roleId = role.id;
@@ -54,6 +52,7 @@ const paginatedSupervisorAccounts = () => {
 
         raw: true,
         where: filters,
+        order: [["createdAt", "DESC"]],
         limit,
         offset: startIndex,
       });

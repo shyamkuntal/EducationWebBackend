@@ -558,8 +558,6 @@ const SubjectManagementController = {
         subjectNameId: req.query.subjectNameId,
       });
 
-      console.log(values);
-
       let whereQuery = { where: { id: values.subjectNameId } };
 
       let subjectName = await services.subjectService.findSubjectName(whereQuery);

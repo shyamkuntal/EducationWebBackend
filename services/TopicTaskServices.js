@@ -147,6 +147,18 @@ const findVocabMappingsByTopicId = async (topicId) => {
   }
 };
 
+const getTaskLogs = async (topicTaskId) => {
+  try {
+    let logs = await TopicTaskLog.findAll({
+      where: { topicTaskId },
+      order: [["createdAt", "ASC"]],
+    });
+    return logs;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   createTopicTask,
   findTopicTasks,
@@ -157,4 +169,5 @@ module.exports = {
   findTopicTaskMappingsByTaskId,
   findSubTopicMappingsByTopicId,
   findVocabMappingsByTopicId,
+  getTaskLogs,
 };

@@ -1,5 +1,8 @@
 const express = require("express");
 const TopicManagementController = require("../controller/TopicManagement/TopicManagement");
+const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor");
+const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject");
+const BoardManagementController = require("../controller/BoardManagement/BoardM");
 const paginatedTopicTasks = require("../middlewares/paginatedTopicTasks");
 
 const router = express.Router();
@@ -30,12 +33,16 @@ router.patch("/asssigntasktodatagenerator", TopicManagementController.assignTask
 // /api/topicmanagement/assigntasktoreviewer
 router.patch("/assigntasktoreviewer", TopicManagementController.assignTaskToReviewer);
 
-// /api/topicmanagement/getsheetlogs
+// /api/topicmanagement/gettasklogs
+router.get("/gettasklogs", TopicManagementController.getTopiTaskLogs);
 
-// /api/getsubjectnames -get
+// api/topicmanagement/getuserassignedsubjects
+router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
 
-// /api/topicmanagement/getallboards -get
+// /api/topicmanagement/getsubjectnames
+router.get("/subjectnames", PastPaperSupervisorController.getSubjectNames);
 
-// /api/topicmanagement/getallsubboards -get
+// api/topicmanagement/getsubjectnamebyid
+router.get("/getsubjectnamebyid", SubjectManagementController.getSubjectNameById);
 
 module.exports = router;
