@@ -13,19 +13,20 @@ const createTopicTaskSchema = Joi.object({
 
 const createTopicSchema = Joi.object({
   topicTaskId: Joi.string().guid(),
-  name: Joi.string(),
+  name: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string()))
+
 });
 
 const createSubTopicSchema = Joi.object({
   topicTaskId: Joi.string().guid(),
   topicId: Joi.string().guid(),
-  name: Joi.string(),
+  name: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string()))
 });
 
 const createVocabularySchema = Joi.object({
   topicTaskId: Joi.string().guid(),
   topicId: Joi.string().guid(),
-  name: Joi.string(),
+  name: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string()))
 });
 
 module.exports = {
@@ -60,6 +61,9 @@ const assignTaskToReviewerSchema = Joi.object({
 const getTopicSubTopicVocabByTaskIdSchema = Joi.object({
   topicTaskId: Joi.string().guid().required(),
 });
+const getSubTopicVocabByTopicIdSchema = Joi.object({
+  topicId: Joi.string().guid().required(),
+});
 
 const getAllTopicSubTopicVocabSchema = Joi.object({
   boardId: Joi.string().guid().allow("").allow(null),
@@ -82,4 +86,5 @@ module.exports = {
   getTopicSubTopicVocabByTaskIdSchema,
   getAllTopicSubTopicVocabSchema,
   getTopicTaskLogsSchema,
+  getSubTopicVocabByTopicIdSchema
 };

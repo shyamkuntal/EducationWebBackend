@@ -8,6 +8,7 @@ const {
   getTopicSubTopicVocabByTaskIdSchema,
   getAllTopicSubTopicVocabSchema,
   getTopicTaskLogsSchema,
+  getSubTopicVocabByTopicIdSchema,
 } = require("../../validations/TopicManagementValidations");
 const CONSTANTS = require("../../constants/constants");
 
@@ -327,15 +328,26 @@ const TopicManagementController = {
       next(err);
     }
   },
-  async getTopiTaskLogs(req, res, next) {
+  async getSubTopicVocabByTopicId(req, res, next) {
     try {
-      let values = await getTopicTaskLogsSchema.validateAsync({
-        topicTaskId: req.query.topicTaskId,
+      let values = await getSubTopicVocabByTopicIdSchema.validateAsync({
+        topicId: req.query.topicId,
       });
 
-      let logs = await services.topicTaskService.getTaskLogs(values.topicTaskId);
+      let topicSubTopicsVocab = [];
+        // fetch subTopics
+        let subTopics = await services.topicTaskService.findSubTopicMappingsByTopicId(
+          values.topicId
+        );
+        // fetch vocab
+        let vocab = await services.topicTaskService.findVocabMappingsByTopicId(values.topicId);
 
-      res.status(httpStatus.OK).send(logs);
+        topicSubTopicsVocab.push({
+          topicId: values.topicId,
+          subTopics: subTopics,
+          vocab: vocab,
+        });
+      res.status(httpStatus.OK).send(topicSubTopicsVocab);
     } catch (err) {
       next(err);
     }

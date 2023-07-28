@@ -8,6 +8,7 @@ const { PaperNumberSheet } = require("../models/PaperNumberSheet.js");
 const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject.js");
 const PaperNumberReviewerController = require("../controller/PaperNumberReviewer/PaperNumberReviewer.js");
 const paginatedTopicTasks = require("../middlewares/paginatedTopicTasks.js");
+const TopicManagementController = require("../controller/TopicManagement/TopicManagement.js");
 
 const router = express.Router();
 
@@ -65,11 +66,32 @@ router.get("/getalltopictasks", paginatedTopicTasks(), (req, res) => {
     res.json(res.paginatedResults);
 });
 
+
+// ********** Topic Routes ************** //
+
+
 router.post("/createtopic", DataGeneratorController.createTopic);
 
 router.post("/createsubtopic", DataGeneratorController.createSubTopic);
 
 router.post("/createvocabulary", DataGeneratorController.createVocabulary);
+
+router.patch("/submitopictasktosupervisor", DataGeneratorController.SubmitTopicTaskToSupervisor);
+
+// /api/topicmanagement/getalltopicsubtopicvocab
+router.get("/getalltopicsubtopicvocab", TopicManagementController.getAllTopicSubTopicVocab);
+
+// /api/topicmanagement/gettopicsubtopicvocabbytopictaskid
+router.get(
+  "/gettopicsubtopicvocabbytopictaskid",
+  TopicManagementController.getTopicSubTopicVocabByTaskId
+);
+
+// /api/topicmanagement/getsubtopicvocabbytopicid
+router.get(
+  "/getsubtopicvocabbytopicid",
+  TopicManagementController.getSubTopicVocabByTopicId
+);
 
 
 module.exports = router; 

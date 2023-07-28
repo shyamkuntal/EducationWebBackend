@@ -6,7 +6,10 @@ const CONSTANTS = require("../../constants/constants.js");
 const {
   getPaperNumberByPaperNumberSheetSchema,
 } = require("../../validations/PaperNumberValidations.js");
-const { assignSheetToSupervisorSchema } = require("../../validations/DataGeneratorValidations.js");
+const {
+  assignTopicTaskToSupervisorSchema,
+  assignPaperNumberSheetToSupervisorSchema,
+} = require("../../validations/DataGeneratorValidations.js");
 const {
   getRecheckingCommentsSchema,
 } = require("../../validations/PaperNumberReviewerValidations.js");
@@ -16,7 +19,11 @@ const {
   createSubTopicSchema,
   createVocabularySchema,
 } = require("../../validations/TopicManagementValidations.js");
-const { TaskTopicMapping, TaskSubTopicMapping, TaskVocabularyMapping } = require("../../models/TopicTaskMapping.js");
+const {
+  TaskTopicMapping,
+  TaskSubTopicMapping,
+  TaskVocabularyMapping,
+} = require("../../models/TopicTaskMapping.js");
 const { SubTopicMapping, VocabularyMapping } = require("../../models/Topic.js");
 
 const DataGeneratorController = {
@@ -150,7 +157,7 @@ const DataGeneratorController = {
 
   async SubmitToSupervisor(req, res, next) {
     try {
-      let values = await assignSheetToSupervisorSchema.validateAsync(req.body);
+      let values = await assignPaperNumberSheetToSupervisorSchema.validateAsync(req.body);
 
       let responseMessage = {
         assinedUserToSheet: "",
@@ -278,29 +285,41 @@ const DataGeneratorController = {
     }
   },
 
-  //  Topic Controller
+  // ******************* Topic Controller **********************//
 
   async createTopic(req, res, next) {
     try {
       let values = await createTopicSchema.validateAsync(req.body);
-
-      let dataToBeCreated = {
-        name: values.name,
-      };
+      const names = values.name;
+      console.log(names);
 
       // await services.topicTaskService.checkTopicTask(dataToBeCreated);
+      if (!Array.isArray(names)) {
+        let dataToBeCreated = {
+          name: values.name,
+        };
+        const topic = await services.topicService.createTopic(dataToBeCreated);
 
-      let topic = await services.topicTaskService.createTopic(dataToBeCreated);
+        const sentData = {
+          topicTaskId: values.topicTaskId,
+          topicId: topic.id,
+        };
+        let taskMapData = await TaskTopicMapping.create(sentData);
+        return res.status(httpStatus.CREATED).send(topic);
+      } else {
+        const topics = await Promise.all(
+          names.map(async (topicName) => {
+            const dataToBeCreated = {
+              name: topicName,
+            };
+            const topic = await services.topicService.createTopic(dataToBeCreated);
 
-      // creating tasktopic mapping data
-
-      let sentData = {
-        topicTaskId: values.topicTaskId,
-        topicId: topic.id,
-      };
-      let taskMapData = await TaskTopicMapping.create(sentData);
-
-      res.status(httpStatus.CREATED).send(topic);
+            return { name: topic.name, topicTaskId: values.topicTaskId, topicId: topic.id };
+          })
+        );
+        const taskMapData = await TaskTopicMapping.bulkCreate(topics);
+        res.status(httpStatus.CREATED).send(topics);
+      }
     } catch (err) {
       next(err);
       console.log(err);
@@ -310,30 +329,52 @@ const DataGeneratorController = {
   async createSubTopic(req, res, next) {
     try {
       let values = await createSubTopicSchema.validateAsync(req.body);
+      const names = values.name;
 
-      let dataToBeCreated = {
-        name: values.name,
-      };
+      if (!Array.isArray(names)) {
+        let dataToBeCreated = {
+          name: values.name,
+        };
+        const subtopic = await services.topicService.createSubTopic(dataToBeCreated);
 
-      let subtopic = await services.topicTaskService.createSubTopic(dataToBeCreated);
+        // creating Task sub-topic mapping 
 
-      // creating task sub topic mapping data
+        let sentTaskData = {
+          topicTaskId: values.topicTaskId,
+          subTopicId: subtopic.id,
+        };
+        let taskMapData = await TaskSubTopicMapping.create(sentTaskData);
 
-      let sentTaskData = {
-        topicTaskId: values.topicTaskId,
-        subTopicId: subtopic.id,
-      };
-      let taskMapData = await TaskSubTopicMapping.create(sentTaskData);
+        // creating sub-topic mapping 
 
-      // creating sub-topic mapping data
+        let subTopicData = {
+          topicId: values.topicId,
+          subTopicId: subtopic.id,
+        };
 
-      let subTopicData = {
-        topicId: values.topicId,
-        subTopicId: subtopic.id,
-      };
-      let subTopicMapData = await SubTopicMapping.create(subTopicData);
+        let subTopicMapData = await SubTopicMapping.create(subTopicData);
+        return res.status(httpStatus.CREATED).send(subtopic);
+      } else {
+        const subtopics = await Promise.all(
+          names.map(async (subTopicName) => {
+            const dataToBeCreated = {
+              name: subTopicName,
+            };
+            const subtopic = await services.topicService.createSubTopic(dataToBeCreated);
 
-      res.status(httpStatus.CREATED).send(subtopic);
+            return { name: subtopic.name, topicTaskId: values.topicTaskId, subTopicId: subtopic.id, topicId: values.topicId };
+          })
+        );
+
+        // creating Task sub-topic mapping 
+        const taskMapData = await TaskSubTopicMapping.bulkCreate(subtopics);
+
+        // creating sub-topic mapping 
+
+        let subTopicMapData = await SubTopicMapping.bulkCreate(subtopics);
+
+        res.status(httpStatus.CREATED).send(subtopics);
+      }
     } catch (err) {
       next(err);
       console.log(err);
@@ -343,35 +384,161 @@ const DataGeneratorController = {
   async createVocabulary(req, res, next) {
     try {
       let values = await createVocabularySchema.validateAsync(req.body);
+      const names = values.name;
 
-      let dataToBeCreated = {
-        name: values.name,
-      };
+      if (!Array.isArray(names)) {
+        let dataToBeCreated = {
+          name: values.name,
+        };
+        let vocabulary = await services.topicService.createVocabulary(dataToBeCreated);
 
-      // await services.topicTaskService.checkTopicTask(dataToBeCreated);
+        // creating Task sub-topic mapping 
 
-      let vocabulary = await services.topicTaskService.createVocabulary(dataToBeCreated);
+        let sentTaskData = {
+          topicTaskId: values.topicTaskId,
+          vocabularyId: vocabulary.id,
+        };
+        let taskMapData = await TaskVocabularyMapping.create(sentTaskData);
 
-      // creating task vocab topic mapping data
+        // creating sub-topic mapping 
 
-      let sentData = {
-        topicTaskId: values.topicTaskId,
-        vocabularyId: vocabulary.id,
-      };
-      let taskMapData = await TaskVocabularyMapping.create(sentData);
-      
-      // creating vocab mapping data
+        let vocabData = {
+          topicId: values.topicId,
+          vocabularyId: vocabulary.id,
+        };
 
-      let vocabData = {
-        topicId: values.topicId,
-        vocabularyId: vocabulary.id,
-      };
-      let vocabMapData = await VocabularyMapping.create(vocabData);
+        let vocabMapData = await VocabularyMapping.create(vocabData);
+        return res.status(httpStatus.CREATED).send(vocabulary);
+      } else {
+        const vocabulary = await Promise.all(
+          names.map(async (vocab) => {
+            const dataToBeCreated = {
+              name: vocab,
+            };
+            let vocabularyData = await services.topicService.createVocabulary(dataToBeCreated);
 
-      res.status(httpStatus.CREATED).send(vocabulary);
+            return { name: vocabularyData.name, topicTaskId: values.topicTaskId, vocabularyId: vocabularyData.id, topicId: values.topicId };
+          })
+        );
+
+          console.log(vocabulary)
+        // creating Task sub-topic mapping 
+        let taskMapData = await TaskVocabularyMapping.bulkCreate(vocabulary);
+
+        // creating sub-topic mapping 
+
+        let vocabMapData = await VocabularyMapping.bulkCreate(vocabulary);
+
+        res.status(httpStatus.CREATED).send(vocabulary);
+      }
     } catch (err) {
       next(err);
       console.log(err);
+    }
+  },
+
+  //  log error
+  async SubmitTopicTaskToSupervisor(req, res, next) {
+    try {
+      let values = await assignTopicTaskToSupervisorSchema.validateAsync(req.body);
+
+      let responseMessage = {
+        assinedUserToSheet: "",
+        UpdateSheetStatus: "",
+        sheetLog: "",
+      };
+
+      let userData = await services.userService.finduser(
+        values.dataGeneratorId,
+        CONSTANTS.roleNames.DataGenerator
+      );
+      let sheetData = await services.topicService.findSheetAndUser(values.topicTaskId);
+
+      if (sheetData) {
+        let dataToBeUpdated = {
+          statusForDataGenerator: CONSTANTS.sheetStatuses.Complete,
+          assignedToUserId: sheetData.supervisorId,
+          lifeCycle: CONSTANTS.roleNames.Supervisor,
+        };
+        let whereQuery = {
+          where: {
+            id: sheetData.id,
+          },
+        };
+        let statusToUpdate = await services.topicService.updateTopicTaskSheet(
+          dataToBeUpdated,
+          whereQuery
+        );
+
+        // let createLog = await services.topicTaskService(
+        //   sheetData.id,
+        //   sheetData.supervisor.Name,
+        //   userData.Name,
+        //   CONSTANTS.sheetLogsMessages.DataGeneratorAssignToSupervisor
+        // );
+
+        // if (statusToUpdate.length > 0 && createLog) {
+        //   responseMessage.assinedUserToSheet = "Sheet assigned to supervisor successfully";
+        //   responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
+        //   responseMessage.sheetLog = "Log record for Task to supervisor added successfully";
+        // }
+
+        res.status(httpStatus.OK).send({ message: responseMessage });
+      } else {
+        res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Sheet Id" });
+      }
+    } catch (err) {
+      next(err);
+      console.log(err);
+    }
+  },
+
+  async MarkTopicTaskasInProgress(req, res) {
+    const id = req.body.topicTaskId;
+
+    try {
+      const sheetData = await services.topicService.findPaperNumberSheetByPk(id);
+
+      let statusToUpdate = {
+        statusForDataGenerator: CONSTANTS.sheetStatuses.InProgress,
+      };
+      let whereQuery = {
+        where: {
+          id: sheetData.id,
+        },
+      };
+      let response = await services.topicService.updatePaperNumberSheet(statusToUpdate, whereQuery);
+
+      return res.status(httpStatus.OK).send({
+        message: "Sheet marked InProgress successfully",
+      });
+    } catch (err) {
+      console.log(err);
+      return res.json({ status: 501, error: err.message });
+    }
+  },
+
+  async MarkTopicTaskascomplete(req, res) {
+    const id = req.body.paperNumberSheetId;
+
+    try {
+      const sheetData = await services.topicService.findPaperNumberSheetByPk(id);
+
+      let statusToUpdate = {
+        statusForDataGenerator: CONSTANTS.sheetStatuses.Complete,
+      };
+      let whereQuery = {
+        where: {
+          id: sheetData.id,
+        },
+      };
+      let response = await services.topicService.updatePaperNumberSheet(statusToUpdate, whereQuery);
+
+      return res.status(httpStatus.OK).send({
+        message: "Sheet marked Complete successfully",
+      });
+    } catch (err) {
+      return res.json({ status: 501, error: err.message });
     }
   },
 };
