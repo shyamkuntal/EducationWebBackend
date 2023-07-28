@@ -335,19 +335,28 @@ const TopicManagementController = {
       });
 
       let topicSubTopicsVocab = [];
-        // fetch subTopics
-        let subTopics = await services.topicTaskService.findSubTopicMappingsByTopicId(
-          values.topicId
-        );
-        // fetch vocab
-        let vocab = await services.topicTaskService.findVocabMappingsByTopicId(values.topicId);
+      // fetch subTopics
+      let subTopics = await services.topicTaskService.findSubTopicMappingsByTopicId(values.topicId);
+      // fetch vocab
+      let vocab = await services.topicTaskService.findVocabMappingsByTopicId(values.topicId);
 
-        topicSubTopicsVocab.push({
-          topicId: values.topicId,
-          subTopics: subTopics,
-          vocab: vocab,
-        });
+      topicSubTopicsVocab.push({
+        topicId: values.topicId,
+        subTopics: subTopics,
+        vocab: vocab,
+      });
       res.status(httpStatus.OK).send(topicSubTopicsVocab);
+    } catch (err) {
+      next(err);
+    }
+  },
+  async getTopiTaskLogs(req, res, next) {
+    try {
+      let values = await getTopicTaskLogsSchema.validateAsync({
+        topicTaskId: req.query.topicTaskId,
+      });
+      let logs = await services.topicTaskService.getTaskLogs(values.topicTaskId);
+      res.status(httpStatus.OK).send(logs);
     } catch (err) {
       next(err);
     }
