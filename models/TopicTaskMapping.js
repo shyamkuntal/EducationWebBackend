@@ -18,6 +18,18 @@ const TaskTopicMapping = db.define("taskTopicMapping", {
     type: Sequelize.UUID,
     allowNull: false,
   },
+  errorReport: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  isError: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  isArchived: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 TaskTopicMapping.belongsTo(TopicTask, {
@@ -41,14 +53,33 @@ const TaskSubTopicMapping = db.define("taskSubTopicMapping", {
     type: Sequelize.UUID,
     allowNull: false,
   },
+  topicId: {
+    type: Sequelize.UUID,
+    allowNull: false,
+  },
   subTopicId: {
     type: Sequelize.UUID,
     allowNull: false,
+  },
+  errorReport: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  isError: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  isArchived: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
   },
 });
 
 TaskSubTopicMapping.belongsTo(TopicTask, {
   foreignKey: { name: "topicTaskId" },
+});
+TaskTopicMapping.belongsTo(Topic, {
+  foreignKey: { name: "topicId" },
 });
 TaskSubTopicMapping.belongsTo(SubTopic, {
   foreignKey: { name: "subTopicId" },
@@ -68,14 +99,33 @@ const TaskVocabularyMapping = db.define("taskVocabularyMapping", {
     type: Sequelize.UUID,
     allowNull: false,
   },
+  topicId: {
+    type: Sequelize.UUID,
+    allowNull: false,
+  },
   vocabularyId: {
     type: Sequelize.UUID,
     allowNull: false,
+  },
+  errorReport: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  isError: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  isArchived: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
   },
 });
 
 TaskVocabularyMapping.belongsTo(TopicTask, {
   foreignKey: { name: "topicTaskId" },
+});
+TaskVocabularyMapping.belongsTo(Topic, {
+  foreignKey: { name: "topicId" },
 });
 TaskVocabularyMapping.belongsTo(Vocabulary, {
   foreignKey: { name: "vocabularyId" },

@@ -10,18 +10,7 @@ const Vocabulary = db.define("vocabulary", {
   name: {
     type: Sequelize.STRING,
     allowNull: false,
-  },
-  errorReport: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  isError: {
-    type: Sequelize.BOOLEAN,
-    defaultValue: false,
-  },
-  isArchived: {
-    type: Sequelize.BOOLEAN,
-    defaultValue: false,
+    unique: true,
   },
 });
 

@@ -170,7 +170,7 @@ const PaperNumberSheetController = {
       const sheetLogs = await services.paperNumberSheetService.findSheetLog(
         values.paperNumberSheetId
       );
-      res.status(httpStatus.OK).send({ sheetLogs: sheetLogs });
+      res.status(httpStatus.OK).send({ taskLogs: sheetLogs });
     } catch (error) {
       console.log(error);
       next(error);

@@ -12,6 +12,8 @@ const paginatedPricerAccounts = require("../middlewares/paginatedPricerAccounts.
 const paginatedUploader2Accounts = require("../middlewares/paginatedUploader2Accounts.js");
 const paginatedPaperNumberSheet = require("../middlewares/paginatedPaperNumber");
 const paginatedSheet = require("../middlewares/paginatedSheet");
+const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor");
+const PaperNumberSheetController = require("../controller/PaperNumberManagement/PaperNumber");
 
 router.get("/getpastpaperaccounts", paginatedPastPaperAccounts(), (req, res) => {
   res.send(res.paginatedResults);
@@ -76,5 +78,9 @@ router.get("/getusers", AccountManagementController.getAllUserByRole);
 router.get("/getsupervisorinfo", AccountManagementController.getSupervisorInfo);
 
 router.patch("/toggleactivate", AccountManagementController.toggleActivateUser);
+
+router.get("/getsheetlogs", PastPaperSupervisorController.getSheetLogs);
+
+router.get("/getpnsheetlogs", PaperNumberSheetController.getSheetLogs);
 
 module.exports = router;
