@@ -1,20 +1,8 @@
-const {
-  SubBoard,
-  Board,
-  UserBoardMapping,
-  UserSubBoardMapping,
-} = require("../models/Board");
+const { SubBoard, Board, UserBoardMapping, UserSubBoardMapping } = require("../models/Board");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
 
-const createBoard = async (
-  boardName,
-  boardType,
-  contact,
-  email,
-  website,
-  address
-) => {
+const createBoard = async (boardName, boardType, contact, email, website, address) => {
   try {
     const board = await Board.create({
       boardName,
@@ -39,6 +27,7 @@ const findAllBoards = async (attributes) => {
     let boards = await Board.findAll({
       where: { isArchived: false, isPublished: true },
       attributes: attributes,
+      raw: true,
     });
     return boards;
   } catch (err) {

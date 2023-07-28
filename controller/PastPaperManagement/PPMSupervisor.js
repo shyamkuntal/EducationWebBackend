@@ -257,7 +257,6 @@ const PastPaperSupervisorController = {
     try {
       let attributes = ["id", "boardName", "boardType"];
       let boards = await services.boardService.findAllBoards(attributes);
-
       res.status(httpStatus.OK).send(boards);
     } catch (err) {
       next(err);
@@ -673,6 +672,5 @@ const PastPaperSupervisorController = {
     }
   },
 };
-
 
 module.exports = PastPaperSupervisorController;

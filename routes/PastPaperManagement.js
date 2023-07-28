@@ -10,7 +10,7 @@ router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssi
 
 router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
-router.get("/getallboards", PastPaperSupervisorController.getallboards);
+//router.get("/getallboards", PastPaperSupervisorController.getallboards);
 
 router.get("/getallroles", PastPaperSupervisorController.getallroles);
 
@@ -47,7 +47,9 @@ router.patch("/assignsheettoreviewer", PastPaperSupervisorController.AssignSheet
 
 router.get("/getpastpaper", PastPaperSupervisorController.getPastPaper);
 
-router.get("/getpapernumberbyboardsubBoardgradesubject", PastPaperSupervisorController.getPaperNumberbyBoardSubBoardGradeSubject);
-
+router.get(
+  "/getpapernumberbyboardsubBoardgradesubject",
+  PastPaperSupervisorController.getPaperNumberbyBoardSubBoardGradeSubject
+);
 
 module.exports = router;
