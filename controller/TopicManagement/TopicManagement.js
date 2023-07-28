@@ -279,11 +279,11 @@ const TopicManagementController = {
 
       for (element of topics) {
         // fetch subTopics
-        let subTopics = await services.topicTaskService.findSubTopicMappingsByTopicId(
+        let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTopicId(
           element.topicId
         );
         // fetch vocab
-        let vocab = await services.topicTaskService.findVocabMappingsByTopicId(element.topicId);
+        let vocab = await services.topicTaskService.findVocabTaskMappingsByTopicId(element.topicId);
 
         topicSubTopicsVocab.push({
           topic: element.topic,

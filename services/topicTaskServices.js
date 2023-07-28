@@ -1,7 +1,11 @@
 const { Op, Sequelize, where } = require("sequelize");
 const { TopicTask, TopicTaskLog } = require("../models/TopicTask");
-const { TaskTopicMapping } = require("../models/TopicTaskMapping");
-const { Topic, SubTopic, SubTopicMapping, VocabularyMapping } = require("../models/Topic");
+const {
+  TaskTopicMapping,
+  TaskSubTopicMapping,
+  TaskVocabularyMapping,
+} = require("../models/TopicTaskMapping");
+const { Topic, SubTopic } = require("../models/Topic");
 const { Vocabulary } = require("../models/Vocabulary");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
@@ -114,9 +118,9 @@ const findTopicTaskMappingsByTaskId = async (topicTaskId) => {
   }
 };
 
-const findSubTopicMappingsByTopicId = async (topicId) => {
+const findSubTopicTaskMappingsByTopicId = async (topicId) => {
   try {
-    let mappings = await SubTopicMapping.findAll({
+    let mappings = await TaskSubTopicMapping.findAll({
       where: { topicId },
       attributes: ["topicId"],
       include: [{ model: SubTopic, attributes: ["id", "name"] }],
@@ -128,9 +132,9 @@ const findSubTopicMappingsByTopicId = async (topicId) => {
   }
 };
 
-const findVocabMappingsByTopicId = async (topicId) => {
+const findVocabTaskMappingsByTopicId = async (topicId) => {
   try {
-    let mappings = await VocabularyMapping.findAll({
+    let mappings = await TaskVocabularyMapping.findAll({
       where: { topicId },
       attributes: ["topicId"],
       include: [{ model: Vocabulary, attributes: ["id", "name"] }],
@@ -161,7 +165,7 @@ module.exports = {
   findTopicTaskAndUser,
   createTopicTaskLog,
   findTopicTaskMappingsByTaskId,
-  findSubTopicMappingsByTopicId,
-  findVocabMappingsByTopicId,
+  findSubTopicTaskMappingsByTopicId,
+  findVocabTaskMappingsByTopicId,
   getTaskLogs,
 };

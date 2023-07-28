@@ -45,4 +45,10 @@ router.get("/subjectnames", PastPaperSupervisorController.getSubjectNames);
 // api/topicmanagement/getsubjectnamebyid
 router.get("/getsubjectnamebyid", SubjectManagementController.getSubjectNameById);
 
+// api/topicmanagement/getallboards
+router.get("/getallboards", BoardManagementController.getAllBoards);
+
+// api/topicmanagement/getsubboardsbyboard
+router.get("/getsubboardsbyboard", BoardManagementController.GetSubBoards);
+
 module.exports = router;
