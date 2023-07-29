@@ -26,15 +26,13 @@ router.patch("/togglepublish", PaperNumberSheetController.TogglePublishSheet);
 
 router.get("/getsheetlogs", PaperNumberSheetController.getSheetLogs);
 
-router.get(
-  "/getpapernumberbypnsheetid",
-  DataGeneratorController.getPaperNumberByPaperNumberSheet
-);
+router.get("/getpapernumberbypnsheetid", DataGeneratorController.getPaperNumberByPaperNumberSheet);
 
 // api/pnreviewer/geterrorreportfile
 router.get("/geterrorreportfile", PaperNumberReviewerController.getErrorReportFile);
 
 router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
+router.get("/getdistinctpapernumbers", PaperNumberSheetController.getDistinctPaperNumbers);
 
 module.exports = router;

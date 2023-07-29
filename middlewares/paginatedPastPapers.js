@@ -95,17 +95,17 @@ const paginatedPastPaperResults = (model, req) => {
       filtersForSheet.varient = query;
     }
 
-    if (req.query.paperNumber) {
+    if (req.query.paperNumberId) {
       let query = "";
-      if (typeof req.query.paperNumber === "string") {
-        query = req.query.paperNumber;
+      if (typeof req.query.paperNumberId === "string") {
+        query = req.query.paperNumberId;
       }
 
-      if (typeof req.query.paperNumber === "object") {
-        query = { [Op.in]: req.query.paperNumber };
+      if (typeof req.query.paperNumberId === "object") {
+        query = { [Op.in]: req.query.paperNumberId };
       }
 
-      filtersForSheet.paperNumber = query;
+      filtersForSheet.paperNumberId = query;
     }
 
     if (req.query.time === "last6Months") {
@@ -139,7 +139,6 @@ const paginatedPastPaperResults = (model, req) => {
         limit: limit,
       };
     }
-
     try {
       const pastPapers = await PastPaper.findAll({
         include: [
@@ -247,7 +246,6 @@ const paginatedPastPaperResults = (model, req) => {
         }
       } else {
         for (let i = 0; i < pastPapers.length; i++) {
-          console.log(pastPapers[i]);
           let fetchSheetWithoutSubjectName = await Sheet.findOne({
             where: { subjectId: pastPapers[i].PastPaperSheet.subjectId },
             include: [

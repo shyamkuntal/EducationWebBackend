@@ -5,6 +5,7 @@ const paginatedPastPaperResults = require("../middlewares/paginatedPastPapers");
 const BoardManagementController = require("../controller/BoardManagement/BoardM");
 const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject");
 const AccountManagementController = require("../controller/AccountManagement/ManageAccount");
+const PaperNumberSheetController = require("../controller/PaperNumberManagement/PaperNumber");
 const upload = require("../config/multer.js");
 
 // /api/public/getallroles
@@ -29,6 +30,8 @@ router.get("/getsubjectnames", SubjectManagementController.getSubjectNamesWithOu
 
 // /api/public/getallsubjectlevels
 router.get("/getallsubjectlevels", SubjectManagementController.getAllSubjectLevels);
+
+router.get("/getdistinctpapernumbers", PaperNumberSheetController.getDistinctPaperNumbers);
 
 // router.post("/createuserrole", AccountManagementController.createUserRole);
 

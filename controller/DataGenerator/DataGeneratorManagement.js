@@ -111,7 +111,6 @@ const DataGeneratorController = {
       res.status(httpStatus.OK).send(paperNumber);
     } catch (err) {
       next(err);
-      console.log(err);
     }
   },
 
@@ -337,7 +336,7 @@ const DataGeneratorController = {
         };
         const subtopic = await services.topicService.createSubTopic(dataToBeCreated);
 
-        // creating Task sub-topic mapping 
+        // creating Task sub-topic mapping
 
         let sentTaskData = {
           topicTaskId: values.topicTaskId,
@@ -345,7 +344,7 @@ const DataGeneratorController = {
         };
         let taskMapData = await TaskSubTopicMapping.create(sentTaskData);
 
-        // creating sub-topic mapping 
+        // creating sub-topic mapping
 
         let subTopicData = {
           topicId: values.topicId,
@@ -362,14 +361,19 @@ const DataGeneratorController = {
             };
             const subtopic = await services.topicService.createSubTopic(dataToBeCreated);
 
-            return { name: subtopic.name, topicTaskId: values.topicTaskId, subTopicId: subtopic.id, topicId: values.topicId };
+            return {
+              name: subtopic.name,
+              topicTaskId: values.topicTaskId,
+              subTopicId: subtopic.id,
+              topicId: values.topicId,
+            };
           })
         );
 
-        // creating Task sub-topic mapping 
+        // creating Task sub-topic mapping
         const taskMapData = await TaskSubTopicMapping.bulkCreate(subtopics);
 
-        // creating sub-topic mapping 
+        // creating sub-topic mapping
 
         let subTopicMapData = await SubTopicMapping.bulkCreate(subtopics);
 
@@ -392,7 +396,7 @@ const DataGeneratorController = {
         };
         let vocabulary = await services.topicService.createVocabulary(dataToBeCreated);
 
-        // creating Task sub-topic mapping 
+        // creating Task sub-topic mapping
 
         let sentTaskData = {
           topicTaskId: values.topicTaskId,
@@ -400,7 +404,7 @@ const DataGeneratorController = {
         };
         let taskMapData = await TaskVocabularyMapping.create(sentTaskData);
 
-        // creating sub-topic mapping 
+        // creating sub-topic mapping
 
         let vocabData = {
           topicId: values.topicId,
@@ -417,15 +421,20 @@ const DataGeneratorController = {
             };
             let vocabularyData = await services.topicService.createVocabulary(dataToBeCreated);
 
-            return { name: vocabularyData.name, topicTaskId: values.topicTaskId, vocabularyId: vocabularyData.id, topicId: values.topicId };
+            return {
+              name: vocabularyData.name,
+              topicTaskId: values.topicTaskId,
+              vocabularyId: vocabularyData.id,
+              topicId: values.topicId,
+            };
           })
         );
 
-          console.log(vocabulary)
-        // creating Task sub-topic mapping 
+        console.log(vocabulary);
+        // creating Task sub-topic mapping
         let taskMapData = await TaskVocabularyMapping.bulkCreate(vocabulary);
 
-        // creating sub-topic mapping 
+        // creating sub-topic mapping
 
         let vocabMapData = await VocabularyMapping.bulkCreate(vocabulary);
 

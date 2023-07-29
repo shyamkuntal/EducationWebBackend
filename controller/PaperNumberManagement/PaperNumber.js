@@ -292,6 +292,18 @@ const PaperNumberSheetController = {
       return res.status(501).json({ error: err.message });
     }
   },
+
+  async getDistinctPaperNumbers(req, res, next) {
+    try {
+      let paperNumbers = await services.paperNumberService.findDistinctPaperNumbers();
+
+      let length = paperNumbers.length;
+
+      res.status(httpStatus.OK).send(paperNumbers);
+    } catch (err) {
+      next(err);
+    }
+  },
 };
 
 module.exports = PaperNumberSheetController;
