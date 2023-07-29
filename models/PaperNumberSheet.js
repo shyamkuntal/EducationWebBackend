@@ -112,6 +112,7 @@ PaperNumberSheet.belongsTo(User, {
 User.hasMany(PaperNumberSheet, {
   foreignKey: "assignedToUserId",
 });
+
 PaperNumberSheet.belongsTo(User, {
   foreignKey: "supervisorId",
   as: "supervisor",

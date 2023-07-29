@@ -13,28 +13,21 @@ const createTopicTaskSchema = Joi.object({
 
 const createTopicSchema = Joi.object({
   topicTaskId: Joi.string().guid(),
-  name: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string()))
-
+  name: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
 });
 
 const createSubTopicSchema = Joi.object({
   topicTaskId: Joi.string().guid(),
   topicId: Joi.string().guid(),
-  name: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string()))
+  name: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
 });
 
 const createVocabularySchema = Joi.object({
   topicTaskId: Joi.string().guid(),
   topicId: Joi.string().guid(),
-  name: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string()))
+  name: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
 });
 
-module.exports = {
-  createTopicTaskSchema,
-  createTopicSchema,
-  createSubTopicSchema,
-  createVocabularySchema,
-};
 const updateTopicTaskSchema = Joi.object({
   topicTaskId: Joi.string().guid().required(),
   boardId: Joi.string().guid().required(),
@@ -75,6 +68,10 @@ const getTopicTaskLogsSchema = Joi.object({
   topicTaskId: Joi.string().guid().required(),
 });
 
+const togglePublishTopicTaskSchema = Joi.object({
+  topicTaskId: Joi.string().guid().required(),
+});
+
 module.exports = {
   createTopicTaskSchema,
   updateTopicTaskSchema,
@@ -86,5 +83,6 @@ module.exports = {
   getTopicSubTopicVocabByTaskIdSchema,
   getAllTopicSubTopicVocabSchema,
   getTopicTaskLogsSchema,
-  getSubTopicVocabByTopicIdSchema
+  getSubTopicVocabByTopicIdSchema,
+  togglePublishTopicTaskSchema,
 };

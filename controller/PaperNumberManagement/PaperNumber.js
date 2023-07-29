@@ -9,6 +9,7 @@ const {
   getPaperNumberByPaperNumberSheetSchema,
   assignDataGeneratorUserToSheetSchema,
   assignReviewerUserToSheetSchema,
+  togglePublishPaperNumberTaskSchema,
 } = require("../../validations/PaperNumberValidations.js");
 const constants = require("../../constants/constants.js");
 const { getSheetLogsSchema } = require("../../validations/PPMSupervisorValidations.js");
@@ -274,13 +275,9 @@ const PaperNumberSheetController = {
   },
 
   async TogglePublishSheet(req, res) {
-    const id = req.body.id;
-    console.log(id);
-    // const isPublished = req.body.isPublished;
-
     try {
-      const sheet = await services.paperNumberSheetService.findPaperNumberSheetByPk(id);
-      console.log(sheet);
+      let values = await togglePublishPaperNumberTaskSchema.validateAsync(req.body);
+      const sheet = await services.paperNumberSheetService.findPaperNumberSheetByPk(values.id);
 
       if (!sheet) {
         return res.status(404).json({ message: "sheet not found" });

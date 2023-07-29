@@ -120,6 +120,15 @@ TopicTask.belongsTo(User, {
   as: "reviewer",
 });
 
+TopicTask.belongsTo(User, {
+  foreignKey: { name: "assignedToUserId" },
+  as: "assignedToUserName",
+});
+
+User.hasMany(TopicTask, {
+  foreignKey: "assignedToUserId",
+});
+
 const SpamTopicTaskRecheckComments = db.define("spamTopicTaskRecheckComments", {
   id: {
     type: Sequelize.UUID,

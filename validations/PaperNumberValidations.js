@@ -43,6 +43,10 @@ const getPaperNumberByPaperNumberSheetSchema = Joi.object({
   paperNumberSheetId: Joi.string().guid().required(),
 });
 
+const togglePublishPaperNumberTaskSchema = Joi.object({
+  id: Joi.string().guid().required(),
+});
+
 module.exports = {
   createPaperNumberSheetSchema,
   EditPaperNumberSheetSchema,
@@ -50,4 +54,5 @@ module.exports = {
   assignReviewerUserToSheetSchema,
   getPaperNumberByPaperNumberSheetSchema,
   CreatePaperNumber,
+  togglePublishPaperNumberTaskSchema,
 };

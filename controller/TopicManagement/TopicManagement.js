@@ -9,6 +9,7 @@ const {
   getAllTopicSubTopicVocabSchema,
   getTopicTaskLogsSchema,
   getSubTopicVocabByTopicIdSchema,
+  togglePublishTopicTaskSchema,
 } = require("../../validations/TopicManagementValidations");
 const CONSTANTS = require("../../constants/constants");
 
@@ -357,6 +358,43 @@ const TopicManagementController = {
       });
       let logs = await services.topicTaskService.getTaskLogs(values.topicTaskId);
       res.status(httpStatus.OK).send(logs);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async togglePublishTopicTask(req, res, next) {
+    try {
+      let values = await togglePublishTopicTaskSchema.validateAsync(req.body);
+
+      let responseMessage = {};
+
+      let whereQueryForTaskFind = { where: { id: values.topicTaskId }, raw: true };
+
+      let task = await services.topicTaskService.findTopicTasks(whereQueryForTaskFind);
+
+      if (!task) {
+        return res.status(httpStatus.BAD_REQUEST).send({ message: "Topic Task not found" });
+      }
+
+      let taskData = task[0];
+
+      let dataToBeUpdated = {
+        isPublished: !taskData.isPublished,
+        isSpam: false,
+      };
+
+      let whereQuery = {
+        where: { id: values.topicTaskId },
+      };
+
+      let updateTask = await services.topicTaskService.updateTopicTask(dataToBeUpdated, whereQuery);
+
+      if (updateTask.length > 0) {
+        responseMessage.message = `Task IsPublished set to ${dataToBeUpdated.isPublished}`;
+      }
+
+      res.status(httpStatus.OK).send(responseMessage);
     } catch (err) {
       next(err);
     }

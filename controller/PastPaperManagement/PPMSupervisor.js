@@ -366,9 +366,9 @@ const PastPaperSupervisorController = {
     const roleId = req.query.roleId;
     try {
       const users = await User.findAll({
-        attributes: ["userName", "email", "Name"],
+        attributes: ["id", "userName", "email", "Name"],
         where: { roleId },
-        include: { all: true, nested: true },
+        include: { all: true, nest: true },
       });
 
       return res.status(200).json({ users });

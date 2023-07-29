@@ -5,6 +5,7 @@ const paginatedPastPaperResults = require("../middlewares/paginatedPastPapers");
 const BoardManagementController = require("../controller/BoardManagement/BoardM");
 const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject");
 const AccountManagementController = require("../controller/AccountManagement/ManageAccount");
+const upload = require("../config/multer.js");
 
 // /api/public/getallroles
 router.get("/getallroles", AccountManagementController.getallroles);
@@ -28,5 +29,18 @@ router.get("/getsubjectnames", SubjectManagementController.getSubjectNamesWithOu
 
 // /api/public/getallsubjectlevels
 router.get("/getallsubjectlevels", SubjectManagementController.getAllSubjectLevels);
+
+// router.post("/createuserrole", AccountManagementController.createUserRole);
+
+// router.post("/createuser", AccountManagementController.createUser);
+
+// router.post(
+//   "/createsubject",
+//   upload.fields([
+//     { name: "image", maxCount: 1 },
+//     { name: "newImage", maxCount: 1 },
+//   ]),
+//   SubjectManagementController.CreateSubject
+// );
 
 module.exports = router;

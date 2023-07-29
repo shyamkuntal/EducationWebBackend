@@ -33,6 +33,9 @@ router.patch("/asssigntasktodatagenerator", TopicManagementController.assignTask
 // /api/topicmanagement/assigntasktoreviewer
 router.patch("/assigntasktoreviewer", TopicManagementController.assignTaskToReviewer);
 
+// /api/topicmanagement/togglepublishtask
+router.patch("/togglepublishtask", TopicManagementController.togglePublishTopicTask);
+
 // /api/topicmanagement/gettasklogs
 router.get("/gettasklogs", TopicManagementController.getTopiTaskLogs);
 
@@ -50,5 +53,11 @@ router.get("/getallboards", BoardManagementController.getAllBoards);
 
 // api/topicmanagement/getsubboardsbyboard
 router.get("/getsubboardsbyboard", BoardManagementController.GetSubBoards);
+
+// api/topicmanagement/getsubjectdetailsbyids
+router.get(
+  "/getsubjectdetailsbyids",
+  SubjectManagementController.getSubjectDetailsByBoardSubBoardGrade
+);
 
 module.exports = router;

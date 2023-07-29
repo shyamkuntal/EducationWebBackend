@@ -125,6 +125,11 @@ const paginatedTopicTasks = () => {
             attributes: ["Name"],
             as: "supervisor",
           },
+          {
+            model: User,
+            attributes: ["Name"],
+            as: "assignedToUserName",
+          },
         ],
         where: filters,
         limit,

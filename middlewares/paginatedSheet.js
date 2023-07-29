@@ -147,6 +147,12 @@ const paginatedSheetResults = (req) => {
           {
             model: User,
             attributes: ["Name"],
+            as: "supervisor",
+          },
+          {
+            model: User,
+            attributes: ["Name"],
+            as: "assignedToUserName",
           },
         ],
         where: filters,

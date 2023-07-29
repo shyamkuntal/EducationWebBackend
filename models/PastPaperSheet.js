@@ -128,10 +128,13 @@ Sheet.belongsTo(SubBoard, {
 
 Sheet.belongsTo(User, {
   foreignKey: "assignedToUserId",
+  as: "assignedToUserName",
 });
+
 User.hasMany(Sheet, {
   foreignKey: "assignedToUserId",
 });
+
 Sheet.belongsTo(User, {
   foreignKey: "supervisorId",
   as: "supervisor",
