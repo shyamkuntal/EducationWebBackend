@@ -14,6 +14,7 @@ const {
 const CONSTANTS = require("../../constants/constants");
 
 const TopicManagementController = {
+
   async createTopicTask(req, res, next) {
     try {
       let values = await createTopicTaskSchema.validateAsync(req.body);
@@ -37,6 +38,7 @@ const TopicManagementController = {
       next(err);
     }
   },
+
   async updateTopicTask(req, res, next) {
     try {
       let values = await updateTopicTaskSchema.validateAsync(req.body);
@@ -69,6 +71,7 @@ const TopicManagementController = {
       next(err);
     }
   },
+
   async assignTaskToDataGenerator(req, res, next) {
     try {
       let values = await assignTaskToDataGeneratorSchema.validateAsync(req.body);
@@ -211,6 +214,7 @@ const TopicManagementController = {
       next(err);
     }
   },
+
   async getAllTopicSubTopicVocab(req, res, next) {
     try {
       let values = await getAllTopicSubTopicVocabSchema.validateAsync({
@@ -298,6 +302,7 @@ const TopicManagementController = {
       next(err);
     }
   },
+
   async getTopicSubTopicVocabByTaskId(req, res, next) {
     try {
       let values = await getTopicSubTopicVocabByTaskIdSchema.validateAsync({
@@ -329,6 +334,7 @@ const TopicManagementController = {
       next(err);
     }
   },
+
   async getSubTopicVocabByTopicId(req, res, next) {
     try {
       let values = await getSubTopicVocabByTopicIdSchema.validateAsync({
@@ -337,9 +343,7 @@ const TopicManagementController = {
 
       let topicSubTopicsVocab = [];
       // fetch subTopics
-      let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTopicId(
-        values.topicId
-      );
+      let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTopicId(values.topicId);
       // fetch vocab
       let vocab = await services.topicTaskService.findVocabTaskMappingsByTopicId(values.topicId);
 
@@ -353,6 +357,27 @@ const TopicManagementController = {
       next(err);
     }
   },
+
+  async getSubTopicVocabByTaskId(req, res, next) {
+    try {
+      let values = req.query
+      let topicSubTopicsVocab = [];
+      // fetch subTopics
+      let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTaskId(values.topicTaskId, values.topicId);
+      // fetch vocab
+      let vocab = await services.topicTaskService.findVocabTaskMappingsByTaskId(values.topicTaskId, values.topicId);
+
+      topicSubTopicsVocab.push({
+        topicId: values.topicId,
+        subTopics: subTopics,
+        vocab: vocab,
+      });
+      res.status(httpStatus.OK).send(topicSubTopicsVocab);
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async getTopiTaskLogs(req, res, next) {
     try {
       let values = await getTopicTaskLogsSchema.validateAsync({

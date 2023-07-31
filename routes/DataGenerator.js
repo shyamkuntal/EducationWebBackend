@@ -93,5 +93,11 @@ router.get(
   TopicManagementController.getSubTopicVocabByTopicId
 );
 
+// /api/topicmanagement/getsubtopicvocabbytopicid
+router.get(
+  "/getsubtopicvocabbytaskid",
+  TopicManagementController.getSubTopicVocabByTaskId
+);
+
 
 module.exports = router; 

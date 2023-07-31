@@ -12,14 +12,15 @@ const createTopicTaskSchema = Joi.object({
 });
 
 const createTopicSchema = Joi.object({
-  topicTaskId: Joi.string().guid(),
   name: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
+  topicTaskId: Joi.string().guid(),
 });
 
 const createSubTopicSchema = Joi.object({
   topicTaskId: Joi.string().guid(),
   topicId: Joi.string().guid(),
-  name: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
+  newNames: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
+  importNames: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
 });
 
 const createVocabularySchema = Joi.object({

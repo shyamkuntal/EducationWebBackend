@@ -284,40 +284,37 @@ const DataGeneratorController = {
     }
   },
 
-  // ******************* Topic Controller **********************//
+  // ******************* Topic Controller ********************** //
 
   async createTopic(req, res, next) {
     try {
       let values = await createTopicSchema.validateAsync(req.body);
-      const names = values.name;
-      console.log(names);
+      // Check if the topic name already exists
+      const existingTopic = await services.topicService.checkTopicDuplicateName(values.name);
+      if (existingTopic) {
+        // If the topic name already exists, only add mapping
+        const sentData = {
+          topicTaskId: values.topicTaskId,
+          topicId: existingTopic.id,
+        };
 
-      // await services.topicTaskService.checkTopicTask(dataToBeCreated);
-      if (!Array.isArray(names)) {
+        let mapData = await TaskTopicMapping.create(sentData);
+        return res.status(httpStatus.CREATED).send(mapData);
+      } else {
         let dataToBeCreated = {
           name: values.name,
         };
+        console.log(dataToBeCreated)
         const topic = await services.topicService.createTopic(dataToBeCreated);
 
         const sentData = {
           topicTaskId: values.topicTaskId,
           topicId: topic.id,
         };
-        let taskMapData = await TaskTopicMapping.create(sentData);
-        return res.status(httpStatus.CREATED).send(topic);
-      } else {
-        const topics = await Promise.all(
-          names.map(async (topicName) => {
-            const dataToBeCreated = {
-              name: topicName,
-            };
-            const topic = await services.topicService.createTopic(dataToBeCreated);
 
-            return { name: topic.name, topicTaskId: values.topicTaskId, topicId: topic.id };
-          })
-        );
-        const taskMapData = await TaskTopicMapping.bulkCreate(topics);
-        res.status(httpStatus.CREATED).send(topics);
+        await TaskTopicMapping.create(sentData);
+
+        return res.status(httpStatus.CREATED).send(topic);
       }
     } catch (err) {
       next(err);
@@ -326,59 +323,51 @@ const DataGeneratorController = {
   },
 
   async createSubTopic(req, res, next) {
+    const values = req.body
+    const importNames = values.importNames
+    const newNames = values.newNames
     try {
-      let values = await createSubTopicSchema.validateAsync(req.body);
-      const names = values.name;
+      // Check and create new subTopics from newNames
+      const createdSubTopics = [];
 
-      if (!Array.isArray(names)) {
-        let dataToBeCreated = {
-          name: values.name,
-        };
-        const subtopic = await services.topicService.createSubTopic(dataToBeCreated);
-
-        // creating Task sub-topic mapping
-
-        let sentTaskData = {
-          topicTaskId: values.topicTaskId,
-          subTopicId: subtopic.id,
-        };
-        let taskMapData = await TaskSubTopicMapping.create(sentTaskData);
-
-        // creating sub-topic mapping
-
-        let subTopicData = {
-          topicId: values.topicId,
-          subTopicId: subtopic.id,
-        };
-
-        let subTopicMapData = await SubTopicMapping.create(subTopicData);
-        return res.status(httpStatus.CREATED).send(subtopic);
-      } else {
-        const subtopics = await Promise.all(
-          names.map(async (subTopicName) => {
-            const dataToBeCreated = {
-              name: subTopicName,
-            };
-            const subtopic = await services.topicService.createSubTopic(dataToBeCreated);
-
-            return {
-              name: subtopic.name,
-              topicTaskId: values.topicTaskId,
-              subTopicId: subtopic.id,
-              topicId: values.topicId,
-            };
-          })
-        );
-
-        // creating Task sub-topic mapping
-        const taskMapData = await TaskSubTopicMapping.bulkCreate(subtopics);
-
-        // creating sub-topic mapping
-
-        let subTopicMapData = await SubTopicMapping.bulkCreate(subtopics);
-
-        res.status(httpStatus.CREATED).send(subtopics);
+      for (const nameObj of newNames) {
+        let existingTopic = await services.topicService.checkSubTopicDuplicateName(nameObj.name);
+        if (existingTopic === null) {
+          // Create new subTopic and map it to the taskSubTopicMappping table
+          const subtopic = await services.topicService.createSubTopic(nameObj.name);
+          let sentTaskData = {
+            topicTaskId: values.topicTaskId,
+            topicId: values.topicId,
+            subTopicId: subtopic.id,
+          };
+          await TaskSubTopicMapping.create(sentTaskData);
+          createdSubTopics.push(subtopic);
+        } else {
+            let sentTaskData = {
+            topicTaskId: values.topicTaskId,
+            topicId: values.topicId,
+            subTopicId: existingTopic.id,
+          };
+          await TaskSubTopicMapping.create(sentTaskData);
+        }
       }
+      res.status(httpStatus.CREATED).send(createdSubTopics);
+      
+      // Map the data in taskSubTopicMapping table based on importNames.
+      if(importNames.length > 0){
+        const createdMappings = [];
+        for (const nameObj of importNames) {
+          const sentTaskData = {
+            topicTaskId: values.topicTaskId,
+            topicId: values.topicId,
+            subTopicId: nameObj.id,
+          };
+          await TaskSubTopicMapping.create(sentTaskData);
+          createdMappings.push(sentTaskData);
+        }
+        res.status(httpStatus.CREATED).send(createdMappings);
+      }
+      
     } catch (err) {
       next(err);
       console.log(err);
@@ -386,60 +375,51 @@ const DataGeneratorController = {
   },
 
   async createVocabulary(req, res, next) {
+    const values = req.body
+    const importNames = values.importNames
+    const newNames = values.newNames
     try {
-      let values = await createVocabularySchema.validateAsync(req.body);
-      const names = values.name;
+      // Check and create new subTopics from newNames
+      const createdVocabs = [];
 
-      if (!Array.isArray(names)) {
-        let dataToBeCreated = {
-          name: values.name,
-        };
-        let vocabulary = await services.topicService.createVocabulary(dataToBeCreated);
-
-        // creating Task sub-topic mapping
-
-        let sentTaskData = {
-          topicTaskId: values.topicTaskId,
-          vocabularyId: vocabulary.id,
-        };
-        let taskMapData = await TaskVocabularyMapping.create(sentTaskData);
-
-        // creating sub-topic mapping
-
-        let vocabData = {
-          topicId: values.topicId,
-          vocabularyId: vocabulary.id,
-        };
-
-        let vocabMapData = await VocabularyMapping.create(vocabData);
-        return res.status(httpStatus.CREATED).send(vocabulary);
-      } else {
-        const vocabulary = await Promise.all(
-          names.map(async (vocab) => {
-            const dataToBeCreated = {
-              name: vocab,
-            };
-            let vocabularyData = await services.topicService.createVocabulary(dataToBeCreated);
-
-            return {
-              name: vocabularyData.name,
-              topicTaskId: values.topicTaskId,
-              vocabularyId: vocabularyData.id,
-              topicId: values.topicId,
-            };
-          })
-        );
-
-        console.log(vocabulary);
-        // creating Task sub-topic mapping
-        let taskMapData = await TaskVocabularyMapping.bulkCreate(vocabulary);
-
-        // creating sub-topic mapping
-
-        let vocabMapData = await VocabularyMapping.bulkCreate(vocabulary);
-
-        res.status(httpStatus.CREATED).send(vocabulary);
+      for (const nameObj of newNames) {
+        let existingVocab = await services.topicService.checkVocabDuplicateName(nameObj.name);
+        if (existingVocab === null) {
+          // Create new subTopic and map it to the taskSubTopicMappping table
+          const vocab = await services.topicService.createVocabulary(nameObj.name);
+          let sentTaskData = {
+            topicTaskId: values.topicTaskId,
+            topicId: values.topicId,
+            vocabularyId: vocab.id,
+          };
+          await TaskVocabularyMapping.create(sentTaskData);
+          createdVocabs.push(vocab);
+        } else {
+            let sentTaskData = {
+            topicTaskId: values.topicTaskId,
+            topicId: values.topicId,
+            vocabularyId: existingVocab.id,
+          };
+          await TaskVocabularyMapping.create(sentTaskData);
+        }
       }
+      res.status(httpStatus.CREATED).send(createdVocabs);
+      
+      // Map the data in taskSubTopicMapping table based on importNames.
+      if(importNames.length > 0){
+        const createdMappings = [];
+        for (const nameObj of importNames) {
+          const sentTaskData = {
+            topicTaskId: values.topicTaskId,
+            topicId: values.topicId,
+            vocabularyId: nameObj.id,
+          };
+          await TaskVocabularyMapping.create(sentTaskData);
+          createdMappings.push(sentTaskData);
+        }
+        res.status(httpStatus.CREATED).send(createdMappings);
+      }
+      
     } catch (err) {
       next(err);
       console.log(err);
@@ -479,18 +459,18 @@ const DataGeneratorController = {
           whereQuery
         );
 
-        // let createLog = await services.topicTaskService(
-        //   sheetData.id,
-        //   sheetData.supervisor.Name,
-        //   userData.Name,
-        //   CONSTANTS.sheetLogsMessages.DataGeneratorAssignToSupervisor
-        // );
+        let createLog = await services.topicTaskService.createTopicTaskLog(
+          sheetData.id,
+          sheetData.supervisor.Name,
+          userData.Name,
+          CONSTANTS.sheetLogsMessages.DataGeneratorAssignToSupervisor
+        );
 
-        // if (statusToUpdate.length > 0 && createLog) {
-        //   responseMessage.assinedUserToSheet = "Sheet assigned to supervisor successfully";
-        //   responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
-        //   responseMessage.sheetLog = "Log record for Task to supervisor added successfully";
-        // }
+        if (statusToUpdate.length > 0 && createLog) {
+          responseMessage.assinedUserToSheet = "Sheet assigned to supervisor successfully";
+          responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
+          responseMessage.sheetLog = "Log record for Task to supervisor added successfully";
+        }
 
         res.status(httpStatus.OK).send({ message: responseMessage });
       } else {
