@@ -8,6 +8,7 @@ const {
   archiveSubBoardsSchema,
   getBoardsAndSubBoards,
   editBoardSchema,
+  getBoardsByTypeSchema,
 } = require("../../validations/BoardManagementValidations.js");
 const services = require("../../services/index.js");
 const httpStatus = require("http-status");
@@ -250,6 +251,18 @@ const BoardManagementController = {
     try {
       let allBoards = await services.boardService.findAllBoards();
       res.status(httpStatus.OK).send(allBoards);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getBoardsByType(req, res, next) {
+    try {
+      let values = await getBoardsByTypeSchema.validateAsync({ boardType: req.query.boardType });
+
+      let boards = await services.boardService.findBoardsByType(values.boardType);
+
+      res.status(httpStatus.OK).send(boards);
     } catch (err) {
       next(err);
     }

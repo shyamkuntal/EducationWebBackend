@@ -35,6 +35,15 @@ const findAllBoards = async (attributes) => {
   }
 };
 
+const findBoardsByType = async (boardType) => {
+  try {
+    let boards = await Board.findAll({ where: { boardType } });
+    return boards;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const findBoardByName = async (boardName) => {
   try {
     let findBoardByName = await Board.findOne({ where: { boardName } });
@@ -152,4 +161,5 @@ module.exports = {
   findAllBoards,
   findBoardByName,
   findSubBoardsById,
+  findBoardsByType,
 };

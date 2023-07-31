@@ -8,9 +8,7 @@ const addBoardSchema = Joi.object({
   email: Joi.string().email().required(),
   website: Joi.string().regex(CONSTANTS.validationRegex.urlRegex).required(),
   address: Joi.string().max(225).required(),
-  subBoard: Joi.array().items(
-    Joi.object({ subBoardName: Joi.string().max(225).required() })
-  ),
+  subBoard: Joi.array().items(Joi.object({ subBoardName: Joi.string().max(225).required() })),
 });
 
 const editBoardSchema = Joi.object({
@@ -60,6 +58,10 @@ const getBoardsAndSubBoards = Joi.object({
   boardId: Joi.string().guid().required(),
 });
 
+const getBoardsByTypeSchema = Joi.object({
+  boardType: Joi.string().max(50).required(),
+});
+
 module.exports = {
   getSubBoardsSchema,
   createSubBoardsSchema,
@@ -69,4 +71,5 @@ module.exports = {
   archiveSubBoardsSchema,
   getBoardsAndSubBoards,
   editBoardSchema,
+  getBoardsByTypeSchema,
 };

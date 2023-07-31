@@ -33,6 +33,8 @@ router.get("/getallsubjectlevels", SubjectManagementController.getAllSubjectLeve
 
 router.get("/getdistinctpapernumbers", PaperNumberSheetController.getDistinctPaperNumbers);
 
+router.get("/getboardnamebytype", BoardManagementController.getBoardsByType);
+
 // router.post("/createuserrole", AccountManagementController.createUserRole);
 
 // router.post("/createuser", AccountManagementController.createUser);

@@ -10,7 +10,6 @@ const Vocabulary = db.define("vocabulary", {
   name: {
     type: Sequelize.STRING,
     allowNull: false,
-    unique: true,
   },
 });
 

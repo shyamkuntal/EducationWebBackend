@@ -27,7 +27,6 @@ const SubTopic = db.define("subTopic", {
   name: {
     type: Sequelize.STRING,
     allowNull: false,
-    unique: true,
   },
 });
 
