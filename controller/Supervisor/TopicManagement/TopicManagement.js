@@ -311,34 +311,75 @@ const TopicManagementController = {
       let values = await getTopicSubTopicVocabByTaskIdSchema.validateAsync({
         topicTaskId: req.query.topicTaskId,
       });
-
       // fetchTopics
       let topicsMappings = await services.topicTaskService.findTopicTaskMappingsByTaskId(
         values.topicTaskId
       );
-
+      console.log(topicsMappings)
       let topicSubTopicsVocab = [];
-      for (element of topicsMappings) {
-        // fetch subTopics
-        let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTaskId(
-          values.topicTaskId,
-          element.topicId
-        );
-        console.log(subTopics);
-        // fetch vocab
-        let vocab = await services.topicTaskService.findVocabTaskMappingsByTaskId(
-          values.topicTaskId,
-          element.topicId
-        );
+      if (topicsMappings.length > 0) {
+        for (element of topicsMappings) {
+          console.log(element)
+          // fetch subTopics
+          let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTopicId(
+            element.topicId
+          );
+          // fetch vocab
+          let vocab = await services.topicTaskService.findVocabTaskMappingsByTopicId(
+            element.topicId
+          );
 
-        topicSubTopicsVocab.push({
-          topic: element,
-          subTopics: subTopics,
-          vocab: vocab,
-        });
+          topicSubTopicsVocab.push({
+            topic: element.topic,
+            subTopics: subTopics,
+            vocab: vocab,
+          });
+        }
       }
+
       res.status(httpStatus.OK).send(topicSubTopicsVocab);
     } catch (err) {
+      console.log(err)
+      next(err);
+    }
+  },
+
+  async getTopicSubTopicVocabByTaskIdTopicId(req, res, next) {
+    try {
+      let values = await getTopicSubTopicVocabByTaskIdTopicIdSchema.validateAsync({
+        topicTaskId: req.query.topicTaskId,
+        topicId: req.query.topicId,
+      });
+
+      // fetchTopics
+      let topicsMappings =
+        await services.topicTaskService.findTopicTaskMappingsByTopicTaskIdAndTopicId(
+          values.topicTaskId,
+          values.topicId
+        );
+
+      // fetch subTopics
+      let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTaskId(
+        values.topicTaskId,
+        values.topicId
+      );
+      // fetch vocab
+      let vocab = await services.topicTaskService.findVocabTaskMappingsByTaskId(
+        values.topicTaskId,
+        values.topicId
+      );
+
+      let result = {
+        topic: topicsMappings[0],
+        subTopics: subTopics,
+        vocab: vocab,
+      };
+
+      res.status(httpStatus.OK).send(result);
+
+      console.log(values);
+    } catch (err) {
+      console.log(err)
       next(err);
     }
   },
