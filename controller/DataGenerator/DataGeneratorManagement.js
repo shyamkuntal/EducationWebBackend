@@ -291,30 +291,38 @@ const DataGeneratorController = {
       let values = await createTopicSchema.validateAsync(req.body);
       // Check if the topic name already exists
       const existingTopic = await services.topicService.checkTopicDuplicateName(values.name);
-      if (existingTopic) {
-        // If the topic name already exists, only add mapping
-        const sentData = {
-          topicTaskId: values.topicTaskId,
-          topicId: existingTopic.id,
-        };
+      const existingTopicInMapping = await services.topicService.checkTopicDuplicateNamebyTaskId(
+        existingTopic.id,
+        values.topicTaskId
+      );
+      if (!existingTopicInMapping) {
+        if (existingTopic) {
+          // If the topic name already exists, only add mapping
+          const sentData = {
+            topicTaskId: values.topicTaskId,
+            topicId: existingTopic.id,
+          };
 
-        let mapData = await TaskTopicMapping.create(sentData);
-        return res.status(httpStatus.CREATED).send(mapData);
+          let mapData = await TaskTopicMapping.create(sentData);
+          return res.status(httpStatus.CREATED).send(mapData);
+        } else {
+          let dataToBeCreated = {
+            name: values.name,
+          };
+          console.log(dataToBeCreated);
+          const topic = await services.topicService.createTopic(dataToBeCreated);
+
+          const sentData = {
+            topicTaskId: values.topicTaskId,
+            topicId: topic.id,
+          };
+
+          await TaskTopicMapping.create(sentData);
+
+          return res.status(httpStatus.CREATED).send(topic);
+        }
       } else {
-        let dataToBeCreated = {
-          name: values.name,
-        };
-        console.log(dataToBeCreated)
-        const topic = await services.topicService.createTopic(dataToBeCreated);
-
-        const sentData = {
-          topicTaskId: values.topicTaskId,
-          topicId: topic.id,
-        };
-
-        await TaskTopicMapping.create(sentData);
-
-        return res.status(httpStatus.CREATED).send(topic);
+        return res.status(httpStatus.OK).send({ message: "Already Present" });
       }
     } catch (err) {
       next(err);
@@ -323,51 +331,61 @@ const DataGeneratorController = {
   },
 
   async createSubTopic(req, res, next) {
-    const values = req.body
-    const importNames = values.importNames
-    const newNames = values.newNames
+    const values = req.body;
+    const importNames = values.importNames;
+    const newNames = values.newNames;
     try {
-      // Check and create new subTopics from newNames
-      const createdSubTopics = [];
-
-      for (const nameObj of newNames) {
-        let existingTopic = await services.topicService.checkSubTopicDuplicateName(nameObj.name);
-        if (existingTopic === null) {
-          // Create new subTopic and map it to the taskSubTopicMappping table
-          const subtopic = await services.topicService.createSubTopic(nameObj.name);
-          let sentTaskData = {
-            topicTaskId: values.topicTaskId,
-            topicId: values.topicId,
-            subTopicId: subtopic.id,
-          };
-          await TaskSubTopicMapping.create(sentTaskData);
-          createdSubTopics.push(subtopic);
-        } else {
+      if (newNames.length > 0) {
+        // Check and create new subTopics from newNames
+        const createdSubTopics = [];
+        for (const nameObj of newNames) {
+          let existingTopic = await services.topicService.checkSubTopicDuplicateName(nameObj.name);
+          if (existingTopic === null) {
+            // Create new subTopic and map it to the taskSubTopicMappping table
+            const subtopic = await services.topicService.createSubTopic(nameObj.name);
             let sentTaskData = {
-            topicTaskId: values.topicTaskId,
-            topicId: values.topicId,
-            subTopicId: existingTopic.id,
-          };
-          await TaskSubTopicMapping.create(sentTaskData);
+              topicTaskId: values.topicTaskId,
+              topicId: values.topicId,
+              subTopicId: subtopic.id,
+            };
+            await TaskSubTopicMapping.create(sentTaskData);
+            createdSubTopics.push(subtopic);
+          } else {
+            let sentTaskData = {
+              topicTaskId: values.topicTaskId,
+              topicId: values.topicId,
+              subTopicId: existingTopic.id,
+            };
+            await TaskSubTopicMapping.create(sentTaskData);
+          }
         }
+        res.status(httpStatus.CREATED).send(createdSubTopics);
       }
-      res.status(httpStatus.CREATED).send(createdSubTopics);
-      
       // Map the data in taskSubTopicMapping table based on importNames.
-      if(importNames.length > 0){
+      if (importNames.length > 0) {
+        console.log("Shya Import ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,", importNames);
         const createdMappings = [];
         for (const nameObj of importNames) {
-          const sentTaskData = {
-            topicTaskId: values.topicTaskId,
-            topicId: values.topicId,
-            subTopicId: nameObj.id,
-          };
-          await TaskSubTopicMapping.create(sentTaskData);
-          createdMappings.push(sentTaskData);
+          let existingSubTopic = await services.topicService.checkSubTopicDuplicateNamebyTaskId(
+            nameObj.id,
+            values.topicTaskId
+          );
+          if (!existingSubTopic) {
+            const sentTaskData = {
+              topicTaskId: values.topicTaskId,
+              topicId: values.topicId,
+              subTopicId: nameObj.id,
+            };
+            await TaskSubTopicMapping.create(sentTaskData);
+            createdMappings.push(sentTaskData);
+          }
         }
-        res.status(httpStatus.CREATED).send(createdMappings);
+        if (createdMappings.length > 0) {
+          res.status(httpStatus.CREATED).send(createdMappings);
+        } else {
+          return res.status(httpStatus.OK).send({ message: "Already Present" });
+        }
       }
-      
     } catch (err) {
       next(err);
       console.log(err);
@@ -375,51 +393,60 @@ const DataGeneratorController = {
   },
 
   async createVocabulary(req, res, next) {
-    const values = req.body
-    const importNames = values.importNames
-    const newNames = values.newNames
+    const values = req.body;
+    const importNames = values.importNames;
+    const newNames = values.newNames;
     try {
-      // Check and create new subTopics from newNames
-      const createdVocabs = [];
-
-      for (const nameObj of newNames) {
-        let existingVocab = await services.topicService.checkVocabDuplicateName(nameObj.name);
-        if (existingVocab === null) {
-          // Create new subTopic and map it to the taskSubTopicMappping table
-          const vocab = await services.topicService.createVocabulary(nameObj.name);
-          let sentTaskData = {
-            topicTaskId: values.topicTaskId,
-            topicId: values.topicId,
-            vocabularyId: vocab.id,
-          };
-          await TaskVocabularyMapping.create(sentTaskData);
-          createdVocabs.push(vocab);
-        } else {
+      if (newNames.length > 0) {
+        // Check and create new subTopics from newNames
+        const createdVocabs = [];
+        for (const nameObj of newNames) {
+          let existingVocab = await services.topicService.checkVocabDuplicateName(nameObj.name);
+          if (existingVocab === null) {
+            // Create new subTopic and map it to the taskSubTopicMappping table
+            const vocab = await services.topicService.createVocabulary(nameObj.name);
             let sentTaskData = {
-            topicTaskId: values.topicTaskId,
-            topicId: values.topicId,
-            vocabularyId: existingVocab.id,
-          };
-          await TaskVocabularyMapping.create(sentTaskData);
+              topicTaskId: values.topicTaskId,
+              topicId: values.topicId,
+              vocabularyId: vocab.id,
+            };
+            await TaskVocabularyMapping.create(sentTaskData);
+            createdVocabs.push(vocab);
+          } else {
+            let sentTaskData = {
+              topicTaskId: values.topicTaskId,
+              topicId: values.topicId,
+              vocabularyId: existingVocab.id,
+            };
+            await TaskVocabularyMapping.create(sentTaskData);
+          }
         }
+        res.status(httpStatus.CREATED).send(createdVocabs);
       }
-      res.status(httpStatus.CREATED).send(createdVocabs);
-      
       // Map the data in taskSubTopicMapping table based on importNames.
-      if(importNames.length > 0){
+      if (importNames.length > 0) {
         const createdMappings = [];
         for (const nameObj of importNames) {
-          const sentTaskData = {
-            topicTaskId: values.topicTaskId,
-            topicId: values.topicId,
-            vocabularyId: nameObj.id,
-          };
-          await TaskVocabularyMapping.create(sentTaskData);
-          createdMappings.push(sentTaskData);
+          let existingVocab = await services.topicService.checkVocabDuplicateNamebyTaskId(
+            nameObj.id,
+            values.topicTaskId
+          );
+          if (!existingVocab) {
+            const sentTaskData = {
+              topicTaskId: values.topicTaskId,
+              topicId: values.topicId,
+              vocabularyId: nameObj.id,
+            };
+            await TaskVocabularyMapping.create(sentTaskData);
+            createdMappings.push(sentTaskData);
+          }
         }
-        res.status(httpStatus.CREATED).send(createdMappings);
+        if (createdMappings.length > 0) {
+          res.status(httpStatus.CREATED).send(createdMappings);
+        } else {
+          return res.status(httpStatus.OK).send({ message: "Already Present" });
+        }
       }
-      
     } catch (err) {
       next(err);
       console.log(err);

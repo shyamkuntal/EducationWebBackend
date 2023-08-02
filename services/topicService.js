@@ -3,6 +3,7 @@ const { Topic, SubTopic } = require("../models/Topic");
 const { TopicTask } = require("../models/TopicTask");
 const { User } = require("../models/User");
 const { Vocabulary } = require("../models/Vocabulary");
+const { TaskSubTopicMapping, TaskVocabularyMapping } = require("../models/TopicTaskMapping");
 
 const createTopic = async ({ name }) => {
   console.log("shyam -------", name)
@@ -122,6 +123,51 @@ const checkSubTopicDuplicateName = async (name) => {
   }
 }
 
+const checkSubTopicDuplicateNamebyTaskId = async (subTopicId, topicTaskId) => {
+  try {
+    const subTopic = await TaskSubTopicMapping.findOne({
+      where: {
+        topicTaskId: topicTaskId,
+        subTopicId: subTopicId
+      },
+      raw: true
+    });
+    return subTopic;
+  } catch (error) {
+    throw error;
+  }
+}
+
+const checkVocabDuplicateNamebyTaskId = async (vocabularyId, topicTaskId) => {
+  try {
+    const vocab = await TaskVocabularyMapping.findOne({
+      where: {
+        topicTaskId: topicTaskId,
+        vocabularyId: vocabularyId
+      },
+      raw: true
+    });
+    return vocab;
+  } catch (error) {
+    throw error;
+  }
+}
+
+const checkTopicDuplicateNamebyTaskId = async (topicId, topicTaskId) => {
+  try {
+    const topic = await TaskVocabularyMapping.findOne({
+      where: {
+        topicTaskId: topicTaskId,
+        topicId: topicId
+      },
+      raw: true
+    });
+    return topic;
+  } catch (error) {
+    throw error;
+  }
+}
+
 const checkVocabDuplicateName = async (name) => {
   try {
     const vocab = await Vocabulary.findOne({
@@ -138,4 +184,11 @@ const checkVocabDuplicateName = async (name) => {
   }
 }
 
-module.exports = { createTopic, createSubTopic, createVocabulary, findSheetAndUser, updateTopicTaskSheet, findPaperNumberSheetByPk, findAllTopics, checkTopicDuplicateName, checkSubTopicDuplicateName, checkVocabDuplicateName };
+module.exports = { createTopic, 
+  createSubTopic, createVocabulary, 
+  findSheetAndUser, updateTopicTaskSheet, 
+  findPaperNumberSheetByPk, findAllTopics, 
+  checkTopicDuplicateName, checkSubTopicDuplicateName, 
+  checkVocabDuplicateName, checkSubTopicDuplicateNamebyTaskId,
+  checkVocabDuplicateNamebyTaskId,checkTopicDuplicateNamebyTaskId,
+ };
