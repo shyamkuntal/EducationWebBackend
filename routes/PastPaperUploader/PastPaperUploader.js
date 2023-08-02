@@ -1,5 +1,5 @@
 const express = require("express");
-const upload = require("../config/multer.js");
+const upload = require("../../config/multer.js");
 const {
   createPastPaper,
   getAssignedSheets,
@@ -10,11 +10,11 @@ const {
   EditPastPaper,
   getdatafordashboard,
   getSingleAssignedSheet,
-} = require("../controller/PastPaperUploader/PastPaper.js");
-const paginatedSheetResults = require("../middlewares/paginatedSheet.js");
-const PastPaperUploaderController = require("../controller/PastPaperUploader/PastPaper.js");
-const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor.js");
-const BoardManagementController = require("../controller/BoardManagement/BoardM.js");
+} = require("../../controller/PastPaperUploader/PastPaper.js");
+const paginatedSheetResults = require("../../middlewares/paginatedSheet.js");
+const PastPaperUploaderController = require("../../controller/PastPaperUploader/PastPaper.js");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor.js");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM.js");
 
 const router = express.Router();
 

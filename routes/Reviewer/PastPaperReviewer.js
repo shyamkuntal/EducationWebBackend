@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const PastPaperReviewerController = require("../controller/PastPaperReviewer/PastPaperReviewer");
-const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor");
-const BoardManagementController = require("../controller/BoardManagement/BoardM");
+const PastPaperReviewerController = require("../../controller/Reviewer/PastPaperReviewer/PastPaperReviewer");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM");
 
-const upload = require("../config/multer.js");
-const paginatedSheetResults = require("../middlewares/paginatedSheet.js");
+const upload = require("../../config/multer.js");
+const paginatedSheetResults = require("../../middlewares/paginatedSheet.js");
 
 // api/ppmreviewer/getsheets
 router.get("/getallsheets", paginatedSheetResults(), (req, res) => {

@@ -1,25 +1,22 @@
 const express = require("express");
-const upload = require("../config/multer.js");
-const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor.js");
-const BoardManagementController = require("../controller/BoardManagement/BoardM.js");
-const DataGeneratorController = require("../controller/DataGenerator/DataGeneratorManagement.js");
-const paginatedPaperNumberSheet = require("../middlewares/paginatedPaperNumber.js");
-const { PaperNumberSheet } = require("../models/PaperNumberSheet.js");
-const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject.js");
-const PaperNumberReviewerController = require("../controller/PaperNumberReviewer/PaperNumberReviewer.js");
-const paginatedTopicTasks = require("../middlewares/paginatedTopicTasks.js");
-const TopicManagementController = require("../controller/TopicManagement/TopicManagement.js");
+const upload = require("../../config/multer.js");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor.js");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM.js");
+const DataGeneratorController = require("../../controller/DataGenerator/DataGeneratorManagement.js");
+const paginatedPaperNumberSheet = require("../../middlewares/paginatedPaperNumber.js");
+const { PaperNumberSheet } = require("../../models/PaperNumberSheet.js");
+const SubjectManagementController = require("../../controller/Supervisor/SubjectManagement/ManageSubject.js");
+const PaperNumberReviewerController = require("../../controller/Reviewer/PaperNumberReviewer/PaperNumberReviewer.js");
+const paginatedTopicTasks = require("../../middlewares/paginatedTopicTasks.js");
+const TopicManagementController = require("../../controller/Supervisor/TopicManagement/TopicManagement.js");
 
 const router = express.Router();
 
 router.get("/getallPaperNumberSheets", paginatedPaperNumberSheet(PaperNumberSheet), (req, res) => {
-    res.json(res.paginatedResults);
+  res.json(res.paginatedResults);
 });
 
-router.get(
-    "/getpapernumberbypnsheetid",
-    DataGeneratorController.getPaperNumberByPaperNumberSheet
-);
+router.get("/getpapernumberbypnsheetid", DataGeneratorController.getPaperNumberByPaperNumberSheet);
 
 router.post("/createpapernumber", DataGeneratorController.createPaperNumber);
 
@@ -38,14 +35,11 @@ router.get("/getallboards", BoardManagementController.getAllBoards);
 router.get("/getallsubboards", BoardManagementController.GetSubBoards);
 
 router.get(
-    "/getsubjectdetailsbyids",
-    SubjectManagementController.getSubjectDetailsByBoardSubBoardGrade
+  "/getsubjectdetailsbyids",
+  SubjectManagementController.getSubjectDetailsByBoardSubBoardGrade
 );
 
-router.get(
-    "/getsubjectbysubjectnameid",
-    SubjectManagementController.getSubjectBySubjectNameId
-);
+router.get("/getsubjectbysubjectnameid", SubjectManagementController.getSubjectBySubjectNameId);
 
 router.patch("/submittosupervisor", DataGeneratorController.SubmitToSupervisor);
 
@@ -63,12 +57,10 @@ router.get("/geterrorreportfile", PaperNumberReviewerController.getErrorReportFi
 
 // /api/topicmanagement/getalltopictasks
 router.get("/getalltopictasks", paginatedTopicTasks(), (req, res) => {
-    res.json(res.paginatedResults);
+  res.json(res.paginatedResults);
 });
 
-
 // ********** Topic Routes ************** //
-
 
 router.post("/createtopic", DataGeneratorController.createTopic);
 
@@ -88,16 +80,9 @@ router.get(
 );
 
 // /api/topicmanagement/getsubtopicvocabbytopicid
-router.get(
-  "/getsubtopicvocabbytopicid",
-  TopicManagementController.getSubTopicVocabByTopicId
-);
+router.get("/getsubtopicvocabbytopicid", TopicManagementController.getSubTopicVocabByTopicId);
 
 // /api/topicmanagement/getsubtopicvocabbytopicid
-router.get(
-  "/getsubtopicvocabbytaskid",
-  TopicManagementController.getSubTopicVocabByTaskId
-);
+router.get("/getsubtopicvocabbytaskid", TopicManagementController.getSubTopicVocabByTaskId);
 
-
-module.exports = router; 
+module.exports = router;

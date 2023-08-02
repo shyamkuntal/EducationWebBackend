@@ -1,7 +1,7 @@
 const express = require("express");
-const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject.js");
-const getPaginatedSubjects = require("../middlewares/subjectFilter.js");
-const upload = require("../config/multer.js");
+const SubjectManagementController = require("../../controller/Supervisor/SubjectManagement/ManageSubject");
+const getPaginatedSubjects = require("../../middlewares/subjectFilter.js");
+const upload = require("../../config/multer.js");
 
 const router = express.Router();
 

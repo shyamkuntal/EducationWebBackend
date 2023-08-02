@@ -1,19 +1,19 @@
 const express = require("express");
-const AccountManagementController = require("../controller/AccountManagement/ManageAccount.js");
-const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject.js");
-const { route } = require("./PastPaperUploader.js");
+const AccountManagementController = require("../../controller/Supervisor/AccountManagement/ManageAccount");
+const SubjectManagementController = require("../../controller/Supervisor/SubjectManagement/ManageSubject");
+const { route } = require("../PastPaperUploader/PastPaperUploader.js");
 const router = express.Router();
-const paginatedPastPaperAccounts = require("../middlewares/paginatedPastPaperAccounts.js");
-const paginatedReviewerAccounts = require("../middlewares/paginatedReviewerAccounts.js");
-const paginatedSupervisorAccounts = require("../middlewares/paginatedSupervisorAccounts.js");
-const paginatedDataGeneratorAccounts = require("../middlewares/paginatedDataGeneratorAccounts.js");
-const paginatedTeacherAccounts = require("../middlewares/paginatedTeacherAccounts.js");
-const paginatedPricerAccounts = require("../middlewares/paginatedPricerAccounts.js");
-const paginatedUploader2Accounts = require("../middlewares/paginatedUploader2Accounts.js");
-const paginatedPaperNumberSheet = require("../middlewares/paginatedPaperNumber");
-const paginatedSheet = require("../middlewares/paginatedSheet");
-const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor");
-const PaperNumberSheetController = require("../controller/PaperNumberManagement/PaperNumber");
+const paginatedPastPaperAccounts = require("../../middlewares/paginatedPastPaperAccounts.js");
+const paginatedReviewerAccounts = require("../../middlewares/paginatedReviewerAccounts.js");
+const paginatedSupervisorAccounts = require("../../middlewares/paginatedSupervisorAccounts.js");
+const paginatedDataGeneratorAccounts = require("../../middlewares/paginatedDataGeneratorAccounts.js");
+const paginatedTeacherAccounts = require("../../middlewares/paginatedTeacherAccounts.js");
+const paginatedPricerAccounts = require("../../middlewares/paginatedPricerAccounts.js");
+const paginatedUploader2Accounts = require("../../middlewares/paginatedUploader2Accounts.js");
+const paginatedPaperNumberSheet = require("../../middlewares/paginatedPaperNumber");
+const paginatedSheet = require("../../middlewares/paginatedSheet");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor");
+const PaperNumberSheetController = require("../../controller/Supervisor/PaperNumberManagement/PaperNumber");
 
 router.get("/getpastpaperaccounts", paginatedPastPaperAccounts(), (req, res) => {
   res.send(res.paginatedResults);

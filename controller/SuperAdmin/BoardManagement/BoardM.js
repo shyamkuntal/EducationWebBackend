@@ -1,4 +1,4 @@
-const { Board, SubBoard } = require("../../models/Board.js");
+const { Board, SubBoard } = require("../../../models/Board.js");
 const {
   getSubBoardsSchema,
   createSubBoardsSchema,
@@ -9,8 +9,8 @@ const {
   getBoardsAndSubBoards,
   editBoardSchema,
   getBoardsByTypeSchema,
-} = require("../../validations/BoardManagementValidations.js");
-const services = require("../../services/index.js");
+} = require("../../../validations/BoardManagementValidations.js");
+const services = require("../../../services/index.js");
 const httpStatus = require("http-status");
 const { v4: uuidv4 } = require("uuid");
 

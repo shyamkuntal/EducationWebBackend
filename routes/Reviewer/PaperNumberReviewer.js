@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const PaperNumberReviewerController = require("../controller/PaperNumberReviewer/PaperNumberReviewer");
-const DataGeneratorController = require("../controller/DataGenerator/DataGeneratorManagement");
-const PaperNumberManagentController = require("../controller/PaperNumberManagement/PaperNumber");
-const BoardManagementController = require("../controller/BoardManagement/BoardM");
-const PastPaperSupervisorController = require("../controller/PastPaperManagement/PPMSupervisor");
-const SubjectManagementController = require("../controller/SubjectManagement/ManageSubject");
-const paginatedPaperNumberSheet = require("../middlewares/paginatedPaperNumber");
+const PaperNumberReviewerController = require("../../controller/Reviewer/PaperNumberReviewer/PaperNumberReviewer");
+const DataGeneratorController = require("../../controller/DataGenerator/DataGeneratorManagement");
+const PaperNumberManagentController = require("../../controller/Supervisor/PaperNumberManagement/PaperNumber");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor");
+const SubjectManagementController = require("../../controller/Supervisor/SubjectManagement/ManageSubject");
+const paginatedPaperNumberSheet = require("../../middlewares/paginatedPaperNumber");
 
-const upload = require("../config/multer.js");
+const upload = require("../../config/multer.js");
 
 // api/pnreviewer/getsheets
 router.get("/getallsheets", paginatedPaperNumberSheet(), (req, res) => {

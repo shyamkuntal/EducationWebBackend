@@ -1,7 +1,7 @@
 const express = require("express");
-const BoardManagementController = require("../controller/BoardManagement/BoardM.js");
-const paginatedResults = require("../middlewares/paginatedResults.js");
-const { Board } = require("../models/Board.js");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM");
+const paginatedResults = require("../../middlewares/paginatedResults.js");
+const { Board } = require("../../models/Board.js");
 const router = express.Router();
 
 router.get("/getallboards", paginatedResults(Board), (req, res) => {

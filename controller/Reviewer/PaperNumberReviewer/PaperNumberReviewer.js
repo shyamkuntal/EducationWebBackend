@@ -1,4 +1,4 @@
-const services = require("../../services/index.js");
+const services = require("../../../services/index.js");
 const httpStatus = require("http-status");
 const {
   updateSheetStatusSchema,
@@ -8,9 +8,9 @@ const {
   addRecheckCommentSchema,
   getRecheckingCommentsSchema,
   getErrorReportFilesSchema,
-} = require("../../validations/PaperNumberReviewerValidations.js");
-const CONSTANTS = require("../../constants/constants.js");
-const { generateFileName } = require("../../config/s3.js");
+} = require("../../../validations/PaperNumberReviewerValidations.js");
+const CONSTANTS = require("../../../constants/constants.js");
+const { generateFileName } = require("../../../config/s3.js");
 
 const PaperNumberReviewerController = {
   async UpdateInprogressSheetStatus(req, res, next) {
