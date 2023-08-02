@@ -291,7 +291,9 @@ const TopicManagementController = {
           element.topicId
         );
         // fetch vocab
-        let vocab = await services.topicTaskService.findVocabTaskMappingsByTopicId(element.topicId);
+        let vocab = await services.topicTaskService.findVocabTopicTaskMappingsByTopicId(
+          element.topicId
+        );
 
         topicSubTopicsVocab.push({
           topic: element.topic,
@@ -318,20 +320,18 @@ const TopicManagementController = {
       console.log(topicsMappings);
       let topicSubTopicsVocab = [];
       if (topicsMappings.length > 0) {
-        for (element of topicsMappings) {
-          console.log(element);
+        for (let i = 0; i < topicsMappings.length; i++) {
           // fetch subTopics
           let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTopicId(
-            element.topicId
+            topicsMappings[i].topicId
           );
           // fetch vocab
           let vocab = await services.topicTaskService.findVocabTopicTaskMappingsByTopicId(
-            element.topicId
+            topicsMappings[i].topicId
           );
-
           topicSubTopicsVocab.push({
             topicTaskId: values.topicTaskId,
-            topic: element.topic,
+            topic: topicsMappings[i].topic,
             subTopics: subTopics,
             vocab: vocab,
           });
