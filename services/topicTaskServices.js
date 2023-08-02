@@ -147,7 +147,7 @@ const findSubTopicTaskMappingsByTopicId = async (topicId) => {
   }
 };
 
-const findVocabTaskMappingsByTopicId = async (topicId) => {
+const findVocabTopicTaskMappingsByTopicId = async (topicId) => {
   try {
     let mappings = await TaskVocabularyMapping.findAll({
       where: { topicId },
@@ -199,6 +199,36 @@ const getTaskLogs = async (topicTaskId) => {
   }
 };
 
+const updateTaskTopicMapping = async (dataToBeUpdated, whereQuery) => {
+  try {
+    let updatedMapping = await TaskTopicMapping.update(dataToBeUpdated, whereQuery);
+
+    return updatedMapping;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const updateTaskSubTopicMapping = async (dataToBeUpdated, whereQuery) => {
+  try {
+    let updatedMapping = await TaskSubTopicMapping.update(dataToBeUpdated, whereQuery);
+
+    return updatedMapping;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const updateTaskVocabularyMapping = async (dataToBeUpdated, whereQuery) => {
+  try {
+    let updatedMapping = await TaskVocabularyMapping.update(dataToBeUpdated, whereQuery);
+
+    return updatedMapping;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   createTopicTask,
   findTopicTasks,
@@ -208,9 +238,12 @@ module.exports = {
   createTopicTaskLog,
   findTopicTaskMappingsByTaskId,
   findSubTopicTaskMappingsByTopicId,
-  findVocabTaskMappingsByTopicId,
+  findVocabTopicTaskMappingsByTopicId,
   getTaskLogs,
   findVocabTaskMappingsByTaskId,
   findSubTopicTaskMappingsByTaskId,
   findTopicTaskMappingsByTopicTaskIdAndTopicId,
+  updateTaskTopicMapping,
+  updateTaskSubTopicMapping,
+  updateTaskVocabularyMapping,
 };
