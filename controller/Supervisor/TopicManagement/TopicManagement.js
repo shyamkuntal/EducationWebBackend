@@ -315,21 +315,22 @@ const TopicManagementController = {
       let topicsMappings = await services.topicTaskService.findTopicTaskMappingsByTaskId(
         values.topicTaskId
       );
-      console.log(topicsMappings)
+      console.log(topicsMappings);
       let topicSubTopicsVocab = [];
       if (topicsMappings.length > 0) {
         for (element of topicsMappings) {
-          console.log(element)
+          console.log(element);
           // fetch subTopics
           let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTopicId(
             element.topicId
           );
           // fetch vocab
-          let vocab = await services.topicTaskService.findVocabTaskMappingsByTopicId(
+          let vocab = await services.topicTaskService.findVocabTopicTaskMappingsByTopicId(
             element.topicId
           );
 
           topicSubTopicsVocab.push({
+            topicTaskId: values.topicTaskId,
             topic: element.topic,
             subTopics: subTopics,
             vocab: vocab,
@@ -339,7 +340,7 @@ const TopicManagementController = {
 
       res.status(httpStatus.OK).send(topicSubTopicsVocab);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       next(err);
     }
   },
@@ -379,7 +380,7 @@ const TopicManagementController = {
 
       console.log(values);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       next(err);
     }
   },
