@@ -99,5 +99,15 @@ router.get(
   TopicManagementController.getSubTopicVocabByTaskId
 );
 
+router.patch(
+  "/marktopictaskasinprogress",
+  DataGeneratorController.MarkTopicTaskasInProgress
+);
+
+router.patch(
+  "/marktopictaskascomplete",
+  DataGeneratorController.MarkTopicTaskascomplete
+);
+
 
 module.exports = router; 

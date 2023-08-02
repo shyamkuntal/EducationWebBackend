@@ -484,19 +484,21 @@ const DataGeneratorController = {
 
   async MarkTopicTaskasInProgress(req, res) {
     const id = req.body.topicTaskId;
-
     try {
-      const sheetData = await services.topicService.findPaperNumberSheetByPk(id);
+      let whereQueryForTaskFind = { where: { id: id }, raw: true };
+      const sheetData = await services.topicTaskService.findTopicTasks(whereQueryForTaskFind);
 
       let statusToUpdate = {
         statusForDataGenerator: CONSTANTS.sheetStatuses.InProgress,
       };
+
       let whereQuery = {
         where: {
-          id: sheetData.id,
+          id: id,
         },
       };
-      let response = await services.topicService.updatePaperNumberSheet(statusToUpdate, whereQuery);
+
+      await services.topicTaskService.updateTopicTask(statusToUpdate, whereQuery);
 
       return res.status(httpStatus.OK).send({
         message: "Sheet marked InProgress successfully",
