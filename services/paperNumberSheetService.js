@@ -60,9 +60,9 @@ const getFilesUrlFromS3 = async (fileName) => {
       Key: fileName,
     };
 
-    const getAnsPaperCommand = new GetObjectCommand(getFilesParams);
+    const getFileCommand = new GetObjectCommand(getFilesParams);
 
-    const fileUrl = await getSignedUrl(s3Client, getAnsPaperCommand, {
+    const fileUrl = await getSignedUrl(s3Client, getFileCommand, {
       expiresIn: 3600,
     });
 

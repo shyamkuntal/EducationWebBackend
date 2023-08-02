@@ -24,6 +24,12 @@ router.get(
   TopicManagementController.getTopicSubTopicVocabByTaskId
 );
 
+// /api/topicmanagement/gettopicsubtopicvocabbytopictaskidtopicid
+router.get(
+  "/gettopicsubtopicvocabbytopictaskidtopicid",
+  TopicManagementController.getTopicSubTopicVocabByTaskIdTopicId
+);
+
 // /api/topicmanagement/updatetopictask
 router.put("/updatetopictask", TopicManagementController.updateTopicTask);
 
@@ -59,5 +65,11 @@ router.get(
   "/getsubjectdetailsbyids",
   SubjectManagementController.getSubjectDetailsByBoardSubBoardGrade
 );
+
+// /api/topicmanagement/gettopictaskbyid
+router.get("/gettopictaskbyid", TopicManagementController.getTopicTaskById);
+
+// /api/topicmanagement/geterrorreportfile
+router.get("/geterrorreportfile", TopicManagementController.getErrorReportFile);
 
 module.exports = router;

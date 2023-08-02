@@ -10,11 +10,14 @@ const {
   getTopicTaskLogsSchema,
   getSubTopicVocabByTopicIdSchema,
   togglePublishTopicTaskSchema,
+  findTopicTaskByIdSchema,
+  getTaskErrorReportSchema,
+  getTopicSubTopicVocabByTaskIdTopicIdSchema,
 } = require("../../validations/TopicManagementValidations");
 const CONSTANTS = require("../../constants/constants");
+const { Board, SubBoard } = require("../../models/Board");
 
 const TopicManagementController = {
-
   async createTopicTask(req, res, next) {
     try {
       let values = await createTopicTaskSchema.validateAsync(req.body);
@@ -317,19 +320,63 @@ const TopicManagementController = {
       let topicSubTopicsVocab = [];
       for (element of topicsMappings) {
         // fetch subTopics
-        let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTopicId(
+        let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTaskId(
+          values.topicTaskId,
           element.topicId
         );
+        console.log(subTopics);
         // fetch vocab
-        let vocab = await services.topicTaskService.findVocabTaskMappingsByTopicId(element.topicId);
+        let vocab = await services.topicTaskService.findVocabTaskMappingsByTaskId(
+          values.topicTaskId,
+          element.topicId
+        );
 
         topicSubTopicsVocab.push({
-          topic: element.topic,
+          topic: element,
           subTopics: subTopics,
           vocab: vocab,
         });
       }
       res.status(httpStatus.OK).send(topicSubTopicsVocab);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getTopicSubTopicVocabByTaskIdTopicId(req, res, next) {
+    try {
+      let values = await getTopicSubTopicVocabByTaskIdTopicIdSchema.validateAsync({
+        topicTaskId: req.query.topicTaskId,
+        topicId: req.query.topicId,
+      });
+
+      // fetchTopics
+      let topicsMappings =
+        await services.topicTaskService.findTopicTaskMappingsByTopicTaskIdAndTopicId(
+          values.topicTaskId,
+          values.topicId
+        );
+
+      // fetch subTopics
+      let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTaskId(
+        values.topicTaskId,
+        values.topicId
+      );
+      // fetch vocab
+      let vocab = await services.topicTaskService.findVocabTaskMappingsByTaskId(
+        values.topicTaskId,
+        values.topicId
+      );
+
+      let result = {
+        topic: topicsMappings[0],
+        subTopics: subTopics,
+        vocab: vocab,
+      };
+
+      res.status(httpStatus.OK).send(result);
+
+      console.log(values);
     } catch (err) {
       next(err);
     }
@@ -343,7 +390,9 @@ const TopicManagementController = {
 
       let topicSubTopicsVocab = [];
       // fetch subTopics
-      let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTopicId(values.topicId);
+      let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTopicId(
+        values.topicId
+      );
       // fetch vocab
       let vocab = await services.topicTaskService.findVocabTaskMappingsByTopicId(values.topicId);
 
@@ -360,12 +409,18 @@ const TopicManagementController = {
 
   async getSubTopicVocabByTaskId(req, res, next) {
     try {
-      let values = req.query
+      let values = req.query;
       let topicSubTopicsVocab = [];
       // fetch subTopics
-      let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTaskId(values.topicTaskId, values.topicId);
+      let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTaskId(
+        values.topicTaskId,
+        values.topicId
+      );
       // fetch vocab
-      let vocab = await services.topicTaskService.findVocabTaskMappingsByTaskId(values.topicTaskId, values.topicId);
+      let vocab = await services.topicTaskService.findVocabTaskMappingsByTaskId(
+        values.topicTaskId,
+        values.topicId
+      );
 
       topicSubTopicsVocab.push({
         topicId: values.topicId,
@@ -422,6 +477,52 @@ const TopicManagementController = {
       }
 
       res.status(httpStatus.OK).send(responseMessage);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getTopicTaskById(req, res, next) {
+    try {
+      let values = await findTopicTaskByIdSchema.validateAsync({
+        topicTaskId: req.query.topicTaskId,
+      });
+      let whereQuery = {
+        where: { id: values.topicTaskId },
+        include: [
+          { model: Board, attributes: ["id", "boardName"] },
+          { model: SubBoard, attributes: ["id", "subBoardName"] },
+        ],
+      };
+      let task = await services.topicTaskService.findTopicTasks(whereQuery);
+
+      res.status(httpStatus.OK).send(task);
+    } catch (err) {
+      next(err);
+    }
+  },
+  async getErrorReportFile(req, res, next) {
+    try {
+      let values = await getTaskErrorReportSchema.validateAsync({
+        topicTaskId: req.query.topicTaskId,
+      });
+      let whereQuery = {
+        where: { id: values.topicTaskId },
+        raw: true,
+      };
+
+      let task = await services.topicTaskService.findTopicTasks(whereQuery);
+
+      if (!task) {
+        res.status(httpStatus.BAD_REQUEST).send({ message: "Task not found!" });
+      }
+
+      let fileUrl = await services.pastpaperService.getFilesUrlFromS3(task[0].errorReportImg);
+
+      res.status(200).send({
+        errorReportFile: task[0].errorReportImg,
+        errorReportFileUrl: fileUrl,
+      });
     } catch (err) {
       next(err);
     }

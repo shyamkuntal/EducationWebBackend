@@ -73,6 +73,19 @@ const togglePublishTopicTaskSchema = Joi.object({
   topicTaskId: Joi.string().guid().required(),
 });
 
+const findTopicTaskByIdSchema = Joi.object({
+  topicTaskId: Joi.string().guid().required(),
+});
+
+const getTaskErrorReportSchema = Joi.object({
+  topicTaskId: Joi.string().guid().required(),
+});
+
+const getTopicSubTopicVocabByTaskIdTopicIdSchema = Joi.object({
+  topicTaskId: Joi.string().guid().required(),
+  topicId: Joi.string().guid().required(),
+});
+
 module.exports = {
   createTopicTaskSchema,
   updateTopicTaskSchema,
@@ -86,4 +99,7 @@ module.exports = {
   getTopicTaskLogsSchema,
   getSubTopicVocabByTopicIdSchema,
   togglePublishTopicTaskSchema,
+  findTopicTaskByIdSchema,
+  getTaskErrorReportSchema,
+  getTopicSubTopicVocabByTaskIdTopicIdSchema,
 };

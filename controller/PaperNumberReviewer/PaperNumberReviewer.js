@@ -434,20 +434,20 @@ const PaperNumberReviewerController = {
         values.paperNumberSheetId
       );
 
-      if (paperNumberSheetData) {
-        let fileUrl = await services.paperNumberSheetService.getFilesUrlFromS3(
-          paperNumberSheetData.dataValues.errorReportImg
-        );
-
-        res.status(200).send({
-          errorReportFile: paperNumberSheetData.dataValues.errorReportImg,
-          errorReportFileUrl: fileUrl,
-        });
-      } else {
+      if (!paperNumberSheetData) {
         res.status(httpStatus.BAD_REQUEST).send({ message: "Sheet not found!" });
       }
+
+      let fileUrl = await services.paperNumberSheetService.getFilesUrlFromS3(
+        paperNumberSheetData.dataValues.errorReportImg
+      );
+
+      res.status(200).send({
+        errorReportFile: paperNumberSheetData.dataValues.errorReportImg,
+        errorReportFileUrl: fileUrl,
+      });
     } catch (err) {
-      console.log(err) 
+      console.log(err);
       next(err);
     }
   },

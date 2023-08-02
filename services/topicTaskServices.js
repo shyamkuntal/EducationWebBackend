@@ -107,7 +107,22 @@ const findTopicTaskMappingsByTaskId = async (topicTaskId) => {
   try {
     let mappings = await TaskTopicMapping.findAll({
       where: { topicTaskId },
-      attributes: ["topicTaskId", "topicId"],
+      attributes: ["topicTaskId", "topicId", "errorReport", "isError"],
+      include: [{ model: Topic, attributes: ["id", "name"] }],
+      raw: true,
+      nest: true,
+    });
+    return mappings;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findTopicTaskMappingsByTopicTaskIdAndTopicId = async (topicTaskId, topicId) => {
+  try {
+    let mappings = await TaskTopicMapping.findAll({
+      where: { topicTaskId, topicId },
+      attributes: ["topicTaskId", "topicId", "errorReport", "isError"],
       include: [{ model: Topic, attributes: ["id", "name"] }],
       raw: true,
       nest: true,
@@ -149,7 +164,7 @@ const findSubTopicTaskMappingsByTaskId = async (topicTaskId, topicId) => {
   try {
     let mappings = await TaskSubTopicMapping.findAll({
       where: { topicTaskId, topicId },
-      attributes: ["topicId"],
+      attributes: ["topicId", "errorReport", "isError"],
       include: [{ model: SubTopic, attributes: ["id", "name"] }],
     });
 
@@ -163,7 +178,7 @@ const findVocabTaskMappingsByTaskId = async (topicTaskId, topicId) => {
   try {
     let mappings = await TaskVocabularyMapping.findAll({
       where: { topicTaskId, topicId },
-      attributes: ["topicId"],
+      attributes: ["topicId", "errorReport", "isError"],
       include: [{ model: Vocabulary, attributes: ["id", "name"] }],
     });
     return mappings;
@@ -196,5 +211,6 @@ module.exports = {
   findVocabTaskMappingsByTopicId,
   getTaskLogs,
   findVocabTaskMappingsByTaskId,
-  findSubTopicTaskMappingsByTaskId
+  findSubTopicTaskMappingsByTaskId,
+  findTopicTaskMappingsByTopicTaskIdAndTopicId,
 };
