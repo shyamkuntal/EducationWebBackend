@@ -24,7 +24,8 @@ const {
   TaskSubTopicMapping,
   TaskVocabularyMapping,
 } = require("../../models/TopicTaskMapping.js");
-const { SubTopicMapping, VocabularyMapping } = require("../../models/Topic.js");
+const { Topic, SubTopic } = require("../../models/Topic.js");
+const { Vocabulary } = require("../../models/Vocabulary.js");
 
 const DataGeneratorController = {
   //take care of isarchived and ispublished later
@@ -291,10 +292,10 @@ const DataGeneratorController = {
       let values = await createTopicSchema.validateAsync(req.body);
       // Check if the topic name already exists
       const existingTopic = await services.topicService.checkTopicDuplicateName(values.name);
-      const existingTopicInMapping = await services.topicService.checkTopicDuplicateNamebyTaskId(
-        existingTopic.id,
-        values.topicTaskId
-      );
+      const existingTopicInMapping = existingTopic
+        ? await services.topicService.checkTopicDuplicateNamebyTaskId(existingTopic.id, values.topicTaskId)
+        : null;
+
       if (!existingTopicInMapping) {
         if (existingTopic) {
           // If the topic name already exists, only add mapping
@@ -363,7 +364,6 @@ const DataGeneratorController = {
       }
       // Map the data in taskSubTopicMapping table based on importNames.
       if (importNames.length > 0) {
-        console.log("Shya Import ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,", importNames);
         const createdMappings = [];
         for (const nameObj of importNames) {
           let existingSubTopic = await services.topicService.checkSubTopicDuplicateNamebyTaskId(
@@ -398,12 +398,12 @@ const DataGeneratorController = {
     const newNames = values.newNames;
     try {
       if (newNames.length > 0) {
-        // Check and create new subTopics from newNames
+        // Check and create new Vocab from newNames
         const createdVocabs = [];
         for (const nameObj of newNames) {
           let existingVocab = await services.topicService.checkVocabDuplicateName(nameObj.name);
           if (existingVocab === null) {
-            // Create new subTopic and map it to the taskSubTopicMappping table
+            // Create new Vocab and map it to the taskVocabMappping table
             const vocab = await services.topicService.createVocabulary(nameObj.name);
             let sentTaskData = {
               topicTaskId: values.topicTaskId,
@@ -423,7 +423,7 @@ const DataGeneratorController = {
         }
         res.status(httpStatus.CREATED).send(createdVocabs);
       }
-      // Map the data in taskSubTopicMapping table based on importNames.
+      // Map the data in taskVocabMapping table based on importNames.
       if (importNames.length > 0) {
         const createdMappings = [];
         for (const nameObj of importNames) {
@@ -513,22 +513,18 @@ const DataGeneratorController = {
     const id = req.body.topicTaskId;
     try {
       let whereQueryForTaskFind = { where: { id: id }, raw: true };
-      const sheetData = await services.topicTaskService.findTopicTasks(whereQueryForTaskFind);
-
+      const sheetData = await services.topicTaskService.findTopicTasks(whereQueryForTaskFind)
       let statusToUpdate = {
         statusForDataGenerator: CONSTANTS.sheetStatuses.InProgress,
       };
-
       let whereQuery = {
         where: {
           id: id,
         },
       };
-
       await services.topicTaskService.updateTopicTask(statusToUpdate, whereQuery);
-
       return res.status(httpStatus.OK).send({
-        message: "Sheet marked InProgress successfully",
+        message: "Sheet marked As InProgress Successfully",
       });
     } catch (err) {
       console.log(err);
@@ -537,26 +533,235 @@ const DataGeneratorController = {
   },
 
   async MarkTopicTaskascomplete(req, res) {
-    const id = req.body.paperNumberSheetId;
+    const id = req.body.topicTaskId;
 
     try {
-      const sheetData = await services.topicService.findPaperNumberSheetByPk(id);
-
+      let whereQueryForTaskFind = { where: { id: id }, raw: true };
+      const sheetData = await services.topicTaskService.findTopicTasks(whereQueryForTaskFind);
       let statusToUpdate = {
         statusForDataGenerator: CONSTANTS.sheetStatuses.Complete,
       };
       let whereQuery = {
         where: {
-          id: sheetData.id,
+          id: id,
         },
       };
-      let response = await services.topicService.updatePaperNumberSheet(statusToUpdate, whereQuery);
-
+      await services.topicTaskService.updateTopicTask(statusToUpdate, whereQuery);
       return res.status(httpStatus.OK).send({
-        message: "Sheet marked Complete successfully",
+        message: "Sheet marked As Complete Successfully",
       });
     } catch (err) {
       return res.json({ status: 501, error: err.message });
+    }
+  },
+
+  async EditSubTopic(req, res, next) {
+    const values = req.body;
+    const DeleteSubTopics = values.deleteSubTopics;
+    const EditSubTopics = values.editSubTopics;
+
+    try {
+      if (EditSubTopics.length > 0) {
+        // Check and create new subTopics from newNames
+        const createdSubTopics = [];
+        for (const nameObj of EditSubTopics) {
+          let existingSubTopic = await services.topicService.checkSubTopicDuplicateName(nameObj.name);
+          if (existingSubTopic === null) {
+            // Create new subTopic and map it to the taskSubTopicMappping table
+            const subtopic = await services.topicService.createSubTopic(nameObj.name);
+            let sentTaskData = {
+              topicTaskId: values.topicTaskId,
+              topicId: values.topicId,
+              subTopicId: subtopic.id,
+            };
+            await TaskSubTopicMapping.create(sentTaskData);
+            createdSubTopics.push(subtopic);
+          } else {
+            let sentTaskData = {
+              topicTaskId: values.topicTaskId,
+              topicId: values.topicId,
+              subTopicId: existingSubTopic.id,
+            };
+            await TaskSubTopicMapping.create(sentTaskData);
+          }
+        }
+        res.status(httpStatus.CREATED).send(createdSubTopics);
+      }
+      // Delete mappings from TaskSubTopicMapping based on deleteSubTopics array
+      if (DeleteSubTopics.length > 0) {
+        for (const subTopic of DeleteSubTopics) {
+          await TaskSubTopicMapping.destroy({
+            where: {
+              topicTaskId: values.topicTaskId,
+              subTopicId: subTopic.id,
+            },
+          });
+          let findSubTopic = await TaskSubTopicMapping.findAll({
+            where: { subTopicId: subTopic.id },
+            raw: true
+          })
+          if(findSubTopic.length === 0){
+            await SubTopic.destroy({
+              where: { id: subTopic.id }
+            });
+          }
+        }
+        res.status(httpStatus.OK).send({message: "Deleted Successfully"});
+      }
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  },
+
+  async EditVocabulary(req, res, next) {
+    const values = req.body;
+    const DeleteVocab = values.deleteVocab;
+    const EditVocab = values.editVocab;
+
+    try {
+      if (EditVocab.length > 0) {
+        // Check and create new Vocab from newNames
+        const createdVocabs = [];
+        for (const nameObj of EditVocab) {
+          let existingVocab = await services.topicService.checkVocabDuplicateName(nameObj.name);
+          if (existingVocab === null) {
+            // Create new Vocab and map it to the taskVocabMappping table
+            const vocab = await services.topicService.createVocabulary(nameObj.name);
+            let sentTaskData = {
+              topicTaskId: values.topicTaskId,
+              topicId: values.topicId,
+              vocabularyId: vocab.id,
+            };
+            await TaskVocabularyMapping.create(sentTaskData);
+            createdVocabs.push(vocab);
+          } else {
+            let sentTaskData = {
+              topicTaskId: values.topicTaskId,
+              topicId: values.topicId,
+              vocabularyId: existingVocab.id,
+            };
+            await TaskVocabularyMapping.create(sentTaskData);
+          }
+        }
+        res.status(httpStatus.CREATED).send(createdVocabs);
+      }
+      // Delete mappings from TaskVocabMapping based 
+      if (DeleteVocab.length > 0) {
+        for (const Vocab of DeleteVocab) {
+          await TaskVocabularyMapping.destroy({
+            where: {
+              topicTaskId: values.topicTaskId,
+              vocabularyId: Vocab.id,
+            },
+          });
+          let findVocab = await TaskVocabularyMapping.findAll({
+            where: { vocabularyId: Vocab.id },
+            raw: true
+          })
+          console.log(findVocab.length)
+          if(findVocab.length === 0){
+            await Vocabulary.destroy({
+              where: { id: Vocab.id }
+            });
+          }
+        }
+        res.status(httpStatus.OK).send({message: "Deleted Successfully"});
+      }
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  },
+
+  async DeleteTopicAndAllRelatedData(req, res, next){
+    const values = req.body;
+    try {
+      let findTopicInSubTopicMapping = await TaskSubTopicMapping.findAll({
+        where: { 
+          topicId: values.topicId,
+          topicTaskId: values.topicTaskId 
+        },
+        raw: true
+      })
+      if(findTopicInSubTopicMapping.length > 0) {
+        for (const subTopic of findTopicInSubTopicMapping) {
+          await TaskSubTopicMapping.destroy({
+            where: {
+              topicTaskId: values.topicTaskId,
+              subTopicId: subTopic.subTopicId,
+            },
+          });
+          let findSubTopic = await TaskSubTopicMapping.findAll({
+            where: { subTopicId: subTopic.id },
+            raw: true
+          })
+          if(findSubTopic.length === 0){
+            await SubTopic.destroy({
+              where: { id: subTopic.subTopicId }
+            });
+          }
+        }
+      }
+
+      let findTopicInVocabMapping = await TaskVocabularyMapping.findAll({
+        where: { 
+          topicId: values.topicId,
+          topicTaskId: values.topicTaskId 
+        },
+        raw: true
+      })
+      if(findTopicInVocabMapping.length > 0){
+        for (const Vocab of findTopicInVocabMapping) {
+          await TaskVocabularyMapping.destroy({
+            where: {
+              topicTaskId: values.topicTaskId,
+              vocabularyId: Vocab.vocabularyId,
+            },
+          });
+          let findVocab = await TaskVocabularyMapping.findAll({
+            where: { vocabularyId: Vocab.vocabularyId },
+            raw: true
+          })
+          if(findVocab.length === 0){
+            await Vocabulary.destroy({
+              where: { id: Vocab.vocabularyId }
+            });
+          }
+        }
+      }
+
+      let findTopicInTopicMapping = await TaskTopicMapping.findAll({
+        where: { 
+          topicId: values.topicId,
+          topicTaskId: values.topicTaskId 
+        },
+        raw: true
+      })
+      if(findTopicInTopicMapping.length > 0){
+        for (const topic of findTopicInTopicMapping) {
+          await TaskTopicMapping.destroy({
+            where: {
+              topicTaskId: values.topicTaskId,
+              topicId: topic.topicId,
+            },
+          });
+          let findTopic = await TaskTopicMapping.findAll({
+            where: { topicId: topic.topicId },
+            raw: true
+          })
+          if(findTopic.length === 0){
+            await Topic.destroy({
+              where: { id: topic.topicId }
+            });
+          }
+        }
+      }
+
+      res.status(httpStatus.OK).send({message: "Deleted Successfully"});
+    } catch (err) {
+      console.log(err)
+      next(err)
     }
   },
 };

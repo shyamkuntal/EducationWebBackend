@@ -3,7 +3,7 @@ const { Topic, SubTopic } = require("../models/Topic");
 const { TopicTask } = require("../models/TopicTask");
 const { User } = require("../models/User");
 const { Vocabulary } = require("../models/Vocabulary");
-const { TaskSubTopicMapping, TaskVocabularyMapping } = require("../models/TopicTaskMapping");
+const { TaskSubTopicMapping, TaskVocabularyMapping, TaskTopicMapping } = require("../models/TopicTaskMapping");
 
 const createTopic = async ({ name }) => {
   console.log("shyam -------", name)
@@ -155,7 +155,7 @@ const checkVocabDuplicateNamebyTaskId = async (vocabularyId, topicTaskId) => {
 
 const checkTopicDuplicateNamebyTaskId = async (topicId, topicTaskId) => {
   try {
-    const topic = await TaskVocabularyMapping.findOne({
+    const topic = await TaskTopicMapping.findOne({
       where: {
         topicTaskId: topicTaskId,
         topicId: topicId

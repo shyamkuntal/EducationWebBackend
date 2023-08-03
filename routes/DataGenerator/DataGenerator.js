@@ -57,4 +57,7 @@ router.get("/getsubtopicvocabbytopicid", TopicManagementController.getSubTopicVo
 router.get("/getsubtopicvocabbytaskid", TopicManagementController.getSubTopicVocabByTaskId);
 router.patch("/marktopictaskasinprogress", DataGeneratorController.MarkTopicTaskasInProgress);
 router.patch("/marktopictaskascomplete", DataGeneratorController.MarkTopicTaskascomplete);
+router.post("/editsubtopics", DataGeneratorController.EditSubTopic);
+router.post("/editvocabulary", DataGeneratorController.EditVocabulary);
+router.post("/deletetopicandrelateddata", DataGeneratorController.DeleteTopicAndAllRelatedData);
 module.exports = router;
