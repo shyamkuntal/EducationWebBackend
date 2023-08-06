@@ -110,10 +110,8 @@ const findSheetAndUser = async (paperNumberSheetId) => {
     let findSheet = PaperNumberSheet.findOne({
       where: { id: paperNumberSheetId },
       include: [
-        {
-          model: User,
-          as: "supervisor",
-        },
+        { model: User, as: "assignedToUserName", attributes: ["id", "Name", "userName"] },
+        { model: User, as: "supervisor", attributes: ["id", "Name", "userName"] },
       ],
       raw: true,
       nest: true,

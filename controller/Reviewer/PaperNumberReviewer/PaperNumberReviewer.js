@@ -11,6 +11,7 @@ const {
 } = require("../../../validations/PaperNumberReviewerValidations.js");
 const CONSTANTS = require("../../../constants/constants.js");
 const { generateFileName } = require("../../../config/s3.js");
+const { ApiError } = require("../../../middlewares/apiError");
 
 const PaperNumberReviewerController = {
   async UpdateInprogressSheetStatus(req, res, next) {
@@ -21,43 +22,41 @@ const PaperNumberReviewerController = {
         values.paperNumberSheetId
       );
 
-      if (sheet) {
-        let assignedTo = sheet.assignedToUserId;
-        let lifeCycle = sheet.lifeCycle;
-        let previousStatus = sheet.statusForReviewer;
+      if (!sheet) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Sheet not found!");
+      }
+      let assignedTo = sheet.assignedToUserId;
+      let lifeCycle = sheet.lifeCycle;
+      let previousStatus = sheet.statusForReviewer;
 
-        // Checking if sheet is assigned to current reviewer
+      if (assignedTo !== values.reviewerId || lifeCycle !== CONSTANTS.roleNames.Reviewer) {
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          "Sheet not assigned to reviewr or lifecycle mismatch"
+        );
+      }
 
-        if (assignedTo === values.reviewerId && lifeCycle === CONSTANTS.roleNames.Reviewer) {
-          if (previousStatus !== CONSTANTS.sheetStatuses.InProgress) {
-            let dataToBeUpdated = {
-              statusForSupervisor: CONSTANTS.sheetStatuses.InProgress,
-              statusForReviewer: CONSTANTS.sheetStatuses.InProgress,
-            };
+      if (previousStatus === CONSTANTS.sheetStatuses.InProgress) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Current sheet status is already Inprogress");
+      }
+      if (previousStatus === CONSTANTS.sheetStatuses.InProgress) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Current sheet status is already Inprogress");
+      }
 
-            let whereQuery = { where: { id: sheet.id } };
+      let dataToBeUpdated = {
+        statusForSupervisor: CONSTANTS.sheetStatuses.InProgress,
+        statusForReviewer: CONSTANTS.sheetStatuses.InProgress,
+      };
 
-            let updateInprogressStatus =
-              await services.paperNumberSheetService.updatePaperNumberSheet(
-                dataToBeUpdated,
-                whereQuery
-              );
+      let whereQuery = { where: { id: sheet.id } };
 
-            if (updateInprogressStatus.length > 0) {
-              res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
-            }
-          } else {
-            res.status(httpStatus.BAD_REQUEST).send({
-              message: "Current sheet status is already Inprogress",
-            });
-          }
-        } else {
-          res
-            .status(httpStatus.BAD_REQUEST)
-            .send({ message: "Invalid reviewer id or sheet life cycle" });
-        }
-      } else {
-        res.status(httpStatus.BAD_REQUEST).send({ message: "Invalid sheetId" });
+      let updateInprogressStatus = await services.paperNumberSheetService.updatePaperNumberSheet(
+        dataToBeUpdated,
+        whereQuery
+      );
+
+      if (updateInprogressStatus.length > 0) {
+        res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
       }
     } catch (err) {
       next(err);
@@ -80,90 +79,84 @@ const PaperNumberReviewerController = {
       };
 
       // checking sheet
-      let userData = await services.userService.finduser(
-        values.reviewerId,
-        CONSTANTS.roleNames.Reviewer
-      );
-
       let paperNumberSheetData = await services.paperNumberSheetService.findSheetAndUser(
         values.paperNumberSheetId
       );
 
-      if (userData && paperNumberSheetData) {
-        // Checking is reviewer is assigned to sheet
-        if (userData.id === paperNumberSheetData.assignedToUserId) {
-          // checking if erorr Report exists, adding if does not exists
-          if (paperNumberSheetData.isSpam !== true) {
-            let fileName =
-              process.env.AWS_BUCKET_PAPERNUMBER_ERROR_REPORT_IMAGES_FOLDER +
-              "/" +
-              generateFileName(values.errorReportFile.originalname);
-
-            let uploadFile =
-              await services.paperNumberSheetService.uploadPaperNumberErrorReportFile(
-                fileName,
-                values.errorReportFile
-              );
-
-            if (uploadFile) {
-              responseMessage.message.errorReportFileUpload =
-                "Error Report file added successfully!";
-            }
-
-            // updating error report, adding reviewer comments,updating sheetStatuses,setting IsSpam to true
-            //  error report img and assigning to supervisor
-
-            let dataToBeUpdated = {
-              assignedToUserId: paperNumberSheetData.supervisorId,
-              statusForReviewer: CONSTANTS.sheetStatuses.Complete,
-              statusForSupervisor: CONSTANTS.sheetStatuses.Complete,
-              errorReport: values.errorReport,
-              reviewerCommentToSupervisor: values.comment,
-              errorReportImg: fileName,
-              isSpam: true,
-            };
-
-            let whereQuery = {
-              where: { id: values.paperNumberSheetId },
-            };
-
-            let updateErrorReport = await services.paperNumberSheetService.updatePaperNumberSheet(
-              dataToBeUpdated,
-              whereQuery
-            );
-
-            if (updateErrorReport.length > 0) {
-              responseMessage.message.errorReport = "Error Report updated successfully!";
-            }
-
-            // Create sheetLog
-
-            let dataToBeCreated = {
-              paperNumberSheetId: paperNumberSheetData.id,
-              assignee: paperNumberSheetData.supervisor.userName,
-              assignedTo: userData.userName,
-              logMessage: CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisorErrorReport,
-            };
-
-            let createLog = await services.paperNumberSheetService.createPaperNumberSheetLog(
-              dataToBeCreated
-            );
-
-            if (createLog) {
-              responseMessage.message.sheetLog =
-                "Log record for assignment to supervisor added successfully";
-            }
-
-            res.status(httpStatus.OK).send(responseMessage);
-          } else {
-            res.status(httpStatus.BAD_REQUEST).send({ message: "Error report already exists" });
-          }
-        } else {
-          res.status(httpStatus.BAD_REQUEST).send({ message: "Reviewer Not assigned to sheet" });
-        }
-      } else {
-        res.status(httpStatus.BAD_REQUEST).send({ message: "Invalid sheetId" });
+      if (!paperNumberSheetData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
       }
+
+      if (
+        values.reviewerId !== paperNumberSheetData.reviewerId ||
+        paperNumberSheetData.assignedToUserId !== paperNumberSheetData.reviewerId
+      ) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Reviewer not assigned to sheet!");
+      }
+
+      if (paperNumberSheetData.isSpam === true) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Error Report already exists!!");
+      }
+
+      let fileName =
+        process.env.AWS_BUCKET_PAPERNUMBER_ERROR_REPORT_IMAGES_FOLDER +
+        "/" +
+        generateFileName(values.errorReportFile.originalname);
+
+      let uploadFile = await services.paperNumberSheetService.uploadPaperNumberErrorReportFile(
+        fileName,
+        values.errorReportFile
+      );
+
+      if (uploadFile) {
+        responseMessage.message.errorReportFileUpload = "Error Report file added successfully!";
+      }
+
+      // updating error report, adding reviewer comments,updating sheetStatuses,setting IsSpam to true
+      //  error report img and assigning to supervisor
+
+      let dataToBeUpdated = {
+        assignedToUserId: paperNumberSheetData.supervisorId,
+        statusForReviewer: CONSTANTS.sheetStatuses.Complete,
+        statusForSupervisor: CONSTANTS.sheetStatuses.Complete,
+        errorReport: values.errorReport,
+        reviewerCommentToSupervisor: values.comment,
+        errorReportImg: fileName,
+        isSpam: true,
+      };
+
+      let whereQuery = {
+        where: { id: values.paperNumberSheetId },
+      };
+
+      let updateErrorReport = await services.paperNumberSheetService.updatePaperNumberSheet(
+        dataToBeUpdated,
+        whereQuery
+      );
+
+      if (updateErrorReport.length > 0) {
+        responseMessage.message.errorReport = "Error Report updated successfully!";
+      }
+
+      // Create sheetLog
+
+      let dataToBeCreated = {
+        paperNumberSheetId: paperNumberSheetData.id,
+        assignee: paperNumberSheetData.assignedToUserName.userName,
+        assignedTo: paperNumberSheetData.supervisor.userName,
+        logMessage: CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisorErrorReport,
+      };
+
+      let createLog = await services.paperNumberSheetService.createPaperNumberSheetLog(
+        dataToBeCreated
+      );
+
+      if (createLog) {
+        responseMessage.message.sheetLog =
+          "Log record for assignment to supervisor added successfully";
+      }
+
+      res.status(httpStatus.OK).send(responseMessage);
     } catch (err) {
       next(err);
     }
@@ -187,65 +180,47 @@ const PaperNumberReviewerController = {
         values.paperNumberSheetId
       );
 
-      if (userData && paperNumberSheetData) {
-        // Checking if sheet is already assingned to supervisor
-        if (paperNumberSheetData.assignedToUserId === paperNumberSheetData.supervisorId) {
-          res.status(httpStatus.BAD_REQUEST).send({
-            message: "Sheet already assigned to supervisor",
-          });
-        } else {
-          // Checking if sheet status is complete for reviewer
-          if (paperNumberSheetData.statusForReviewer !== CONSTANTS.sheetStatuses.Complete) {
-            res.status(httpStatus.BAD_REQUEST).send({
-              message: "Please mark it as complete first",
-            });
-          } else {
-            //UPDATE sheet assignment & sheet status
-
-            let dataToBeUpdated = {
-              assignedToUserId: paperNumberSheetData.supervisorId,
-              statusForSupervisor: CONSTANTS.sheetStatuses.Complete,
-            };
-
-            let whereQuery = {
-              where: { id: paperNumberSheetData.id },
-            };
-            let updateAssignAndStatus =
-              await services.paperNumberSheetService.updatePaperNumberSheet(
-                dataToBeUpdated,
-                whereQuery
-              );
-
-            if (updateAssignAndStatus.length > 0) {
-              responseMessage.assinedUserToSheet = "Sheet assigned to supervisor successfully";
-              responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
-            }
-
-            // Create sheetLog
-
-            let dataToBeCreated = {
-              paperNumberSheetId: paperNumberSheetData.id,
-              assignee: userData.userName,
-              assignedTo: paperNumberSheetData.supervisor.userName,
-              logMessage: CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisor,
-            };
-
-            let createLog = await services.paperNumberSheetService.createPaperNumberSheetLog(
-              dataToBeCreated
-            );
-
-            if (createLog) {
-              responseMessage.sheetLog =
-                "Log record for assignment to supervisor added successfully";
-            }
-            res.status(httpStatus.OK).send(responseMessage);
-          }
-        }
-      } else {
-        res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Sheet Id" });
+      if (!userData && !paperNumberSheetData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Sheet not found!");
+      }
+      // Checking if sheet is already assingned to supervisor
+      if (paperNumberSheetData.assignedToUserId === paperNumberSheetData.supervisorId) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Task already assigned to supervisor!");
       }
 
-      console.log(values);
+      // Checking if sheet status is complete for reviewer
+      if (paperNumberSheetData.statusForReviewer !== CONSTANTS.sheetStatuses.Complete) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Please mark it as complete first");
+      }
+
+      //UPDATE sheet assignment & sheet status
+      let dataToBeUpdated = {
+        assignedToUserId: paperNumberSheetData.supervisorId,
+        statusForSupervisor: CONSTANTS.sheetStatuses.Complete,
+      };
+
+      let whereQuery = {
+        where: { id: paperNumberSheetData.id },
+      };
+
+      await services.paperNumberSheetService.updatePaperNumberSheet(dataToBeUpdated, whereQuery);
+
+      responseMessage.assinedUserToSheet = "Sheet assigned to supervisor successfully";
+      responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
+
+      // Create sheetLog
+      let dataToBeCreated = {
+        paperNumberSheetId: paperNumberSheetData.id,
+        assignee: userData.userName,
+        assignedTo: paperNumberSheetData.supervisor.userName,
+        logMessage: CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisor,
+      };
+
+      await services.paperNumberSheetService.createPaperNumberSheetLog(dataToBeCreated);
+
+      responseMessage.sheetLog = "Log record for assignment to supervisor added successfully";
+
+      res.status(httpStatus.OK).send(responseMessage);
     } catch (err) {
       console.log(err);
       next(err);
@@ -375,49 +350,40 @@ const PaperNumberReviewerController = {
     try {
       let values = await updateSheetStatusSchema.validateAsync(req.body);
 
-      console.log(values);
-
       // checking sheet
       let paperNumberSheetData = await services.paperNumberSheetService.findSheetAndUser(
         values.paperNumberSheetId
       );
 
-      if (paperNumberSheetData) {
-        let assignedTo = paperNumberSheetData.assignedToUserId;
-        let lifeCycle = paperNumberSheetData.lifeCycle;
-        let previousStatus = paperNumberSheetData.statusForReviewer;
-
-        // Checking if sheet is assigned to current reviewer
-        if (assignedTo === values.reviewerId && lifeCycle === CONSTANTS.roleNames.Reviewer) {
-          if (previousStatus !== CONSTANTS.sheetStatuses.Complete) {
-            let dataToBeUpdated = {
-              statusForReviewer: CONSTANTS.sheetStatuses.Complete,
-            };
-
-            let whereQuery = { where: { id: paperNumberSheetData.id } };
-
-            let updateCompleteStatus =
-              await services.paperNumberSheetService.updatePaperNumberSheet(
-                dataToBeUpdated,
-                whereQuery
-              );
-
-            if (updateCompleteStatus.length > 0) {
-              res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
-            }
-          } else {
-            res
-              .status(httpStatus.BAD_REQUEST)
-              .send({ message: "Current sheet status is already Complete" });
-          }
-        } else {
-          res
-            .status(httpStatus.BAD_REQUEST)
-            .send({ message: "Current sheet status is already Complete" });
-        }
-      } else {
-        res.status(httpStatus.BAD_REQUEST).send({ message: "Invalid sheetId" });
+      if (!paperNumberSheetData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Sheet not found!");
       }
+
+      let assignedTo = paperNumberSheetData.assignedToUserId;
+      let lifeCycle = paperNumberSheetData.lifeCycle;
+      let previousStatus = paperNumberSheetData.statusForReviewer;
+
+      // Checking if sheet is assigned to current reviewer
+      if (assignedTo !== values.reviewerId && lifeCycle !== CONSTANTS.roleNames.Reviewer) {
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          "Sheet not assigned to reviewr or lifecycle mismatch"
+        );
+      }
+
+      if (previousStatus === CONSTANTS.sheetStatuses.Complete) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Current sheet status is already Complete");
+      }
+
+      let dataToBeUpdated = {
+        statusForReviewer: CONSTANTS.sheetStatuses.Complete,
+      };
+
+      let whereQuery = { where: { id: paperNumberSheetData.id } };
+
+      await services.paperNumberSheetService.updatePaperNumberSheet(dataToBeUpdated, whereQuery);
+
+      res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
     } catch (err) {
       console.log(err);
       next(err);

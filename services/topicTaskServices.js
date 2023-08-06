@@ -37,6 +37,15 @@ const createTopicTask = async ({
   }
 };
 
+const findOneTopicTask = async (whereQuery) => {
+  try {
+    let task = await TopicTask.findOne(whereQuery);
+    return task;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const findTopicTasks = async (whereQuery) => {
   try {
     let tasks = await TopicTask.findAll(whereQuery);
@@ -95,6 +104,7 @@ const findTopicTaskAndUser = async (topicTaskId) => {
 
 const createTopicTaskLog = async (topicTaskId, assignee, assignedTo, logMessage) => {
   try {
+    console.log(topicTaskId, assignee, assignedTo, logMessage);
     let taskLog = await TopicTaskLog.create({ topicTaskId, assignee, assignedTo, logMessage });
 
     return taskLog;
@@ -246,4 +256,5 @@ module.exports = {
   updateTaskTopicMapping,
   updateTaskSubTopicMapping,
   updateTaskVocabularyMapping,
+  findOneTopicTask,
 };

@@ -4,9 +4,16 @@ require("dotenv").config();
 const routes = require("./routes/index.js");
 const db = require("./config/database.js");
 const { convertToApiError, handleError } = require("./middlewares/apiError.js");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./utils/swagger.json");
 
 const app = express();
 app.use(express.json());
+
+//API DOCS
+if (process.env.NODE_ENV === "dev") {
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+}
 
 // CORS
 if (process.env.NODE_ENV === "production") {
@@ -33,6 +40,7 @@ db.authenticate()
   .then(() => console.log("Database connected..."))
   .catch((err) => console.log("Error: " + err));
 
+// api route
 app.use("/api", routes);
 
 //API ERROR HANDLING

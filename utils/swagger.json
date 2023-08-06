@@ -1,0 +1,4466 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Eduplanet Dev",
+    "description": ""
+  },
+  "host": "localhost:3002",
+  "basePath": "/api",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/auth/cmslogin": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/sendpasswordresetemail": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/resetpassword": {
+      "put": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/isauth": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/public/getallroles": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/public/getrolebyname/{roleName}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "roleName",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/public/getpastpapers": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectLevelId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "season",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "varient",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "paperNumberId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/public/getallboards": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/public/getsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/public/getsubjectnames": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/public/getallsubjectlevels": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/public/getdistinctpapernumbers": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/public/getboardnamebytype": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardType",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accountmanagement/getpastpaperaccounts": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getuploader2accounts": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getrevieweraccounts": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getpriceraccounts": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getdatageneratoraccounts": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getsupervisoraccounts": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getteacheraccounts": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getsheetsbyassignedtouserid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForPastPaper",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectLevelId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "season",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "varient",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "paperNumber",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getpapernumbersheetsbyassignedtouserid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForDataGenerator",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getsubjectnames": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accountmanagement/createuserrole": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accountmanagement/createuser": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accountmanagement/edituser": {
+      "put": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getallrolesforaddaccount": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getuserCount": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getallsubjectNamebyid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accountmanagement/getallboards": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accountmanagement/getsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accountmanagement/getallusermappings": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accountmanagement/getallsubjects": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getusers": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getsupervisorinfo": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/accountmanagement/toggleactivate": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/accountmanagement/getsheetlogs": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accountmanagement/getpnsheetlogs": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "paperNumberSheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/boardmanagement/getallboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/boardmanagement/getsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/boardmanagement/getboardsandsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/boardmanagement/createboard": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/boardmanagement/createsubboard": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/boardmanagement/editboard": {
+      "put": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/boardmanagement/togglepublishboard": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/boardmanagement/togglearchiveboard": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/boardmanagement/togglearchivesubboard": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/subjectmanagement/getallsubjects": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectName",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/subjectmanagement/createsubject": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "boardId": {
+                  "example": "any"
+                },
+                "subBoardId": {
+                  "example": "any"
+                },
+                "grade": {
+                  "example": "any"
+                },
+                "subjectName": {
+                  "example": "any"
+                },
+                "subjectNameId": {
+                  "example": "any"
+                },
+                "subjectImageId": {
+                  "example": "any"
+                },
+                "subjectLevels": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/subjectmanagement/updatesubject": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "subjectId": {
+                  "example": "any"
+                },
+                "boardId": {
+                  "example": "any"
+                },
+                "subBoardId": {
+                  "example": "any"
+                },
+                "grade": {
+                  "example": "any"
+                },
+                "subjectNameId": {
+                  "example": "any"
+                },
+                "subjectLevels": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/subjectmanagement/togglepublishsubject": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/subjectmanagement/togglearchiveSubjectLevels": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/subjectmanagement/createsubjectname": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "subjectName": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/subjectmanagement/getsubjectdetailsbyids": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/subjectmanagement/getsubjectdetailsbyidsnotpublished": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/subjectmanagement/getsubjectnames": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/subjectmanagement/getallboards": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/subjectmanagement/getallsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/subjectmanagement/getsubjectbysubjectnameid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/subjectmanagement/getsubjectdetails": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/subjectmanagement/getsubjectnamebyid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/createsheet": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "boardId": {
+                  "example": "any"
+                },
+                "subBoardId": {
+                  "example": "any"
+                },
+                "grade": {
+                  "example": "any"
+                },
+                "subjectId": {
+                  "example": "any"
+                },
+                "subjectLevelId": {
+                  "example": "any"
+                },
+                "year": {
+                  "example": "any"
+                },
+                "season": {
+                  "example": "any"
+                },
+                "varient": {
+                  "example": "any"
+                },
+                "paperNumberId": {
+                  "example": "any"
+                },
+                "paperNumber": {
+                  "example": "any"
+                },
+                "resources": {
+                  "example": "any"
+                },
+                "supervisorId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getuserassignedsubjects": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getsubjectnames": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getallroles": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getsheetlogs": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getusers": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getuser": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/{boardId}/getallsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/{boardId}/{SubBoardId}/getallgrades": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "SubBoardId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/{boardId}/{SubBoardId}/{grade}/getallsubjects": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "SubBoardId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getalllevels": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getallsheets": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForPastPaper",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectLevelId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "season",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "varient",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "paperNumber",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getsheetsubjects": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getallsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getallboards": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/{sheetid}/getsheet/": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/{sheetid}/togglepublishsheet": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "501": {
+            "description": "Not Implemented"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/{sheetid}/togglearchivesheet": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/assignsheettopastpaper": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/assignsheettoreviewer": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getpastpaper": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getpapernumberbyboardsubBoardgradesubject": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmreviewer/getallsheets": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForPastPaper",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectLevelId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "season",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "varient",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "paperNumber",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ppmreviewer/getsubjectnames": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmreviewer/getallboards": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmreviewer/getallsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmreviewer/getrecheckcomments": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmreviewer/updateinprogresssheetstatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmreviewer/updatecompletessheetstatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmreviewer/submitsheettosupervisor": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmreviewer/reportsheeterror": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmreviewer/getpastpaper": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmreviewer/reportrecheckerror": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmreviewer/getuserassignedsubjects": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppuploader/getallsheets": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForPastPaper",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectLevelId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "season",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "varient",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "paperNumber",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ppuploader/{sheetId}/getsinglesheet": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForPastPaper",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectLevelId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "season",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "varient",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "paperNumber",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ppuploader/getassignedsubjects": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppuploader/getrecheckcomments": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppuploader/createpastpaper": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "paperNumber": {
+                  "example": "any"
+                },
+                "googleLink": {
+                  "example": "any"
+                },
+                "sheetId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/ppuploader/submittosupervisor": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppuploader/markitasinprogress": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sheetId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/ppuploader/markitascomplete": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sheetId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/ppuploader/editpastpaper": {
+      "put": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppuploader/getpastpaper": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppuploader/getsubjectnames": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppuploader/{userId}/getdatafordashboard": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForPastPaper",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectLevelId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "season",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "varient",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "paperNumber",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ppuploader/getallboards": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppuploader/getallsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppuploader/geterrorreportfiles": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/pnmanagement/createPaperNumberSheet": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "boardId": {
+                  "example": "any"
+                },
+                "subBoardId": {
+                  "example": "any"
+                },
+                "grade": {
+                  "example": "any"
+                },
+                "subjectId": {
+                  "example": "any"
+                },
+                "resources": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                },
+                "supervisorId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnmanagement/updatepapernumbersheet": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "paperNumberSheetId": {
+                  "example": "any"
+                },
+                "boardId": {
+                  "example": "any"
+                },
+                "subBoardId": {
+                  "example": "any"
+                },
+                "grade": {
+                  "example": "any"
+                },
+                "subjectId": {
+                  "example": "any"
+                },
+                "resources": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                },
+                "supervisorId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnmanagement/getallPaperNumberSheets": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForDataGenerator",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/pnmanagement/getallPaperNumber": {
+      "get": {
+        "description": "",
+        "responses": {
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/pnmanagement/assignsheettodatagenerator": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnmanagement/assignsheettoreviewer": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnmanagement/togglepublish": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "501": {
+            "description": "Not Implemented"
+          }
+        }
+      }
+    },
+    "/pnmanagement/getsheetlogs": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "paperNumberSheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnmanagement/getpapernumberbypnsheetid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "paperNumberSheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnmanagement/geterrorreportfile": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "paperNumberSheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/pnmanagement/getsubjectnames": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnmanagement/getdistinctpapernumbers": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/getallsheets": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForDataGenerator",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/pnreviewer/updateinprogresssheetstatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/getallboards": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/getsubboardsbyboard": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/getuserassignedsubjects": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/getsubjectnames": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/getpapernumberbypnsheetid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "paperNumberSheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/adderrorstopapernumbers": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/reportpapernumumbersheeterror": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/addrecheckcomment": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/updatecompletestatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/submitsheettosupervisor": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/geterrorreportfile": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "paperNumberSheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/pnreviewer/getsubjectnamebyid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/getallPaperNumberSheets": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForDataGenerator",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/datagenerator/getpapernumberbypnsheetid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "paperNumberSheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/createpapernumber": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "paperNumberSheetId": {
+                  "example": "any"
+                },
+                "paperNumber": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/datagenerator/updatepapernumber": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "paperNumberSheetId": {
+                  "example": "any"
+                },
+                "textFields": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/datagenerator/deletepapernumber": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "paperNumberId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/datagenerator/getallPaperNumber": {
+      "get": {
+        "description": "",
+        "responses": {
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/datagenerator/getassignedsubjects": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/getsubjectnames": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/getallboards": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/getallsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/getsubjectdetailsbyids": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/getsubjectbysubjectnameid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/submittosupervisor": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/markitasinprogress": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "paperNumberSheetId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/datagenerator/markitascomplete": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "paperNumberSheetId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/datagenerator/getallpapernumber": {
+      "get": {
+        "description": "",
+        "responses": {
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/datagenerator/getrecheckcomment": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "paperNumberSheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/geterrorreportfile": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "paperNumberSheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/datagenerator/getalltopictasks": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForDataGenerator",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/datagenerator/createtopic": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/createsubtopic": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "importNames": {
+                  "example": "any"
+                },
+                "newNames": {
+                  "example": "any"
+                },
+                "topicTaskId": {
+                  "example": "any"
+                },
+                "topicId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/createvocabulary": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "importNames": {
+                  "example": "any"
+                },
+                "newNames": {
+                  "example": "any"
+                },
+                "topicTaskId": {
+                  "example": "any"
+                },
+                "topicId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/submitopictasktosupervisor": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/getalltopicsubtopicvocab": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/gettopicsubtopicvocabbytopictaskid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/getsubtopicvocabbytopicid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topicId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/getsubtopicvocabbytaskid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "topicId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/datagenerator/marktopictaskasinprogress": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "topicTaskId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/datagenerator/marktopictaskascomplete": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "paperNumberSheetId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/topicmanagement/createtopictask": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/getalltopictasks": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForDataGenerator",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/topicmanagement/getalltopicsubtopicvocab": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/gettopicsubtopicvocabbytopictaskid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/gettopicsubtopicvocabbytopictaskidtopicid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "topicId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/updatetopictask": {
+      "put": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/asssigntasktodatagenerator": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/assigntasktoreviewer": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/togglepublishtask": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/gettasklogs": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/getuserassignedsubjects": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/subjectnames": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/getsubjectnamebyid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/getallboards": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/getsubboardsbyboard": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/getsubjectdetailsbyids": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/gettopictaskbyid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/topicmanagement/geterrorreportfile": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/tpmreviewer/getallsheets": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForDataGenerator",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/tpmreviewer/reporttopictaskerror": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/tpmreviewer/adderrorstotopics": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/tpmreviewer/adderrorstosubtopics": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/tpmreviewer/adderrorstovocab": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    }
+  }
+}

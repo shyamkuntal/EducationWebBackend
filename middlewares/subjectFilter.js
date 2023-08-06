@@ -74,13 +74,6 @@ const paginatedSubjects = (model) => {
         where: filters,
         limit,
         offset: startIndex,
-        group: [
-          "subject.id",
-          "subjectName.id",
-          "boardId",
-          "subBoardId",
-          "grade",
-        ],
       });
 
       results.results = subjects;
