@@ -8,6 +8,7 @@ const PaperNumber = require("./Supervisor/PaperNumberManagement");
 const PaperNumberReviewer = require("./Reviewer/PaperNumberReviewer");
 const DataGenerator = require("./DataGenerator/DataGenerator");
 const AccountManagement = require("./Supervisor/AccountManagement");
+const BookManagement = require("./Supervisor/BookManagement");
 const PastPaperReviewer = require("./Reviewer/PastPaperReviewer");
 const PastPaperUploader = require("./PastPaperUploader/PastPaperUploader");
 const topicManagement = require("./Supervisor/TopicManagement");
@@ -27,16 +28,22 @@ const router = express.Router();
 router.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 router.use("/auth", Auth);
 router.use("/public", PublicRoutes);
+
 router.use("/accountmanagement", AuthSuperadminSupervisor(), AccountManagement);
 router.use("/boardmanagement", AuthSuperadmin(), BoardRouters);
-router.use("/subjectmanagement", AuthSupervisor(), SubjectRouters);
+
 router.use("/ppmsupervisor", AuthSuperadminSupervisor(), PastPaper);
-router.use("/ppmreviewer", AuthReviewer(), PastPaperReviewer);
-router.use("/ppuploader", AuthPastPaper(), PastPaperUploader);
+router.use("/subjectmanagement", AuthSupervisor(), SubjectRouters);
 router.use("/pnmanagement", AuthSupervisor(), PaperNumber);
-router.use("/pnreviewer", AuthReviewer(), PaperNumberReviewer);
-router.use("/datagenerator", AuthDataGenerator(), DataGenerator);
 router.use("/topicmanagement", AuthSupervisor(), topicManagement);
+router.use("/bookmanagement", AuthSupervisor(), BookManagement);
+
+router.use("/ppuploader", AuthPastPaper(), PastPaperUploader);
+
+router.use("/datagenerator", AuthDataGenerator(), DataGenerator);
+
+router.use("/pnreviewer", AuthReviewer(), PaperNumberReviewer);
+router.use("/ppmreviewer", AuthReviewer(), PastPaperReviewer);
 router.use("/tpmreviewer", AuthReviewer(), topicManagemnetReviewer);
 
 module.exports = router;

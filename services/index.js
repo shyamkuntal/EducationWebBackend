@@ -9,3 +9,4 @@ module.exports.paperNumberSheetService = require("./paperNumberSheetService.js")
 module.exports.paperNumberService = require("./paperNumberService.js");
 module.exports.topicTaskService = require("./topicTaskServices.js");
 module.exports.topicService = require("./topicService.js");
+module.exports.bookService = require("./BookManagementService.js");

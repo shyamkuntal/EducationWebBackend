@@ -117,7 +117,7 @@ const TopicManagementController = {
             dataToBeUpdated,
             whereQuery
           );
-
+            console.log(updateTopicTask[1])
           if (updateTopicTask.length > 0) {
             responseMessage.assinedUserToTask =
               "Task assigned to Data Generator and lifeCycle updated successfully";
@@ -318,7 +318,7 @@ const TopicManagementController = {
       let topicsMappings = await services.topicTaskService.findTopicTaskMappingsByTaskId(
         values.topicTaskId
       );
-      console.log(topicsMappings);
+      
       let topicSubTopicsVocab = [];
       if (topicsMappings.length > 0) {
         for (let i = 0; i < topicsMappings.length; i++) {
@@ -544,6 +544,7 @@ const TopicManagementController = {
       next(err);
     }
   },
+
   async getErrorReportFile(req, res, next) {
     try {
       let values = await getTaskErrorReportSchema.validateAsync({
