@@ -693,9 +693,10 @@ const DataGeneratorController = {
             },
           });
           let findSubTopic = await TaskSubTopicMapping.findAll({
-            where: { subTopicId: subTopic.id },
+            where: { subTopicId: subTopic.subTopicId },
             raw: true
           })
+          console.log(findSubTopic, findSubTopic.length, subTopic.subTopicId)
           if(findSubTopic.length === 0){
             await SubTopic.destroy({
               where: { id: subTopic.subTopicId }

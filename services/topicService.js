@@ -51,16 +51,6 @@ const findAllTopics = async () => {
   }
 };
 
-const findPaperNumberSheetByPk = async (topicTaskId) => {
-  try {
-    let sheet = await TopicTask.findByPk(topicTaskId);
-
-    return sheet;
-  } catch (err) {
-    throw err;
-  }
-};
-
 const findSheetAndUser = async (topicTaskId) => {
   try {
     let findSheet = TopicTask.findOne({
@@ -186,8 +176,7 @@ const checkVocabDuplicateName = async (name) => {
 
 module.exports = { createTopic, 
   createSubTopic, createVocabulary, 
-  findSheetAndUser, updateTopicTaskSheet, 
-  findPaperNumberSheetByPk, findAllTopics, 
+  findSheetAndUser, updateTopicTaskSheet, findAllTopics, 
   checkTopicDuplicateName, checkSubTopicDuplicateName, 
   checkVocabDuplicateName, checkSubTopicDuplicateNamebyTaskId,
   checkVocabDuplicateNamebyTaskId,checkTopicDuplicateNamebyTaskId,

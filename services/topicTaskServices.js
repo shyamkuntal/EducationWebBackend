@@ -122,6 +122,7 @@ const findTopicTaskMappingsByTaskId = async (topicTaskId) => {
       raw: true,
       nest: true,
     });
+
     return mappings;
   } catch (err) {
     throw err;

@@ -282,21 +282,22 @@ const TopicManagementController = {
           topics.push(ele);
         });
       }
-
       let topicSubTopicsVocab = [];
 
       for (element of topics) {
         // fetch subTopics
-        let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTopicId(
+        let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTaskId(
+          element.topicTaskId,
           element.topicId
         );
         // fetch vocab
-        let vocab = await services.topicTaskService.findVocabTopicTaskMappingsByTopicId(
+        let vocab = await services.topicTaskService.findVocabTaskMappingsByTaskId(
+          element.topicTaskId,
           element.topicId
         );
 
         topicSubTopicsVocab.push({
-          topic: element.topic,
+          topic: element,
           subTopics: subTopics,
           vocab: vocab,
         });
