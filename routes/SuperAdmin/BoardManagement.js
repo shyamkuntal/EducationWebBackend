@@ -16,5 +16,6 @@ router.put("/editboard", BoardManagementController.UpdateBoard);
 router.patch("/togglepublishboard", BoardManagementController.TogglePublishBoard);
 router.patch("/togglearchiveboard", BoardManagementController.ToggleArchiveBoard);
 router.patch("/togglearchivesubboard", BoardManagementController.ToggleArchiveSubBoards);
+router.put("/updatesubboardname", BoardManagementController.updateSubBoardName);
 
 module.exports = router;

@@ -9,6 +9,7 @@ const {
   getBoardsAndSubBoards,
   editBoardSchema,
   getBoardsByTypeSchema,
+  updateSubBoardSchema,
 } = require("../../../validations/BoardManagementValidations.js");
 const services = require("../../../services/index.js");
 const httpStatus = require("http-status");
@@ -192,7 +193,7 @@ const BoardManagementController = {
       next(err);
     }
   },
-  async ToggleArchiveSubBoards(req, res) {
+  async ToggleArchiveSubBoards(req, res, next) {
     try {
       let values = await archiveSubBoardsSchema.validateAsync(req.body);
 
@@ -225,6 +226,21 @@ const BoardManagementController = {
       );
 
       res.status(httpStatus.OK).send(subBoards);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async updateSubBoardName(req, res, next) {
+    try {
+      let values = await updateSubBoardSchema.validateAsync(req.body);
+
+      let updateSubBoard = await SubBoard.update(
+        { subBoardName: values.subBoardName },
+        { where: { id: values.subBoardId } }
+      );
+
+      res.status(httpStatus.OK).send({ message: "SubBoardName Updated!" });
     } catch (err) {
       next(err);
     }

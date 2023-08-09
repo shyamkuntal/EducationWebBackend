@@ -38,7 +38,7 @@ router.patch("/updatecompletestatus", TopicManagementReviewerController.updateCo
 router.patch("/submittasktosupervisor", TopicManagementReviewerController.submitTaskToSupervisor);
 
 // api/tpmreviewer/addrecheckcomment
-router.patch("/addrecheckcomment");
+router.patch("/addrecheckcomment", TopicManagementReviewerController.addRecheckComment);
 
 // api/tpmreviewer/getrecheckcomment
 router.get("/getrecheckcomment");

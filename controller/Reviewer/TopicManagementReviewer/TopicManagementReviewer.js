@@ -346,12 +346,6 @@ const TopicManagementController = {
       responseMessage.UpdateSheetStatus = "Task Statuses updated successfully";
 
       // Create sheetLog
-      let dataToBeCreated = {
-        topicTaskId: topicTaskData.id,
-        assignee: topicTaskData,
-        assignedTo: paperNumberSheetData.supervisor.userName,
-        logMessage: CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisor,
-      };
 
       await services.topicTaskService.createTopicTaskLog(
         values.topicTaskId,
@@ -363,6 +357,12 @@ const TopicManagementController = {
       responseMessage.sheetLog = "Log record for assignment to supervisor added successfully";
 
       res.status(httpStatus.OK).send(responseMessage);
+    } catch (err) {
+      next(err);
+    }
+  },
+  async addRecheckComment(req, res, next) {
+    try {
     } catch (err) {
       next(err);
     }
