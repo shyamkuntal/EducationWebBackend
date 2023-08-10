@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const TopicManagementReviewerController = require("../../controller/Reviewer/TopicManagementReviewer/TopicManagementReviewer");
+const SubjectManagementController = require("../../controller/Supervisor/SubjectManagement/ManageSubject");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM.js");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor");
 const upload = require("../../config/multer");
 const paginatedTopicTasks = require("../../middlewares/paginatedTopicTasks");
 
@@ -38,12 +41,27 @@ router.patch("/updatecompletestatus", TopicManagementReviewerController.updateCo
 router.patch("/submittasktosupervisor", TopicManagementReviewerController.submitTaskToSupervisor);
 
 // api/tpmreviewer/addrecheckcomment
-router.patch("/addrecheckcomment", TopicManagementReviewerController.addRecheckComment);
+router.post("/addrecheckcomment", TopicManagementReviewerController.addRecheckComment);
 
 // api/tpmreviewer/getrecheckcomment
-router.get("/getrecheckcomment");
+router.get("/getrecheckcomment", TopicManagementReviewerController.getRecheckComment);
 
 // api/tpmreviewer/geterrorreportfile
-router.get("/geterrorreportfile");
+router.get("/geterrorreportfile", TopicManagementReviewerController.getErrorReportFile);
+
+// api/tpmreviewer/getsubjectnamebyid
+router.get("/getsubjectnamebyid", SubjectManagementController.getSubjectNameById);
+
+// api/pnreviewer/getallboards
+router.get("/getallboards", BoardManagementController.getAllBoards);
+
+// api/pnreviewer/getsubboardsbyboard
+router.get("/getsubboardsbyboard", BoardManagementController.GetSubBoards);
+
+// api/pnreviewer/getuserassignedsubjects
+router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
+
+// api/pnreviewer/getsubjectnames
+router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
 module.exports = router;

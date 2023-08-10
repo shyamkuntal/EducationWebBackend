@@ -16,9 +16,12 @@ const {
 } = require("../../../validations/TopicManagementValidations");
 const CONSTANTS = require("../../../constants/constants");
 const { Board, SubBoard } = require("../../../models/Board");
+const { ApiError } = require("../../../middlewares/apiError");
+const db = require("../../../config/database");
 
 const TopicManagementController = {
   async createTopicTask(req, res, next) {
+    const t = await db.transaction();
     try {
       let values = await createTopicTaskSchema.validateAsync(req.body);
 
@@ -34,15 +37,19 @@ const TopicManagementController = {
 
       await services.topicTaskService.checkTopicTask(dataToBeCreated);
 
-      let topicTask = await services.topicTaskService.createTopicTask(dataToBeCreated);
-
+      let topicTask = await services.topicTaskService.createTopicTask(dataToBeCreated, {
+        transaction: t,
+      });
+      await t.commit();
       res.status(httpStatus.CREATED).send(topicTask);
     } catch (err) {
+      await t.rollback();
       next(err);
     }
   },
 
   async updateTopicTask(req, res, next) {
+    const t = await db.transaction();
     try {
       let values = await updateTopicTaskSchema.validateAsync(req.body);
 
@@ -64,18 +71,19 @@ const TopicManagementController = {
 
       let updatedTopicTask = await services.topicTaskService.updateTopicTask(
         dataToBeUpdated,
-        whereQuery
+        whereQuery,
+        { transaction: t }
       );
-
-      if (updatedTopicTask.length > 0) {
-        res.status(httpStatus.OK).send({ message: "Topic Task updated successfully!" });
-      }
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Topic Task updated successfully!" });
     } catch (err) {
+      await t.rollBack();
       next(err);
     }
   },
 
   async assignTaskToDataGenerator(req, res, next) {
+    const t = await db.transaction();
     try {
       let values = await assignTaskToDataGeneratorSchema.validateAsync(req.body);
       console.log(values);
@@ -92,64 +100,61 @@ const TopicManagementController = {
         taskLog: "",
       };
 
-      if (userData && topicTaskData) {
-        // Checking if sheet is already assigned to Data Generator
-
-        if (topicTaskData.assignedToUserId === userData.id) {
-          res.status(httpStatus.OK).send({ mesage: "Task already assigned to Data Generator" });
-        } else {
-          //UPDATE task assignment & life cycle & task status
-
-          let dataToBeUpdated = {
-            assignedToUserId: userData.id,
-            dataGeneratorId: userData.id,
-            lifeCycle: CONSTANTS.roleNames.DataGenerator,
-            statusForSupervisor: CONSTANTS.sheetStatuses.NotStarted,
-            statusForDataGenerator: CONSTANTS.sheetStatuses.NotStarted,
-            supervisorCommentToDataGenerator: values.supervisorComments,
-          };
-
-          let whereQuery = {
-            where: { id: values.topicTaskId },
-          };
-
-          let updateTopicTask = await services.topicTaskService.updateTopicTask(
-            dataToBeUpdated,
-            whereQuery
-          );
-            console.log(updateTopicTask[1])
-          if (updateTopicTask.length > 0) {
-            responseMessage.assinedUserToTask =
-              "Task assigned to Data Generator and lifeCycle updated successfully";
-            responseMessage.UpdateTaskStatus = "Task Statuses updated successfully";
-          }
-
-          // CREATE task log for task assignment to dataGenerator
-
-          let createLog = await services.topicTaskService.createTopicTaskLog(
-            topicTaskData.id,
-            topicTaskData.supervisor.Name,
-            userData.Name,
-            CONSTANTS.sheetLogsMessages.supervisorAssignToDataGenerator
-          );
-
-          if (createLog) {
-            responseMessage.taskLog =
-              "Log record for task assignment to dataGenerator added successfully";
-          }
-
-          res.status(httpStatus.OK).send(responseMessage);
-        }
-      } else {
-        res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Task Id" });
+      if (!userData && !topicTaskData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Wrong user Id or Task Id!");
       }
+      // Checking if sheet is already assigned to Data Generator
+
+      if (topicTaskData.assignedToUserId !== userData.id) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Task already assigned to Data Generator!");
+      }
+
+      //UPDATE task assignment & life cycle & task status
+      let dataToBeUpdated = {
+        assignedToUserId: userData.id,
+        dataGeneratorId: userData.id,
+        lifeCycle: CONSTANTS.roleNames.DataGenerator,
+        statusForSupervisor: CONSTANTS.sheetStatuses.NotStarted,
+        statusForDataGenerator: CONSTANTS.sheetStatuses.NotStarted,
+        supervisorCommentToDataGenerator: values.supervisorComments,
+      };
+
+      let whereQuery = {
+        where: { id: values.topicTaskId },
+      };
+
+      let updateTopicTask = await services.topicTaskService.updateTopicTask(
+        dataToBeUpdated,
+        whereQuery,
+        { transaction: t }
+      );
+
+      responseMessage.assinedUserToTask =
+        "Task assigned to Data Generator and lifeCycle updated successfully";
+      responseMessage.UpdateTaskStatus = "Task Statuses updated successfully";
+
+      // CREATE task log for task assignment to dataGenerator
+      let createLog = await services.topicTaskService.createTopicTaskLog(
+        topicTaskData.id,
+        topicTaskData.supervisor.Name,
+        userData.Name,
+        CONSTANTS.sheetLogsMessages.supervisorAssignToDataGenerator,
+        { transaction: t }
+      );
+
+      responseMessage.taskLog =
+        "Log record for task assignment to dataGenerator added successfully";
+
+      await t.commit();
+      res.status(httpStatus.OK).send(responseMessage);
     } catch (err) {
-      console.log(err);
+      await t.rollback();
       next(err);
     }
   },
 
   async assignTaskToReviewer(req, res, next) {
+    const t = await db.transaction();
     try {
       let values = await assignTaskToReviewerSchema.validateAsync(req.body);
 
@@ -163,57 +168,54 @@ const TopicManagementController = {
         taskLog: "",
       };
 
-      if (userData && topicTaskData) {
-        // Checking if sheet is already assigned to TopicTask reviewer
-        if (topicTaskData.assignedToUserId === userData.id) {
-          res.status(httpStatus.OK).send({ mesage: "Task already assigned to Data Generator" });
-        } else {
-          //UPDATE task assignment & life cycle & task status
-
-          let dataToBeUpdated = {
-            assignedToUserId: userData.id,
-            reviewerId: userData.id,
-            lifeCycle: CONSTANTS.roleNames.Reviewer,
-            statusForSupervisor: CONSTANTS.sheetStatuses.NotStarted,
-            statusForReviewer: CONSTANTS.sheetStatuses.NotStarted,
-            supervisorCommentToReviewer: values.supervisorComments,
-          };
-
-          let whereQuery = {
-            where: { id: values.topicTaskId },
-          };
-
-          let updateTopicTask = await services.topicTaskService.updateTopicTask(
-            dataToBeUpdated,
-            whereQuery
-          );
-
-          if (updateTopicTask.length > 0) {
-            responseMessage.assinedUserToTask =
-              "Task assigned to Reviewer and lifeCycle updated successfully";
-            responseMessage.UpdateTaskStatus = "Task Statuses updated successfully";
-          }
-
-          // CREATE task log for task assignment to reviewer
-
-          let createLog = await services.topicTaskService.createTopicTaskLog(
-            topicTaskData.id,
-            topicTaskData.supervisor.Name,
-            userData.Name,
-            CONSTANTS.sheetLogsMessages.supervisorAssignToReviewer
-          );
-
-          if (createLog) {
-            responseMessage.taskLog =
-              "Log record for task assignment to reviewer added successfully";
-          }
-
-          res.status(httpStatus.OK).send(responseMessage);
-        }
-      } else {
-        res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Task Id" });
+      if (!userData && !topicTaskData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Wrong user Id or Task Id!");
       }
+      // Checking if sheet is already assigned to TopicTask reviewer
+      if (topicTaskData.assignedToUserId !== userData.id) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Task already assigned to Data Generator!");
+      }
+
+      //UPDATE task assignment & life cycle & task status
+
+      let dataToBeUpdated = {
+        assignedToUserId: userData.id,
+        reviewerId: userData.id,
+        lifeCycle: CONSTANTS.roleNames.Reviewer,
+        statusForSupervisor: CONSTANTS.sheetStatuses.NotStarted,
+        statusForReviewer: CONSTANTS.sheetStatuses.NotStarted,
+        supervisorCommentToReviewer: values.supervisorComments,
+      };
+
+      let whereQuery = {
+        where: { id: values.topicTaskId },
+      };
+
+      let updateTopicTask = await services.topicTaskService.updateTopicTask(
+        dataToBeUpdated,
+        whereQuery,
+        { transaction: t }
+      );
+
+      responseMessage.assinedUserToTask =
+        "Task assigned to Reviewer and lifeCycle updated successfully";
+      responseMessage.UpdateTaskStatus = "Task Statuses updated successfully";
+
+      // CREATE task log for task assignment to reviewer
+
+      let createLog = await services.topicTaskService.createTopicTaskLog(
+        topicTaskData.id,
+        topicTaskData.supervisor.Name,
+        userData.Name,
+        CONSTANTS.sheetLogsMessages.supervisorAssignToReviewer,
+        { transaction: t }
+      );
+
+      responseMessage.taskLog = "Log record for task assignment to reviewer added successfully";
+      await t.commit();
+      res.status(httpStatus.OK).send(responseMessage);
     } catch (err) {
+      await t.rollBack();
       next(err);
     }
   },
@@ -318,7 +320,7 @@ const TopicManagementController = {
       let topicsMappings = await services.topicTaskService.findTopicTaskMappingsByTaskId(
         values.topicTaskId
       );
-      
+
       let topicSubTopicsVocab = [];
       if (topicsMappings.length > 0) {
         for (let i = 0; i < topicsMappings.length; i++) {
@@ -489,6 +491,7 @@ const TopicManagementController = {
   },
 
   async togglePublishTopicTask(req, res, next) {
+    const t = await db.transaction();
     try {
       let values = await togglePublishTopicTaskSchema.validateAsync(req.body);
 
@@ -499,7 +502,7 @@ const TopicManagementController = {
       let task = await services.topicTaskService.findTopicTasks(whereQueryForTaskFind);
 
       if (!task) {
-        return res.status(httpStatus.BAD_REQUEST).send({ message: "Topic Task not found" });
+        throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
       }
 
       let taskData = task[0];
@@ -513,14 +516,18 @@ const TopicManagementController = {
         where: { id: values.topicTaskId },
       };
 
-      let updateTask = await services.topicTaskService.updateTopicTask(dataToBeUpdated, whereQuery);
+      let updateTask = await services.topicTaskService.updateTopicTask(
+        dataToBeUpdated,
+        whereQuery,
+        { transaction: t }
+      );
 
-      if (updateTask.length > 0) {
-        responseMessage.message = `Task IsPublished set to ${dataToBeUpdated.isPublished}`;
-      }
+      await t.commit();
+      responseMessage.message = `Task IsPublished set to ${dataToBeUpdated.isPublished}`;
 
       res.status(httpStatus.OK).send(responseMessage);
     } catch (err) {
+      await t.rollBack();
       next(err);
     }
   },

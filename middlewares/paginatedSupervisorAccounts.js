@@ -57,8 +57,6 @@ const paginatedSupervisorAccounts = () => {
         offset: startIndex,
       });
 
-      console.log(usersDetails);
-
       let userWithBoardsSubBoards = [];
 
       for (let i = 0; i < usersDetails.length; i++) {

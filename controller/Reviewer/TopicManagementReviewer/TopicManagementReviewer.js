@@ -6,17 +6,22 @@ const {
   updateInprogressTaskStatusSchema,
   updateCompleteTaskStatusSchema,
   submitTaskToSupervisorSchema,
+  addRecheckCommentSchema,
+  getErrorReportFilesSchema,
+  getRecheckingCommentsSchema,
 } = require("../../../validations/TopicManagementReviewerValidations");
-const { TaskTopicMapping } = require("../../../models/TopicTaskMapping");
+const { SpamTopicTaskRecheckComments } = require("../../../models/TopicTask");
 const services = require("../../../services");
 const httpStatus = require("http-status");
 const CONSTANTS = require("../../../constants/constants");
 const { User } = require("../../../models/User");
 const { generateFileName } = require("../../../config/s3");
 const { ApiError } = require("../../../middlewares/apiError");
+const db = require("../../../config/database");
 
 const TopicManagementController = {
   async updateInProgressTaskStatus(req, res, next) {
+    const t = await db.transaction();
     try {
       let values = await updateInprogressTaskStatusSchema.validateAsync(req.body);
 
@@ -49,14 +54,18 @@ const TopicManagementController = {
 
       let whereQueryForTaskUpdate = { where: { id: topicTaskData.id } };
 
-      await services.topicTaskService.updateTopicTask(dataToBeUpdated, whereQueryForTaskUpdate);
-
+      await services.topicTaskService.updateTopicTask(dataToBeUpdated, whereQueryForTaskUpdate, {
+        transaction: t,
+      });
+      await t.commit();
       res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
     } catch (err) {
+      await t.rollback();
       next(err);
     }
   },
   async addErrorReportToTopicTask(req, res, next) {
+    const t = await db.transaction;
     try {
       let values = await addErrorReportToTopicTaskSchema.validateAsync({
         ...req.body,
@@ -133,7 +142,10 @@ const TopicManagementController = {
 
       let updateTopicTask = await services.topicTaskService.updateTopicTask(
         dataToBeUpdated,
-        whereQueryForUpdateTopicTask
+        whereQueryForUpdateTopicTask,
+        {
+          transaction: t,
+        }
       );
 
       if (updateTopicTask[0] > 0) {
@@ -145,19 +157,25 @@ const TopicManagementController = {
         values.topicTaskId,
         topicTaskData.assignedToUserName.userName,
         topicTaskData.supervisor.userName,
-        CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisorErrorReport
+        CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisorErrorReport,
+        {
+          transaction: t,
+        }
       );
 
       if (createLog) {
         responseMessage.message.sheetLog =
           "Log record for assignment to supervisor added successfully";
       }
+      await t.commit();
       res.status(httpStatus.OK).send(responseMessage);
     } catch (err) {
+      await t.rollback();
       next(err);
     }
   },
   async addErrorsToTopics(req, res, next) {
+    const t = await db.transaction();
     try {
       let values = await addErrorsToTopicsSchema.validateAsync(req.body);
 
@@ -170,21 +188,25 @@ const TopicManagementController = {
 
       let updateTaskTopicMapping = await services.topicTaskService.updateTaskTopicMapping(
         dataToBeUpdated,
-        whereQuery
+        whereQuery,
+        { transaction: t }
       );
-
+      await t.commit();
       if (!updateTaskTopicMapping[0] > 0) {
-        res
-          .status(httpStatus.INTERNAL_SERVER_ERROR)
-          .send({ message: "Couldn't add Error Report to taskSubTopic mapping!" });
+        throw new ApiError(
+          httpStatus.INTERNAL_SERVER_ERROR,
+          "Couldn't add Error Report to taskTopic mapping!"
+        );
       } else {
         res.status(httpStatus.OK).send({ message: "Added Error Report to taskTopic mapping!" });
       }
     } catch (err) {
+      await t.rollback();
       next(err);
     }
   },
   async addErrorsToSubTopics(req, res, next) {
+    constt = db.transaction();
     try {
       let values = await addErrorsToSubTopicsSchema.validateAsync(req.body);
 
@@ -203,20 +225,26 @@ const TopicManagementController = {
 
       let updatedTaskSubTopicMapping = await services.topicTaskService.updateTaskSubTopicMapping(
         dataToBeUpdated,
-        whereQuery
+        whereQuery,
+        { transaction: t }
       );
+
+      await t.commit();
       if (!updatedTaskSubTopicMapping[0] > 0) {
-        res
-          .status(httpStatus.INTERNAL_SERVER_ERROR)
-          .send({ message: "Couldn't add Error Report to taskSubTopic mapping!" });
+        throw new ApiError(
+          httpStatus.INTERNAL_SERVER_ERROR,
+          "Couldn't add Error Report to taskSubTopic mapping!"
+        );
       } else {
         res.status(httpStatus.OK).send({ message: "Added Error Report to taskSubTopic mapping!" });
       }
     } catch (err) {
+      await t.rollback();
       next(err);
     }
   },
   async addErrorsToVocabulary(req, res, next) {
+    const t = db.transaction();
     try {
       let values = await addErrorsToVocabularySchema.validateAsync(req.body);
 
@@ -231,23 +259,27 @@ const TopicManagementController = {
       };
       let updateTaskVocabularyMapping = await services.topicTaskService.updateTaskVocabularyMapping(
         dataToBeUpdated,
-        whereQuery
+        whereQuery,
+        { transaction: t }
       );
-
+      await t.commit();
       if (!updateTaskVocabularyMapping[0] > 0) {
-        res
-          .status(httpStatus.INTERNAL_SERVER_ERROR)
-          .send({ message: "Couldn't add Error Report to taskVocabulary mapping!" });
+        throw new ApiError(
+          httpStatus.INTERNAL_SERVER_ERROR,
+          "Couldn't add Error Report to taskVocabulary mapping!!"
+        );
       } else {
         res
           .status(httpStatus.OK)
           .send({ message: "Added Error Report to taskVocabulary mapping!" });
       }
     } catch (err) {
+      await t.rollback();
       next(err);
     }
   },
   async updateCompleteTaskStatus(req, res, next) {
+    const t = db.transaction();
     try {
       let values = await updateCompleteTaskStatusSchema.validateAsync(req.body);
 
@@ -280,16 +312,18 @@ const TopicManagementController = {
 
       let whereQueryForUpdate = { where: { id: topicTaskData.id } };
 
-      await services.topicTaskService.updateTopicTask(dataToBeUpdated, whereQueryForUpdate);
-
+      await services.topicTaskService.updateTopicTask(dataToBeUpdated, whereQueryForUpdate, {
+        transaction: t,
+      });
+      await t.commit();
       res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
-
-      console.log(values);
     } catch (err) {
+      await t.rollack();
       next(err);
     }
   },
   async submitTaskToSupervisor(req, res, next) {
+    const t = db.transaction();
     try {
       let values = await submitTaskToSupervisorSchema.validateAsync(req.body);
 
@@ -340,7 +374,9 @@ const TopicManagementController = {
         where: { id: topicTaskData.id },
       };
 
-      await services.topicTaskService.updateTopicTask(dataToBeUpdated, whereQuery);
+      await services.topicTaskService.updateTopicTask(dataToBeUpdated, whereQuery, {
+        transaction: t,
+      });
 
       responseMessage.assinedUserToSheet = "Task assigned to supervisor successfully";
       responseMessage.UpdateSheetStatus = "Task Statuses updated successfully";
@@ -351,18 +387,144 @@ const TopicManagementController = {
         values.topicTaskId,
         topicTaskData.assignedToUserName.userName,
         topicTaskData.supervisor.userName,
-        CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisor
+        CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisor,
+        { transaction: t }
       );
 
       responseMessage.sheetLog = "Log record for assignment to supervisor added successfully";
 
+      await t.commit();
+
       res.status(httpStatus.OK).send(responseMessage);
     } catch (err) {
+      await t.rollback();
       next(err);
     }
   },
   async addRecheckComment(req, res, next) {
+    const t = await db.transaction();
     try {
+      let values = await addRecheckCommentSchema.validateAsync(req.body);
+
+      let responseMessage = {
+        message: { recheckComment: "", taskLog: "" },
+      };
+
+      let whereQuery = {
+        where: { id: values.topicTaskId },
+        include: [
+          { model: User, as: "assignedToUserName", attributes: ["id", "Name", "userName"] },
+          { model: User, as: "supervisor", attributes: ["id", "Name", "userName"] },
+        ],
+        raw: true,
+        nest: true,
+      };
+
+      let topicTaskData = await services.topicTaskService.findOneTopicTask(whereQuery);
+
+      console.log(topicTaskData);
+      if (!topicTaskData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
+      }
+
+      if (topicTaskData.reviewerId !== values.reviewerId) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Reviewer Not assigned to task!");
+      }
+
+      if (topicTaskData.isSpam !== true) {
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          "Cannot add recheck error, task not in spam state!"
+        );
+      }
+
+      let dataToBeCreated = {
+        topicTaskId: values.topicTaskId,
+        reviewerRecheckComment: values.recheckComment,
+      };
+
+      let addRecheckComment = await SpamTopicTaskRecheckComments.create(dataToBeCreated, {
+        transaction: t,
+      });
+
+      responseMessage.message.recheckComment = "RecheckComment added successfully!";
+
+      let dataToBeUpdated = {
+        assignedToUserId: topicTaskData.supervisorId,
+        statusForReviewer: CONSTANTS.sheetStatuses.Complete,
+        lifeCycle: CONSTANTS.roleNames.Supervisor,
+        isSpam: true,
+      };
+
+      let whereQueryForTaskUpdate = { where: { id: values.topicTaskId } };
+
+      let updateTopicTaskData = await services.topicTaskService.updateTopicTask(
+        dataToBeUpdated,
+        whereQueryForTaskUpdate,
+        { transaction: t }
+      );
+
+      let createLog = await services.topicTaskService.createTopicTaskLog(
+        values.topicTaskId,
+        topicTaskData.assignedToUserName.userName,
+        topicTaskData.supervisor.userName,
+        CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisorErrorReport,
+        { transaction: t }
+      );
+
+      responseMessage.message.taskLog =
+        "Log record for assignment to supervisor added successfully";
+
+      res.status(httpStatus.OK).send({
+        message: "Recheking error added successfully!",
+        responseMessage,
+        addRecheckComment,
+      });
+
+      await t.commit();
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+  async getErrorReportFile(req, res, next) {
+    try {
+      let values = await getErrorReportFilesSchema.validateAsync({
+        topicTaskId: req.query.topicTaskId,
+      });
+      let whereQuery = {
+        where: { id: values.topicTaskId },
+      };
+      let topicTaskData = await services.topicTaskService.findOneTopicTask(whereQuery);
+
+      if (!topicTaskData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
+      }
+      console.log(values);
+
+      let fileUrl = await services.paperNumberSheetService.getFilesUrlFromS3(
+        topicTaskData.errorReportImg
+      );
+
+      res.status(httpStatus.OK).send({
+        errorReportFile: topicTaskData.errorReportImg,
+        errorReportFileUrl: fileUrl,
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+  async getRecheckComment(req, res, next) {
+    try {
+      let values = await getRecheckingCommentsSchema.validateAsync({
+        topicTaskId: req.query.topicTaskId,
+      });
+      let recheckComment = await services.topicTaskService.findRecheckingComments(
+        values.topicTaskId
+      );
+
+      res.status(httpStatus.OK).send(recheckComment);
     } catch (err) {
       next(err);
     }

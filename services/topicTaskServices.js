@@ -1,5 +1,5 @@
 const { Op, Sequelize, where } = require("sequelize");
-const { TopicTask, TopicTaskLog } = require("../models/TopicTask");
+const { TopicTask, TopicTaskLog, SpamTopicTaskRecheckComments } = require("../models/TopicTask");
 const {
   TaskTopicMapping,
   TaskSubTopicMapping,
@@ -19,17 +19,21 @@ const createTopicTask = async ({
   resources,
   description,
   supervisorId,
+  options,
 }) => {
   try {
-    let topicTask = await TopicTask.create({
-      boardId,
-      subBoardId,
-      grade,
-      subjectId,
-      resources,
-      description,
-      supervisorId,
-    });
+    let topicTask = await TopicTask.create(
+      {
+        boardId,
+        subBoardId,
+        grade,
+        subjectId,
+        resources,
+        description,
+        supervisorId,
+      },
+      options
+    );
 
     return topicTask;
   } catch (err) {
@@ -78,9 +82,9 @@ const checkTopicTask = async ({ boardId, subBoardId, grade, subjectId }) => {
   }
 };
 
-const updateTopicTask = async (dataToBeUpdated, whereQuery) => {
+const updateTopicTask = async (dataToBeUpdated, whereQuery, options) => {
   try {
-    let updatedTopicTask = await TopicTask.update(dataToBeUpdated, whereQuery);
+    let updatedTopicTask = await TopicTask.update(dataToBeUpdated, whereQuery, options);
 
     return updatedTopicTask;
   } catch (err) {
@@ -102,10 +106,13 @@ const findTopicTaskAndUser = async (topicTaskId) => {
   }
 };
 
-const createTopicTaskLog = async (topicTaskId, assignee, assignedTo, logMessage) => {
+const createTopicTaskLog = async (topicTaskId, assignee, assignedTo, logMessage, options) => {
   try {
     console.log(topicTaskId, assignee, assignedTo, logMessage);
-    let taskLog = await TopicTaskLog.create({ topicTaskId, assignee, assignedTo, logMessage });
+    let taskLog = await TopicTaskLog.create(
+      { topicTaskId, assignee, assignedTo, logMessage },
+      options
+    );
 
     return taskLog;
   } catch (err) {
@@ -210,9 +217,9 @@ const getTaskLogs = async (topicTaskId) => {
   }
 };
 
-const updateTaskTopicMapping = async (dataToBeUpdated, whereQuery) => {
+const updateTaskTopicMapping = async (dataToBeUpdated, whereQuery, options) => {
   try {
-    let updatedMapping = await TaskTopicMapping.update(dataToBeUpdated, whereQuery);
+    let updatedMapping = await TaskTopicMapping.update(dataToBeUpdated, whereQuery, options);
 
     return updatedMapping;
   } catch (err) {
@@ -220,9 +227,9 @@ const updateTaskTopicMapping = async (dataToBeUpdated, whereQuery) => {
   }
 };
 
-const updateTaskSubTopicMapping = async (dataToBeUpdated, whereQuery) => {
+const updateTaskSubTopicMapping = async (dataToBeUpdated, whereQuery, options) => {
   try {
-    let updatedMapping = await TaskSubTopicMapping.update(dataToBeUpdated, whereQuery);
+    let updatedMapping = await TaskSubTopicMapping.update(dataToBeUpdated, whereQuery.options);
 
     return updatedMapping;
   } catch (err) {
@@ -235,6 +242,19 @@ const updateTaskVocabularyMapping = async (dataToBeUpdated, whereQuery) => {
     let updatedMapping = await TaskVocabularyMapping.update(dataToBeUpdated, whereQuery);
 
     return updatedMapping;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findRecheckingComments = async (topicTaskId) => {
+  try {
+    let findRecheckComments = await SpamTopicTaskRecheckComments.findOne({
+      where: { topicTaskId },
+      order: [["createdAt", "DESC"]],
+      raw: true,
+    });
+    return findRecheckComments;
   } catch (err) {
     throw err;
   }
@@ -258,4 +278,5 @@ module.exports = {
   updateTaskSubTopicMapping,
   updateTaskVocabularyMapping,
   findOneTopicTask,
+  findRecheckingComments,
 };

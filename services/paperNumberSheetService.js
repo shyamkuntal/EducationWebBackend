@@ -72,9 +72,9 @@ const getFilesUrlFromS3 = async (fileName) => {
   }
 };
 
-const updatePaperNumberSheet = async (dataToBeUpdated, whereQuery) => {
+const updatePaperNumberSheet = async (dataToBeUpdated, whereQuery, options) => {
   try {
-    let updateStatus = await PaperNumberSheet.update(dataToBeUpdated, whereQuery);
+    let updateStatus = await PaperNumberSheet.update(dataToBeUpdated, whereQuery, options);
 
     return updateStatus;
   } catch (err) {

@@ -293,7 +293,10 @@ const DataGeneratorController = {
       // Check if the topic name already exists
       const existingTopic = await services.topicService.checkTopicDuplicateName(values.name);
       const existingTopicInMapping = existingTopic
-        ? await services.topicService.checkTopicDuplicateNamebyTaskId(existingTopic.id, values.topicTaskId)
+        ? await services.topicService.checkTopicDuplicateNamebyTaskId(
+            existingTopic.id,
+            values.topicTaskId
+          )
         : null;
 
       if (!existingTopicInMapping) {
@@ -513,7 +516,7 @@ const DataGeneratorController = {
     const id = req.body.topicTaskId;
     try {
       let whereQueryForTaskFind = { where: { id: id }, raw: true };
-      const sheetData = await services.topicTaskService.findTopicTasks(whereQueryForTaskFind)
+      const sheetData = await services.topicTaskService.findTopicTasks(whereQueryForTaskFind);
       let statusToUpdate = {
         statusForDataGenerator: CONSTANTS.sheetStatuses.InProgress,
       };
@@ -565,7 +568,9 @@ const DataGeneratorController = {
         // Check and create new subTopics from newNames
         const createdSubTopics = [];
         for (const nameObj of EditSubTopics) {
-          let existingSubTopic = await services.topicService.checkSubTopicDuplicateName(nameObj.name);
+          let existingSubTopic = await services.topicService.checkSubTopicDuplicateName(
+            nameObj.name
+          );
           if (existingSubTopic === null) {
             // Create new subTopic and map it to the taskSubTopicMappping table
             const subtopic = await services.topicService.createSubTopic(nameObj.name);
@@ -598,19 +603,19 @@ const DataGeneratorController = {
           });
           let findSubTopic = await TaskSubTopicMapping.findAll({
             where: { subTopicId: subTopic.id },
-            raw: true
-          })
-          if(findSubTopic.length === 0){
+            raw: true,
+          });
+          if (findSubTopic.length === 0) {
             await SubTopic.destroy({
-              where: { id: subTopic.id }
+              where: { id: subTopic.id },
             });
           }
         }
-        res.status(httpStatus.OK).send({message: "Deleted Successfully"});
+        res.status(httpStatus.OK).send({ message: "Deleted Successfully" });
       }
     } catch (err) {
-      console.log(err)
-      next(err)
+      console.log(err);
+      next(err);
     }
   },
 
@@ -646,7 +651,7 @@ const DataGeneratorController = {
         }
         res.status(httpStatus.CREATED).send(createdVocabs);
       }
-      // Delete mappings from TaskVocabMapping based 
+      // Delete mappings from TaskVocabMapping based
       if (DeleteVocab.length > 0) {
         for (const Vocab of DeleteVocab) {
           await TaskVocabularyMapping.destroy({
@@ -657,34 +662,34 @@ const DataGeneratorController = {
           });
           let findVocab = await TaskVocabularyMapping.findAll({
             where: { vocabularyId: Vocab.id },
-            raw: true
-          })
-          console.log(findVocab.length)
-          if(findVocab.length === 0){
+            raw: true,
+          });
+          console.log(findVocab.length);
+          if (findVocab.length === 0) {
             await Vocabulary.destroy({
-              where: { id: Vocab.id }
+              where: { id: Vocab.id },
             });
           }
         }
-        res.status(httpStatus.OK).send({message: "Deleted Successfully"});
+        res.status(httpStatus.OK).send({ message: "Deleted Successfully" });
       }
     } catch (err) {
-      console.log(err)
-      next(err)
+      console.log(err);
+      next(err);
     }
   },
 
-  async DeleteTopicAndAllRelatedData(req, res, next){
+  async DeleteTopicAndAllRelatedData(req, res, next) {
     const values = req.body;
     try {
       let findTopicInSubTopicMapping = await TaskSubTopicMapping.findAll({
-        where: { 
+        where: {
           topicId: values.topicId,
-          topicTaskId: values.topicTaskId 
+          topicTaskId: values.topicTaskId,
         },
-        raw: true
-      })
-      if(findTopicInSubTopicMapping.length > 0) {
+        raw: true,
+      });
+      if (findTopicInSubTopicMapping.length > 0) {
         for (const subTopic of findTopicInSubTopicMapping) {
           await TaskSubTopicMapping.destroy({
             where: {
@@ -694,25 +699,25 @@ const DataGeneratorController = {
           });
           let findSubTopic = await TaskSubTopicMapping.findAll({
             where: { subTopicId: subTopic.subTopicId },
-            raw: true
-          })
-          console.log(findSubTopic, findSubTopic.length, subTopic.subTopicId)
-          if(findSubTopic.length === 0){
+            raw: true,
+          });
+          console.log(findSubTopic, findSubTopic.length, subTopic.subTopicId);
+          if (findSubTopic.length === 0) {
             await SubTopic.destroy({
-              where: { id: subTopic.subTopicId }
+              where: { id: subTopic.subTopicId },
             });
           }
         }
       }
 
       let findTopicInVocabMapping = await TaskVocabularyMapping.findAll({
-        where: { 
+        where: {
           topicId: values.topicId,
-          topicTaskId: values.topicTaskId 
+          topicTaskId: values.topicTaskId,
         },
-        raw: true
-      })
-      if(findTopicInVocabMapping.length > 0){
+        raw: true,
+      });
+      if (findTopicInVocabMapping.length > 0) {
         for (const Vocab of findTopicInVocabMapping) {
           await TaskVocabularyMapping.destroy({
             where: {
@@ -722,24 +727,24 @@ const DataGeneratorController = {
           });
           let findVocab = await TaskVocabularyMapping.findAll({
             where: { vocabularyId: Vocab.vocabularyId },
-            raw: true
-          })
-          if(findVocab.length === 0){
+            raw: true,
+          });
+          if (findVocab.length === 0) {
             await Vocabulary.destroy({
-              where: { id: Vocab.vocabularyId }
+              where: { id: Vocab.vocabularyId },
             });
           }
         }
       }
 
       let findTopicInTopicMapping = await TaskTopicMapping.findAll({
-        where: { 
+        where: {
           topicId: values.topicId,
-          topicTaskId: values.topicTaskId 
+          topicTaskId: values.topicTaskId,
         },
-        raw: true
-      })
-      if(findTopicInTopicMapping.length > 0){
+        raw: true,
+      });
+      if (findTopicInTopicMapping.length > 0) {
         for (const topic of findTopicInTopicMapping) {
           await TaskTopicMapping.destroy({
             where: {
@@ -749,20 +754,20 @@ const DataGeneratorController = {
           });
           let findTopic = await TaskTopicMapping.findAll({
             where: { topicId: topic.topicId },
-            raw: true
-          })
-          if(findTopic.length === 0){
+            raw: true,
+          });
+          if (findTopic.length === 0) {
             await Topic.destroy({
-              where: { id: topic.topicId }
+              where: { id: topic.topicId },
             });
           }
         }
       }
 
-      res.status(httpStatus.OK).send({message: "Deleted Successfully"});
+      res.status(httpStatus.OK).send({ message: "Deleted Successfully" });
     } catch (err) {
-      console.log(err)
-      next(err)
+      console.log(err);
+      next(err);
     }
   },
 };

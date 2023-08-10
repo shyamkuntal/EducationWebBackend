@@ -54,6 +54,20 @@ const submitTaskToSupervisorSchema = Joi.object({
   reviewerId: Joi.string().guid().required(),
 });
 
+const addRecheckCommentSchema = Joi.object({
+  topicTaskId: Joi.string().guid().required(),
+  reviewerId: Joi.string().guid().required(),
+  recheckComment: Joi.string().max(225).required(),
+});
+
+const getErrorReportFilesSchema = Joi.object({
+  topicTaskId: Joi.string().guid().required(),
+});
+
+const getRecheckingCommentsSchema = Joi.object({
+  topicTaskId: Joi.string().guid().required(),
+});
+
 module.exports = {
   addErrorReportToTopicTaskSchema,
   addErrorsToTopicsSchema,
@@ -62,4 +76,7 @@ module.exports = {
   updateInprogressTaskStatusSchema,
   updateCompleteTaskStatusSchema,
   submitTaskToSupervisorSchema,
+  addRecheckCommentSchema,
+  getErrorReportFilesSchema,
+  getRecheckingCommentsSchema,
 };
