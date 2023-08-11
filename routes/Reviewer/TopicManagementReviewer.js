@@ -34,6 +34,15 @@ router.patch("/adderrorstosubtopics", TopicManagementReviewerController.addError
 // api/tpmreviewer/adderrorstovocab
 router.patch("/adderrorstovocab", TopicManagementReviewerController.addErrorsToVocabulary);
 
+// api/tpmreviewer/gettopicsbytaskid
+router.get("/gettopicsbytaskid", TopicManagementReviewerController.getErrorReportFile);
+
+// api/tpmreviewer/getsubtopicsbytaskid
+router.get("/getsubtopicsbytaskid", TopicManagementReviewerController.getErrorReportFile);
+
+// api/tpmreviewer/getvocabularybytaskid
+router.get("/getvocabularybytaskid", TopicManagementReviewerController.getErrorReportFile);
+
 // api/tpmreviewer/updatecompletestatus
 router.patch("/updatecompletestatus", TopicManagementReviewerController.updateCompleteTaskStatus);
 
@@ -48,20 +57,5 @@ router.get("/getrecheckcomment", TopicManagementReviewerController.getRecheckCom
 
 // api/tpmreviewer/geterrorreportfile
 router.get("/geterrorreportfile", TopicManagementReviewerController.getErrorReportFile);
-
-// api/tpmreviewer/getsubjectnamebyid
-router.get("/getsubjectnamebyid", SubjectManagementController.getSubjectNameById);
-
-// api/pnreviewer/getallboards
-router.get("/getallboards", BoardManagementController.getAllBoards);
-
-// api/pnreviewer/getsubboardsbyboard
-router.get("/getsubboardsbyboard", BoardManagementController.GetSubBoards);
-
-// api/pnreviewer/getuserassignedsubjects
-router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
-
-// api/pnreviewer/getsubjectnames
-router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
 module.exports = router;

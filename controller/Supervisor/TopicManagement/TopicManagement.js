@@ -77,7 +77,7 @@ const TopicManagementController = {
       await t.commit();
       res.status(httpStatus.OK).send({ message: "Topic Task updated successfully!" });
     } catch (err) {
-      await t.rollBack();
+      await t.rollback();
       next(err);
     }
   },
@@ -172,8 +172,8 @@ const TopicManagementController = {
         throw new ApiError(httpStatus.BAD_REQUEST, "Wrong user Id or Task Id!");
       }
       // Checking if sheet is already assigned to TopicTask reviewer
-      if (topicTaskData.assignedToUserId !== userData.id) {
-        throw new ApiError(httpStatus.BAD_REQUEST, "Task already assigned to Data Generator!");
+      if (topicTaskData.assignedToUserId === userData.id) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Task already assigned to Reviewer!");
       }
 
       //UPDATE task assignment & life cycle & task status
@@ -186,6 +186,7 @@ const TopicManagementController = {
         statusForReviewer: CONSTANTS.sheetStatuses.NotStarted,
         supervisorCommentToReviewer: values.supervisorComments,
       };
+      console.log(dataToBeUpdated);
 
       let whereQuery = {
         where: { id: values.topicTaskId },
@@ -215,7 +216,7 @@ const TopicManagementController = {
       await t.commit();
       res.status(httpStatus.OK).send(responseMessage);
     } catch (err) {
-      await t.rollBack();
+      await t.rollback();
       next(err);
     }
   },
@@ -527,7 +528,7 @@ const TopicManagementController = {
 
       res.status(httpStatus.OK).send(responseMessage);
     } catch (err) {
-      await t.rollBack();
+      await t.rollback();
       next(err);
     }
   },

@@ -65,7 +65,7 @@ const TopicManagementController = {
     }
   },
   async addErrorReportToTopicTask(req, res, next) {
-    const t = await db.transaction;
+    const t = await db.transaction();
     try {
       let values = await addErrorReportToTopicTaskSchema.validateAsync({
         ...req.body,
@@ -206,7 +206,7 @@ const TopicManagementController = {
     }
   },
   async addErrorsToSubTopics(req, res, next) {
-    constt = db.transaction();
+    const t = db.transaction();
     try {
       let values = await addErrorsToSubTopicsSchema.validateAsync(req.body);
 
@@ -525,6 +525,13 @@ const TopicManagementController = {
       );
 
       res.status(httpStatus.OK).send(recheckComment);
+    } catch (err) {
+      next(err);
+    }
+  },
+  async getTopicsByTopicTaskId(req, res, next) {
+    try {
+      let values;
     } catch (err) {
       next(err);
     }

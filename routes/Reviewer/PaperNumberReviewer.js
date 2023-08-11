@@ -21,15 +21,6 @@ router.patch(
   PaperNumberReviewerController.UpdateInprogressSheetStatus
 );
 
-// api/pnreviewer/getallboards
-router.get("/getallboards", BoardManagementController.getAllBoards);
-
-// api/pnreviewer/getsubboardsbyboard
-router.get("/getsubboardsbyboard", BoardManagementController.GetSubBoards);
-
-// api/pnreviewer/getuserassignedsubjects
-router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
-
 // api/pnreviewer/getsubjectnames
 router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
