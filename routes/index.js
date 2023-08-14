@@ -13,6 +13,7 @@ const PastPaperReviewer = require("./Reviewer/PastPaperReviewer");
 const PastPaperUploader = require("./PastPaperUploader/PastPaperUploader");
 const topicManagement = require("./Supervisor/TopicManagement");
 const topicManagemnetReviewer = require("./Reviewer/TopicManagementReviewer");
+const bookManagemnetReviewer = require("./Reviewer/BookManagement");
 const PublicRoutes = require("./PublicRoutes.js");
 const Auth = require("./Auth.js");
 const {
@@ -45,5 +46,6 @@ router.use("/datagenerator", AuthDataGenerator(), DataGenerator);
 router.use("/pnreviewer", AuthReviewer(), PaperNumberReviewer);
 router.use("/ppmreviewer", AuthReviewer(), PastPaperReviewer);
 router.use("/tpmreviewer", AuthReviewer(), topicManagemnetReviewer);
+router.use("/bkmreviewer", AuthReviewer(), bookManagemnetReviewer );
 
 module.exports = router;
