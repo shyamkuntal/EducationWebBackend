@@ -479,7 +479,7 @@ const TopicManagementController = {
     }
   },
 
-  async getTopiTaskLogs(req, res, next) {
+  async getTopicTaskLogs(req, res, next) {
     try {
       let values = await getTopicTaskLogsSchema.validateAsync({
         topicTaskId: req.query.topicTaskId,

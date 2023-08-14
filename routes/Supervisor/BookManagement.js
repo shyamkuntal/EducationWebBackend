@@ -28,6 +28,8 @@ router.get("/getallbookbybookid", BookManagementController.getAllChapterByBookId
 
 router.patch("/togglepublishbooktask", BookManagementController.togglePublishBookTask);
 
+router.get("/gettasklogs", BookManagementController.getBookTaskLogs);
+
 // api/topicmanagement/getuserassignedsubjects
 router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
 

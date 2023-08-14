@@ -43,7 +43,7 @@ router.patch("/assigntasktoreviewer", TopicManagementController.assignTaskToRevi
 router.patch("/togglepublishtask", TopicManagementController.togglePublishTopicTask);
 
 // /api/topicmanagement/gettasklogs
-router.get("/gettasklogs", TopicManagementController.getTopiTaskLogs);
+router.get("/gettasklogs", TopicManagementController.getTopicTaskLogs);
 
 // api/topicmanagement/getuserassignedsubjects
 router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);

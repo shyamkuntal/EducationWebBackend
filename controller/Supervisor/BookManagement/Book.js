@@ -1,6 +1,6 @@
 const { ApiError } = require("../../../middlewares/apiError");
 const { Book, Chapter } = require("../../../models/Book/Book");
-const { BookTask } = require("../../../models/Book/BookTask");
+const { BookTask, BookTaskLog } = require("../../../models/Book/BookTask");
 const { TaskBookMapping, TaskBookChapterMapping } = require("../../../models/Book/BookTaskMapping");
 const services = require("../../../services/index");
 const httpStatus = require("http-status");
@@ -14,7 +14,6 @@ const {
 const CONSTANTS = require("../../../constants/constants");
 
 const BookManagementController = {
-
   async createBookTask(req, res, next) {
     const t = await db.transaction();
     try {
@@ -158,7 +157,7 @@ const BookManagementController = {
         } else {
           // UPDATE task assignment & life cycle & task status
 
-          let dataToBeUpdated = {
+          let dataToBeUpdatedInTaskTable = {
             assignedToUserId: userData.id,
             dataGeneratorId: userData.id,
             lifeCycle: CONSTANTS.roleNames.DataGenerator,
@@ -167,12 +166,11 @@ const BookManagementController = {
             supervisorCommentToDataGenerator: values.supervisorComments,
           };
 
-          let updatedBookTask = await BookTask.update(dataToBeUpdated, {
+          let updatedBookTask = await BookTask.update(dataToBeUpdatedInTaskTable, {
             where: { id: values.bookTaskId },
             returning: true,
             transaction: t,
           });
-
           //   let bookTaskData = updatedBookTask[1][0];
 
           if (updatedBookTask.length > 0) {
@@ -301,7 +299,7 @@ const BookManagementController = {
 
       const bookMapping = await TaskBookMapping.findAll({
         where: { bookTaskId: values },
-        include: [{ model: Book, attributes: ["id", "name"] }],
+        include: [{ model: Book, attributes: ["id", "name", "subTitle", "author", "publisher"] }],
       });
 
       let BookChapter = [];
@@ -310,17 +308,20 @@ const BookManagementController = {
           // fetch Chapters
           const chapter = await TaskBookChapterMapping.findAll({
             where: { bookTaskId: values },
-            include: [{ model: Chapter, attributes: ["id", "name"] }],
+            include: [{ model: Chapter, attributes: ["id", "name", "chapterNumber"] }],
           });
 
           BookChapter.push({
             bookTaskId: values,
+            bookStatusForDataGenerator: bookMapping[i].bookStatusForDataGenerator,
+            bookStatusForReviewer: bookMapping[i].bookStatusForReviewer,
+            isError: bookMapping[i].isError,
+            errorReport: bookMapping[i].errorReport,
             book: bookMapping[i].book,
             chapter: chapter,
           });
         }
       }
-
       res.status(httpStatus.OK).send(BookChapter);
     } catch (err) {
       console.log(err);
@@ -382,7 +383,19 @@ const BookManagementController = {
     }
   },
 
-  
+  async getBookTaskLogs(req, res, next) {
+    let bookTaskId = req.query.bookTaskId;
+    try {
+      let logs = await BookTaskLog.findAll({
+        where: { bookTaskId },
+        order: [["createdAt", "ASC"]],
+      });
+
+      res.status(httpStatus.OK).send(logs);
+    } catch (err) {
+      next(err);
+    }
+  },
 };
 
 module.exports = BookManagementController;

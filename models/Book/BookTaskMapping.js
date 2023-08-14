@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../../config/database");
 const { Book, Chapter } = require("./Book");
 const { BookTask } = require("./BookTask");
+const constants = require("../../constants/constants");
 
 const TaskBookMapping = db.define("taskBookMapping", {
   id: {
@@ -28,6 +29,14 @@ const TaskBookMapping = db.define("taskBookMapping", {
   isArchived: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
+  },
+  bookStatusForDataGenerator: {
+    type: Sequelize.STRING,
+    defaultValue: constants.sheetStatuses.NotStarted,
+  },
+  bookStatusForReviewer: {
+    type: Sequelize.STRING,
+    defaultValue: constants.sheetStatuses.NotStarted,
   },
 });
 
