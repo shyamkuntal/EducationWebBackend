@@ -336,6 +336,12 @@ const TopicManagementController = {
           topicSubTopicsVocab.push({
             topicTaskId: values.topicTaskId,
             topic: topicsMappings[i].topic,
+            topicWithAllAttributes: {
+              id: topicsMappings[i].topic.id,
+              name: topicsMappings[i].topic.name,
+              isError: topicsMappings[i].isError,
+              errorReport: topicsMappings[i].errorReport,
+            },
             subTopics: subTopics,
             vocab: vocab,
           });

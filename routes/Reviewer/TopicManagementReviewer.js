@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const TopicManagementReviewerController = require("../../controller/Reviewer/TopicManagementReviewer/TopicManagementReviewer");
-const SubjectManagementController = require("../../controller/Supervisor/SubjectManagement/ManageSubject");
-const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM.js");
-const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor");
+const TopicManagementController = require("../../controller/Supervisor/TopicManagement/TopicManagement");
 const upload = require("../../config/multer");
 const paginatedTopicTasks = require("../../middlewares/paginatedTopicTasks");
 
@@ -34,15 +32,6 @@ router.patch("/adderrorstosubtopics", TopicManagementReviewerController.addError
 // api/tpmreviewer/adderrorstovocab
 router.patch("/adderrorstovocab", TopicManagementReviewerController.addErrorsToVocabulary);
 
-// api/tpmreviewer/gettopicsbytaskid
-router.get("/gettopicsbytaskid", TopicManagementReviewerController.getErrorReportFile);
-
-// api/tpmreviewer/getsubtopicsbytaskid
-router.get("/getsubtopicsbytaskid", TopicManagementReviewerController.getErrorReportFile);
-
-// api/tpmreviewer/getvocabularybytaskid
-router.get("/getvocabularybytaskid", TopicManagementReviewerController.getErrorReportFile);
-
 // api/tpmreviewer/updatecompletestatus
 router.patch("/updatecompletestatus", TopicManagementReviewerController.updateCompleteTaskStatus);
 
@@ -57,5 +46,11 @@ router.get("/getrecheckcomment", TopicManagementReviewerController.getRecheckCom
 
 // api/tpmreviewer/geterrorreportfile
 router.get("/geterrorreportfile", TopicManagementReviewerController.getErrorReportFile);
+
+// /api/tpmreviewer/gettopicsubtopicvocabbytopictaskid
+router.get(
+  "/gettopicsubtopicvocabbytopictaskid",
+  TopicManagementController.getTopicSubTopicVocabByTaskId
+);
 
 module.exports = router;

@@ -126,6 +126,7 @@ const findTopicTaskMappingsByTaskId = async (topicTaskId) => {
       where: { topicTaskId },
       attributes: ["topicTaskId", "topicId", "errorReport", "isError"],
       include: [{ model: Topic, attributes: ["id", "name"] }],
+      order: [["createdAt", "DESC"]],
       raw: true,
       nest: true,
     });
@@ -155,7 +156,7 @@ const findSubTopicTaskMappingsByTopicId = async (topicId) => {
   try {
     let mappings = await TaskSubTopicMapping.findAll({
       where: { topicId },
-      attributes: ["topicId"],
+      attributes: ["topicId", "errorReport", "isError"],
       include: [{ model: SubTopic, attributes: ["id", "name"] }],
     });
 
@@ -169,7 +170,7 @@ const findVocabTopicTaskMappingsByTopicId = async (topicId) => {
   try {
     let mappings = await TaskVocabularyMapping.findAll({
       where: { topicId },
-      attributes: ["topicId"],
+      attributes: ["topicId", "errorReport", "isError"],
       include: [{ model: Vocabulary, attributes: ["id", "name"] }],
     });
     return mappings;
@@ -229,7 +230,7 @@ const updateTaskTopicMapping = async (dataToBeUpdated, whereQuery, options) => {
 
 const updateTaskSubTopicMapping = async (dataToBeUpdated, whereQuery, options) => {
   try {
-    let updatedMapping = await TaskSubTopicMapping.update(dataToBeUpdated, whereQuery.options);
+    let updatedMapping = await TaskSubTopicMapping.update(dataToBeUpdated, whereQuery, options);
 
     return updatedMapping;
   } catch (err) {
@@ -237,9 +238,9 @@ const updateTaskSubTopicMapping = async (dataToBeUpdated, whereQuery, options) =
   }
 };
 
-const updateTaskVocabularyMapping = async (dataToBeUpdated, whereQuery) => {
+const updateTaskVocabularyMapping = async (dataToBeUpdated, whereQuery, options) => {
   try {
-    let updatedMapping = await TaskVocabularyMapping.update(dataToBeUpdated, whereQuery);
+    let updatedMapping = await TaskVocabularyMapping.update(dataToBeUpdated, whereQuery, options);
 
     return updatedMapping;
   } catch (err) {

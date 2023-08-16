@@ -206,38 +206,36 @@ const TopicManagementController = {
     }
   },
   async addErrorsToSubTopics(req, res, next) {
-    const t = db.transaction();
+    const t = await db.transaction();
     try {
-      let values = await addErrorsToSubTopicsSchema.validateAsync(req.body);
+      let values = await addErrorsToSubTopicsSchema.validateAsync({
+        subTopicsErrors: req.body.subTopicsErrors,
+      });
 
-      let dataToBeUpdated = {
-        isError: values.isError,
-        errorReport: values.errorReport,
-      };
+      let subTopicsWithErrors = values.subTopicsErrors;
 
-      let whereQuery = {
-        where: {
-          subTopicId: values.subTopicId,
-          topicId: values.topicId,
-          topicTaskId: values.topicTaskId,
-        },
-      };
+      for (let i = 0; i < subTopicsWithErrors.length; i++) {
+        let dataToBeUpdated = {
+          isError: subTopicsWithErrors[i].isError,
+          errorReport: subTopicsWithErrors[i].errorReport,
+        };
 
-      let updatedTaskSubTopicMapping = await services.topicTaskService.updateTaskSubTopicMapping(
-        dataToBeUpdated,
-        whereQuery,
-        { transaction: t }
-      );
+        let whereQuery = {
+          where: {
+            subTopicId: subTopicsWithErrors[i].subTopicId,
+            topicId: subTopicsWithErrors[i].topicId,
+            topicTaskId: subTopicsWithErrors[i].topicTaskId,
+          },
+        };
+
+        await services.topicTaskService.updateTaskSubTopicMapping(dataToBeUpdated, whereQuery, {
+          transaction: t,
+        });
+      }
 
       await t.commit();
-      if (!updatedTaskSubTopicMapping[0] > 0) {
-        throw new ApiError(
-          httpStatus.INTERNAL_SERVER_ERROR,
-          "Couldn't add Error Report to taskSubTopic mapping!"
-        );
-      } else {
-        res.status(httpStatus.OK).send({ message: "Added Error Report to taskSubTopic mapping!" });
-      }
+
+      res.status(httpStatus.OK).send({ message: "Added Error Report to taskSubTopic mapping!" });
     } catch (err) {
       await t.rollback();
       next(err);
@@ -246,33 +244,34 @@ const TopicManagementController = {
   async addErrorsToVocabulary(req, res, next) {
     const t = db.transaction();
     try {
-      let values = await addErrorsToVocabularySchema.validateAsync(req.body);
+      let values = await addErrorsToVocabularySchema.validateAsync({
+        vocabularyErrors: req.body.vocabularyErrors,
+      });
 
-      let dataToBeUpdated = { isError: values.isError, errorReport: values.errorReport };
+      console.log(values);
 
-      let whereQuery = {
-        where: {
-          vocabularyId: values.vocabularyId,
-          topicId: values.topicId,
-          topicTaskId: values.topicTaskId,
-        },
-      };
-      let updateTaskVocabularyMapping = await services.topicTaskService.updateTaskVocabularyMapping(
-        dataToBeUpdated,
-        whereQuery,
-        { transaction: t }
-      );
-      await t.commit();
-      if (!updateTaskVocabularyMapping[0] > 0) {
-        throw new ApiError(
-          httpStatus.INTERNAL_SERVER_ERROR,
-          "Couldn't add Error Report to taskVocabulary mapping!!"
-        );
-      } else {
-        res
-          .status(httpStatus.OK)
-          .send({ message: "Added Error Report to taskVocabulary mapping!" });
+      let vocabularyWithErrors = values.vocabularyErrors;
+
+      for (let i = 0; i < vocabularyWithErrors.length; i++) {
+        let dataToBeUpdated = {
+          isError: vocabularyWithErrors[i].isError,
+          errorReport: vocabularyWithErrors[i].errorReport,
+        };
+        let whereQuery = {
+          where: {
+            vocabularyId: vocabularyWithErrors[i].vocabularyId,
+            topicId: vocabularyWithErrors[i].topicId,
+            topicTaskId: vocabularyWithErrors[i].topicTaskId,
+          },
+        };
+        await services.topicTaskService.updateTaskVocabularyMapping(dataToBeUpdated, whereQuery, {
+          transaction: t,
+        });
       }
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Added Error Report to taskVocabulary mapping!" });
     } catch (err) {
       await t.rollback();
       next(err);

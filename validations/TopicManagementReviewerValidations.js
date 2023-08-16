@@ -34,19 +34,27 @@ const addErrorsToTopicsSchema = Joi.object({
 });
 
 const addErrorsToSubTopicsSchema = Joi.object({
-  subTopicId: Joi.string().guid().required(),
-  topicId: Joi.string().guid().required(),
-  topicTaskId: Joi.string().guid().required(),
-  isError: Joi.boolean().required(),
-  errorReport: Joi.string().max(225).required().allow(null),
+  subTopicsErrors: Joi.array().items(
+    Joi.object({
+      subTopicId: Joi.string().guid().required(),
+      topicId: Joi.string().guid().required(),
+      topicTaskId: Joi.string().guid().required(),
+      isError: Joi.boolean().required(),
+      errorReport: Joi.string().max(225).required().allow(null),
+    })
+  ),
 });
 
 const addErrorsToVocabularySchema = Joi.object({
-  vocabularyId: Joi.string().guid().required(),
-  topicId: Joi.string().guid().required(),
-  topicTaskId: Joi.string().guid().required(),
-  isError: Joi.boolean().required(),
-  errorReport: Joi.string().max(225).required().allow(null),
+  vocabularyErrors: Joi.array().items(
+    Joi.object({
+      vocabularyId: Joi.string().guid().required(),
+      topicId: Joi.string().guid().required(),
+      topicTaskId: Joi.string().guid().required(),
+      isError: Joi.boolean().required(),
+      errorReport: Joi.string().max(225).required().allow(null),
+    })
+  ),
 });
 
 const submitTaskToSupervisorSchema = Joi.object({
