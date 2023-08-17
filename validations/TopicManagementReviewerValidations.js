@@ -30,7 +30,7 @@ const addErrorsToTopicsSchema = Joi.object({
   topicId: Joi.string().guid().required(),
   topicTaskId: Joi.string().guid().required(),
   isError: Joi.boolean().required(),
-  errorReport: Joi.string().max(225).required().allow(null),
+  errorReport: Joi.string().max(225).required().allow(null).allow(""),
 });
 
 const addErrorsToSubTopicsSchema = Joi.object({
@@ -40,7 +40,7 @@ const addErrorsToSubTopicsSchema = Joi.object({
       topicId: Joi.string().guid().required(),
       topicTaskId: Joi.string().guid().required(),
       isError: Joi.boolean().required(),
-      errorReport: Joi.string().max(225).required().allow(null),
+      errorReport: Joi.string().max(225).required().allow(null).allow(""),
     })
   ),
 });
@@ -52,7 +52,7 @@ const addErrorsToVocabularySchema = Joi.object({
       topicId: Joi.string().guid().required(),
       topicTaskId: Joi.string().guid().required(),
       isError: Joi.boolean().required(),
-      errorReport: Joi.string().max(225).required().allow(null),
+      errorReport: Joi.string().max(225).required().allow(null).allow(""),
     })
   ),
 });

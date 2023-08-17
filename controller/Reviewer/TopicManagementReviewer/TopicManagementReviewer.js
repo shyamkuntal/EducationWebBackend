@@ -242,7 +242,7 @@ const TopicManagementController = {
     }
   },
   async addErrorsToVocabulary(req, res, next) {
-    const t = db.transaction();
+    const t = await db.transaction();
     try {
       let values = await addErrorsToVocabularySchema.validateAsync({
         vocabularyErrors: req.body.vocabularyErrors,
@@ -278,7 +278,7 @@ const TopicManagementController = {
     }
   },
   async updateCompleteTaskStatus(req, res, next) {
-    const t = db.transaction();
+    const t = await db.transaction();
     try {
       let values = await updateCompleteTaskStatusSchema.validateAsync(req.body);
 
@@ -317,12 +317,12 @@ const TopicManagementController = {
       await t.commit();
       res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
     } catch (err) {
-      await t.rollack();
+      await t.rollback();
       next(err);
     }
   },
   async submitTaskToSupervisor(req, res, next) {
-    const t = db.transaction();
+    const t = await db.transaction();
     try {
       let values = await submitTaskToSupervisorSchema.validateAsync(req.body);
 
