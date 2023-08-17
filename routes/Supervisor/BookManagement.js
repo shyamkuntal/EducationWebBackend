@@ -1,15 +1,14 @@
 const express = require("express");
-const BookManagementController = require("../../controller/Supervisor/BookManagement/Book");
+const BookManagementController = require("../../controller/Supervisor/Book");
 const paginatedBookTasks = require("../../middlewares/paginatedBookTask");
-const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor");
-const SubjectManagementController = require("../../controller/Supervisor/SubjectManagement/ManageSubject");
-const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM");
-
+const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor");
+const SubjectManagementController = require("../../controller/Supervisor/ManageSubject");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardM");
 
 const router = express.Router();
 
 router.get("/getallpaginatedbooktask", paginatedBookTasks(), (req, res) => {
-    res.json(res.paginatedResults);
+  res.json(res.paginatedResults);
 });
 
 router.post("/createbooktask", BookManagementController.createBookTask);
@@ -52,7 +51,5 @@ router.get(
   "/getsubjectdetailsbyids",
   SubjectManagementController.getSubjectDetailsByBoardSubBoardGrade
 );
-
-
 
 module.exports = router;

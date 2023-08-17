@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const PastPaperReviewerController = require("../../controller/Reviewer/PastPaperReviewer/PastPaperReviewer");
-const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor");
-const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM");
+const PastPaperReviewerController = require("../../controller/Reviewer/PastPaperReviewer");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardM");
 
 const upload = require("../../config/multer.js");
 const paginatedSheetResults = require("../../middlewares/paginatedSheet.js");

@@ -1,6 +1,6 @@
 const express = require("express");
-const AccountManagementController = require("../../controller/Supervisor/AccountManagement/ManageAccount");
-const SubjectManagementController = require("../../controller/Supervisor/SubjectManagement/ManageSubject");
+const AccountManagementController = require("../../controller/Supervisor/ManageAccount");
+const SubjectManagementController = require("../../controller/Supervisor/ManageSubject");
 const { route } = require("../PastPaperUploader/PastPaperUploader.js");
 const router = express.Router();
 const paginatedPastPaperAccounts = require("../../middlewares/paginatedPastPaperAccounts.js");
@@ -12,8 +12,8 @@ const paginatedPricerAccounts = require("../../middlewares/paginatedPricerAccoun
 const paginatedUploader2Accounts = require("../../middlewares/paginatedUploader2Accounts.js");
 const paginatedPaperNumberSheet = require("../../middlewares/paginatedPaperNumber");
 const paginatedSheet = require("../../middlewares/paginatedSheet");
-const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor");
-const PaperNumberSheetController = require("../../controller/Supervisor/PaperNumberManagement/PaperNumber");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor");
+const PaperNumberSheetController = require("../../controller/Supervisor/PaperNumber");
 
 router.get("/getpastpaperaccounts", paginatedPastPaperAccounts(), (req, res) => {
   res.send(res.paginatedResults);

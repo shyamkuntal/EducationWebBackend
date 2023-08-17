@@ -1,5 +1,5 @@
 const express = require("express");
-const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardM");
 const paginatedResults = require("../../middlewares/paginatedResults.js");
 const { Board } = require("../../models/Board.js");
 const router = express.Router();

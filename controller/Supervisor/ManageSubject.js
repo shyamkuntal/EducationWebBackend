@@ -1,7 +1,7 @@
 const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const { generateFileName, s3Client } = require("../../../config/s3.js");
-const { Subject, SubjectLevel, subjectName } = require("../../../models/Subject.js");
+const { generateFileName, s3Client } = require("../../config/s3.js");
+const { Subject, SubjectLevel, subjectName } = require("../../models/Subject.js");
 
 const {
   createSubjectSchema,
@@ -13,9 +13,9 @@ const {
   togglePublishSubject,
   updateSubjectSchema,
   getSubjectNameByIdSchema,
-} = require("../../../validations/subjectManagementValidations.js");
+} = require("../../validations/subjectManagementValidations.js");
 const httpStatus = require("http-status");
-const services = require("../../../services/index.js");
+const services = require("../../services/index.js");
 require("dotenv").config();
 const bucketName = process.env.AWS_BUCKET_NAME;
 

@@ -1,12 +1,11 @@
 const express = require("express");
-const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor.js");
-const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM.js");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor.js");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardM.js");
 const PaperNoDGController = require("../../controller/DataGenerator/PaperNoManagement");
 const paginatedPaperNumberSheet = require("../../middlewares/paginatedPaperNumber");
 const { PaperNumberSheet } = require("../../middlewares/paginatedPaperNumber");
-const SubjectManagementController = require("../../controller/Supervisor/SubjectManagement/ManageSubject.js");
-const PaperNumberReviewerController = require("../../controller/Reviewer/PaperNumberReviewer/PaperNumberReviewer.js");
-
+const SubjectManagementController = require("../../controller/Supervisor/ManageSubject.js");
+const PaperNumberReviewerController = require("../../controller/Reviewer/PaperNumberReviewer.js");
 
 const router = express.Router();
 
@@ -35,6 +34,5 @@ router.get("/getallpapernumber", PaperNoDGController.getAllPaperNumber);
 router.get("/getrecheckcomment", PaperNoDGController.getRecheckComment);
 // api/pnreviewer/geterrorreportfile
 router.get("/geterrorreportfile", PaperNumberReviewerController.getErrorReportFile);
-
 
 module.exports = router;

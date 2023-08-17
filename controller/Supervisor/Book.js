@@ -1,19 +1,19 @@
-const { ApiError } = require("../../../middlewares/apiError");
-const { Book, Chapter } = require("../../../models/Book/Book");
-const { BookTask, BookTaskLog } = require("../../../models/Book/BookTask");
-const { TaskBookMapping, TaskBookChapterMapping } = require("../../../models/Book/BookTaskMapping");
-const services = require("../../../services/index");
+const { ApiError } = require("../../middlewares/apiError");
+const { Book, Chapter } = require("../../models/Book/Book");
+const { BookTask, BookTaskLog } = require("../../models/Book/BookTask");
+const { TaskBookMapping, TaskBookChapterMapping } = require("../../models/Book/BookTaskMapping");
+const services = require("../../services/index");
 const httpStatus = require("http-status");
-const db = require("../../../config/database");
+const db = require("../../config/database");
 const {
   createBookTaskSchema,
   updateBookTaskSchema,
   assignTaskToDataGeneratorSchema,
   assignTaskToReviewerSchema,
-} = require("../../../validations/BookManagementValidations");
-const CONSTANTS = require("../../../constants/constants");
-const { SubBoard, Board } = require("../../../models/Board");
-const { Subject } = require("../../../models/Subject");
+} = require("../../validations/BookManagementValidations");
+const CONSTANTS = require("../../constants/constants");
+const { SubBoard, Board } = require("../../models/Board");
+const { Subject } = require("../../models/Subject");
 
 const BookManagementController = {
   async createBookTask(req, res, next) {
@@ -411,14 +411,14 @@ const BookManagementController = {
             model: Book,
             attributes: ["id", "name", "subTitle", "author", "publisher", "createdAt"],
           },
-          { 
+          {
             model: BookTask,
-            include:[
+            include: [
               {
                 model: SubBoard,
                 attributes: ["subBoardName"],
               },
-    
+
               {
                 model: Board,
                 attributes: ["boardName"],
@@ -428,11 +428,11 @@ const BookManagementController = {
                 where: req.query.subjectNameId ? { subjectNameId: req.query.subjectNameId } : {},
                 attributes: ["id", "boardId", "subBoardId", "grade", "subjectNameId"],
               },
-            ]
-          }
+            ],
+          },
         ],
         raw: true,
-        nest: true
+        nest: true,
       });
 
       let BookChapter = [];
@@ -445,7 +445,7 @@ const BookManagementController = {
             where: { bookId: bookDetails.bookId },
             include: [{ model: Chapter, attributes: ["id", "name", "chapterNumber"] }],
           });
-          const chaptersWithNames = chapterMapping.map(item => item.chapter);
+          const chaptersWithNames = chapterMapping.map((item) => item.chapter);
           BookChapter.push({
             book: bookDetails,
             chapters: chaptersWithNames,

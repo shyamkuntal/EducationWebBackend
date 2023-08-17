@@ -1,6 +1,6 @@
 const express = require("express");
 const TopicDGController = require("../../controller/DataGenerator/TopicManagement");
-const TopicManagementController = require("../../controller/Supervisor/TopicManagement/TopicManagement.js");
+const TopicManagementController = require("../../controller/Supervisor/TopicManagement.js");
 const paginatedTopicTasks = require("../../middlewares/paginatedTopicTasks");
 
 const router = express.Router();

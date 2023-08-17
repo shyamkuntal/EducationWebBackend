@@ -1,5 +1,5 @@
 const express = require("express");
-const SubjectManagementController = require("../../controller/Supervisor/SubjectManagement/ManageSubject");
+const SubjectManagementController = require("../../controller/Supervisor/ManageSubject");
 const getPaginatedSubjects = require("../../middlewares/subjectFilter.js");
 const upload = require("../../config/multer.js");
 

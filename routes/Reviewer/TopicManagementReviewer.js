@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const TopicManagementReviewerController = require("../../controller/Reviewer/TopicManagementReviewer/TopicManagementReviewer");
-const TopicManagementController = require("../../controller/Supervisor/TopicManagement/TopicManagement");
+const TopicManagementReviewerController = require("../../controller/Reviewer/TopicManagementReviewer");
+const TopicManagementController = require("../../controller/Supervisor/TopicManagement");
 const upload = require("../../config/multer");
 const paginatedTopicTasks = require("../../middlewares/paginatedTopicTasks");
 

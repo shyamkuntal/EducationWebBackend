@@ -13,8 +13,8 @@ const {
 } = require("../../controller/PastPaperUploader/PastPaper.js");
 const paginatedSheetResults = require("../../middlewares/paginatedSheet.js");
 const PastPaperUploaderController = require("../../controller/PastPaperUploader/PastPaper.js");
-const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor.js");
-const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM.js");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor.js");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardM.js");
 
 const router = express.Router();
 

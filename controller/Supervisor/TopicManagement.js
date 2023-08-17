@@ -1,4 +1,4 @@
-const services = require("../../../services/index");
+const services = require("../../services/index");
 const httpStatus = require("http-status");
 const {
   createTopicTaskSchema,
@@ -13,11 +13,11 @@ const {
   findTopicTaskByIdSchema,
   getTaskErrorReportSchema,
   getTopicSubTopicVocabByTaskIdTopicIdSchema,
-} = require("../../../validations/TopicManagementValidations");
-const CONSTANTS = require("../../../constants/constants");
-const { Board, SubBoard } = require("../../../models/Board");
-const { ApiError } = require("../../../middlewares/apiError");
-const db = require("../../../config/database");
+} = require("../../validations/TopicManagementValidations");
+const CONSTANTS = require("../../constants/constants");
+const { Board, SubBoard } = require("../../models/Board");
+const { ApiError } = require("../../middlewares/apiError");
+const db = require("../../config/database");
 
 const TopicManagementController = {
   async createTopicTask(req, res, next) {

@@ -1,24 +1,24 @@
-const { Board, SubBoard } = require("../../../models/Board.js");
-const { Sheet, SheetLog } = require("../../../models/PastPaperSheet.js");
-const CONSTANTS = require("../../../constants/constants.js");
-const { Subject, SubjectLevel } = require("../../../models/Subject.js");
-const services = require("../../../services/index.js");
+const { Board, SubBoard } = require("../../models/Board.js");
+const { Sheet, SheetLog } = require("../../models/PastPaperSheet.js");
+const CONSTANTS = require("../../constants/constants.js");
+const { Subject, SubjectLevel } = require("../../models/Subject.js");
+const services = require("../../services/index.js");
 const {
   assignUploderUserToSheetSchema,
   assignReviewerUserToSheetSchema,
   getUserAssignedSubjectsSchema,
   getSheetLogsSchema,
   getPastPaperSchema,
-} = require("../../../validations/PPMSupervisorValidations.js");
+} = require("../../validations/PPMSupervisorValidations.js");
 const httpStatus = require("http-status");
-const { User, Roles } = require("../../../models/User.js");
+const { User, Roles } = require("../../models/User.js");
 const {
   getSubBoardsSchema,
   getSubjectLevelBySubjectId,
-} = require("../../../validations/subjectManagementValidations.js");
+} = require("../../validations/subjectManagementValidations.js");
 const { GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const { s3Client } = require("../../../config/s3.js");
+const { s3Client } = require("../../config/s3.js");
 
 const PastPaperSupervisorController = {
   //take care of isarchived and ispublished later

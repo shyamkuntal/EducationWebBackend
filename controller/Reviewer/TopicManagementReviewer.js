@@ -9,15 +9,15 @@ const {
   addRecheckCommentSchema,
   getErrorReportFilesSchema,
   getRecheckingCommentsSchema,
-} = require("../../../validations/TopicManagementReviewerValidations");
-const { SpamTopicTaskRecheckComments } = require("../../../models/TopicTask");
-const services = require("../../../services");
+} = require("../../validations/TopicManagementReviewerValidations");
+const { SpamTopicTaskRecheckComments } = require("../../models/TopicTask");
+const services = require("../../services");
 const httpStatus = require("http-status");
-const CONSTANTS = require("../../../constants/constants");
-const { User } = require("../../../models/User");
-const { generateFileName } = require("../../../config/s3");
-const { ApiError } = require("../../../middlewares/apiError");
-const db = require("../../../config/database");
+const CONSTANTS = require("../../constants/constants");
+const { User } = require("../../models/User");
+const { generateFileName } = require("../../config/s3");
+const { ApiError } = require("../../middlewares/apiError");
+const db = require("../../config/database");
 
 const TopicManagementController = {
   async updateInProgressTaskStatus(req, res, next) {

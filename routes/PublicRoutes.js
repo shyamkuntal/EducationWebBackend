@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 
 const paginatedPastPaperResults = require("../middlewares/paginatedPastPapers");
-const BoardManagementController = require("../controller/SuperAdmin/BoardManagement/BoardM");
-const SubjectManagementController = require("../controller/Supervisor/SubjectManagement/ManageSubject");
-const AccountManagementController = require("../controller/Supervisor/AccountManagement/ManageAccount");
-const PaperNumberSheetController = require("../controller/Supervisor/PaperNumberManagement/PaperNumber");
+const BoardManagementController = require("../controller/SuperAdmin/BoardM");
+const SubjectManagementController = require("../controller/Supervisor/ManageSubject");
+const AccountManagementController = require("../controller/Supervisor/ManageAccount");
+const PaperNumberSheetController = require("../controller/Supervisor/PaperNumber");
 const upload = require("../config/multer.js");
 
 // /api/public/getallroles

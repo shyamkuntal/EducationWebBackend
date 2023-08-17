@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const PaperNumberReviewerController = require("../../controller/Reviewer/PaperNumberReviewer/PaperNumberReviewer");
+const PaperNumberReviewerController = require("../../controller/Reviewer/PaperNumberReviewer");
 const DataGeneratorController = require("../../controller/DataGenerator/PaperNoManagement");
-const PaperNumberManagentController = require("../../controller/Supervisor/PaperNumberManagement/PaperNumber");
-const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM");
-const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor");
-const SubjectManagementController = require("../../controller/Supervisor/SubjectManagement/ManageSubject");
+const PaperNumberManagentController = require("../../controller/Supervisor/PaperNumber");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardM");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor");
+const SubjectManagementController = require("../../controller/Supervisor/ManageSubject");
 const paginatedPaperNumberSheet = require("../../middlewares/paginatedPaperNumber");
 
 const upload = require("../../config/multer.js");

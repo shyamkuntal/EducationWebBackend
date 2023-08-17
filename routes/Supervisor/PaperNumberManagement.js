@@ -1,10 +1,10 @@
 const express = require("express");
-const PaperNumberSheetController = require("../../controller/Supervisor/PaperNumberManagement/PaperNumber");
+const PaperNumberSheetController = require("../../controller/Supervisor/PaperNumber");
 const { PaperNumberSheet } = require("../../models/PaperNumberSheet");
 const paginatedPaperNumberSheet = require("../../middlewares/paginatedPaperNumber");
 const DataGeneratorController = require("../../controller/DataGenerator/PaperNoManagement");
-const PaperNumberReviewerController = require("../../controller/Reviewer/PaperNumberReviewer/PaperNumberReviewer");
-const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor");
+const PaperNumberReviewerController = require("../../controller/Reviewer/PaperNumberReviewer");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor");
 
 const router = express.Router();
 

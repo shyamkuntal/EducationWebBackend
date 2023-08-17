@@ -1,13 +1,13 @@
-const CONSTANTS = require("../../../constants/constants.js");
+const CONSTANTS = require("../../constants/constants.js");
 const {
   assignSupervisorUserToSheetSchema,
   updateSheetStatusSchema,
   reportErrorSchema,
   getRecheckingComments,
-} = require("../../../validations/PPMReviewerValidation.js");
-const services = require("../../../services/index");
+} = require("../../validations/PPMReviewerValidation.js");
+const services = require("../../services/index");
 const httpStatus = require("http-status");
-const { generateFileName } = require("../../../config/s3.js");
+const { generateFileName } = require("../../config/s3.js");
 
 const PastPaperReviewerController = {
   async getRecheckErrors(req, res, next) {

@@ -1,8 +1,8 @@
 const express = require("express");
-const TopicManagementController = require("../../controller/Supervisor/TopicManagement/TopicManagement");
-const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor");
-const SubjectManagementController = require("../../controller/Supervisor/SubjectManagement/ManageSubject");
-const BoardManagementController = require("../../controller/SuperAdmin/BoardManagement/BoardM");
+const TopicManagementController = require("../../controller/Supervisor/TopicManagement");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor");
+const SubjectManagementController = require("../../controller/Supervisor/ManageSubject");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardM");
 const paginatedTopicTasks = require("../../middlewares/paginatedTopicTasks");
 
 const router = express.Router();

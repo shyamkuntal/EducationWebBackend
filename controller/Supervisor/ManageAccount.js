@@ -6,12 +6,12 @@ const {
   UserQualificationMapping,
   UserSubjectMapping,
   UserModuleMapping,
-} = require("../../../models/User.js");
-const { roleNames } = require("../../../constants/constants.js");
+} = require("../../models/User.js");
+const { roleNames } = require("../../constants/constants.js");
 const { Sequelize } = require("sequelize");
-const { subjectName } = require("../../../models/Subject.js");
-const services = require("../../../services/index.js");
-const { findRoleByNameSchema } = require("../../../validations/RoleValidation.js");
+const { subjectName } = require("../../models/Subject.js");
+const services = require("../../services/index.js");
+const { findRoleByNameSchema } = require("../../validations/RoleValidation.js");
 const httpStatus = require("http-status");
 const {
   getSubBoardsSchema,
@@ -20,8 +20,8 @@ const {
   getSubjectNameByIdSchema,
   toggleActivateUserSchema,
   getUserBoardSubBoardSubjectSchema,
-} = require("../../../validations/AccountManagementValidation.js");
-const CONSTANTS = require("../../../constants/constants.js");
+} = require("../../validations/AccountManagementValidation.js");
+const CONSTANTS = require("../../constants/constants.js");
 
 const AccountManagementController = {
   async createUserRole(req, res, next) {

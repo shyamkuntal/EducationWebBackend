@@ -1,8 +1,8 @@
-const { PaperNumberSheet, PaperNumber } = require("../../../models/PaperNumberSheet.js");
-const services = require("../../../services/index.js");
+const { PaperNumberSheet, PaperNumber } = require("../../models/PaperNumberSheet.js");
+const services = require("../../services/index.js");
 const httpStatus = require("http-status");
-const { User, Roles } = require("../../../models/User.js");
-const CONSTANTS = require("../../../constants/constants.js");
+const { User, Roles } = require("../../models/User.js");
+const CONSTANTS = require("../../constants/constants.js");
 const {
   createPaperNumberSheetSchema,
   EditPaperNumberSheetSchema,
@@ -10,9 +10,9 @@ const {
   assignDataGeneratorUserToSheetSchema,
   assignReviewerUserToSheetSchema,
   togglePublishPaperNumberTaskSchema,
-} = require("../../../validations/PaperNumberValidations.js");
-const constants = require("../../../constants/constants.js");
-const { getSheetLogsSchema } = require("../../../validations/PPMSupervisorValidations.js");
+} = require("../../validations/PaperNumberValidations.js");
+const constants = require("../../constants/constants.js");
+const { getSheetLogsSchema } = require("../../validations/PPMSupervisorValidations.js");
 
 const PaperNumberSheetController = {
   //take care of isarchived and ispublished later

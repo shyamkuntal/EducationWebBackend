@@ -1,5 +1,5 @@
 const express = require("express");
-const PastPaperSupervisorController = require("../../controller/Supervisor/PastPaperManagement/PPMSupervisor");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor");
 const paginatedSheetResults = require("../../middlewares/paginatedSheet.js");
 
 const router = express.Router();
