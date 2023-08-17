@@ -335,6 +335,7 @@ const TopicDGController = {
     const EditSubTopics = values.editSubTopics;
     const t = await db.transaction();
     try {
+      let responseMessage = {}
       if (EditSubTopics.length > 0) {
         // Check and create new subTopics from newNames
         const createdSubTopics = [];
@@ -362,7 +363,8 @@ const TopicDGController = {
             await TaskSubTopicMapping.create(sentTaskData, { transaction: t });
           }
         }
-        res.status(httpStatus.CREATED).send(createdSubTopics);
+        responseMessage.createdNewSubTopics = createdSubTopics
+        // res.status(httpStatus.CREATED).send(createdSubTopics);
       }
       // Delete mappings from TaskSubTopicMapping based on deleteSubTopics array
       if (DeleteSubTopics.length > 0) {
@@ -385,9 +387,11 @@ const TopicDGController = {
             });
           }
         }
-        res.status(httpStatus.OK).send({ message: "Deleted Successfully" });
+        responseMessage.DeletedSubTopics = "Deleted Successfully"
+        // res.status(httpStatus.OK).send({ message: "Deleted Successfully" });
       }
       await t.commit();
+      res.status(httpStatus.OK).send({responseMessage})
     } catch (err) {
       console.log(err);
       await t.rollback();
@@ -401,6 +405,7 @@ const TopicDGController = {
     const EditVocab = values.editVocab;
     const t = await db.transaction();
     try {
+      let responseMessage = {}
       if (EditVocab.length > 0) {
         // Check and create new Vocab from newNames
         const createdVocabs = [];
@@ -425,7 +430,8 @@ const TopicDGController = {
             await TaskVocabularyMapping.create(sentTaskData, { transaction: t });
           }
         }
-        res.status(httpStatus.CREATED).send(createdVocabs);
+        responseMessage.createdNewVocabs = createdVocabs
+        // res.status(httpStatus.CREATED).send(createdVocabs);
       }
       // Delete mappings from TaskVocabMapping based
       if (DeleteVocab.length > 0) {
@@ -450,9 +456,11 @@ const TopicDGController = {
             });
           }
         }
-        res.status(httpStatus.OK).send({ message: "Deleted Successfully" });
+        responseMessage.DeletedVocab = "Deleted Successfully"
+        // res.status(httpStatus.OK).send({ message: "Deleted Successfully" });
       }
       await t.commit();
+      res.status(httpStatus.OK).send({responseMessage})
     } catch (err) {
       console.log(err);
       await t.rollback();

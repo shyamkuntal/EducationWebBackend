@@ -1,4 +1,5 @@
-const { BookTask, BookTaskLog } = require("../models/Book/BookTask");
+const { BookTask, BookTaskLog, SpamBookTaskRecheckComments } = require("../models/Book/BookTask");
+const { TaskBookMapping, TaskBookChapterMapping } = require("../models/Book/BookTaskMapping");
 const { User } = require("../models/User");
 
 const findBookTaskAndUser = async (bookTaskId) => {
@@ -24,6 +25,15 @@ const findBookTasks = async (whereQuery) => {
   }
 };
 
+const findOneBookTask = async (whereQuery) => {
+  try {
+    let task = await BookTask.findOne(whereQuery);
+    return task;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const createBookTaskLog = async (bookTaskId, assignee, assignedTo, logMessage) => {
   try {
     let taskLog = await BookTaskLog.create({ bookTaskId, assignee, assignedTo, logMessage });
@@ -44,9 +54,45 @@ const updateBookTask = async (dataToBeUpdated, whereQuery) => {
   }
 };
 
+const updateTaskBookMapping = async (dataToBeUpdated, whereQuery, options) => {
+  try {
+    let updatedMapping = await TaskBookMapping.update(dataToBeUpdated, whereQuery, options);
+    return updatedMapping;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const updateTaskChapterMapping = async (dataToBeUpdated, whereQuery, options) => {
+  try {
+    let updatedMapping = await TaskBookChapterMapping.update(dataToBeUpdated, whereQuery, options);
+
+    return updatedMapping;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findRecheckingComments = async (bookTaskId) => {
+  try {
+    let findRecheckComments = await SpamBookTaskRecheckComments.findOne({
+      where: { bookTaskId },
+      order: [["createdAt", "DESC"]],
+      raw: true,
+    });
+    return findRecheckComments;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   findBookTaskAndUser,
   createBookTaskLog,
   updateBookTask,
   findBookTasks,
+  findOneBookTask,
+  updateTaskBookMapping,
+  updateTaskChapterMapping,
+  findRecheckingComments,
 };
