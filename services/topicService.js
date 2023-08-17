@@ -113,11 +113,12 @@ const checkSubTopicDuplicateName = async (name) => {
   }
 }
 
-const checkSubTopicDuplicateNamebyTaskId = async (subTopicId, topicTaskId) => {
+const checkSubTopicDuplicateNamebyTaskId = async ( topicTaskId, topicId, subTopicId) => {
   try {
     const subTopic = await TaskSubTopicMapping.findOne({
       where: {
         topicTaskId: topicTaskId,
+        topicId: topicId,
         subTopicId: subTopicId
       },
       raw: true
@@ -128,11 +129,12 @@ const checkSubTopicDuplicateNamebyTaskId = async (subTopicId, topicTaskId) => {
   }
 }
 
-const checkVocabDuplicateNamebyTaskId = async (vocabularyId, topicTaskId) => {
+const checkVocabDuplicateNamebyTaskId = async ( topicTaskId, topicId, vocabularyId) => {
   try {
     const vocab = await TaskVocabularyMapping.findOne({
       where: {
         topicTaskId: topicTaskId,
+        topicId: topicId,
         vocabularyId: vocabularyId
       },
       raw: true

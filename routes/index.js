@@ -6,7 +6,8 @@ const SubjectRouters = require("./Supervisor/SubjectManagement");
 const PastPaper = require("./Supervisor/PastPaperManagement");
 const PaperNumber = require("./Supervisor/PaperNumberManagement");
 const PaperNumberReviewer = require("./Reviewer/PaperNumberReviewer");
-const DataGenerator = require("./DataGenerator/DataGenerator");
+const DataGeneratorPN = require("./DataGenerator/PaperNoManagement");
+const DataGeneratorTPM = require("./DataGenerator/TopicManagement");
 const AccountManagement = require("./Supervisor/AccountManagement");
 const BookManagement = require("./Supervisor/BookManagement");
 const PastPaperReviewer = require("./Reviewer/PastPaperReviewer");
@@ -39,9 +40,13 @@ router.use("/pnmanagement", AuthSupervisor(), PaperNumber);
 router.use("/topicmanagement", AuthSupervisor(), topicManagement);
 router.use("/bookmanagement", AuthSupervisor(), BookManagement);
 
+
 router.use("/ppuploader", AuthPastPaper(), PastPaperUploader);
 
-router.use("/datagenerator", AuthDataGenerator(), DataGenerator);
+
+router.use("/datagenerator", AuthDataGenerator(), DataGeneratorPN);
+router.use("/datagenerator", AuthDataGenerator(), DataGeneratorTPM);
+
 
 router.use("/pnreviewer", AuthReviewer(), PaperNumberReviewer);
 router.use("/ppmreviewer", AuthReviewer(), PastPaperReviewer);

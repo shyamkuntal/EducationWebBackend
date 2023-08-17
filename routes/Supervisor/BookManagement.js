@@ -16,9 +16,9 @@ router.post("/createbooktask", BookManagementController.createBookTask);
 
 router.patch("/updatebooktask", BookManagementController.updateBookTask);
 
-router.patch("/asssigntasktodatagenerator", BookManagementController.assignTaskToDataGenerator);
+router.patch("/assigntasktodatagenerator", BookManagementController.assignTaskToDataGenerator);
 
-router.patch("/asssigntasktoreviewer", BookManagementController.assignTaskToReviewer);
+router.patch("/assigntasktoreviewer", BookManagementController.assignTaskToReviewer);
 
 router.get("/getallbooktask", BookManagementController.getAllBookTask);
 
@@ -29,6 +29,8 @@ router.get("/getallbookbybookid", BookManagementController.getAllChapterByBookId
 router.patch("/togglepublishbooktask", BookManagementController.togglePublishBookTask);
 
 router.get("/gettasklogs", BookManagementController.getBookTaskLogs);
+
+router.get("/getallbooks", BookManagementController.getAllBookfromBookTable);
 
 // api/topicmanagement/getuserassignedsubjects
 router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);

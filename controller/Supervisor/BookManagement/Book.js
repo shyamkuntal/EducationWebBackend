@@ -12,6 +12,8 @@ const {
   assignTaskToReviewerSchema,
 } = require("../../../validations/BookManagementValidations");
 const CONSTANTS = require("../../../constants/constants");
+const { SubBoard, Board } = require("../../../models/Board");
+const { Subject } = require("../../../models/Subject");
 
 const BookManagementController = {
   async createBookTask(req, res, next) {
@@ -393,6 +395,66 @@ const BookManagementController = {
 
       res.status(httpStatus.OK).send(logs);
     } catch (err) {
+      next(err);
+    }
+  },
+
+  async getAllBookfromBookTable(req, res, next) {
+    const boardId = req.query.boardId;
+    const subBoardId = req.query.subBoardId;
+    const grade = req.query.grade;
+
+    try {
+      const bookMappings = await TaskBookMapping.findAll({
+        include: [
+          {
+            model: Book,
+            attributes: ["id", "name", "subTitle", "author", "publisher", "createdAt"],
+          },
+          { 
+            model: BookTask,
+            include:[
+              {
+                model: SubBoard,
+                attributes: ["subBoardName"],
+              },
+    
+              {
+                model: Board,
+                attributes: ["boardName"],
+              },
+              {
+                model: Subject,
+                where: req.query.subjectNameId ? { subjectNameId: req.query.subjectNameId } : {},
+                attributes: ["id", "boardId", "subBoardId", "grade", "subjectNameId"],
+              },
+            ]
+          }
+        ],
+        raw: true,
+        nest: true
+      });
+
+      let BookChapter = [];
+      if (bookMappings.length > 0) {
+        for (let i = 0; i < bookMappings.length; i++) {
+          const bookDetails = bookMappings[i];
+
+          // Fetch Chapters for each book
+          const chapterMapping = await TaskBookChapterMapping.findAll({
+            where: { bookId: bookDetails.bookId },
+            include: [{ model: Chapter, attributes: ["id", "name", "chapterNumber"] }],
+          });
+          const chaptersWithNames = chapterMapping.map(item => item.chapter);
+          BookChapter.push({
+            book: bookDetails,
+            chapters: chaptersWithNames,
+          });
+        }
+      }
+      res.status(httpStatus.OK).send(BookChapter);
+    } catch (err) {
+      console.log(err);
       next(err);
     }
   },
