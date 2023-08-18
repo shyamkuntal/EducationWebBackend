@@ -2,6 +2,8 @@ const { Board, SubBoard } = require("../models/Board.js");
 const { BookTask } = require("../models/Book/BookTask.js");
 const { Subject } = require("../models/Subject.js");
 const { User } = require("../models/User.js");
+const { paginationValidationSchema } = require("../validations/PaginationValidations.js");
+const { ApiError } = require("../middlewares/apiError");
 
 const paginatedBookTasks = () => {
   return async (req, res, next) => {
@@ -63,22 +65,24 @@ const paginatedBookTasks = () => {
     const endIndex = page * limit;
     const results = {};
 
-    const count = await BookTask.count({ where: filters });
-    if (endIndex < count) {
-      results.next = {
-        page: page + 1,
-        limit: limit,
-      };
-    }
-
-    if (startIndex > 0 && count > 0) {
-      results.previous = {
-        page: page - 1,
-        limit: limit,
-      };
-    }
-
     try {
+      let values = await paginationValidationSchema.validateAsync(filters);
+
+      const count = await BookTask.count({ where: filters });
+      if (endIndex < count) {
+        results.next = {
+          page: page + 1,
+          limit: limit,
+        };
+      }
+
+      if (startIndex > 0 && count > 0) {
+        results.previous = {
+          page: page - 1,
+          limit: limit,
+        };
+      }
+
       const BookTaskData = await BookTask.findAll({
         attributes: [
           "id",
@@ -110,7 +114,6 @@ const paginatedBookTasks = () => {
             model: SubBoard,
             attributes: ["subBoardName"],
           },
-
           {
             model: Board,
             attributes: ["boardName"],
@@ -137,7 +140,6 @@ const paginatedBookTasks = () => {
         raw: true,
         nest: true,
       });
-
       results.results = BookTaskData;
 
       res.paginatedResults = results;

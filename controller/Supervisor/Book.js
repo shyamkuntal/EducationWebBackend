@@ -143,7 +143,7 @@ const BookManagementController = {
         CONSTANTS.roleNames.DataGenerator
       );
 
-      let bookTaskData = await services.bookService.findBookTaskAndUser(values.bookTaskId);
+      let bookTaskData = await services.bookTaskService.findBookTaskAndUser(values.bookTaskId);
 
       let responseMessage = {
         assinedUserToTask: "",
@@ -182,7 +182,7 @@ const BookManagementController = {
           }
 
           // CREATE task log for task assignment to dataGenerator
-          let createLog = await services.bookService.createBookTaskLog(
+          let createLog = await services.bookTaskService.createBookTaskLog(
             bookTaskData.id,
             bookTaskData.supervisor.Name,
             userData.Name,
@@ -218,7 +218,7 @@ const BookManagementController = {
         CONSTANTS.roleNames.Reviewer
       );
 
-      let bookTaskData = await services.bookService.findBookTaskAndUser(values.bookTaskId);
+      let bookTaskData = await services.bookTaskService.findBookTaskAndUser(values.bookTaskId);
 
       let responseMessage = {
         assinedUserToTask: "",
@@ -258,7 +258,7 @@ const BookManagementController = {
           }
 
           // CREATE task log for task assignment to dataGenerator
-          let createLog = await services.bookService.createBookTaskLog(
+          let createLog = await services.bookTaskService.createBookTaskLog(
             bookTaskData.id,
             bookTaskData.supervisor.Name,
             userData.Name,
@@ -355,7 +355,7 @@ const BookManagementController = {
 
       let whereQueryForTaskFind = { where: { id: taskId }, raw: true };
 
-      let task = await services.bookService.findBookTasks(whereQueryForTaskFind);
+      let task = await services.bookTaskService.findBookTasks(whereQueryForTaskFind);
 
       if (!task) {
         return res.status(httpStatus.BAD_REQUEST).send({ message: "Task not found" });
@@ -372,7 +372,7 @@ const BookManagementController = {
         where: { id: taskId },
       };
 
-      let updateTask = await services.bookService.updateBookTask(dataToBeUpdated, whereQuery);
+      let updateTask = await services.bookTaskService.updateBookTask(dataToBeUpdated, whereQuery);
 
       if (updateTask.length > 0) {
         responseMessage.message = `Task IsPublished set to ${dataToBeUpdated.isPublished}`;

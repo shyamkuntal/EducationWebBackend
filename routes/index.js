@@ -6,15 +6,16 @@ const SubjectRouters = require("./Supervisor/SubjectManagement");
 const PastPaper = require("./Supervisor/PastPaperManagement");
 const PaperNumber = require("./Supervisor/PaperNumberManagement");
 const PaperNumberReviewer = require("./Reviewer/PaperNumberReviewer");
-const DataGeneratorPN = require("./DataGenerator/PaperNoManagement");
-const DataGeneratorTPM = require("./DataGenerator/TopicManagement");
+const PaperNumberDataGenerator = require("./DataGenerator/PaperNoManagement");
+const TopicManagementDataGenerator = require("./DataGenerator/TopicManagement");
 const AccountManagement = require("./Supervisor/AccountManagement");
 const BookManagement = require("./Supervisor/BookManagement");
 const PastPaperReviewer = require("./Reviewer/PastPaperReviewer");
 const PastPaperUploader = require("./PastPaperUploader/PastPaperUploader");
-const topicManagement = require("./Supervisor/TopicManagement");
-const topicManagemnetReviewer = require("./Reviewer/TopicManagementReviewer");
-const bookManagemnetReviewer = require("./Reviewer/BookManagement");
+const TopicManagement = require("./Supervisor/TopicManagement");
+const TopicManagemnetReviewer = require("./Reviewer/TopicManagementReviewer");
+const BookManagemnetReviewer = require("./Reviewer/BookManagement");
+const BookManagementDataGenerator = require("./DataGenerator/BookManagement");
 const PublicRoutes = require("./PublicRoutes.js");
 const Auth = require("./Auth.js");
 const {
@@ -37,20 +38,18 @@ router.use("/boardmanagement", AuthSuperadmin(), BoardRouters);
 router.use("/ppmsupervisor", AuthSuperadminSupervisor(), PastPaper);
 router.use("/subjectmanagement", AuthSupervisor(), SubjectRouters);
 router.use("/pnmanagement", AuthSupervisor(), PaperNumber);
-router.use("/topicmanagement", AuthSupervisor(), topicManagement);
+router.use("/topicmanagement", AuthSupervisor(), TopicManagement);
 router.use("/bookmanagement", AuthSupervisor(), BookManagement);
-
 
 router.use("/ppuploader", AuthPastPaper(), PastPaperUploader);
 
-
-router.use("/datagenerator", AuthDataGenerator(), DataGeneratorPN);
-router.use("/datagenerator", AuthDataGenerator(), DataGeneratorTPM);
-
+router.use("/datagenerator", AuthDataGenerator(), PaperNumberDataGenerator);
+router.use("/datagenerator", AuthDataGenerator(), TopicManagementDataGenerator);
+router.use("/bmdatagenerator", AuthDataGenerator(), BookManagementDataGenerator);
 
 router.use("/pnreviewer", AuthReviewer(), PaperNumberReviewer);
 router.use("/ppmreviewer", AuthReviewer(), PastPaperReviewer);
-router.use("/tpmreviewer", AuthReviewer(), topicManagemnetReviewer);
-router.use("/bkmreviewer", AuthReviewer(), bookManagemnetReviewer );
+router.use("/tpmreviewer", AuthReviewer(), TopicManagemnetReviewer);
+router.use("/bkmreviewer", AuthReviewer(), BookManagemnetReviewer);
 
 module.exports = router;
