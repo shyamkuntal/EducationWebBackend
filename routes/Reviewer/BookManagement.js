@@ -10,9 +10,9 @@ router.get("/getallpaginatedbooktask", paginatedBookTasks(), (req, res) => {
   res.json(res.paginatedResults);
 });
 
-router.get("/getallbookbytaskid", BookManagementController.getAllBookChapterByTaskId);
+router.get("/getallbookchapterbytaskid", BookManagementController.getAllBookChapterByTaskId);
 
-router.get("/getallbookbybookid", BookManagementController.getAllChapterByBookId);
+router.get("/getallchapterbybookid", BookManagementController.getAllChapterByBookId);
 
 // /api/bkmreviewer/updateinprogresstaskstatus
 router.patch(
@@ -20,7 +20,7 @@ router.patch(
 );
 
 // api/tpmreviewer/updatecompletestatus
-router.patch("/updatecompletestatus", ReviewerBookController.updateCompleteTaskStatus);
+router.patch("/updatecompletebooktaskstatus", ReviewerBookController.updateCompleteTaskStatus);
 
 router.patch(
   "/reportbooktaskerror",
