@@ -44,7 +44,7 @@ router.use("/bookmanagement", AuthSupervisor(), BookManagement);
 router.use("/ppuploader", AuthPastPaper(), PastPaperUploader);
 
 router.use("/datagenerator", AuthDataGenerator(), PaperNumberDataGenerator);
-router.use("/datagenerator", AuthDataGenerator(), TopicManagementDataGenerator);
+router.use("/tpmdatagenerator", AuthDataGenerator(), TopicManagementDataGenerator);
 router.use("/bmdatagenerator", AuthDataGenerator(), BookManagementDataGenerator);
 
 router.use("/pnreviewer", AuthReviewer(), PaperNumberReviewer);
