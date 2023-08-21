@@ -14,4 +14,17 @@ router.patch("/updatebook", BookManagementDGController.updateBookSubTitleAuthorP
 
 router.post("/addchapters", BookManagementDGController.addChapters);
 
+router.delete("/deletechapter", BookManagementDGController.deleteChapter);
+
+router.patch("/setbookinprogressstatus", BookManagementDGController.setBookInProgressStatus);
+
+router.patch("/setbookcompletestatus", BookManagementDGController.setBookCompleteStatus);
+
+router.patch(
+  "/updateinprogressbooktaskstatus",
+  BookManagementDGController.updateInProgressBookTaskStatus
+);
+
+router.patch("/setcompletebooktaskstatus");
+
 module.exports = router;

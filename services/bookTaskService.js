@@ -35,9 +35,9 @@ const createBookTaskLog = async (bookTaskId, assignee, assignedTo, logMessage) =
   }
 };
 
-const updateBookTask = async (dataToBeUpdated, whereQuery) => {
+const updateBookTask = async (dataToBeUpdated, whereQuery, options) => {
   try {
-    let updatedTask = await BookTask.update(dataToBeUpdated, whereQuery);
+    let updatedTask = await BookTask.update(dataToBeUpdated, whereQuery, options);
 
     return updatedTask;
   } catch (err) {
@@ -55,15 +55,45 @@ const findBookByBookTask = async (whereQuery) => {
   }
 };
 
-const findTaskBookChapterByBookTaskId = async (whereQuery) => {
+const updateTaskBookMapping = async (dataToBeUpdated, whereQuery, options) => {
   try {
-  } catch (err) {}
+    let updatedTaskBookMapping = await TaskBookMapping.update(dataToBeUpdated, whereQuery, options);
+
+    return updatedTaskBookMapping;
+  } catch (err) {
+    throw err;
+  }
 };
+
+const findOneBookTask = async (whereQuery) => {
+  try {
+    let task = await BookTask.findOne(whereQuery);
+    return task;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const findRecheckingComments = async (bookTaskId) => {
+  try {
+    let findRecheckComments = await SpamBookTaskRecheckComments.findOne({
+      where: { bookTaskId },
+      order: [["createdAt", "DESC"]],
+      raw: true,
+    });
+    return findRecheckComments;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   findBookTaskAndUser,
   createBookTaskLog,
   updateBookTask,
   findBookTasks,
   findBookByBookTask,
-  findTaskBookChapterByBookTaskId,
+  updateTaskBookMapping,
+  findOneBookTask,
+  findRecheckingComments,
 };

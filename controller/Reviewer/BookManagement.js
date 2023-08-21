@@ -19,7 +19,6 @@ const db = require("../../config/database");
 const { SpamBookTaskRecheckComments } = require("../../models/Book/BookTask");
 
 const ReviewerBookController = {
-
   async updateInProgressTaskStatus(req, res, next) {
     const t = await db.transaction();
     try {
@@ -27,7 +26,7 @@ const ReviewerBookController = {
 
       let whereQuery = { where: { id: values.bookTaskId }, raw: true };
 
-      let bookTaskData = await services.bookService.findOneBookTask(whereQuery);
+      let bookTaskData = await services.bookTaskService.findOneBookTask(whereQuery);
 
       if (!bookTaskData) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
@@ -54,7 +53,7 @@ const ReviewerBookController = {
 
       let whereQueryForTaskUpdate = { where: { id: bookTaskData.id } };
 
-      await services.bookService.updateBookTask(dataToBeUpdated, whereQueryForTaskUpdate, {
+      await services.bookTaskService.updateBookTask(dataToBeUpdated, whereQueryForTaskUpdate, {
         transaction: t,
       });
       await t.commit();
@@ -72,7 +71,7 @@ const ReviewerBookController = {
 
       let whereQuery = { where: { id: values.bookTaskId }, raw: true };
 
-      let bookTaskData = await services.bookService.findOneBookTask(whereQuery);
+      let bookTaskData = await services.bookTaskService.findOneBookTask(whereQuery);
 
       if (!bookTaskData) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Book Task not found!");
@@ -99,7 +98,7 @@ const ReviewerBookController = {
 
       let whereQueryForUpdate = { where: { id: bookTaskData.id } };
 
-      await services.bookService.updateBookTask(dataToBeUpdated, whereQueryForUpdate, {
+      await services.bookTaskService.updateBookTask(dataToBeUpdated, whereQueryForUpdate, {
         transaction: t,
       });
       await t.commit();
@@ -138,9 +137,7 @@ const ReviewerBookController = {
         nest: true,
       };
 
-      let bookTaskData = await services.bookService.findOneBookTask(
-        whereQueryForFindBooktask
-      );
+      let bookTaskData = await services.bookTaskService.findOneBookTask(whereQueryForFindBooktask);
 
       if (!bookTaskData) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
@@ -186,7 +183,7 @@ const ReviewerBookController = {
         where: { id: values.bookTaskId },
       };
 
-      let updateTopicTask = await services.bookService.updateBookTask(
+      let updateTopicTask = await services.bookTaskService.updateBookTask(
         dataToBeUpdated,
         whereQueryForUpdateBookTask,
         {
@@ -312,9 +309,7 @@ const ReviewerBookController = {
         nest: true,
       };
 
-      let bookTaskData = await services.bookService.findOneBookTask(
-        whereQueryForFindBookTask
-      );
+      let bookTaskData = await services.bookTaskService.findOneBookTask(whereQueryForFindBookTask);
 
       if (!bookTaskData) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
@@ -339,7 +334,7 @@ const ReviewerBookController = {
         where: { id: bookTaskData.id },
       };
 
-      await services.bookService.updateBookTask(dataToBeUpdated, whereQuery, {
+      await services.bookTaskService.updateBookTask(dataToBeUpdated, whereQuery, {
         transaction: t,
       });
 
@@ -386,7 +381,7 @@ const ReviewerBookController = {
         nest: true,
       };
 
-      let bookTaskData = await services.bookService.findOneBookTask(whereQuery);
+      let bookTaskData = await services.bookTaskService.findOneBookTask(whereQuery);
 
       if (!bookTaskData) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Book Task not found!");
@@ -423,11 +418,9 @@ const ReviewerBookController = {
 
       let whereQueryForTaskUpdate = { where: { id: values.bookTaskId } };
 
-      await services.bookService.updateBookTask(
-        dataToBeUpdated,
-        whereQueryForTaskUpdate,
-        { transaction: t }
-      );
+      await services.bookTaskService.updateBookTask(dataToBeUpdated, whereQueryForTaskUpdate, {
+        transaction: t,
+      });
 
       await services.bookService.createBookTaskLog(
         values.bookTaskId,
@@ -462,7 +455,7 @@ const ReviewerBookController = {
       let whereQuery = {
         where: { id: values.bookTaskId },
       };
-      let bookTaskData = await services.bookService.findOneBookTask(whereQuery);
+      let bookTaskData = await services.bookTaskService.findOneBookTask(whereQuery);
 
       if (!bookTaskData) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Book Task not found!");
@@ -486,16 +479,13 @@ const ReviewerBookController = {
       let values = await getRecheckingCommentsSchema.validateAsync({
         bookTaskId: req.query.bookTaskId,
       });
-      let recheckComment = await services.bookService.findRecheckingComments(
-        values.bookTaskId
-      );
+      let recheckComment = await services.bookTaskService.findRecheckingComments(values.bookTaskId);
 
       res.status(httpStatus.OK).send(recheckComment);
     } catch (err) {
       next(err);
     }
   },
-
 };
 
 module.exports = ReviewerBookController;

@@ -309,7 +309,15 @@ const BookManagementController = {
         for (let i = 0; i < bookMapping.length; i++) {
           // fetch Chapters
           const chapter = await TaskBookChapterMapping.findAll({
-            where: { bookTaskId: values },
+            where: { bookTaskId: values, bookId: bookMapping[i].bookId },
+            attributes: [
+              "bookTaskId",
+              "bookId",
+              "chapterId",
+              "errorReport",
+              "isError",
+              "isArchived",
+            ],
             include: [{ model: Chapter, attributes: ["id", "name", "chapterNumber"] }],
           });
 

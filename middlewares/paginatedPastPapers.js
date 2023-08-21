@@ -174,7 +174,10 @@ const paginatedPastPaperResults = (model, req) => {
       if (subjectNameFilter?.length > 0) {
         for (let i = 0; i < pastPapers.length; i++) {
           let fetchSheet = await Sheet.findOne({
-            where: { subjectId: pastPapers[i].sheet.subjectId },
+            where: {
+              subjectId: pastPapers[i].PastPaperSheet.subjectId,
+              subjectLevelId: pastPapers[i].PastPaperSheet.subjectLevelId,
+            },
             include: [
               {
                 model: Subject,
@@ -192,7 +195,9 @@ const paginatedPastPaperResults = (model, req) => {
           let fetchSubject;
           if (fetchSheet !== null) {
             fetchSubject = await Subject.findOne({
-              where: { subjectNameId: fetchSheet.subject.subjectNameId },
+              where: {
+                subjectNameId: fetchSheet.subject.subjectNameId,
+              },
               include: [{ model: subjectName, attrubutes: [] }],
               raw: true,
               nest: true,
@@ -247,7 +252,10 @@ const paginatedPastPaperResults = (model, req) => {
       } else {
         for (let i = 0; i < pastPapers.length; i++) {
           let fetchSheetWithoutSubjectName = await Sheet.findOne({
-            where: { subjectId: pastPapers[i].PastPaperSheet.subjectId },
+            where: {
+              subjectId: pastPapers[i].PastPaperSheet.subjectId,
+              subjectLevelId: pastPapers[i].PastPaperSheet.subjectLevelId,
+            },
             include: [
               {
                 model: Subject,
