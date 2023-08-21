@@ -32,12 +32,17 @@ const updateBookStatusSchema = Joi.object({
 
 const updateInprogressTaskStatusSchema = Joi.object({
   bookTaskId: Joi.string().guid().required(),
-  datageneratorId: Joi.string().guid().required(),
+  dataGeneratorId: Joi.string().guid().required(),
 });
 
 const updateCompleteTaskStatusSchema = Joi.object({
   bookTaskId: Joi.string().guid().required(),
-  datageneratorId: Joi.string().guid().required(),
+  dataGeneratorId: Joi.string().guid().required(),
+});
+
+const submitTaskToSupervisorSchema = Joi.object({
+  bookTaskId: Joi.string().guid().required(),
+  dataGeneratorId: Joi.string().guid().required(),
 });
 
 module.exports = {
@@ -48,4 +53,5 @@ module.exports = {
   updateBookStatusSchema,
   updateInprogressTaskStatusSchema,
   updateCompleteTaskStatusSchema,
+  submitTaskToSupervisorSchema,
 };

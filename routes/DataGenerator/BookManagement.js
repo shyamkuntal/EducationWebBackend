@@ -25,6 +25,11 @@ router.patch(
   BookManagementDGController.updateInProgressBookTaskStatus
 );
 
-router.patch("/setcompletebooktaskstatus");
+router.patch(
+  "/updatecompletebooktaskstatus",
+  BookManagementDGController.updateCompleteBookTaskStatus
+);
+
+router.patch("/submittasktosupervior", BookManagementDGController.submitTaskToSupervisor);
 
 module.exports = router;

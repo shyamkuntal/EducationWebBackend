@@ -9,11 +9,13 @@ const {
   updateBookStatusSchema,
   updateInprogressTaskStatusSchema,
   updateCompleteTaskStatusSchema,
+  submitTaskToSupervisorSchema,
 } = require("../../validations/BookManagementDGValidations.js");
 const db = require("../../config/database.js");
 const { Chapter } = require("../../models/Book/Book.js");
 const { TaskBookChapterMapping } = require("../../models/Book/BookTaskMapping.js");
 const { ApiError } = require("../../middlewares/apiError.js");
+const { User } = require("../../models/User.js");
 
 const BookManagementDGController = {
   async getBooksChapterByBookTaskId(req, res, next) {
@@ -219,11 +221,11 @@ const BookManagementDGController = {
       console.log(values);
       let whereQuery = { where: { id: values.bookTaskId }, raw: true };
 
-      let bookTaskData = await services.bookTaskService.findBookTaskAndUser(whereQuery);
+      let bookTaskData = await services.bookTaskService.findOneBookTask(whereQuery);
 
       let assignedTo = bookTaskData.assignedToUserId;
       let lifeCycle = bookTaskData.lifeCycle;
-      let previousStatus = bookTaskData.bookStatusForDataGenerator;
+      let previousStatus = bookTaskData.statusForDataGenerator;
 
       if (!bookTaskData) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
@@ -235,7 +237,7 @@ const BookManagementDGController = {
       ) {
         throw new ApiError(
           httpStatus.BAD_REQUEST,
-          "Task not assigned to reviewr or lifecycle mismatch"
+          "Task not assigned to DataGenerator or lifecycle mismatch"
         );
       }
 
@@ -262,8 +264,128 @@ const BookManagementDGController = {
     }
   },
   async updateCompleteBookTaskStatus(req, res, next) {
+    const t = await db.transaction();
     try {
+      let values = await updateCompleteTaskStatusSchema.validateAsync(req.body);
+
+      let whereQuery = { where: { id: values.bookTaskId }, raw: true };
+
+      let bookTaskData = await services.bookTaskService.findOneBookTask(whereQuery);
+
+      if (!bookTaskData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Book Task not found!");
+      }
+
+      let assignedTo = bookTaskData.assignedToUserId;
+      let lifeCycle = bookTaskData.lifeCycle;
+      let previousStatus = bookTaskData.statusForDataGenerator;
+
+      if (
+        assignedTo !== values.dataGeneratorId ||
+        lifeCycle !== CONSTANTS.roleNames.DataGenerator
+      ) {
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          "Task not assigned to dataGenerator or lifecycle mismatch"
+        );
+      }
+
+      if (previousStatus === CONSTANTS.sheetStatuses.Complete) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Current Task status is already Complete");
+      }
+
+      let dataToBeUpdated = {
+        statusForDataGenerator: CONSTANTS.sheetStatuses.Complete,
+      };
+
+      let whereQueryForUpdate = { where: { id: bookTaskData.id } };
+
+      await services.bookTaskService.updateBookTask(dataToBeUpdated, whereQueryForUpdate, {
+        transaction: t,
+      });
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Task Status Updated successfully!" });
+
+      console.log(values);
     } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async submitTaskToSupervisor(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await submitTaskToSupervisorSchema.validateAsync(req.body);
+
+      console.log(values);
+
+      let responseMessage = {
+        assinedUserToSheet: "",
+        UpdateSheetStatus: "",
+        sheetLog: "",
+      };
+
+      let whereQueryForFindBookTask = {
+        where: {
+          id: values.bookTaskId,
+        },
+        include: [
+          { model: User, as: "assignedToUserName", attributes: ["id", "Name", "userName"] },
+          { model: User, as: "supervisor", attributes: ["id", "Name", "userName"] },
+        ],
+        raw: true,
+        nest: true,
+      };
+
+      let bookTaskData = await services.bookTaskService.findOneBookTask(whereQueryForFindBookTask);
+
+      if (!bookTaskData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
+      }
+
+      if (bookTaskData.assignedToUserId === bookTaskData.supervisorId) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Task already assigned to supervisor!");
+      }
+
+      // Checking if sheet status is complete for reviewer
+      if (bookTaskData.statusForDataGenerator !== CONSTANTS.sheetStatuses.Complete) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Please mark it as complete first");
+      }
+
+      //UPDATE sheet assignment & sheet status
+      let dataToBeUpdated = {
+        assignedToUserId: bookTaskData.supervisorId,
+        statusForSupervisor: CONSTANTS.sheetStatuses.Complete,
+      };
+
+      let whereQuery = {
+        where: { id: bookTaskData.id },
+      };
+
+      await services.bookTaskService.updateBookTask(dataToBeUpdated, whereQuery, {
+        transaction: t,
+      });
+
+      responseMessage.assinedUserToSheet = "Task assigned to supervisor successfully";
+      responseMessage.UpdateSheetStatus = "Task Statuses updated successfully";
+
+      // Create sheetLog
+
+      await services.bookTaskService.createBookTaskLog(
+        values.bookTaskId,
+        bookTaskData.assignedToUserName.userName,
+        bookTaskData.supervisor.userName,
+        CONSTANTS.sheetLogsMessages.pastPaperrAssignToSupervisor,
+        { transaction: t }
+      );
+
+      responseMessage.sheetLog = "Log record for assignment to supervisor added successfully";
+
+      await t.commit();
+      res.status(httpStatus.OK).send(responseMessage);
+    } catch (err) {
+      await t.rollback();
       next(err);
     }
   },

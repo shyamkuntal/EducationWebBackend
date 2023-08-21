@@ -39,7 +39,7 @@ const ReviewerBookController = {
       if (assignedTo !== values.reviewerId || lifeCycle !== CONSTANTS.roleNames.Reviewer) {
         throw new ApiError(
           httpStatus.BAD_REQUEST,
-          "Task not assigned to reviewr or lifecycle mismatch"
+          "Task not assigned to reviewer or lifecycle mismatch"
         );
       }
 
@@ -196,7 +196,7 @@ const ReviewerBookController = {
       }
 
       // Create sheetLog
-      let createLog = await services.bookService.createBookTaskLog(
+      let createLog = await services.bookTaskService.createBookTaskLog(
         values.bookTaskId,
         bookTaskData.assignedToUserName.userName,
         bookTaskData.supervisor.userName,
@@ -343,7 +343,7 @@ const ReviewerBookController = {
 
       // Create sheetLog
 
-      await services.bookService.createBookTaskLog(
+      await services.bookTaskService.createBookTaskLog(
         values.bookTaskId,
         bookTaskData.assignedToUserName.userName,
         bookTaskData.supervisor.userName,
@@ -422,7 +422,7 @@ const ReviewerBookController = {
         transaction: t,
       });
 
-      await services.bookService.createBookTaskLog(
+      await services.bookTaskService.createBookTaskLog(
         values.bookTaskId,
         bookTaskData.assignedToUserName.userName,
         bookTaskData.supervisor.userName,
