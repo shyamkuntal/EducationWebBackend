@@ -12,6 +12,7 @@ const {
 const CONSTANTS = require("../../constants/constants.js");
 const { generateFileName } = require("../../config/s3.js");
 const { ApiError } = require("../../middlewares/apiError.js");
+const { PaperNumberSheet } = require("../../models/PaperNumberSheet.js");
 
 const PaperNumberReviewerController = {
   async UpdateInprogressSheetStatus(req, res, next) {
@@ -410,6 +411,66 @@ const PaperNumberReviewerController = {
       next(err);
     }
   },
+
+  async getCountsCardData(req, res, next) {
+    try {
+      const { assignedToUserId } = req.query;
+  
+      const activeSheets = await PaperNumberSheet.findAll({
+        where: {
+          assignedToUserId: assignedToUserId
+        },
+      });
+  
+      let countsBySubject = {}; // Create an object to store counts for each subject
+      activeSheets.forEach((sheet) => {
+        const subjectId = sheet.subjectId;
+  
+        if (!countsBySubject[subjectId]) {
+          countsBySubject[subjectId] = {
+            subjectId: subjectId,
+            InProgress: 0,
+            NotStarted: 0,
+            Complete: 0,
+          };
+        }
+  
+        if (sheet.lifeCycle === "DataGenerator") {
+          switch (sheet.statusForDataGenerator) {
+            case "InProgress":
+              countsBySubject[subjectId].InProgress++;
+              break;
+            case "NotStarted":
+              countsBySubject[subjectId].NotStarted++;
+              break;
+            case "Complete":
+              countsBySubject[subjectId].Complete++;
+              break;
+          }
+        } else if (sheet.lifeCycle === "Reviewer") {
+          switch (sheet.statusForReviewer) {
+            case "InProgress":
+              countsBySubject[subjectId].InProgress++;
+              break;
+            case "NotStarted":
+              countsBySubject[subjectId].NotStarted++;
+              break;
+            case "Complete":
+              countsBySubject[subjectId].Complete++;
+              break;
+          }
+        }
+      });
+  
+      // Convert the countsBySubject object into an array of objects
+      const countsArray = Object.values(countsBySubject);
+  
+      res.send(countsArray);
+    } catch (err) {
+      return res.json({ status: 501, error: err.message });
+    }
+  },
+
 };
 
 module.exports = PaperNumberReviewerController;

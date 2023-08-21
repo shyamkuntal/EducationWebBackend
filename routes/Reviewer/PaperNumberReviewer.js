@@ -52,4 +52,7 @@ router.get("/geterrorreportfile", PaperNumberReviewerController.getErrorReportFi
 // api/pnreviewer/getsubjectnamebyid
 router.get("/getsubjectnamebyid", SubjectManagementController.getSubjectNameById);
 
+router.get("/getcountscarddata", PaperNumberReviewerController.getCountsCardData);
+
+
 module.exports = router;

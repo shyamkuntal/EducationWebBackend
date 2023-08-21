@@ -304,6 +304,58 @@ const PaperNumberSheetController = {
       next(err);
     }
   },
+
+  async getCountsCardData(req, res, next) {
+    try {
+      const subjectId = req.query.subjectId;
+
+      const activeSheets = await PaperNumberSheet.findAll({
+        where: {
+          subjectId: subjectId,
+        }
+      });
+
+      let counts = {
+        InProgress: 0,
+        NotStarted: 0,
+        Complete: 0
+      };
+      activeSheets.forEach(sheet => {
+        if (sheet.lifeCycle === 'DataGenerator') {
+          switch (sheet.statusForDataGenerator) {
+            case 'InProgress':
+              counts.InProgress++;
+              break;
+            case 'NotStarted':
+              counts.NotStarted++;
+              break;
+            case 'Complete':
+              counts.Complete++;
+              break;
+          }
+        } else if (sheet.lifeCycle === 'Reviewer') {
+          switch (sheet.statusForReviewer) {
+            case 'InProgress':
+              counts.InProgress++;
+              break;
+            case 'NotStarted':
+              counts.NotStarted++;
+              break;
+            case 'Complete':
+              counts.Complete++;
+              break;
+          }
+        }
+      });
+
+      res.send({
+        counts: counts
+      });
+    } catch (err) {
+      return res.json({ status: 501, error: err.message });
+    }
+  }
+
 };
 
 module.exports = PaperNumberSheetController;

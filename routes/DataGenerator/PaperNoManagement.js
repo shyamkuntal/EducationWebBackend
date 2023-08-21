@@ -35,4 +35,6 @@ router.get("/getrecheckcomment", PaperNoDGController.getRecheckComment);
 // api/pnreviewer/geterrorreportfile
 router.get("/geterrorreportfile", PaperNumberReviewerController.getErrorReportFile);
 
+router.get("/getcountscarddata", PaperNoDGController.getCountsCardData);
+
 module.exports = router;

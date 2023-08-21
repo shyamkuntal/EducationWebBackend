@@ -28,7 +28,6 @@ const PastPaperUploaderController = {
     try {
       const assignedToUserId = req.params.userId;
       let userId = req.user.id;
-      console.log(assignedToUserId);
 
       const sheet = await Sheet.findAll({
         where: { assignedToUserId: userId },

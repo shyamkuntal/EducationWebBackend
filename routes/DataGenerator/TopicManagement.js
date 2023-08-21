@@ -48,4 +48,6 @@ router.get("/getrecheckcomment", TopicManagementReviewerController.getRecheckCom
 // api/tpmreviewer/geterrorreportfile
 router.get("/geterrorreportfile", TopicManagementReviewerController.getErrorReportFile);
 
+router.get("/getcountscarddata", TopicDGController.getCountsCardData);
+
 module.exports = router;

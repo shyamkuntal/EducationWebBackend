@@ -53,4 +53,6 @@ router.get(
   TopicManagementController.getTopicSubTopicVocabByTaskId
 );
 
+router.get("/getcountscarddata", TopicManagementReviewerController.getCountsCardData);
+
 module.exports = router;

@@ -35,4 +35,6 @@ router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
 router.get("/getdistinctpapernumbers", PaperNumberSheetController.getDistinctPaperNumbers);
 
+router.get("/getcountscarddata", PaperNumberSheetController.getCountsCardData);
+
 module.exports = router;
