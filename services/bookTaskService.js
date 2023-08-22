@@ -65,6 +65,17 @@ const updateTaskBookMapping = async (dataToBeUpdated, whereQuery, options) => {
   }
 };
 
+const updateTaskChapterMapping = async (dataToBeUpdated, whereQuery, options) => {
+  try {
+    let updatedMapping = await TaskBookChapterMapping.update(dataToBeUpdated, whereQuery, options);
+
+    return updatedMapping;
+  } catch (err) {
+    throw err;
+  }
+};
+
+
 const findOneBookTask = async (whereQuery) => {
   try {
     let task = await BookTask.findOne(whereQuery);
@@ -96,4 +107,5 @@ module.exports = {
   updateTaskBookMapping,
   findOneBookTask,
   findRecheckingComments,
+  updateTaskChapterMapping,
 };

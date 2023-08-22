@@ -230,7 +230,7 @@ const ReviewerBookController = {
 
       let whereQuery = { where: { bookId: values.bookId, bookTaskId: values.bookTaskId } };
 
-      let updateTaskBookMapping = await services.bookService.updateTaskBookMapping(
+      let updateTaskBookMapping = await services.bookTaskService.updateTaskBookMapping(
         dataToBeUpdated,
         whereQuery,
         { transaction: t }
@@ -273,7 +273,7 @@ const ReviewerBookController = {
           },
         };
 
-        await services.bookService.updateTaskChapterMapping(dataToBeUpdated, whereQuery, {
+        await services.bookTaskService.updateTaskChapterMapping(dataToBeUpdated, whereQuery, {
           transaction: t,
         });
       }
