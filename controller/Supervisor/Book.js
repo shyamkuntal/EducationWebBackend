@@ -1,7 +1,7 @@
 const { ApiError } = require("../../middlewares/apiError");
-const { Book, Chapter } = require("../../models/Book/Book");
-const { BookTask, BookTaskLog } = require("../../models/Book/BookTask");
-const { TaskBookMapping, TaskBookChapterMapping } = require("../../models/Book/BookTaskMapping");
+const { Book, Chapter } = require("../../models/Book");
+const { BookTask, BookTaskLog } = require("../../models/BookTask");
+const { TaskBookMapping, TaskBookChapterMapping } = require("../../models/BookTaskMapping");
 const services = require("../../services/index");
 const httpStatus = require("http-status");
 const db = require("../../config/database");

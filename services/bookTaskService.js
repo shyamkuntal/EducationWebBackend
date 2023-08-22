@@ -1,5 +1,5 @@
-const { BookTask, BookTaskLog } = require("../models/Book/BookTask");
-const { TaskBookMapping, TaskBookChapterMapping } = require("../models/Book/BookTaskMapping");
+const { BookTask, BookTaskLog } = require("../models/BookTask");
+const { TaskBookMapping, TaskBookChapterMapping } = require("../models/BookTaskMapping");
 const { User } = require("../models/User");
 
 const findBookTaskAndUser = async (bookTaskId) => {
@@ -74,7 +74,6 @@ const updateTaskChapterMapping = async (dataToBeUpdated, whereQuery, options) =>
     throw err;
   }
 };
-
 
 const findOneBookTask = async (whereQuery) => {
   try {

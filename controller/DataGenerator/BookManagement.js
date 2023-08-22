@@ -12,8 +12,8 @@ const {
   submitTaskToSupervisorSchema,
 } = require("../../validations/BookManagementDGValidations.js");
 const db = require("../../config/database.js");
-const { Chapter } = require("../../models/Book/Book.js");
-const { TaskBookChapterMapping } = require("../../models/Book/BookTaskMapping.js");
+const { Chapter } = require("../../models/Book.js");
+const { TaskBookChapterMapping } = require("../../models/BookTaskMapping.js");
 const { ApiError } = require("../../middlewares/apiError.js");
 const { User } = require("../../models/User.js");
 

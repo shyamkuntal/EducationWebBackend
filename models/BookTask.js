@@ -1,9 +1,9 @@
 const Sequelize = require("sequelize");
-const db = require("../../config/database");
-const { Board, SubBoard } = require("../Board");
-const { Subject, SubjectLevel } = require("../Subject.js");
-const { User, Roles } = require("../User.js");
-const { sheetModelConstants } = require("../../constants/constants.js");
+const db = require("../config/database");
+const { Board, SubBoard } = require("./Board");
+const { Subject, SubjectLevel } = require("./Subject.js");
+const { User, Roles } = require("./User.js");
+const { sheetModelConstants } = require("../constants/constants.js");
 const grades = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 const BookTask = db.define("bookTask", {

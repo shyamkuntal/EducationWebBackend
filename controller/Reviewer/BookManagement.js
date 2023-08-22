@@ -16,7 +16,7 @@ const { User } = require("../../models/User");
 const { generateFileName } = require("../../config/s3");
 const { ApiError } = require("../../middlewares/apiError");
 const db = require("../../config/database");
-const { SpamBookTaskRecheckComments } = require("../../models/Book/BookTask");
+const { SpamBookTaskRecheckComments } = require("../../models/BookTask");
 
 const ReviewerBookController = {
   async updateInProgressTaskStatus(req, res, next) {

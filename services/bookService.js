@@ -1,4 +1,4 @@
-const { Book } = require("../models/Book/Book");
+const { Book } = require("../models/Book");
 
 const updateBook = async (dataToBeUpdated, whereQuery) => {
   try {

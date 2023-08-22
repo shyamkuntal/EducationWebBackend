@@ -1,8 +1,8 @@
 const Sequelize = require("sequelize");
-const db = require("../../config/database");
+const db = require("../config/database");
 const { Book, Chapter } = require("./Book");
 const { BookTask } = require("./BookTask");
-const constants = require("../../constants/constants");
+const constants = require("../constants/constants");
 
 const TaskBookMapping = db.define("taskBookMapping", {
   id: {
@@ -48,7 +48,7 @@ TaskBookMapping.belongsTo(Book, {
   foreignKey: { name: "bookId" },
 });
 
-TaskBookMapping.sync()
+TaskBookMapping.sync();
 
 const TaskBookChapterMapping = db.define("taskBookChapterMapping", {
   id: {
@@ -92,6 +92,6 @@ TaskBookChapterMapping.belongsTo(Chapter, {
   foreignKey: { name: "chapterId" },
 });
 
-TaskBookChapterMapping.sync()
+TaskBookChapterMapping.sync();
 
 module.exports = { TaskBookMapping, TaskBookChapterMapping };

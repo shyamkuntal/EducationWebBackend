@@ -1,5 +1,5 @@
 const { Board, SubBoard } = require("../models/Board.js");
-const { BookTask } = require("../models/Book/BookTask.js");
+const { BookTask } = require("../models/BookTask.js");
 const { Subject } = require("../models/Subject.js");
 const { User } = require("../models/User.js");
 const { paginationValidationSchema } = require("../validations/PaginationValidations.js");
