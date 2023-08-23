@@ -9,6 +9,9 @@ const {
   getUserAssignedSubjectsSchema,
   getSheetLogsSchema,
   getPastPaperSchema,
+  createVariantSchema,
+  editVariantSchema,
+  createPastPaperSheetSchema,
 } = require("../../validations/PPMSupervisorValidations.js");
 const httpStatus = require("http-status");
 const { User, Roles } = require("../../models/User.js");
@@ -19,39 +22,30 @@ const {
 const { GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { s3Client } = require("../../config/s3.js");
+const { Variant } = require("../../models/Variants.js");
+const db = require("../../config/database.js");
+const { ApiError } = require("../../middlewares/apiError.js");
 
 const PastPaperSupervisorController = {
-  //take care of isarchived and ispublished later
   async CreateSheet(req, res, next) {
     try {
-      const {
-        boardId,
-        subBoardId,
-        grade,
-        subjectId,
-        subjectLevelId,
-        year,
-        season,
-        varient,
-        paperNumberId,
-        paperNumber,
-        resources,
-        supervisorId,
-      } = req.body;
+      let values = await createPastPaperSheetSchema.validateAsync(req.body);
+
+      console.log(values);
 
       const sheet = await Sheet.create({
-        boardId,
-        subBoardId,
-        grade,
-        subjectId,
-        subjectLevelId,
-        year,
-        season,
-        varient,
-        paperNumberId,
-        paperNumber,
-        resources,
-        supervisorId,
+        boardId: values.boardId,
+        subBoardId: values.subBoardId,
+        grade: values.grade,
+        subjectId: values.subjectId,
+        subjectLevelId: values.subjectLevelId,
+        year: values.year,
+        season: values.season,
+        variantId: values.variantId,
+        paperNumberId: values.paperNumberId,
+        paperNumber: values.paperNumber,
+        resources: values.resources,
+        supervisorId: values.supervisorId,
       });
 
       return res.json({
@@ -668,6 +662,66 @@ const PastPaperSupervisorController = {
       }
     } catch (err) {
       console.log(err);
+      next(err);
+    }
+  },
+  async createVariant(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await createVariantSchema.validateAsync(req.body);
+
+      let checkVariantName = await Variant.findOne({ where: { name: values.name } });
+
+      if (checkVariantName) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Varaint already exists");
+      }
+
+      let newVariant = await Variant.create({ name: values.name }, { transaction: t });
+
+      await t.commit();
+      res.status(httpStatus.OK).send(newVariant);
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async getAllVariants(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let results = await Variant.findAll();
+
+      await t.commit();
+      res.status(httpStatus.OK).send(results);
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async deleteVariant(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values;
+    } catch (err) {
+      next(err);
+    }
+  },
+  async editVariant(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await editVariantSchema.validateAsync(req.body);
+
+      let checkVariantName = await Variant.findOne({ where: { name: values.newName } });
+
+      if (checkVariantName) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Varaint by this name already exists!");
+      }
+
+      await Variant.update({ name: values.newName }, { where: { id: values.variantId } });
+
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Variant Updated Successfully!" });
+    } catch (err) {
+      await t.rollback();
       next(err);
     }
   },

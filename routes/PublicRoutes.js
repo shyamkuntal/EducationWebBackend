@@ -6,6 +6,7 @@ const BoardManagementController = require("../controller/SuperAdmin/BoardM");
 const SubjectManagementController = require("../controller/Supervisor/ManageSubject");
 const AccountManagementController = require("../controller/Supervisor/ManageAccount");
 const PaperNumberSheetController = require("../controller/Supervisor/PaperNumber");
+const PastPaperSupervisorController = require("../controller/Supervisor/PPMSupervisor");
 const upload = require("../config/multer.js");
 
 // /api/public/getallroles
@@ -34,6 +35,8 @@ router.get("/getallsubjectlevels", SubjectManagementController.getAllSubjectLeve
 router.get("/getdistinctpapernumbers", PaperNumberSheetController.getDistinctPaperNumbers);
 
 router.get("/getboardnamebytype", BoardManagementController.getBoardsByType);
+
+router.get("/getallvariants", PastPaperSupervisorController.getAllVariants);
 
 // router.post("/createuserrole", AccountManagementController.createUserRole);
 

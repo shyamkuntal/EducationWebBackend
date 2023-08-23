@@ -4,6 +4,7 @@ const { Board, SubBoard } = require("./Board.js");
 const { Subject, SubjectLevel } = require("./Subject.js");
 const { User, Roles } = require("./User.js");
 const { sheetModelConstants } = require("../constants/constants.js");
+const { Variant } = require("./Variants");
 const grades = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 const Sheet = db.define("PastPaperSheet", {
@@ -41,6 +42,10 @@ const Sheet = db.define("PastPaperSheet", {
 
   varient: {
     type: Sequelize.STRING,
+    allowNull: true,
+  },
+  variantId: {
+    type: Sequelize.UUID,
     allowNull: false,
   },
   paperNumberId: {
@@ -138,6 +143,10 @@ User.hasMany(Sheet, {
 Sheet.belongsTo(User, {
   foreignKey: "supervisorId",
   as: "supervisor",
+});
+
+Sheet.belongsTo(Variant, {
+  foreignKey: "variantId",
 });
 
 const SpamSheetRecheckComments = db.define("PastPaperSpamSheetRecheckComments", {

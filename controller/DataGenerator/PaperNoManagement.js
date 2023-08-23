@@ -19,17 +19,17 @@ const PaperNoDGController = {
   async getCountsCardData(req, res, next) {
     try {
       const { assignedToUserId } = req.query;
-  
+
       const activeSheets = await PaperNumberSheet.findAll({
         where: {
-          assignedToUserId: assignedToUserId
+          assignedToUserId: assignedToUserId,
         },
       });
-  
+
       let countsBySubject = {}; // Create an object to store counts for each subject
       activeSheets.forEach((sheet) => {
         const subjectId = sheet.subjectId;
-  
+
         if (!countsBySubject[subjectId]) {
           countsBySubject[subjectId] = {
             subjectId: subjectId,
@@ -38,7 +38,7 @@ const PaperNoDGController = {
             Complete: 0,
           };
         }
-  
+
         if (sheet.lifeCycle === "DataGenerator") {
           switch (sheet.statusForDataGenerator) {
             case "InProgress":
@@ -65,16 +65,16 @@ const PaperNoDGController = {
           }
         }
       });
-  
+
       // Convert the countsBySubject object into an array of objects
       const countsArray = Object.values(countsBySubject);
-  
+
       res.send(countsArray);
     } catch (err) {
       return res.json({ status: 501, error: err.message });
     }
   },
-  
+
   async createPaperNumber(req, res, next) {
     try {
       const { paperNumberSheetId, paperNumber } = req.body;
@@ -234,8 +234,8 @@ const PaperNoDGController = {
 
         let createLog = await services.paperNumberSheetService.createSheetLog(
           sheetData.id,
-          sheetData.supervisor.Name,
           userData.Name,
+          sheetData.supervisor.Name,
           CONSTANTS.sheetLogsMessages.DataGeneratorAssignToSupervisor
         );
 

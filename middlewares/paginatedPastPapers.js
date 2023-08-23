@@ -7,6 +7,7 @@ const { SubjectLevel, subjectName, Subject } = require("../models/Subject.js");
 const { PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { s3Client } = require("../config/s3.js");
+const { Variant } = require("../models/Variants.js");
 
 const paginatedPastPaperResults = (model, req) => {
   return async (req, res, next) => {
@@ -83,16 +84,16 @@ const paginatedPastPaperResults = (model, req) => {
       filtersForSheet.season = query;
     }
 
-    if (req.query.varient) {
+    if (req.query.varientId) {
       let query = "";
-      if (typeof req.query.varient === "string") {
-        query = req.query.varient;
+      if (typeof req.query.varientId === "string") {
+        query = req.query.varientId;
       }
 
-      if (typeof req.query.varient === "object") {
-        query = { [Op.in]: req.query.varient };
+      if (typeof req.query.varientId === "object") {
+        query = { [Op.in]: req.query.varientId };
       }
-      filtersForSheet.varient = query;
+      filtersForSheet.variantId = query;
     }
 
     if (req.query.paperNumberId) {
@@ -120,6 +121,8 @@ const paginatedPastPaperResults = (model, req) => {
       };
     }
 
+    console.log(filtersForSheet);
+
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
@@ -139,6 +142,7 @@ const paginatedPastPaperResults = (model, req) => {
         limit: limit,
       };
     }
+
     try {
       const pastPapers = await PastPaper.findAll({
         include: [
@@ -151,6 +155,7 @@ const paginatedPastPaperResults = (model, req) => {
               "grade",
               "subjectId",
               "subjectLevelId",
+              "variantId",
               "year",
               "season",
               "varient",
@@ -177,6 +182,7 @@ const paginatedPastPaperResults = (model, req) => {
             where: {
               subjectId: pastPapers[i].PastPaperSheet.subjectId,
               subjectLevelId: pastPapers[i].PastPaperSheet.subjectLevelId,
+              variantId: pastPapers[i].PastPaperSheet.variantId,
             },
             include: [
               {
@@ -186,6 +192,11 @@ const paginatedPastPaperResults = (model, req) => {
               },
               {
                 model: SubjectLevel,
+                attributes: ["id", "subjectLevelName", "isArchived"],
+              },
+              {
+                model: Variant,
+                attributes: ["id", "name"],
               },
             ],
             raw: true,
@@ -241,6 +252,7 @@ const paginatedPastPaperResults = (model, req) => {
               ...pastPapers[i],
               subject: fetchSubject,
               subjectLevel: fetchSheet.subjectLevel,
+              variant: fetchSheet.variant,
               files: {
                 imageBannerUrl: imageBannerUrl,
                 quesPaperUrl: quesPaperUrl,
@@ -255,6 +267,7 @@ const paginatedPastPaperResults = (model, req) => {
             where: {
               subjectId: pastPapers[i].PastPaperSheet.subjectId,
               subjectLevelId: pastPapers[i].PastPaperSheet.subjectLevelId,
+              variantId: pastPapers[i].PastPaperSheet.variantId,
             },
             include: [
               {
@@ -265,7 +278,12 @@ const paginatedPastPaperResults = (model, req) => {
                 model: SubjectLevel,
                 attributes: ["id", "subjectLevelName", "isArchived"],
               },
+              {
+                model: Variant,
+                attributes: ["id", "name"],
+              },
             ],
+
             raw: true,
             nest: true,
           });
@@ -322,6 +340,7 @@ const paginatedPastPaperResults = (model, req) => {
             ...pastPapers[i],
             subject: fetchSubject,
             subjectLevel: fetchSheetWithoutSubjectName.subjectLevel,
+            variant: fetchSheetWithoutSubjectName.variant,
             files: {
               imageBannerUrl: imageBannerUrl,
               quesPaperUrl: quesPaperUrl,

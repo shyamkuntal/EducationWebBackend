@@ -4,6 +4,14 @@ const paginatedSheetResults = require("../../middlewares/paginatedSheet.js");
 
 const router = express.Router();
 
+router.post("/createvariant", PastPaperSupervisorController.createVariant);
+
+router.get("/getallvariants", PastPaperSupervisorController.getAllVariants);
+
+router.patch("/editvariant", PastPaperSupervisorController.editVariant);
+
+router.delete("/deletevariant", PastPaperSupervisorController.deleteVariant);
+
 router.post("/createsheet", PastPaperSupervisorController.CreateSheet);
 
 router.get("/getuserassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
