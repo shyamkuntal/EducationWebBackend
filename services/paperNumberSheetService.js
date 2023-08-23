@@ -267,13 +267,15 @@ const findPaperNumberbyBoardSubBoardGradeSubject = async ({
     });
 
     // finding PaperNumber by pastPaperId
-
-    let paperNumberDetails = await PaperNumber.findAll({
-      where: {
-        paperNumberSheetId: paperNumberSheetDetails.id,
-        isArchive: false,
-      },
-    });
+    let paperNumberDetails = [];
+    if (paperNumberSheetDetails) {
+      paperNumberDetails = await PaperNumber.findAll({
+        where: {
+          paperNumberSheetId: paperNumberSheetDetails.id,
+          isArchive: false,
+        },
+      });
+    }
 
     return paperNumberDetails;
   } catch (err) {
