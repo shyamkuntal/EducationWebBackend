@@ -1,6 +1,7 @@
 const express = require("express");
 const BookManagementController = require("../../controller/Supervisor/Book");
 const BookManagementDGController = require("../../controller/DataGenerator/BookManagement");
+const ReviewerBookController = require("../../controller/Reviewer/BookManagement");
 const paginatedBookTasks = require("../../middlewares/paginatedBookTask");
 const router = express.Router();
 
@@ -31,5 +32,11 @@ router.patch(
 );
 
 router.patch("/submittasktosupervior", BookManagementDGController.submitTaskToSupervisor);
+
+router.patch("/updatechapter", BookManagementDGController.updateChapter);
+
+router.get("/geterrorreportfile", ReviewerBookController.getErrorReportFile);
+
+router.get("/getrecheckcomment", ReviewerBookController.getRecheckComment);
 
 module.exports = router;

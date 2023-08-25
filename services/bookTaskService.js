@@ -1,4 +1,4 @@
-const { BookTask, BookTaskLog } = require("../models/BookTask");
+const { BookTask, BookTaskLog, SpamBookTaskRecheckComments } = require("../models/BookTask");
 const { TaskBookMapping, TaskBookChapterMapping } = require("../models/BookTaskMapping");
 const { User } = require("../models/User");
 

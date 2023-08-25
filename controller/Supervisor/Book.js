@@ -148,6 +148,7 @@ const BookManagementController = {
       let responseMessage = {
         assinedUserToTask: "",
         UpdateTaskStatus: "",
+        UpdateTaskBookMapping: "",
         taskLog: "",
       };
 
@@ -173,13 +174,27 @@ const BookManagementController = {
             returning: true,
             transaction: t,
           });
-          //   let bookTaskData = updatedBookTask[1][0];
 
           if (updatedBookTask.length > 0) {
             responseMessage.assinedUserToTask =
               "Task assigned to Data Generator and lifeCycle updated successfully";
             responseMessage.UpdateTaskStatus = "Task Statuses updated successfully";
           }
+          // Update taskBookMappings
+
+          let dataToBeUpdatedForTaskBookMapping = {
+            bookStatusForDataGenerator: CONSTANTS.sheetStatuses.NotStarted,
+          };
+          let whereQuery = {
+            where: { bookTaskId: values.bookTaskId },
+          };
+
+          await services.bookTaskService.updateTaskBookMapping(
+            dataToBeUpdatedForTaskBookMapping,
+            whereQuery
+          );
+
+          responseMessage.UpdateTaskBookMapping = "Task Book Mapping updated successfully";
 
           // CREATE task log for task assignment to dataGenerator
           let createLog = await services.bookTaskService.createBookTaskLog(
@@ -249,13 +264,25 @@ const BookManagementController = {
             transaction: t,
           });
 
-          //   let bookTaskData = updatedBookTask[1][0];
-
           if (updatedBookTask.length > 0) {
             responseMessage.assinedUserToTask =
               "Task assigned to Reviewer and lifeCycle updated successfully";
             responseMessage.UpdateTaskStatus = "Task Statuses updated successfully";
           }
+
+          let dataToBeUpdatedForTaskBookMapping = {
+            bookStatusForReviewer: CONSTANTS.sheetStatuses.NotStarted,
+          };
+          let whereQuery = {
+            where: { bookTaskId: values.bookTaskId },
+          };
+
+          await services.bookTaskService.updateTaskBookMapping(
+            dataToBeUpdatedForTaskBookMapping,
+            whereQuery
+          );
+
+          responseMessage.UpdateTaskBookMapping = "Task Book Mapping updated successfully";
 
           // CREATE task log for task assignment to dataGenerator
           let createLog = await services.bookTaskService.createBookTaskLog(

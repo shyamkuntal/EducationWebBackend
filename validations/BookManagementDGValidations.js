@@ -15,7 +15,7 @@ const updateBookSchema = Joi.object({
 const addChapterSchema = Joi.object({
   bookTaskId: Joi.string().guid().required(),
   bookId: Joi.string().guid().required(),
-  chapterNumber: Joi.string().max(225).required(),
+  chapterNumber: Joi.number().max(225).required(),
   name: Joi.string().max(225).required(),
 });
 
@@ -45,6 +45,12 @@ const submitTaskToSupervisorSchema = Joi.object({
   dataGeneratorId: Joi.string().guid().required(),
 });
 
+const updateChapterSchema = Joi.object({
+  chapterId: Joi.string().guid().required(),
+  chapterNumber: Joi.number().max(225).required(),
+  name: Joi.string().max(225).required(),
+});
+
 module.exports = {
   getBooksByBookTaskIdSchema,
   updateBookSchema,
@@ -54,4 +60,5 @@ module.exports = {
   updateInprogressTaskStatusSchema,
   updateCompleteTaskStatusSchema,
   submitTaskToSupervisorSchema,
+  updateChapterSchema,
 };

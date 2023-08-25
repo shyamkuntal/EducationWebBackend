@@ -10,7 +10,7 @@ const paginationValidationSchema = Joi.object({
   boardId: Joi.string().guid(),
   subBoardId: Joi.string().guid(),
   subjectId: Joi.string().guid(),
-  grade: Joi.string().guid(),
+  grade: Joi.string(),
   statusForDataGenerator: Joi.string().max(50),
   statusForReviewer: Joi.string().max(50),
   search: Joi.string().max(225),

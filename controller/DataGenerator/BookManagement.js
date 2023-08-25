@@ -10,6 +10,7 @@ const {
   updateInprogressTaskStatusSchema,
   updateCompleteTaskStatusSchema,
   submitTaskToSupervisorSchema,
+  updateChapterSchema,
 } = require("../../validations/BookManagementDGValidations.js");
 const db = require("../../config/database.js");
 const { Chapter } = require("../../models/Book.js");
@@ -94,7 +95,11 @@ const BookManagementDGController = {
   async deleteChapter(req, res, next) {
     const t = await db.transaction();
     try {
-      let values = await deleteChapterSchema.validateAsync(req.body);
+      let values = await deleteChapterSchema.validateAsync({
+        bookTaskId: req.query.bookTaskId,
+        bookId: req.query.bookId,
+        chapterId: req.query.chapterId,
+      });
 
       console.log(values);
 
@@ -384,6 +389,30 @@ const BookManagementDGController = {
 
       await t.commit();
       res.status(httpStatus.OK).send(responseMessage);
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async updateChapter(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await updateChapterSchema.validateAsync(req.body);
+
+      let dataToBeUpdated = {
+        chapterNumber: values.chapterNumber,
+        name: values.name,
+      };
+
+      let whereQuery = {
+        where: { id: values.chapterId },
+      };
+
+      await Chapter.update(dataToBeUpdated, whereQuery);
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Chapter Updated!" });
     } catch (err) {
       await t.rollback();
       next(err);
