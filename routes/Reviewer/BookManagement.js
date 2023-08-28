@@ -3,6 +3,7 @@ const paginatedBookTasks = require("../../middlewares/paginatedBookTask");
 const BookManagementController = require("../../controller/Supervisor/Book");
 const ReviewerBookController = require("../../controller/Reviewer/BookManagement");
 const upload = require("../../config/multer");
+const BookManagementDGController = require("../../controller/DataGenerator/BookManagement");
 
 const router = express.Router();
 
@@ -40,6 +41,8 @@ router.get("/getrecheckcomment", ReviewerBookController.getRecheckComment);
 
 router.get("/geterrorreportfile", ReviewerBookController.getErrorReportFile);
 
+router.patch("/setbookinprogressstatus", BookManagementDGController.setBookInProgressStatus);
 
+router.patch("/setbookcompletestatus", BookManagementDGController.setBookCompleteStatus);
 
 module.exports = router;

@@ -473,7 +473,6 @@ const ReviewerBookController = {
       next(err);
     }
   },
-
   async getRecheckComment(req, res, next) {
     try {
       let values = await getRecheckingCommentsSchema.validateAsync({

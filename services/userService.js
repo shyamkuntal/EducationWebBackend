@@ -73,7 +73,6 @@ const getUserAssignedSubjects = async (userId) => {
       raw: true,
       nest: true,
     });
-
     return getUserSubjects;
   } catch (error) {
     throw error;

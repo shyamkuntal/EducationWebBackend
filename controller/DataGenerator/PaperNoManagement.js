@@ -26,7 +26,7 @@ const PaperNoDGController = {
         },
       });
 
-      let countsBySubject = {}; // Create an object to store counts for each subject
+      let countsBySubject = {}; 
       activeSheets.forEach((sheet) => {
         const subjectId = sheet.subjectId;
 

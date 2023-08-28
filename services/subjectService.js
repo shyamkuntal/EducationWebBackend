@@ -3,13 +3,7 @@ const { Subject, subjectName, SubjectLevel } = require("../models/Subject");
 const httpStatus = require("http-status");
 const { ApiError } = require("../middlewares/apiError.js");
 
-const createSubject = async ({
-  boardId,
-  subBoardId,
-  grade,
-  subjectNameId,
-  subjectImage,
-}) => {
+const createSubject = async ({ boardId, subBoardId, grade, subjectNameId, subjectImage }) => {
   try {
     let subject = await Subject.create({
       boardId,
@@ -95,12 +89,7 @@ const findSubjectByIds = async (boardId, subBoardId, grade, subjectNameId) => {
   }
 };
 
-const findSubjectByIdsForCreation = async (
-  boardId,
-  subBoardId,
-  grade,
-  subjectNameId
-) => {
+const findSubjectByIdsForCreation = async (boardId, subBoardId, grade, subjectNameId) => {
   try {
     let subject = await Subject.findOne({
       where: { boardId, subBoardId, grade, subjectNameId },
@@ -128,11 +117,27 @@ const getSubjectBySubjectNameId = async (subjectNameId) => {
 
 const getSubjectNames = async () => {
   try {
+    let subject = await Subject.findAll();
+
     let subjectNames = await subjectName.findAll({
       attributes: ["id", "subjectName", "subjectImage"],
       raw: true,
     });
-    return subjectNames;
+
+    const updatedSubjectNameArray = subjectNames.map((subjectName) => {
+      const matchingSubject = subject.find(
+        (subject) => subject.subjectNameId === subjectName.id
+      );
+      if (matchingSubject) {
+        return {
+          ...subjectName,
+          subjectId: matchingSubject.id,
+        };
+      }
+      return subjectName;
+    });
+
+    return updatedSubjectNameArray;
   } catch (err) {
     throw err;
   }

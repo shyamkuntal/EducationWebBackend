@@ -307,54 +307,62 @@ const PaperNumberSheetController = {
 
   async getCountsCardData(req, res, next) {
     try {
-      const subjectId = req.query.subjectId;
+      const { assignedToUserId } = req.query;
 
       const activeSheets = await PaperNumberSheet.findAll({
         where: {
-          subjectId: subjectId,
-        }
+          assignedToUserId: assignedToUserId,
+        },
       });
 
-      let counts = {
-        InProgress: 0,
-        NotStarted: 0,
-        Complete: 0
-      };
-      activeSheets.forEach(sheet => {
-        if (sheet.lifeCycle === 'DataGenerator') {
+      let countsBySubject = {}; 
+      activeSheets.forEach((sheet) => {
+        const subjectId = sheet.subjectId;
+
+        if (!countsBySubject[subjectId]) {
+          countsBySubject[subjectId] = {
+            subjectId: subjectId,
+            InProgress: 0,
+            NotStarted: 0,
+            Complete: 0,
+          };
+        }
+
+        if (sheet.lifeCycle === "DataGenerator") {
           switch (sheet.statusForDataGenerator) {
-            case 'InProgress':
-              counts.InProgress++;
+            case "InProgress":
+              countsBySubject[subjectId].InProgress++;
               break;
-            case 'NotStarted':
-              counts.NotStarted++;
+            case "NotStarted":
+              countsBySubject[subjectId].NotStarted++;
               break;
-            case 'Complete':
-              counts.Complete++;
+            case "Complete":
+              countsBySubject[subjectId].Complete++;
               break;
           }
-        } else if (sheet.lifeCycle === 'Reviewer') {
+        } else if (sheet.lifeCycle === "Reviewer") {
           switch (sheet.statusForReviewer) {
-            case 'InProgress':
-              counts.InProgress++;
+            case "InProgress":
+              countsBySubject[subjectId].InProgress++;
               break;
-            case 'NotStarted':
-              counts.NotStarted++;
+            case "NotStarted":
+              countsBySubject[subjectId].NotStarted++;
               break;
-            case 'Complete':
-              counts.Complete++;
+            case "Complete":
+              countsBySubject[subjectId].Complete++;
               break;
           }
         }
       });
 
-      res.send({
-        counts: counts
-      });
+      // Convert the countsBySubject object into an array of objects
+      const countsArray = Object.values(countsBySubject);
+
+      res.send(countsArray);
     } catch (err) {
       return res.json({ status: 501, error: err.message });
     }
-  }
+  },
 
 };
 

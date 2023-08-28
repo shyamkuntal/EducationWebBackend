@@ -39,4 +39,6 @@ router.get("/geterrorreportfile", ReviewerBookController.getErrorReportFile);
 
 router.get("/getrecheckcomment", ReviewerBookController.getRecheckComment);
 
+router.get("/getcountscarddata", BookManagementDGController.getCountsCardData);
+
 module.exports = router;

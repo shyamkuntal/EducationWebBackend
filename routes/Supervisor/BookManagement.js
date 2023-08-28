@@ -52,4 +52,6 @@ router.get(
   SubjectManagementController.getSubjectDetailsByBoardSubBoardGrade
 );
 
+router.get("/getcountscarddata", BookManagementController.getCountsCardData);
+
 module.exports = router;
