@@ -3,6 +3,7 @@ const { Board, SubBoard } = require("../models/Board.js");
 const { Sheet } = require("../models/PastPaperSheet.js");
 const { SubjectLevel, Subject } = require("../models/Subject.js");
 const { User } = require("../models/User.js");
+const { Variant } = require("../models/Variants.js");
 
 const paginatedSheetResults = (req) => {
   return async (req, res, next) => {
@@ -79,7 +80,6 @@ const paginatedSheetResults = (req) => {
 
     const results = {};
 
-    //const count = await model.countDocuments(filters).exec();
     const count = await Sheet.count({ where: filters });
     if (endIndex < count) {
       results.next = {
@@ -153,6 +153,10 @@ const paginatedSheetResults = (req) => {
             model: User,
             attributes: ["Name"],
             as: "assignedToUserName",
+          },
+          {
+            model: Variant,
+            attributes: ["id", "name"],
           },
         ],
         where: filters,
