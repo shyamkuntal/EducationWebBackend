@@ -2,7 +2,7 @@ const Joi = require("joi");
 const CONSTANTS = require("../constants/constants");
 
 const createPastPaperSchema = Joi.object({
-  paperNumber: Joi.number().required(),
+  paperNumber: Joi.string().required(),
   googleLink: Joi.string().regex(CONSTANTS.validationRegex.urlRegex).required(),
   questionPdf: Joi.object({
     fieldname: Joi.string(),
@@ -40,7 +40,7 @@ const assignSupervisorUserToSheetSchema = Joi.object({
 
 const editPastPaperSchema = Joi.object({
   sheetId: Joi.string().guid().required(),
-  paperNumber: Joi.number().required(),
+  paperNumber: Joi.string().required(),
   googleLink: Joi.string().regex(CONSTANTS.validationRegex.urlRegex).required(),
   newQuestionPaper: Joi.object({
     fieldname: Joi.string(),
