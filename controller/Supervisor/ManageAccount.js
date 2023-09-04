@@ -196,7 +196,7 @@ const AccountManagementController = {
         await services.userService.updatePassword(values.userId, values.password);
       }
 
-      if (values.boardIds && values.boardIds.length > 0) {
+      if (values.boardIds) {
         await UserBoardMapping.destroy({ where: { userId: values.userId } });
         // Update board mapping entries
         const boardmapping = values.boardIds.map((boardId) => ({
@@ -207,7 +207,7 @@ const AccountManagementController = {
         await UserBoardMapping.bulkCreate(boardmapping);
       }
 
-      if (values.subBoardIds && values.subBoardIds.length > 0) {
+      if (values.subBoardIds) {
         await UserSubBoardMapping.destroy({ where: { userId: values.userId } });
         // Update subboard mapping entries
         const subboardmapping = values.subBoardIds.map((subboardId) => ({

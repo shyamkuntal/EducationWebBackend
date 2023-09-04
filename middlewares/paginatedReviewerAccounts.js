@@ -41,7 +41,7 @@ const reviewerAccounts = () => {
     }
 
     try {
-      console.log(role);
+
       const pastPaperDetails = await User.findAll({
         attributes: ["id", "Name", "email", "userName", "isActive"],
 
