@@ -9,7 +9,7 @@ const {
 } = require("../../models/User.js");
 const { roleNames } = require("../../constants/constants.js");
 const { Sequelize } = require("sequelize");
-const { subjectName } = require("../../models/Subject.js");
+const { subjectName, Subject } = require("../../models/Subject.js");
 const services = require("../../services/index.js");
 const { findRoleByNameSchema } = require("../../validations/RoleValidation.js");
 const httpStatus = require("http-status");
@@ -231,7 +231,7 @@ const AccountManagementController = {
         await UserQualificationMapping.bulkCreate(qmapping);
       }
 
-      if (values.subjectsIds && values.subjectsIds.length > 0) {
+      if (values.subjectsIds) {
         await UserSubjectMapping.destroy({ where: { userId: values.userId } });
         // Update subject mapping entries
 
@@ -243,7 +243,7 @@ const AccountManagementController = {
         await UserSubjectMapping.bulkCreate(subjectmapping);
       }
 
-      if (values.modules && values.modules) {
+      if (values.modules) {
         await UserModuleMapping.destroy({ where: { userId: values.userId } });
 
         const modulemapping = values.modules.map((module) => ({
@@ -419,6 +419,16 @@ const AccountManagementController = {
         await services.userService.findUserSubjectsBoardSubBoardQualificationModules(values.userId);
 
       res.status(httpStatus.OK).send(userDetails);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getSubjectMappings(req, res, next) {
+    try {
+      let subjectMappings = await Subject.findAll();
+
+      res.status(httpStatus.OK).send(subjectMappings);
     } catch (err) {
       next(err);
     }

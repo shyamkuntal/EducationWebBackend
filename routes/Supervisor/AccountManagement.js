@@ -83,4 +83,6 @@ router.get("/getsheetlogs", PastPaperSupervisorController.getSheetLogs);
 
 router.get("/getpnsheetlogs", PaperNumberSheetController.getSheetLogs);
 
+router.get("/getallsubjectsmappings", AccountManagementController.getSubjectMappings);
+
 module.exports = router;
