@@ -109,6 +109,10 @@ const Sheet = db.define("PastPaperSheet", {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
+  assignOn: {
+    type: Sequelize.DATE,
+    allowNull: true,
+  }
 });
 
 Sheet.sync().then(() => {

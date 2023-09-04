@@ -10,6 +10,8 @@ router.get("/getallvariants", PastPaperSupervisorController.getAllVariants);
 
 router.patch("/editvariant", PastPaperSupervisorController.editVariant);
 
+router.patch("/updatesheet", PastPaperSupervisorController.UpdateSheet);
+
 router.delete("/deletevariant", PastPaperSupervisorController.deleteVariant);
 
 router.post("/createsheet", PastPaperSupervisorController.CreateSheet);

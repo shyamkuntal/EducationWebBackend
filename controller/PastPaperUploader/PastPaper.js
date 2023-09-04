@@ -330,8 +330,8 @@ const PastPaperUploaderController = {
             // CREATE sheet log for sheet assignment to supervisor
             let createLog = await services.sheetService.createSheetLog(
               sheetData.id,
-              sheetData.supervisor.Name,
               userData.Name,
+              sheetData.supervisor.Name,
               CONSTANTS.sheetLogsMessages.pastPaperrAssignToSupervisor
             );
 

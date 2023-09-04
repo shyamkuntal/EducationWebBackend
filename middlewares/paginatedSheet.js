@@ -124,6 +124,7 @@ const paginatedSheetResults = (req) => {
           "supervisorCommentToPastPaper",
           "isSpam",
           "isArchived",
+          "assignOn",
         ],
         include: [
           {

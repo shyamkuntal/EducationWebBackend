@@ -61,7 +61,6 @@ const checkSheetAssignmentId = async (sheetId, userId) => {
 const updateSheet = async (dataToBeUpdated, whereQuery) => {
   try {
     let updatedSheet = await Sheet.update(dataToBeUpdated, whereQuery);
-
     return updatedSheet;
   } catch (err) {
     throw err;

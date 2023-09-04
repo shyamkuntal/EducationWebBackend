@@ -31,8 +31,6 @@ const PastPaperSupervisorController = {
     try {
       let values = await createPastPaperSheetSchema.validateAsync(req.body);
 
-      console.log(values);
-
       const sheet = await Sheet.create({
         boardId: values.boardId,
         subBoardId: values.subBoardId,
@@ -483,6 +481,7 @@ const PastPaperSupervisorController = {
             statusForSupervisor: CONSTANTS.sheetStatuses.NotStarted,
             statusForPastPaper: CONSTANTS.sheetStatuses.NotStarted,
             supervisorCommentToPastPaper: values.supervisorComments,
+            assignOn: new Date(),
           };
 
           let whereQuery = { where: { id: sheetData.id } };
@@ -522,7 +521,6 @@ const PastPaperSupervisorController = {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }
   },
-
   async AssignSheetToReviewer(req, res) {
     try {
       let values = await assignReviewerUserToSheetSchema.validateAsync(req.body);
@@ -552,6 +550,7 @@ const PastPaperSupervisorController = {
             statusForSupervisor: CONSTANTS.sheetStatuses.NotStarted,
             statusForReviewer: CONSTANTS.sheetStatuses.NotStarted,
             supervisorCommentToReviewer: values.supervisorComments,
+            assignOn: new Date(),
           };
 
           let whereQuery = { where: { id: sheetData.id } };
@@ -602,7 +601,6 @@ const PastPaperSupervisorController = {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
     }
   },
-
   async getPastPaper(req, res, next) {
     try {
       let values = await getPastPaperSchema.validateAsync({
@@ -611,7 +609,7 @@ const PastPaperSupervisorController = {
 
       let pastPaper = await services.pastpaperService.findPastPaper({
         where: { sheetId: values.sheetId },
-        attributes: ["id", "questionPdf", "answerPdf", "imagebanner"],
+        attributes: ["id", "questionPdf", "answerPdf", "imagebanner", "paperNumber", "googleLink"],
         raw: true,
       });
 
@@ -725,7 +723,6 @@ const PastPaperSupervisorController = {
       next(err);
     }
   },
-
   async getCountsCardData(req, res, next) {
     try {
       const { assignedToUserId } = req.query;
@@ -736,7 +733,7 @@ const PastPaperSupervisorController = {
         },
       });
 
-      let countsBySubject = {}; 
+      let countsBySubject = {};
       activeSheets.forEach((sheet) => {
         const subjectId = sheet.subjectId;
 
