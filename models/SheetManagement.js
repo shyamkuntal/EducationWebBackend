@@ -3,6 +3,7 @@ const db = require("../config/database");
 const { Board, SubBoard } = require("./Board");
 const { Subject } = require("./Subject");
 const { Variant } = require("./Variants");
+const { sheetModelConstants } = require("../constants/constants.js");
 
 const SheetManagement = db.define("sheetManagement", {
   id: {
@@ -14,11 +15,11 @@ const SheetManagement = db.define("sheetManagement", {
     type: Sequelize.STRING,
     allowNull: false
   },
-  board: {
+  boardId: {
     type: Sequelize.UUID,
     allowNull: false,
   },
-  subBoard: {
+  subBoardId: {
     type: Sequelize.UUID,
     allowNull: false,
   },
@@ -26,13 +27,13 @@ const SheetManagement = db.define("sheetManagement", {
     type: Sequelize.STRING,
     allowNull: false
   },
-  subject: {
+  subjectId: {
     type: Sequelize.UUID,
     allowNull: false
   },
-  levels: {
-    type: Sequelize.STRING,
-    allowNull: false
+  subjectLevelId: {
+    type: Sequelize.UUID,
+    allowNull: false,
   },
   mypMarkingScheme: {
     type: Sequelize.STRING,
@@ -94,10 +95,6 @@ const SheetManagement = db.define("sheetManagement", {
     type: Sequelize.UUID,
     allowNull: true
   },
-  month: {
-    type: Sequelize.INTEGER,
-    allowNull: true
-  },
   school: {
     type: Sequelize.STRING,
     allowNull: true
@@ -109,7 +106,48 @@ const SheetManagement = db.define("sheetManagement", {
   batchHint: {
     type: Sequelize.INTEGER,
     allowNull: true
-  }
+  },
+  publishTo: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  assignOn: {
+    type: Sequelize.DATE,
+    allowNull: true
+  },
+  lifeCycle: {
+    type: Sequelize.STRING,
+    defaultValue: sheetModelConstants.defaultSheetLifeCycle,
+  },
+  supervisorId: {
+    type: Sequelize.UUID,
+    allowNull: false,
+  },
+  dataGeneratorId: {
+    type: Sequelize.UUID,
+    allowNull: true,
+  },
+  reviewerId: {
+    type: Sequelize.UUID,
+    allowNull: true,
+  },
+  assignedToUserId: {
+    type: Sequelize.UUID,
+    allowNull: true,
+  },
+  statusForSupervisor: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  statusForUploader: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  statusForReviewer: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+
 });
 
 SheetManagement.belongsTo(Board, {

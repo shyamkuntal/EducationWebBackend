@@ -3,7 +3,7 @@ const CONSTANTS = require("../constants/constants");
 
 const createPastPaperSchema = Joi.object({
   paperNumber: Joi.string().required(),
-  googleLink: Joi.string().regex(CONSTANTS.validationRegex.urlRegex).required(),
+  googleLink: Joi.string().uri().required(),
   questionPdf: Joi.object({
     fieldname: Joi.string(),
     originalname: Joi.string(),
