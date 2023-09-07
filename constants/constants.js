@@ -1,4 +1,27 @@
 module.exports = Object.freeze({
+  questionType: {
+    Text: "text",
+    Image: "image",
+    PDF: "pdf",
+    Video: "video",
+    Audio: "audio",
+    Accordian: "accordian",
+    Simulation: "simultaion",
+    Long_Answer: "longAnswer",
+    MCQ_Single: "mcqSingle",
+    MCQ_Multile: "mcqMultiple",
+    True_False: "trueFalse",
+    Fill_Text: "fillText",
+    Fill_Dropdown: "fillDropdown",
+    Table: "table",
+    Match: "match",
+    Sort: "sort",
+    Classify: "classify",
+    Drawing: "drawing",
+    Hotspot: "hotspot",
+    Desmos_Graph: "desmosGraph",
+    Geogebra_Graph: "geogebraGraph"
+  },
   sheetModelConstants: {
     defaultSheetLifeCycle: "Not Assigned",
   },
