@@ -1,7 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
-const { QuestionSubPart } = require("./QuestionSubPart");
 
 // Store html string in option
 const McqQuestionOption = db.define("mcqQuestionOption", {
@@ -15,16 +14,16 @@ const McqQuestionOption = db.define("mcqQuestionOption", {
     allowNull: false,
   },
   option: {
-    type: String(500),
+    type: Sequelize.STRING,
     allowNull: true,
   },
   isCorrectOption: {
-    type: Boolean,
+    type: Sequelize.BOOLEAN,
     default: false,
     allowNull: false,
   },
   content: {
-    type: String(500),
+    type: Sequelize.STRING,
     allowNull: true,
   },
 });
@@ -33,9 +32,6 @@ McqQuestionOption.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
-McqQuestionOption.belongsTo(QuestionSubPart, {
-  foreignKey: { name: "questionSubPartId" },
-});
 
 McqQuestionOption.sync().then(() => {
   console.log("McqQuestion Created");

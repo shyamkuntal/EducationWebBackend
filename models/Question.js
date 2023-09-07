@@ -14,125 +14,135 @@ const Question = db.define("question", {
     allowNull: true,
   },
   questionType: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: false,
   },
-  question: {
-    type: String(500),
+  questionData: {
+    type: Sequelize.STRING,
     allowNull: false,
   },
   marks: {
-    type: Number,
+    type: Sequelize.INTEGER,
     allowNull: true,
   },
   requiredTime: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: true,
   },
   uploaderDescription: {
-    type: String,
-    allowNull: false,
+    type: Sequelize.STRING,
+    allowNull: true,
   },
   videoLink: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: true,
   },
   pageNumber: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: true,
   },
   bookExcercise: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: true,
   },
   exampleNo: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: true,
   },
   bookExcerciseNo: {
-    type: Number,
+    type: Sequelize.INTEGER,
     allowNull: true,
   },
   priceForTeacher: {
-    type: Number,
+    type: Sequelize.INTEGER,
     allowNull: true,
   },
   priceForStudent: {
-    type: Number,
+    type: Sequelize.INTEGER,
     allowNull: true,
   },
   difficultyLevel: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: true,
   },
   levelTagging: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: true,
   },
   commandTerm: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: true,
   },
   errorReportByTeacher: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: true,
   },
   errorReportByReviewer: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: true,
   },
   isPremium: {
-    type: Boolean,
-    default: false,
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
     allowNull: false,
   },
   isCheckedByPricer: {
-    type: Boolean,
-    default: false,
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
     allowNull: false,
   },
   isCheckedByTeacher: {
-    type: Boolean,
-    default: false,
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
     allowNull: false,
   },
   isErrorByTeacher: {
-    type: Boolean,
-    default: false,
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
     allowNull: false,
   },
   isCheckedByReviewer: {
-    type: Boolean,
-    default: false,
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
     allowNull: false,
   },
   isErrorByReviewer: {
-    type: Boolean,
-    default: false,
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
     allowNull: false,
   },
   hasSubParts: {
-    type: Boolean,
-    allowNull: false,
-    default: false,
+    type: Sequelize.BOOLEAN,
   },
-  questionId: {
+  parentQuestionId: {
     type: Sequelize.UUID,
     allowNull: true,
   },
   isQuestionSubPart: {
-    type: Boolean,
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
     allowNull: false,
-    default: false,
   },
   includeExplanation: {
-    type: Boolean,
-    default: false,
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
   },
   explanation: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: true,
   },
+  questionIndentifier: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  isShuffle: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+});
+
+Question.sync().then(() => {
+  console.log("Question Created");
 });
 
 Question.belongsTo(SheetManagement, {
@@ -140,11 +150,8 @@ Question.belongsTo(SheetManagement, {
 });
 
 Question.belongsTo(Question, {
-  foreignKey: { name: "questionId" },
-});
-
-Question.sync().then(() => {
-  console.log("Question Created");
+  foreignKey: { name: "parentQuestionId" },
+  as: "subQuestion",
 });
 
 module.exports = { Question };

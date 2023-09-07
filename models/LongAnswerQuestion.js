@@ -1,7 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
-const { QuestionSubPart } = require("./QuestionSubPart");
 
 // Store html in question
 const LongAnswerQuestion = db.define("longAnswerQuestion", {
@@ -14,22 +13,14 @@ const LongAnswerQuestion = db.define("longAnswerQuestion", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  questionSubPartId: {
-    type: Sequelize.UUID,
-    allowNull: true,
-  },
-  question: {
-    type: String(500),
+  questionData: {
+    type: Sequelize.STRING,
     allowNull: true,
   },
 });
 
 LongAnswerQuestion.belongsTo(Question, {
   foreignKey: { name: "questionId" },
-});
-
-LongAnswerQuestion.belongsTo(QuestionSubPart, {
-  foreignKey: { name: "questionSubPartId" },
 });
 
 LongAnswerQuestion.sync().then(() => {

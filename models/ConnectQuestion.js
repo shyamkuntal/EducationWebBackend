@@ -19,7 +19,7 @@ const ConnectQuestion = db.define("connectQuestion", {
     allowNull: true,
   },
   correctAnswer: {
-    type: String(500),
+    type: Sequelize.STRING,
     allowNull: true,
   },
 });

@@ -1,7 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
-const { QuestionSubPart } = require("./QuestionSubPart");
 
 // Store html string in option
 const TrueFalseQuestionOption = db.define("trueFalseQuestionOption", {
@@ -14,16 +13,12 @@ const TrueFalseQuestionOption = db.define("trueFalseQuestionOption", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  questionSubPartId: {
-    type: Sequelize.UUID,
-    allowNull: true,
-  },
   option: {
-    type: String(500),
+    type: Sequelize.STRING,
     allowNull: true,
   },
   isCorrectOption: {
-    type: Boolean,
+    type: Sequelize.BOOLEAN,
     default: false,
     allowNull: false,
   },
@@ -31,10 +26,6 @@ const TrueFalseQuestionOption = db.define("trueFalseQuestionOption", {
 
 TrueFalseQuestionOption.belongsTo(Question, {
   foreignKey: { name: "questionId" },
-});
-
-TrueFalseQuestionOption.belongsTo(QuestionSubPart, {
-  foreignKey: { name: "questionSubPartId" },
 });
 
 TrueFalseQuestionOption.sync().then(() => {

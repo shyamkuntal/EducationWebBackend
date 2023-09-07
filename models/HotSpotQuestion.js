@@ -1,7 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
-const { QuestionSubPart } = require("./QuestionSubPart");
 
 // Store mongodb objectId in canvasJson
 const HotSpotQuestion = db.define("HotSpotQuestion", {
@@ -14,12 +13,8 @@ const HotSpotQuestion = db.define("HotSpotQuestion", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  questionSubPartId: {
-    type: Sequelize.UUID,
-    allowNull: true,
-  },
   canvasJsonId: {
-    type: String,
+    type: Sequelize.STRING,
     // Validation for mongoDb objectId
     validate: { is: /^[a-fA-F0-9]{24}$/ },
     allowNull: false,
@@ -28,10 +23,6 @@ const HotSpotQuestion = db.define("HotSpotQuestion", {
 
 HotSpotQuestion.belongsTo(Question, {
   foreignKey: { name: "questionId" },
-});
-
-HotSpotQuestion.belongsTo(QuestionSubPart, {
-  foreignKey: { name: "questionSubPartId" },
 });
 
 HotSpotQuestion.sync().then(() => {

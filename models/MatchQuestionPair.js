@@ -14,11 +14,11 @@ const MatchQuestionPair = db.define("matchQuestionPair", {
     allowNull: true,
   },
   matchTarget: {
-    type: String(500),
+    type: Sequelize.STRING,
     allowNull: true,
   },
   matchPhrase: {
-    type: Boolean,
+    type: Sequelize.BOOLEAN,
     default: false,
     allowNull: false,
   },

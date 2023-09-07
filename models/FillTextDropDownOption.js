@@ -1,7 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
-const { QuestionSubPart } = require("./QuestionSubPart");
 
 // Store html string in option
 const FillTextDropDownOption = db.define("fillTextDropDownOption", {
@@ -10,23 +9,23 @@ const FillTextDropDownOption = db.define("fillTextDropDownOption", {
     defaultValue: Sequelize.UUIDV4,
     primaryKey: true,
   },
-  fillTextDropDownQuestionId: {
+  questionId: {
     type: Sequelize.UUID,
     allowNull: true,
   },
   option: {
-    type: String(500),
+    type: Sequelize.STRING,
     allowNull: true,
   },
   isCorrectOption: {
-    type: Boolean,
+    type: Sequelize.BOOLEAN,
     default: false,
     allowNull: false,
   },
 });
 
-FillTextDropDownOption.belongsTo(FillText, {
-  foreignKey: { name: "fillTextDropDownQuestionId" },
+FillTextDropDownOption.belongsTo(Question, {
+  foreignKey: { name: "questionId" },
 });
 
 FillTextDropDownOption.sync().then(() => {

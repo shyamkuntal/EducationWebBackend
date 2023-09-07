@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
+const { Question } = require("./Question");
 
 // Store html string in correctAnswer
 const ConnectQuestionHint = db.define("connectQuestionHint", {
@@ -13,23 +14,20 @@ const ConnectQuestionHint = db.define("connectQuestionHint", {
     allowNull: true,
   },
   hint: {
-    type: String(500),
+    type: Sequelize.STRING,
+    allowNull: true,
   },
-  content:{
-    type:String(500),
-    
-  }
+  content: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
 });
 
-ConnectQuestion.belongsTo(Question, {
+ConnectQuestionHint.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
-ConnectQuestion.belongsTo(QuestionSubPart, {
-  foreignKey: { name: "questionSubPartId" },
-});
-
-ConnectQuestion.sync().then(() => {
+ConnectQuestionHint.sync().then(() => {
   console.log("ConnectQuestion Created");
 });
 

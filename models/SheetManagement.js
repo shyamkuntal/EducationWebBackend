@@ -154,15 +154,15 @@ const SheetManagement = db.define("sheetManagement", {
 });
 
 SheetManagement.belongsTo(Board, {
-  foreignKey: { name: "board" },
+  foreignKey: { name: "boardId" },
 });
 
 SheetManagement.belongsTo(SubBoard, {
-  foreignKey: { name: "subBoard" },
+  foreignKey: { name: "subBoardId" },
 });
 
 SheetManagement.belongsTo(Subject, {
-  foreignKey: { name: "subject" },
+  foreignKey: { name: "subjectId" },
 });
 
 SheetManagement.belongsTo(Variant, {

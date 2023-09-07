@@ -1,7 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
-const { QuestionSubPart } = require("./QuestionSubPart");
 
 // Store html string in question
 const FillTextQuestion = db.define("fillTextQuestion", {
@@ -14,26 +13,18 @@ const FillTextQuestion = db.define("fillTextQuestion", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  questionSubPartId: {
-    type: Sequelize.UUID,
-    allowNull: true,
-  },
   question: {
-    type: String(500),
+    type: Sequelize.STRING,
     allowNull: true,
   },
   correctAnswer: {
-    type: String,
+    type: Sequelize.STRING,
     allowNull: false,
   },
 });
 
 FillTextQuestion.belongsTo(Question, {
   foreignKey: { name: "questionId" },
-});
-
-FillTextQuestion.belongsTo(QuestionSubPart, {
-  foreignKey: { name: "questionSubPartId" },
 });
 
 FillTextQuestion.sync().then(() => {

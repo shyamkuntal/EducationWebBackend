@@ -1,7 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
-const { QuestionSubPart } = require("./QuestionSubPart");
 
 // Store html string in question
 const MatchQuestion = db.define("matchQuestion", {
@@ -14,12 +13,8 @@ const MatchQuestion = db.define("matchQuestion", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  questionSubPartId: {
-    type: Sequelize.UUID,
-    allowNull: true,
-  },
   question: {
-    type: String(500),
+    type: Sequelize.STRING,
     allowNull: true,
   },
 });
@@ -28,9 +23,6 @@ MatchQuestion.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
-MatchQuestion.belongsTo(QuestionSubPart, {
-  foreignKey: { name: "questionSubPartId" },
-});
 
 MatchQuestion.sync().then(() => {
   console.log("MatchQuestion Created");

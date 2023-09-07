@@ -4,7 +4,7 @@ require("dotenv").config();
 const hotSpotSchema = mongoose.Schema(
   {
     name: {
-      type: String,
+      type: Sequelize.STRING,
       maxLength: 100,
       required: true,
       trim: true,
