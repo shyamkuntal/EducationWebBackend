@@ -13,7 +13,7 @@ const SheetManagement = db.define("sheetManagement", {
   },
   sheetType: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
   },
   boardId: {
     type: Sequelize.UUID,
@@ -25,11 +25,11 @@ const SheetManagement = db.define("sheetManagement", {
   },
   grade: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
   },
   subjectId: {
     type: Sequelize.UUID,
-    allowNull: false
+    allowNull: false,
   },
   subjectLevelId: {
     type: Sequelize.UUID,
@@ -37,7 +37,7 @@ const SheetManagement = db.define("sheetManagement", {
   },
   mypMarkingScheme: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
   },
   answerType: {
     type: Sequelize.STRING,
@@ -45,75 +45,75 @@ const SheetManagement = db.define("sheetManagement", {
   },
   pricingSchForStudents: {
     type: Sequelize.STRING,
-    allowNull: true
+    allowNull: true,
   },
   pricingSchForTeachers: {
     type: Sequelize.STRING,
-    allowNull: true
+    allowNull: true,
   },
   numberOfQuestion: {
     type: Sequelize.INTEGER,
-    allowNull: false
+    allowNull: false,
   },
   timeVariable: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
   },
   questionVedioLink: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
   },
   resources: {
     type: Sequelize.STRING,
-    allowNull: true
+    allowNull: true,
   },
   isMCQQuestion: {
     type: Sequelize.BOOLEAN,
-    allowNull: false
+    allowNull: false,
   },
   sheetHintForUploader: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
   },
   sheetDescForUploader: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
   },
   isMultiplePaperNo: {
     type: Sequelize.BOOLEAN,
-    allowNull: true
+    allowNull: true,
   },
   year: {
     type: Sequelize.INTEGER,
-    allowNull: true
+    allowNull: true,
   },
   season: {
     type: Sequelize.STRING,
-    allowNull: true
+    allowNull: true,
   },
   variantId: {
     type: Sequelize.UUID,
-    allowNull: true
+    allowNull: true,
   },
   school: {
     type: Sequelize.STRING,
-    allowNull: true
+    allowNull: true,
   },
   testType: {
     type: Sequelize.STRING,
-    allowNull: true
+    allowNull: true,
   },
   batchHint: {
     type: Sequelize.INTEGER,
-    allowNull: true
+    allowNull: true,
   },
   publishTo: {
     type: Sequelize.STRING,
-    allowNull: true
+    allowNull: true,
   },
   assignOn: {
     type: Sequelize.DATE,
-    allowNull: true
+    allowNull: true,
   },
   lifeCycle: {
     type: Sequelize.STRING,
@@ -123,7 +123,11 @@ const SheetManagement = db.define("sheetManagement", {
     type: Sequelize.UUID,
     allowNull: false,
   },
-  dataGeneratorId: {
+  uploader2Id: {
+    type: Sequelize.UUID,
+    allowNull: true,
+  },
+  teacherId: {
     type: Sequelize.UUID,
     allowNull: true,
   },
@@ -147,27 +151,26 @@ const SheetManagement = db.define("sheetManagement", {
     type: Sequelize.STRING,
     allowNull: true,
   },
-
 });
 
 SheetManagement.belongsTo(Board, {
-  foreignKey: { name: "board" }
+  foreignKey: { name: "board" },
 });
 
 SheetManagement.belongsTo(SubBoard, {
-  foreignKey: { name: "subBoard" }
+  foreignKey: { name: "subBoard" },
 });
 
 SheetManagement.belongsTo(Subject, {
-  foreignKey: { name: "subject" }
+  foreignKey: { name: "subject" },
 });
 
 SheetManagement.belongsTo(Variant, {
-  foreignKey: { name: "variantId" }
+  foreignKey: { name: "variantId" },
 });
 
 SheetManagement.sync().then(() => {
-  console.log("SheetManagement Created")
+  console.log("SheetManagement Created");
 });
 
 module.exports = { SheetManagement };

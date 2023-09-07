@@ -8,9 +8,7 @@ exports.AuthSuperadmin = () => async (req, res, next) => {
     let token = req.headers["authorization"].split(" ")[1];
     let decoded = await services.authService.validateToken(token);
 
-    let roleDetails = await services.userService.findByRoleName(
-      CONSTANTS.roleNames.Superadmin
-    );
+    let roleDetails = await services.userService.findByRoleName(CONSTANTS.roleNames.Superadmin);
 
     if (roleDetails.id === decoded.roleId) {
       req.user = decoded;
@@ -21,9 +19,7 @@ exports.AuthSuperadmin = () => async (req, res, next) => {
         .send({ error: "Invalid Role, Access Denied", status: false });
     }
   } catch (err) {
-    res
-      .status(httpStatus.UNAUTHORIZED)
-      .send({ error: "Access Denied", status: false });
+    res.status(httpStatus.UNAUTHORIZED).send({ error: "Access Denied", status: false });
   }
 };
 
@@ -32,9 +28,7 @@ exports.AuthSupervisor = () => async (req, res, next) => {
     let token = req.headers["authorization"].split(" ")[1];
     let decoded = await services.authService.validateToken(token);
 
-    let roleDetails = await services.userService.findByRoleName(
-      CONSTANTS.roleNames.Supervisor
-    );
+    let roleDetails = await services.userService.findByRoleName(CONSTANTS.roleNames.Supervisor);
 
     if (roleDetails.id === decoded.roleId) {
       req.user = decoded;
@@ -45,9 +39,7 @@ exports.AuthSupervisor = () => async (req, res, next) => {
         .send({ error: "Invalid Role, Access Denied", status: false });
     }
   } catch (err) {
-    res
-      .status(httpStatus.UNAUTHORIZED)
-      .send({ error: "Access Denied", status: false });
+    res.status(httpStatus.UNAUTHORIZED).send({ error: "Access Denied", status: false });
   }
 };
 
@@ -57,9 +49,7 @@ exports.AuthReviewer = () => async (req, res, next) => {
     let token = req.headers["authorization"].split(" ")[1];
     let decoded = await services.authService.validateToken(token);
 
-    let roleDetails = await services.userService.findByRoleName(
-      CONSTANTS.roleNames.Reviewer
-    );
+    let roleDetails = await services.userService.findByRoleName(CONSTANTS.roleNames.Reviewer);
 
     if (roleDetails.id === decoded.roleId) {
       req.user = decoded;
@@ -70,9 +60,7 @@ exports.AuthReviewer = () => async (req, res, next) => {
         .send({ error: "Invalid Role, Access Denied", status: false });
     }
   } catch (err) {
-    res
-      .status(httpStatus.UNAUTHORIZED)
-      .send({ error: "Access Denied", status: false });
+    res.status(httpStatus.UNAUTHORIZED).send({ error: "Access Denied", status: false });
   }
 };
 
@@ -81,9 +69,7 @@ exports.AuthPastPaper = () => async (req, res, next) => {
     let token = req.headers["authorization"].split(" ")[1];
     let decoded = await services.authService.validateToken(token);
 
-    let roleDetails = await services.userService.findByRoleName(
-      CONSTANTS.roleNames.PastPaper
-    );
+    let roleDetails = await services.userService.findByRoleName(CONSTANTS.roleNames.PastPaper);
 
     if (roleDetails.id === decoded.roleId) {
       req.user = decoded;
@@ -94,9 +80,7 @@ exports.AuthPastPaper = () => async (req, res, next) => {
         .send({ error: "Invalid Role, Access Denied", status: false });
     }
   } catch (err) {
-    res
-      .status(httpStatus.UNAUTHORIZED)
-      .send({ error: "Access Denied", status: false });
+    res.status(httpStatus.UNAUTHORIZED).send({ error: "Access Denied", status: false });
   }
 };
 
@@ -105,9 +89,7 @@ exports.AuthDataGenerator = () => async (req, res, next) => {
     let token = req.headers["authorization"].split(" ")[1];
     let decoded = await services.authService.validateToken(token);
 
-    let roleDetails = await services.userService.findByRoleName(
-      CONSTANTS.roleNames.DataGenerator
-    );
+    let roleDetails = await services.userService.findByRoleName(CONSTANTS.roleNames.DataGenerator);
 
     if (roleDetails.id === decoded.roleId) {
       req.user = decoded;
@@ -118,9 +100,7 @@ exports.AuthDataGenerator = () => async (req, res, next) => {
         .send({ error: "Invalid Role, Access Denied", status: false });
     }
   } catch (err) {
-    res
-      .status(httpStatus.UNAUTHORIZED)
-      .send({ error: "Access Denied", status: false });
+    res.status(httpStatus.UNAUTHORIZED).send({ error: "Access Denied", status: false });
   }
 };
 
@@ -150,9 +130,30 @@ exports.AuthSuperadminSupervisor = () => async (req, res, next) => {
         .send({ error: "Invalid Role, Access Denied", status: false });
     }
   } catch (err) {
-    res
-      .status(httpStatus.UNAUTHORIZED)
-      .send({ error: "Access Denied", status: false });
+    res.status(httpStatus.UNAUTHORIZED).send({ error: "Access Denied", status: false });
+  }
+};
+
+exports.AuthUploader2 = () => async (req, res, next) => {
+  try {
+    let token = req.headers["authorization"].split(" ")[1];
+
+    let decoded = await services.authService.validateToken(token);
+
+    let uploader2RoleDetails = await services.userService.findByRoleName(
+      CONSTANTS.roleNames.Uploader2
+    );
+
+    if (uploader2RoleDetails.id === decoded.roleId) {
+      req.user = decoded;
+      next();
+    } else {
+      res
+        .status(httpStatus.UNAUTHORIZED)
+        .send({ error: "Invalid Role, Access Denied", status: false });
+    }
+  } catch (err) {
+    res.status(httpStatus.UNAUTHORIZED).send({ error: "Access Denied", status: false });
   }
 };
 
@@ -168,9 +169,7 @@ exports.Auth = () => async (req, res, next) => {
       next();
     }
   } catch (err) {
-    res
-      .status(httpStatus.UNAUTHORIZED)
-      .send({ error: "Access Denied", status: false });
+    res.status(httpStatus.UNAUTHORIZED).send({ error: "Access Denied", status: false });
   }
 };
 

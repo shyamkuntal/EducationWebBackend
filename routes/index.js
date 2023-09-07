@@ -16,6 +16,7 @@ const TopicManagement = require("./Supervisor/TopicManagement");
 const TopicManagemnetReviewer = require("./Reviewer/TopicManagementReviewer");
 const BookManagemnetReviewer = require("./Reviewer/BookManagement");
 const BookManagementDataGenerator = require("./DataGenerator/BookManagement");
+const QuestionManagementUploader2 = require("./Uploader2/QuestionManagement");
 const PublicRoutes = require("./PublicRoutes.js");
 const Auth = require("./Auth.js");
 const {
@@ -25,6 +26,7 @@ const {
   AuthSuperadminSupervisor,
   AuthReviewer,
   AuthDataGenerator,
+  AuthUploader2,
 } = require("../middlewares/authentication.js");
 
 const router = express.Router();
@@ -51,5 +53,7 @@ router.use("/pnreviewer", AuthReviewer(), PaperNumberReviewer);
 router.use("/ppmreviewer", AuthReviewer(), PastPaperReviewer);
 router.use("/tpmreviewer", AuthReviewer(), TopicManagemnetReviewer);
 router.use("/bkmreviewer", AuthReviewer(), BookManagemnetReviewer);
+
+router.use("/shmuploader", AuthUploader2(), QuestionManagementUploader2);
 
 module.exports = router;
