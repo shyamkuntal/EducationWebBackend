@@ -18,7 +18,7 @@ const HotSpotQuestion = db.define("HotSpotQuestion", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  canvasJson: {
+  canvasJsonId: {
     type: String,
     // Validation for mongoDb objectId
     validate: { is: /^[a-fA-F0-9]{24}$/ },

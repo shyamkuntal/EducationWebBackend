@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 const routes = require("./routes/index.js");
 const db = require("./config/database.js");
+const mongoose = require("mongoose");
 const { convertToApiError, handleError } = require("./middlewares/apiError.js");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./utils/swagger.json");
@@ -39,6 +40,17 @@ if (process.env.NODE_ENV === "production") {
 db.authenticate()
   .then(() => console.log("Database connected..."))
   .catch((err) => console.log("Error: " + err));
+
+//MongoDb Connection
+const mongoUri = process.env.MONGO_DB_URL;
+
+mongoose.connect(mongoUri);
+
+const connection = mongoose.connection;
+
+if (connection) {
+  console.log("MongoDB Connected!");
+}
 
 // api route
 app.use("/api", routes);

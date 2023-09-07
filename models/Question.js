@@ -125,6 +125,14 @@ const Question = db.define("question", {
     allowNull: false,
     default: false,
   },
+  includeExplanation: {
+    type: Boolean,
+    default: false,
+  },
+  explanation: {
+    type: String,
+    allowNull: true,
+  },
 });
 
 Question.belongsTo(SheetManagement, {
