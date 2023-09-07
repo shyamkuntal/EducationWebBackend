@@ -21,7 +21,6 @@ const createPastPaperSchema = Joi.object({
     buffer: Joi.any(),
     size: Joi.number(),
   }),
-
   image: Joi.object({
     fieldname: Joi.string(),
     originalname: Joi.string(),
