@@ -8,8 +8,6 @@ router.post("/createquestion", QuestionManagementController.createQuestion);
 // Abhishek
 
 router.post("/longanswer", QuestionManagementController.createLongAnswer);
-router.post("/filltext", QuestionManagementController.createFillText);
-router.post("/connect", QuestionManagementController.createConnect);
 
 
 
