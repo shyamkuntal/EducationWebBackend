@@ -16,6 +16,7 @@ const TopicManagement = require("./Supervisor/TopicManagement");
 const TopicManagemnetReviewer = require("./Reviewer/TopicManagementReviewer");
 const BookManagemnetReviewer = require("./Reviewer/BookManagement");
 const BookManagementDataGenerator = require("./DataGenerator/BookManagement");
+const SheetManagementSupervisor = require("./Supervisor/SheetManagement");
 const QuestionManagementUploader2 = require("./Uploader2/QuestionManagement");
 const PublicRoutes = require("./PublicRoutes.js");
 const Auth = require("./Auth.js");
@@ -54,6 +55,7 @@ router.use("/ppmreviewer", AuthReviewer(), PastPaperReviewer);
 router.use("/tpmreviewer", AuthReviewer(), TopicManagemnetReviewer);
 router.use("/bkmreviewer", AuthReviewer(), BookManagemnetReviewer);
 
+router.use("/shmsupervisor", AuthSupervisor(), SheetManagementSupervisor);
 router.use("/shmuploader", AuthUploader2(), QuestionManagementUploader2);
 
 module.exports = router;

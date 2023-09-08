@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { MatchQuestion } = require("./MatchQuestion");
+const { Question } = require("./Question");
 
 // Store html string in option
 const MatchQuestionPair = db.define("matchQuestionPair", {
@@ -9,7 +10,7 @@ const MatchQuestionPair = db.define("matchQuestionPair", {
     defaultValue: Sequelize.UUIDV4,
     primaryKey: true,
   },
-  matchQuestionId: {
+  questionId: {
     type: Sequelize.UUID,
     allowNull: true,
   },
@@ -24,8 +25,8 @@ const MatchQuestionPair = db.define("matchQuestionPair", {
   },
 });
 
-MatchQuestionPair.belongsTo(MatchQuestion, {
-  foreignKey: { name: "matchQuestionId" },
+MatchQuestionPair.belongsTo(Question, {
+  foreignKey: { name: "questionId" },
 });
 
 MatchQuestionPair.sync().then(() => {
