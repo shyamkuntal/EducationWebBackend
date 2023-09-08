@@ -10,6 +10,7 @@ router.post("/createquestion", QuestionManagementController.createQuestion);
 // Abhishek
 
 router.post("/longanswer", QuestionManagementController.createLongAnswer);
+router.post("/matchquestion", upload.array("optionFiles", 10), QuestionManagementController.MatchQues);
 
 // Shyam
 

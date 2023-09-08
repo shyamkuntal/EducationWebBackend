@@ -13,7 +13,27 @@ const MatchQuestion = db.define("matchQuestion", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  question: {
+  matchTarget: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  matchPhrase: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  distractor:{
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  distractorContent:{
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  MatchPhraseContent:{
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  MatchTargetContent:{
     type: Sequelize.STRING,
     allowNull: true,
   },
