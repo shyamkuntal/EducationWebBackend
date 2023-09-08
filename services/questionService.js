@@ -1,15 +1,38 @@
 const { Question } = require("../models/Question");
 const { LongAnswerQuestion } = require("../models/LongAnswerQuestion");
+const { FillTextDropDownOption } = require("../models/FillDropDownOption");
+const { ApiError } = require("../middlewares/apiError");
+const httpStatus = require("http-status");
 const { generateFileName, s3Client } = require("../config/s3");
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
-const httpStatus = require("http-status");
 
-const createQuestion = async (dataToBeCreated,options) => {
+const createQuestion = async (dataToBeCreated, options) => {
   try {
     console.log(dataToBeCreated);
-    let createQuestion = await Question.create(dataToBeCreated,options);
+    let createQuestion = await Question.create(dataToBeCreated, options);
 
     return createQuestion;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const checkFillDropDownOptions = async (questionId) => {
+  try {
+    let options = await FillTextDropDownOption.findAll({ where: { questionId }, raw: true });
+
+    if (options.length > 10) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Only 10 options allowed per question!");
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+const getQuestionsDetailsById = async (questionId) => {
+  try {
+    let questionDetails = await Question.findOne({ where: { id: questionId }, raw: true });
+    return questionDetails;
   } catch (err) {
     throw err;
   }
@@ -99,4 +122,4 @@ async function uploadFile(fileObj) {
   }
 }
 
-module.exports = { createQuestion, uploadFile };
+module.exports = { createQuestion, checkFillDropDownOptions, getQuestionsDetailsById, uploadFile };

@@ -2,8 +2,8 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
 
-// Store html string in question
-const FillTextQuestion = db.define("fillTextQuestion", {
+// Store html string in option
+const FillDropDownOption = db.define("FillDropDownOption", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -13,22 +13,23 @@ const FillTextQuestion = db.define("fillTextQuestion", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  question: {
+  option: {
     type: Sequelize.STRING,
     allowNull: true,
   },
-  correctAnswer: {
-    type: Sequelize.STRING,
+  isCorrectOption: {
+    type: Sequelize.BOOLEAN,
+    default: false,
     allowNull: false,
   },
 });
 
-FillTextQuestion.belongsTo(Question, {
+FillDropDownOption.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
-FillTextQuestion.sync().then(() => {
-  console.log("FillTextQuestion Created");
+FillDropDownOption.sync().then(() => {
+  console.log("FillTextDropDownQuestion Created");
 });
 
-module.exports = { FillTextQuestion };
+module.exports = { FillDropDownOption };

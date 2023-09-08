@@ -17,6 +17,26 @@ router.post("/matchquestion", upload.array("optionFiles", 10), QuestionManagemen
 router.post("/mcquestion", upload.array("optionFiles", 10), QuestionManagement.McqQuestion);
 
 // Sarvesh
-router.post("/filldropdown", QuestionManagementSarveshController.createFillDropDown);
+
+// FillDropDown Apis -
+router.post("/createfilldropdown", QuestionManagementSarveshController.createFillDropDown);
+router.post("/addfilldropdownoptions", QuestionManagementSarveshController.addFillDropDownOptions);
+router.delete(
+  "/deletefilldropdownoption",
+  QuestionManagementSarveshController.deleteFillDropDownOption
+);
+router.get("/getfilldropdownquestion", QuestionManagementSarveshController.getfillDropDownOptions);
+
+router.delete(
+  "/deletefilldropdownquestion",
+  QuestionManagementSarveshController.deleteFillDropDownQuestion
+);
+
+router.patch("/editfilldropdownoption", QuestionManagementSarveshController.editFillDropDownOption);
+
+// FillText Apis -
+router.post("/createfilltext", QuestionManagementSarveshController.createFillTextQuestion);
+
+
 
 module.exports = router;

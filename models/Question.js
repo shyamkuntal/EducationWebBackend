@@ -111,9 +111,6 @@ const Question = db.define("question", {
     defaultValue: false,
     allowNull: false,
   },
-  hasSubParts: {
-    type: Sequelize.BOOLEAN,
-  },
   parentQuestionId: {
     type: Sequelize.UUID,
     allowNull: true,
