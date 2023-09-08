@@ -22,6 +22,10 @@ const McqQuestionOption = db.define("mcqQuestionOption", {
     default: false,
     allowNull: false,
   },
+  feedback: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
   content: {
     type: Sequelize.STRING,
     allowNull: true,

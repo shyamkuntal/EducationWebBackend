@@ -21,6 +21,7 @@ const QuestionManagementController = {
 
   async createQuestion(req, res, next) {
     try {
+        console.log(req.body)
       let values = await createQuestionsSchema.validateAsync(req.body);
 
       let question = await services.questionService.createQuestion(values);
