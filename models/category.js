@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
 
-const QuestionContent = db.define("questionContent", {
+const QuestionCategory = db.define("questionCategory", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -12,15 +12,7 @@ const QuestionContent = db.define("questionContent", {
     type: Sequelize.UUID,
     allowNull: false,
   },
-  title: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  description: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  caption: {
+  category: {
     type: Sequelize.STRING,
     allowNull: true,
   },
@@ -30,12 +22,12 @@ const QuestionContent = db.define("questionContent", {
   },
 });
 
-QuestionContent.belongsTo(Question, {
+QuestionCategory.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
-QuestionContent.sync().then(() => {
-  console.log("QuestionContent Created");
+QuestionCategory.sync().then(() => {
+  console.log("QuestionItem Created");
 });
 
-module.exports = { QuestionContent };
+module.exports = { QuestionCategory };

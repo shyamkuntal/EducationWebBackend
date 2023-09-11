@@ -72,8 +72,8 @@ const getQuestionsDetailsById = async (questionId) => {
 
 async function uploadFile(fileObj) {
   try {
-    const fileName = process.env.AWS_BUCKET_QUESTIONS_FILE_FOLDER + "/" + generateFileName(fileObj.originalname);
-
+    const fileName = process.env.AWS_BUCKET_QUESTIONS_FILE_FOLDER + "/" + generateFileName(fileObj.filename);
+    console.log(fileObj)
     const mimeType = fileObj.mimetype;
 
     const uploadParams = {
@@ -90,6 +90,23 @@ async function uploadFile(fileObj) {
     } else {
       return null;
     }
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function updateQuestion(questionId, updatedData) {
+  try {
+   
+    const question = await Question.findByPk(questionId);
+
+    if (!question) {
+      throw new Error(`Question with ID ${questionId} not found`);
+    }
+
+    await question.update(updatedData);
+
+    return question;
   } catch (err) {
     throw err;
   }
@@ -118,4 +135,4 @@ async function DeleteQues(questionId)  {
 }
 
 
-module.exports = { createQuestion, checkFillDropDownOptions, getQuestionsDetailsById, uploadFile, DeleteQues };
+module.exports = { createQuestion, checkFillDropDownOptions, getQuestionsDetailsById, uploadFile, DeleteQues, updateQuestion };

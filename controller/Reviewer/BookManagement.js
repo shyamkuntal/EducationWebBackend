@@ -17,6 +17,7 @@ const { generateFileName } = require("../../config/s3");
 const { ApiError } = require("../../middlewares/apiError");
 const db = require("../../config/database");
 const { SpamBookTaskRecheckComments } = require("../../models/BookTask");
+const { updateBookStatusSchema } = require("../../validations/BookManagementDGValidations");
 
 const ReviewerBookController = {
   async updateInProgressTaskStatus(req, res, next) {
@@ -473,6 +474,98 @@ const ReviewerBookController = {
       next(err);
     }
   },
+  async setBookInProgressStatus(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await updateBookStatusSchema.validateAsync(req.body);
+
+      let whereQuery = {
+        where: { bookTaskId: values.bookTaskId, bookId: values.bookId },
+        raw: true,
+      };
+
+      let book = await services.bookTaskService.findBookByBookTask(whereQuery);
+
+      let bookDetails = book[0];
+
+      if (!bookDetails) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Book Not Found for this Task!");
+      }
+
+      if (bookDetails.bookStatusForReviewer === CONSTANTS.sheetStatuses.InProgress) {
+        throw new ApiError(httpStatus.OK, "Book Status is already InProgress ");
+      }
+
+      let dataToBeUpdated = {
+        bookStatusForReviewer: CONSTANTS.sheetStatuses.InProgress,
+      };
+
+      let whereQueryForUpdateBookTask = {
+        where: { bookTaskId: values.bookTaskId, bookId: values.bookId },
+      };
+
+      await services.bookTaskService.updateTaskBookMapping(
+        dataToBeUpdated,
+        whereQueryForUpdateBookTask,
+        {
+          transaction: t,
+        }
+      );
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Book InProgress Status Updated!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async setBookCompleteStatus(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await updateBookStatusSchema.validateAsync(req.body);
+
+      let whereQuery = {
+        where: { bookTaskId: values.bookTaskId, bookId: values.bookId },
+        raw: true,
+      };
+
+      let book = await services.bookTaskService.findBookByBookTask(whereQuery);
+
+      let bookDetails = book[0];
+
+      if (!bookDetails) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Book Not Found for this Task!");
+      }
+
+      if (bookDetails.bookStatusForReviewer === CONSTANTS.sheetStatuses.Complete) {
+        throw new ApiError(httpStatus.OK, "Book Status is already Complete ");
+      }
+
+      let dataToBeUpdated = {
+        bookStatusForReviewer: CONSTANTS.sheetStatuses.Complete,
+      };
+
+      let whereQueryForUpdateBookTask = {
+        where: { bookTaskId: values.bookTaskId, bookId: values.bookId },
+      };
+
+      await services.bookTaskService.updateTaskBookMapping(
+        dataToBeUpdated,
+        whereQueryForUpdateBookTask,
+        {
+          transaction: t,
+        }
+      );
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Book Complete Status Updated!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
   async getRecheckComment(req, res, next) {
     try {
       let values = await getRecheckingCommentsSchema.validateAsync({
@@ -486,5 +579,7 @@ const ReviewerBookController = {
     }
   },
 };
+
+
 
 module.exports = ReviewerBookController;

@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
 
-const QuestionContent = db.define("questionContent", {
+const QuestionDistractor = db.define("questionContent", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -12,15 +12,7 @@ const QuestionContent = db.define("questionContent", {
     type: Sequelize.UUID,
     allowNull: false,
   },
-  title: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  description: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  caption: {
+  distractor: {
     type: Sequelize.STRING,
     allowNull: true,
   },
@@ -35,7 +27,7 @@ QuestionContent.belongsTo(Question, {
 });
 
 QuestionContent.sync().then(() => {
-  console.log("QuestionContent Created");
+  console.log("QuestionDistractor Created");
 });
 
-module.exports = { QuestionContent };
+module.exports = { QuestionDistractor };

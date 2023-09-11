@@ -15,12 +15,16 @@ router.post("/matchquestion", upload.array("optionFiles", 10), QuestionManagemen
 // Shyam
 
 router.post("/mcquestion", QuestionManagement.McqQuestion);
+router.post("/editmcquestion", QuestionManagement.editMcqQuestion);
 router.delete("/deletemcquestion", QuestionManagement.DeleteMcqQues);
 router.delete("/deletemcqoption", QuestionManagement.DeleteMcqOption);
 router.post("/truefalse", QuestionManagement.TrueFalse);
+router.post("/edittruefalse", QuestionManagement.editTrueFalseQuestion);
 router.delete("/deletetruefalsequestion", QuestionManagement.TrueFalseQuesDelete);
 router.delete("/deletetruefalseoption", QuestionManagement.DeleteTrueFalseOption);
-router.post("/image", QuestionManagement.createImageQues);
+router.post("/createcontentquestion", QuestionManagement.createContentQues);
+router.post("/editcontentquestion", QuestionManagement.editContentQues);
+router.post("/createclassifyquestion", QuestionManagement.createClassifyQues);
 
 // Sarvesh
 

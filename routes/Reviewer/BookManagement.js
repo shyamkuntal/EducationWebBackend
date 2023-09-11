@@ -41,8 +41,8 @@ router.get("/getrecheckcomment", ReviewerBookController.getRecheckComment);
 
 router.get("/geterrorreportfile", ReviewerBookController.getErrorReportFile);
 
-router.patch("/setbookinprogressstatus", BookManagementDGController.setBookInProgressStatus);
+router.patch("/setbookinprogressstatus", ReviewerBookController.setBookInProgressStatus);
 
-router.patch("/setbookcompletestatus", BookManagementDGController.setBookCompleteStatus);
+router.patch("/setbookcompletestatus", ReviewerBookController.setBookCompleteStatus);
 
 module.exports = router;
