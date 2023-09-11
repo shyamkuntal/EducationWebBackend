@@ -58,6 +58,37 @@ const deleteFillDropDownQuestionSchema = Joi.object({
   questionId: Joi.string().guid().required(),
 });
 
+const optionSchema = Joi.object({
+  option: Joi.string().required(),
+  isCorrectOption: Joi.boolean().required(),
+  feedback: Joi.string().required(),
+  content: Joi.object({
+    filename: Joi.string().required(),
+    mimetype: Joi.string().required(),
+    buffer: Joi.string().base64().required(),
+  }).optional(),
+});
+
+const McqSchema = Joi.object({
+  questionType: Joi.string().valid("MCQ").required(),
+  questionData: Joi.string().required(),
+  sheetId: Joi.string().guid().required(),
+  options: Joi.array()
+    .items(
+      Joi.object({
+        option: Joi.string().required(),
+        isCorrectOption: Joi.boolean().required(),
+        feedback: Joi.string().required(),
+        content: Joi.object({
+          filename: Joi.string().required(),
+          mimetype: Joi.string().required(),
+          buffer: Joi.string().required(),
+        }).optional(),
+      })
+    )
+    .required(),
+});
+
 module.exports = {
   createQuestionsSchema,
   createFillDropDownQuestionOptionsSchema,
@@ -65,4 +96,6 @@ module.exports = {
   deleteFillDropDownQuestionOptionsSchema,
   getFillDropDownQuestionOptionsSchema,
   deleteFillDropDownQuestionSchema,
+  optionSchema,
+  McqSchema,
 };

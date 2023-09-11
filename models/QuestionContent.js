@@ -20,6 +20,10 @@ const QuestionContent = db.define("questionContent", {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  caption: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
   content: {
     type: Sequelize.STRING,
     allowNull: false,

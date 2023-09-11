@@ -13,7 +13,7 @@ const TrueFalseQuestionOption = db.define("trueFalseQuestionOption", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  option: {
+  statement: {
     type: Sequelize.STRING,
     allowNull: true,
   },
@@ -21,6 +21,10 @@ const TrueFalseQuestionOption = db.define("trueFalseQuestionOption", {
     type: Sequelize.BOOLEAN,
     default: false,
     allowNull: false,
+  },
+  content: {
+    type: Sequelize.STRING,
+    allowNull: true,
   },
 });
 

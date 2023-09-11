@@ -5,6 +5,7 @@ const { ApiError } = require("../middlewares/apiError");
 const httpStatus = require("http-status");
 const { generateFileName, s3Client } = require("../config/s3");
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
+const db = require("../config/database");
 
 const createQuestion = async (dataToBeCreated, options) => {
   try {
@@ -69,34 +70,6 @@ const getQuestionsDetailsById = async (questionId) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 async function uploadFile(fileObj) {
   try {
     const fileName = process.env.AWS_BUCKET_QUESTIONS_FILE_FOLDER + "/" + generateFileName(fileObj.originalname);
@@ -122,4 +95,27 @@ async function uploadFile(fileObj) {
   }
 }
 
-module.exports = { createQuestion, checkFillDropDownOptions, getQuestionsDetailsById, uploadFile };
+async function DeleteQues(questionId)  {
+
+  const t = await db.transaction();
+  try {
+    const question = await Question.findByPk(questionId);
+    if (!question) {
+      await t.rollback();
+      return res.status(httpStatus.NOT_FOUND).json({ message: 'Question not found' });
+    }
+
+    await question.destroy({ transaction: t });
+
+    await t.commit();
+
+    res.status(httpStatus.OK).send("Question Deleted Successfully");
+  } catch (err) {
+    console.error(err);
+    await t.rollback();
+    next(err);
+  }
+}
+
+
+module.exports = { createQuestion, checkFillDropDownOptions, getQuestionsDetailsById, uploadFile, DeleteQues };
