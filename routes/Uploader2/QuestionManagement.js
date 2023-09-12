@@ -10,7 +10,11 @@ router.post("/createquestion", QuestionManagementController.createQuestion);
 // Abhishek
 
 router.post("/longanswer", QuestionManagementController.createLongAnswer);
-router.post("/matchquestion", upload.array("optionFiles", 10), QuestionManagementController.MatchQues);
+router.post(
+  "/matchquestion",
+  upload.array("optionFiles", 10),
+  QuestionManagementController.MatchQues
+);
 
 // Shyam
 
@@ -47,6 +51,35 @@ router.patch("/editfilldropdownoption", QuestionManagementSarveshController.edit
 // FillText Apis -
 router.post("/createfilltext", QuestionManagementSarveshController.createFillTextQuestion);
 
+router.delete("/deletefilltext", QuestionManagementSarveshController.deleteFillTextQuestion);
 
+router.patch("/editquestion", QuestionManagementSarveshController.editQuestion);
+
+// Match Apis -
+
+router.post("/creatematchquestion", QuestionManagementSarveshController.createMatchQuestion);
+
+router.patch("/editmatchquestion", QuestionManagementSarveshController.editMatchQuestion);
+
+router.post("/addmatchquestionpairs", QuestionManagementSarveshController.addMatchQuestionPair);
+
+router.delete("/deletematchquestionpair", QuestionManagementSarveshController.deleteMatchPair);
+
+router.delete("/deletematchquestion", QuestionManagementSarveshController.deleteMatchQuestion);
+
+// Drawing Apis -
+
+router.post("/createdrawingquestion", QuestionManagementSarveshController.createDrawingQuestion);
+
+router.patch("/editdrawingquestion", QuestionManagementSarveshController.editDrawingQuestion);
+
+router.delete("/deletedrawingquestion", QuestionManagementSarveshController.deleteDrawingQuestion);
+
+// Label drag Apis -
+
+router.post(
+  "/createlabeldragquestion",
+  QuestionManagementSarveshController.createLabelDragQuestion
+);
 
 module.exports = router;

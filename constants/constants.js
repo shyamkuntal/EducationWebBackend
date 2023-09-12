@@ -18,9 +18,11 @@ module.exports = Object.freeze({
     Sort: "sort",
     Classify: "classify",
     Drawing: "drawing",
+    Label_Drag: "labelDrag",
+    Label_Fill: "labelFill",
     Hotspot: "hotspot",
     Desmos_Graph: "desmosGraph",
-    Geogebra_Graph: "geogebraGraph"
+    Geogebra_Graph: "geogebraGraph",
   },
   sheetModelConstants: {
     defaultSheetLifeCycle: "Not Assigned",
@@ -47,7 +49,7 @@ module.exports = Object.freeze({
     reviewerAssignToSupervisor: "Completed sheet review and assigned back to",
     pastPaperrAssignToSupervisor: "Completed sheet assigned back to ",
     reviewerAssignToSupervisorErrorReport: "found an error in the sheet and send back to",
-    DataGeneratorAssignToSupervisor: "Completed sheet assigned back to", 
+    DataGeneratorAssignToSupervisor: "Completed sheet assigned back to",
   },
   sheetCheckList: {
     CheckListItem1: "Check List Item 1",
@@ -61,7 +63,22 @@ module.exports = Object.freeze({
     CheckListItem9: "Check List Item 9",
     CheckListItem10: "Check List Item 10",
   },
-  grades: ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "9th-10th", "11th-12th"],
+  grades: [
+    "1st",
+    "2nd",
+    "3rd",
+    "4th",
+    "5th",
+    "6th",
+    "7th",
+    "8th",
+    "9th",
+    "10th",
+    "11th",
+    "12th",
+    "9th-10th",
+    "11th-12th",
+  ],
   modules: ["pastPaper", "paperNumber"],
   validationRegex: {
     phoneRegex: /^[2-9]{1}[0-9]{7}/,
@@ -72,4 +89,3 @@ module.exports = Object.freeze({
 function newFunction() {
   return /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
 }
- 
