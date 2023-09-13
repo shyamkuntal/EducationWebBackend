@@ -14,7 +14,7 @@ const {
   createPastPaperSheetSchema,
 } = require("../../validations/PPMSupervisorValidations.js");
 const httpStatus = require("http-status");
-const { User, Roles } = require("../../models/User.js");
+const { User, Roles, UserBoardMapping, UserSubBoardMapping, UserModuleMapping } = require("../../models/User.js");
 const {
   getSubBoardsSchema,
   getSubjectLevelBySubjectId,
@@ -25,6 +25,10 @@ const { s3Client } = require("../../config/s3.js");
 const { Variant } = require("../../models/Variants.js");
 const db = require("../../config/database.js");
 const { ApiError } = require("../../middlewares/apiError.js");
+const { BookTask } = require("../../models/BookTask.js");
+const { TopicTask } = require("../../models/TopicTask.js");
+const { PaperNumberSheet } = require("../../models/PaperNumberSheet.js");
+const { SheetManagement } = require("../../models/SheetManagement.js");
 
 const PastPaperSupervisorController = {
   async CreateSheet(req, res, next) {
@@ -276,6 +280,7 @@ const PastPaperSupervisorController = {
       "b6e9d917-f5e4-4268-a364-cfb715439fbb",
       "9ce70cfd-632b-49f6-8cdc-842dc30f1aaa",
     ];
+    // console.log(req.query)
 
     try {
       const users = await User.findAll({
@@ -360,7 +365,64 @@ const PastPaperSupervisorController = {
       const users = await User.findAll({
         attributes: ["id", "userName", "email", "Name"],
         where: { roleId },
-        include: { all: true, nest: true },
+        include: [
+          {
+            model: BookTask,
+            as: "bookTasks",
+            attributes: ["statusForDataGenerator", "statusForReviewer"]
+          },
+          {
+            model: Sheet,
+            as: "PastPaperSheets",
+            attributes: ["statusForPastPaper", "statusForReviewer"]
+          },
+          {
+            model: TopicTask,
+            as: "topicTasks",
+            attributes: ["statusForDataGenerator", "statusForReviewer"]
+          },
+          {
+            model: PaperNumberSheet,
+            as: "paperNumberSheets",
+            attributes: ["statusForDataGenerator", "statusForReviewer"]
+          },
+        ],
+      });
+
+      return res.status(200).json({ users });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+
+  async getAllUserMappingData(req, res) {
+    const {roleId, userId} = req.query;
+    try {
+      const users = await User.findAll({
+        attributes: ["id", "userName", "email", "Name"],
+        where: { id: userId, roleId },
+        include: [
+          {
+            model: UserBoardMapping,
+            as: "UserBoardMapping",
+            attributes: ["boardId"]
+          },
+          {
+            model: UserSubBoardMapping,
+            as: "UserSubBoardMapping",
+            attributes: ["statusForPastPaper", "subBoardId"]
+          },
+          {
+            model: UserModuleMapping,
+            as: "UserModuleMapping",
+            attributes: ["statusForDataGenerator", "statusForReviewer"]
+          },
+          {
+            model: Subject,
+            as: "subject",
+            attributes: ["statusForDataGenerator", "statusForReviewer"]
+          },
+        ],
       });
 
       return res.status(200).json({ users });

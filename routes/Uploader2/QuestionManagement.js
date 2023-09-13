@@ -26,6 +26,8 @@ router.post("/truefalse", QuestionManagement.TrueFalse);
 router.post("/edittruefalse", QuestionManagement.editTrueFalseQuestion);
 router.delete("/deletetruefalsequestion", QuestionManagement.TrueFalseQuesDelete);
 router.delete("/deletetruefalseoption", QuestionManagement.DeleteTrueFalseOption);
+router.post("/createtextquestion", QuestionManagement.creatTextQues);
+router.patch("/updatequestion", QuestionManagement.updateQuestion);
 router.post("/createcontentquestion", QuestionManagement.createContentQues);
 router.post("/editcontentquestion", QuestionManagement.editContentQues);
 router.post("/createclassifyquestion", QuestionManagement.createClassifyQues);

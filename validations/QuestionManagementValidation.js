@@ -26,11 +26,20 @@ const createQuestionsSchema = Joi.object({
   isErrorByReviewer: Joi.boolean(),
   // hasSubParts: Joi.boolean(),
   parentQuestionId: Joi.string().guid(),
-  isQuestionSubPart: Joi.boolean().required(),
+  isQuestionSubPart: Joi.boolean(),
   includeExplanation: Joi.string(),
   explanation: Joi.string(),
   questionIndentifier: Joi.string(),
   isShuffle: Joi.boolean(),
+});
+
+const createTextQuestionSchema = Joi.array().items({
+  sheetId: Joi.string().guid().required(),
+  questionData: Joi.string().max(1000).required(),
+});
+const updateTextQuestionSchema = Joi.object({
+  questionId: Joi.string().guid().required(),
+  questionData: Joi.string().max(1000).required(),
 });
 
 const createFillDropDownQuestionOptionsSchema = Joi.array().items({
@@ -219,4 +228,6 @@ module.exports = {
   editDrawingQuestionSchema,
   deleteMatchPairSchema,
   createLabelDragQuestionSchema,
+  createTextQuestionSchema,
+  updateTextQuestionSchema
 };
