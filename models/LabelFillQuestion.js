@@ -2,8 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
 
-// Store mongodb objectId in canvasJson
-const LabelDragQuestion = db.define("labelDragQuestion", {
+const LabelFillQuestion = db.define("labelFillQuestion", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -21,14 +20,22 @@ const LabelDragQuestion = db.define("labelDragQuestion", {
     type: Sequelize.TEXT,
     allowNull: false,
   },
+  fillAnswer: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  fillAnswerId: {
+    type: Sequelize.UUID,
+    allowNull: false,
+  },
 });
 
-LabelDragQuestion.belongsTo(Question, {
+LabelFillQuestion.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
-LabelDragQuestion.sync().then(() => {
-  console.log("LabelDragQuestion Created");
+LabelFillQuestion.sync().then(() => {
+  console.log("LabelFillQuestion Created");
 });
 
-module.exports = { LabelDragQuestion };
+module.exports = { LabelFillQuestion };

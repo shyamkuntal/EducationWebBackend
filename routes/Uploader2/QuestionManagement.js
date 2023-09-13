@@ -84,4 +84,31 @@ router.post(
   QuestionManagementSarveshController.createLabelDragQuestion
 );
 
+router.patch("/editlabeldragquestion", QuestionManagementSarveshController.editLabelDragQuestion);
+
+router.delete(
+  "/deletelabeldragquestion",
+  QuestionManagementSarveshController.deleteLabelDrawQuestion
+);
+
+// Label Fill Apis -
+
+router.post(
+  "/createlabelfillquestion",
+  QuestionManagementSarveshController.createLabelFillQuestion
+);
+
+router.patch("/editlabelfillquestion", QuestionManagementSarveshController.editLabelFillQuestion);
+
+router.delete(
+  "/deletelabelfillquestion",
+  QuestionManagementSarveshController.deleteLabelFillQuestion
+);
+
+// Geogebra Graph Apis -
+
+router.post("/creategeogebraquestion", QuestionManagementSarveshController.createGeogebraQuestion);
+
+router.patch("/editgeogebraquestion", QuestionManagementSarveshController.editGeogebraQuestion);
+
 module.exports = router;

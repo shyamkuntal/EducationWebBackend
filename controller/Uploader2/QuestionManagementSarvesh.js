@@ -19,12 +19,20 @@ const {
   editDrawingQuestionSchema,
   deleteMatchPairSchema,
   createLabelDragQuestionSchema,
+  editLabelDragQuestionSchema,
+  createLabelFillQuestionSchema,
+  editLabelFillQuestionSchema,
+  createGeogebraGraphQuestionSchema,
+  editGeogebraGraphQuestionSchema,
 } = require("../../validations/QuestionManagementValidation");
 const { FillDropDownOption } = require("../../models/FillDropDownOption");
 const { Question } = require("../../models/Question");
 const { ApiError } = require("../../middlewares/apiError");
 const { MatchQuestionPair } = require("../../models/MatchQuestionPair");
 const { DrawingQuestion } = require("../../models/DrawingQuestion");
+const { LabelDragQuestion } = require("../../models/LabelDragQuestion");
+const { LabelFillQuestion } = require("../../models/LabelFillQuestion");
+const { GeogebraGraphQuestion } = require("../../models/GeogebraGraphQuestion");
 
 const QuestionManagementSarveshController = {
   async createFillDropDown(req, res, next) {
@@ -179,8 +187,6 @@ const QuestionManagementSarveshController = {
       let values = await deleteFillDropDownQuestionSchema.validateAsync({
         questionId: req.query.questionId,
       });
-
-      console.log(values);
 
       await FillDropDownOption.destroy(
         { where: { questionId: values.questionId } },
@@ -657,17 +663,300 @@ const QuestionManagementSarveshController = {
 
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
-      console.log(questionValues);
-
       let labelDragQuestionValues = await createLabelDragQuestionSchema.validateAsync({
         dataGeneratorJson: dataGeneratorJson,
         studentJson: studentJson,
       });
 
-      // let question = await services.questionService.createQuestion()
+      let question = await services.questionService.createQuestion(questionValues, {
+        transaction: t,
+      });
 
-      console.log(labelDragQuestionValues);
+      let newQuestionData = question.dataValues;
+
+      let createLabelDragQuestion = await LabelDragQuestion.create(
+        {
+          questionId: newQuestionData.id,
+          dataGeneratorJson: labelDragQuestionValues.dataGeneratorJson,
+          studentJson: labelDragQuestionValues.studentJson,
+        },
+        { transaction: t }
+      );
+
+      await t.commit();
+
+      res
+        .status(httpStatus.OK)
+        .send({ message: "Label Draw Question created successfully!", createLabelDragQuestion });
     } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async editLabelDragQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let { newDataGeneratorCanvasJson, newStudentCanvasJson, ...rest } = req.body;
+      let questionValues = await editQuestionSchema.validateAsync(rest);
+
+      let labelDragQuestionValues = await editLabelDragQuestionSchema.validateAsync({
+        newDataGeneratorCanvasJson,
+        newStudentCanvasJson,
+      });
+
+      await services.questionService.editQuestion(
+        questionValues,
+        {
+          where: { id: questionValues.id },
+        },
+        { transaction: t }
+      );
+
+      if (
+        labelDragQuestionValues.newDataGeneratorCanvasJson &&
+        labelDragQuestionValues.newStudentCanvasJson
+      ) {
+        await LabelDragQuestion.update(
+          {
+            dataGeneratorJson: labelDragQuestionValues.newDataGeneratorCanvasJson,
+            studentJson: labelDragQuestionValues.newStudentCanvasJson,
+          },
+          { where: { questionId: questionValues.id } },
+          { transaction: t }
+        );
+      }
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Label drag updated!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async deleteLabelDrawQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
+
+      console.log(values);
+
+      await LabelDragQuestion.destroy(
+        { where: { questionId: values.questionId } },
+        { transaction: t }
+      );
+      let whereQuery = { where: { id: values.questionId } };
+      await services.questionService.deleteQuestion(whereQuery, { transaction: t });
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Label Drag Question deleted!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async createLabelFillQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let { dataGeneratorJson, studentJson, fillAnswer, fillAnswerId, ...rest } = req.body;
+
+      let questionValues = await createQuestionsSchema.validateAsync(rest);
+
+      console.log(questionValues);
+
+      let labelFillQuestionValues = await createLabelFillQuestionSchema.validateAsync({
+        dataGeneratorJson,
+        studentJson,
+        fillAnswer,
+        fillAnswerId,
+      });
+
+      console.log(labelFillQuestionValues);
+
+      let question = await services.questionService.createQuestion(questionValues, {
+        transaction: t,
+      });
+
+      let newQuestionData = question.dataValues;
+
+      let createLabelFillQuestion = await LabelFillQuestion.create(
+        {
+          questionId: newQuestionData.id,
+          dataGeneratorJson: labelFillQuestionValues.dataGeneratorJson,
+          studentJson: labelFillQuestionValues.studentJson,
+          fillAnswer: labelFillQuestionValues.fillAnswer,
+          fillAnswerId: labelFillQuestionValues.fillAnswerId,
+        },
+        { transaction: t }
+      );
+
+      await t.commit();
+
+      res
+        .status(httpStatus.OK)
+        .send({ message: "Label Fill Question created", fillQuestion: createLabelFillQuestion });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async editLabelFillQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let { newDataGeneratorJson, newStudentJson, newFillAnswer, newFillAnswerId, ...rest } =
+        req.body;
+
+      let questionValues = await editQuestionSchema.validateAsync(rest);
+
+      let labelFillQuestionValues = await editLabelFillQuestionSchema.validateAsync({
+        newDataGeneratorJson,
+        newStudentJson,
+        newFillAnswer,
+        newFillAnswerId,
+      });
+
+      await services.questionService.editQuestion(
+        questionValues,
+        {
+          where: { id: questionValues.id },
+        },
+        { transaction: t }
+      );
+      if (
+        labelFillQuestionValues.newDataGeneratorJson &&
+        labelFillQuestionValues.newStudentJson &&
+        labelFillQuestionValues.newFillAnswer &&
+        labelFillQuestionValues.fillAnswerId
+      ) {
+        await LabelFillQuestion.update(
+          {
+            dataGeneratorJson: labelFillQuestionValues.newDataGeneratorJson,
+            studentJson: labelFillQuestionValues.newStudentJson,
+            fillAnswer: labelFillQuestionValues.newFillAnswer,
+            fillAnswerId: labelFillQuestionValues.fillAnswerId,
+          },
+          { where: { questionId: questionValues.id } }
+        );
+      }
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Label Fill question updated!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async deleteLabelFillQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
+
+      console.log(values);
+
+      await LabelFillQuestion.destroy(
+        { where: { questionId: values.questionId } },
+        { transaction: t }
+      );
+
+      let whereQuery = { where: { id: values.questionId } };
+      await services.questionService.deleteQuestion(whereQuery);
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Label Fill question deleted!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async createGeogebraQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let { dataGeneratorJson, studentJson, allowAlgebraInput, ...rest } = req.body;
+      let questionValues = await createQuestionsSchema.validateAsync(rest);
+
+      console.log(questionValues);
+
+      let geogebraQuestionValues = await createGeogebraGraphQuestionSchema.validateAsync({
+        dataGeneratorJson,
+        studentJson,
+        allowAlgebraInput,
+      });
+
+      console.log(geogebraQuestionValues);
+
+      let question = await services.questionService.createQuestion(questionValues, {
+        transaction: t,
+      });
+
+      let newQuestionData = question.dataValues;
+
+      let createGeoGebraQuestion = await GeogebraGraphQuestion.create(
+        {
+          questionId: newQuestionData.id,
+          dataGeneratorJson: geogebraQuestionValues.dataGeneratorJson,
+          studentJson: geogebraQuestionValues.studentJson,
+          allowAlgebraInput: geogebraQuestionValues.allowAlgebraInput,
+        },
+        { transaction: t }
+      );
+
+      res
+        .status(httpStatus.OK)
+        .send({ message: "Geogebra question created!", geogebraQuestion: createGeoGebraQuestion });
+
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async editGeogebraQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let { newDataGeneratorJson, newStudentJson, allowAlgebraInput, ...rest } = req.body;
+      let questionValues = await editQuestionSchema.validateAsync(rest);
+
+      let geogebraQuestionValues = await editGeogebraGraphQuestionSchema.validateAsync({
+        newDataGeneratorJson,
+        newStudentJson,
+        allowAlgebraInput,
+      });
+      console.log(geogebraQuestionValues);
+
+      await services.questionService.editQuestion(
+        questionValues,
+        { where: { id: questionValues.id } },
+        { transaction: t }
+      );
+      console.log(
+        geogebraQuestionValues.newDataGeneratorJson && geogebraQuestionValues.newStudentJson
+      );
+      if (geogebraQuestionValues.newDataGeneratorJson && geogebraQuestionValues.newStudentJson) {
+        await GeogebraGraphQuestion.update(
+          {
+            dataGeneratorJson: geogebraQuestionValues.newDataGeneratorJson,
+            studentJson: geogebraQuestionValues.newStudentJson,
+            allowAlgebraInput: geogebraQuestionValues.allowAlgebraInput,
+          },
+          { where: { questionId: questionValues.id } }
+        );
+      }
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ messge: "Geogebra question updated!" });
+    } catch (err) {
+      await t.rollback();
       next(err);
     }
   },

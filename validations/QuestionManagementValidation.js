@@ -209,6 +209,37 @@ const createLabelDragQuestionSchema = Joi.object({
   studentJson: Joi.string().required(),
 });
 
+const editLabelDragQuestionSchema = Joi.object({
+  newDataGeneratorCanvasJson: Joi.string().required(),
+  newStudentCanvasJson: Joi.string().required(),
+});
+
+const createLabelFillQuestionSchema = Joi.object({
+  dataGeneratorJson: Joi.string().required(),
+  studentJson: Joi.string().required(),
+  fillAnswer: Joi.string().required(),
+  fillAnswerId: Joi.string().uuid().required(),
+});
+
+const editLabelFillQuestionSchema = Joi.object({
+  newDataGeneratorJson: Joi.string().required(),
+  newStudentJson: Joi.string().required(),
+  newFillAnswer: Joi.string().required(),
+  newFillAnswerId: Joi.string().uuid().required(),
+});
+
+const createGeogebraGraphQuestionSchema = Joi.object({
+  dataGeneratorJson: Joi.string().required(),
+  studentJson: Joi.string().required(),
+  allowAlgebraInput: Joi.boolean().required(),
+});
+
+const editGeogebraGraphQuestionSchema = Joi.object({
+  newDataGeneratorJson: Joi.string().required(),
+  newStudentJson: Joi.string().required(),
+  allowAlgebraInput: Joi.boolean().required(),
+});
+
 module.exports = {
   createQuestionsSchema,
   createFillDropDownQuestionOptionsSchema,
@@ -230,4 +261,9 @@ module.exports = {
   createLabelDragQuestionSchema,
   createTextQuestionSchema,
   updateTextQuestionSchema
+  editLabelDragQuestionSchema,
+  createLabelFillQuestionSchema,
+  editLabelFillQuestionSchema,
+  createGeogebraGraphQuestionSchema,
+  editGeogebraGraphQuestionSchema,
 };
