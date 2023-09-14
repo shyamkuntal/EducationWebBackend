@@ -260,7 +260,7 @@ module.exports = {
   deleteMatchPairSchema,
   createLabelDragQuestionSchema,
   createTextQuestionSchema,
-  updateTextQuestionSchema
+  updateTextQuestionSchema,
   editLabelDragQuestionSchema,
   createLabelFillQuestionSchema,
   editLabelFillQuestionSchema,
