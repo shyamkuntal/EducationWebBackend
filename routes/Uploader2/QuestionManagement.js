@@ -111,4 +111,25 @@ router.post("/creategeogebraquestion", QuestionManagementSarveshController.creat
 
 router.patch("/editgeogebraquestion", QuestionManagementSarveshController.editGeogebraQuestion);
 
+router.delete(
+  "/deletegeogebraquestion",
+  QuestionManagementSarveshController.deleteGeogebraQuestion
+);
+
+// Desmos graph Apis -
+
+router.post("/createdesmosquestion", QuestionManagementSarveshController.createDesmosGraphQuestion);
+
+router.patch("/editdesmosquestion", QuestionManagementSarveshController.editDesmosGraphQuestion);
+
+router.delete("/deletedesmosquestion", QuestionManagementSarveshController.deleteDesmosQuestion);
+
+// HotSpot Apis -
+
+router.post("/createhotspotquestion", QuestionManagementSarveshController.createHostSpotQuestion);
+
+router.patch("/edithotspotquestion", QuestionManagementSarveshController.editHotSpotQuestion);
+
+router.delete("/deletehotspotquestion", QuestionManagementSarveshController.deleteHotSpotQuestion);
+
 module.exports = router;

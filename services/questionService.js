@@ -43,7 +43,7 @@ const getQuestionsDetailsById = async (questionId) => {
 
 const deleteQuestion = async (whereQuery, options) => {
   try {
-    if (whereQuery) {
+    if (whereQuery.where) {
       let deletedQuestion = await Question.destroy(whereQuery, options);
 
       return deletedQuestion;

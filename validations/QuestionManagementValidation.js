@@ -26,7 +26,7 @@ const createQuestionsSchema = Joi.object({
   isErrorByReviewer: Joi.boolean(),
   // hasSubParts: Joi.boolean(),
   parentQuestionId: Joi.string().guid(),
-  isQuestionSubPart: Joi.boolean(),
+  isQuestionSubPart: Joi.boolean().required(),
   includeExplanation: Joi.string(),
   explanation: Joi.string(),
   questionIndentifier: Joi.string(),
@@ -240,6 +240,28 @@ const editGeogebraGraphQuestionSchema = Joi.object({
   allowAlgebraInput: Joi.boolean().required(),
 });
 
+const createDesmosGraphQuestionSchema = Joi.object({
+  dataGeneratorJson: Joi.string().required(),
+  studentJson: Joi.string().required(),
+});
+
+const editDesmosGraphQuestionSchema = Joi.object({
+  newDataGeneratorJson: Joi.string().required(),
+  newStudentJson: Joi.string().required(),
+});
+
+const createHotSpotQuestionSchema = Joi.object({
+  dataGeneratorJson: Joi.string().required(),
+  studentJson: Joi.string().required(),
+  hotSpotIds: Joi.array().items(Joi.string().uuid()),
+});
+
+const editHotSpotQuestionSchema = Joi.object({
+  newDataGeneratorJson: Joi.string().required(),
+  newStudentJson: Joi.string().required(),
+  hotSpotIds: Joi.array().items(Joi.string().uuid()),
+});
+
 module.exports = {
   createQuestionsSchema,
   createFillDropDownQuestionOptionsSchema,
@@ -266,4 +288,8 @@ module.exports = {
   editLabelFillQuestionSchema,
   createGeogebraGraphQuestionSchema,
   editGeogebraGraphQuestionSchema,
+  createDesmosGraphQuestionSchema,
+  editDesmosGraphQuestionSchema,
+  createHotSpotQuestionSchema,
+  editHotSpotQuestionSchema,
 };

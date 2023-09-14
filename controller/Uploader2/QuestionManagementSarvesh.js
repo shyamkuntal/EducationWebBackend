@@ -24,6 +24,10 @@ const {
   editLabelFillQuestionSchema,
   createGeogebraGraphQuestionSchema,
   editGeogebraGraphQuestionSchema,
+  createDesmosGraphQuestionSchema,
+  editDesmosGraphQuestionSchema,
+  createHotSpotQuestionSchema,
+  editHotSpotQuestionSchema,
 } = require("../../validations/QuestionManagementValidation");
 const { FillDropDownOption } = require("../../models/FillDropDownOption");
 const { Question } = require("../../models/Question");
@@ -33,6 +37,9 @@ const { DrawingQuestion } = require("../../models/DrawingQuestion");
 const { LabelDragQuestion } = require("../../models/LabelDragQuestion");
 const { LabelFillQuestion } = require("../../models/LabelFillQuestion");
 const { GeogebraGraphQuestion } = require("../../models/GeogebraGraphQuestion");
+const { DesmosGraphQuestion } = require("../../models/DesmosGraphQuestion");
+const { HotSpotQuestion } = require("../../models/HotSpotQuestion");
+const { Sequelize } = require("sequelize");
 
 const QuestionManagementSarveshController = {
   async createFillDropDown(req, res, next) {
@@ -268,13 +275,11 @@ const QuestionManagementSarveshController = {
     try {
       let values = await editQuestionSchema.validateAsync(req.body);
 
-      let { id, ...rest } = values;
+      let { id, ...questionData } = values;
 
       let whereQuery = { where: { id: id } };
 
-      let dataToBeUpdated = rest;
-
-      await services.questionService.editQuestion(dataToBeUpdated, whereQuery, {
+      await services.questionService.editQuestion(questionData, whereQuery, {
         transaction: t,
       });
 
@@ -374,12 +379,12 @@ const QuestionManagementSarveshController = {
       let { pairsToBeUpdated, pairsToBeAdded, ...rest } = req.body;
       let questionValues = await editQuestionSchema.validateAsync(rest);
 
-      console.log(questionValues);
-
       let updateValues = await editMatchQuestionPairsSchema.validateAsync({
         pairsToBeUpdated,
         pairsToBeAdded,
       });
+
+      let { id, ...questionData } = questionValues;
 
       const updatePairs = updateValues.pairsToBeUpdated;
 
@@ -437,15 +442,15 @@ const QuestionManagementSarveshController = {
           await MatchQuestionPair.update(
             dataToBeUpdated,
             {
-              where: { id: updatePairs[i].id, questionId: questionValues.id },
+              where: { id: updatePairs[i].id, questionId: id },
             },
             { transaction: t }
           );
         }
 
         await services.questionService.editQuestion(
-          questionValues,
-          { where: { id: questionValues.id } },
+          questionData,
+          { where: { id: id } },
           { transaction: t }
         );
 
@@ -603,10 +608,10 @@ const QuestionManagementSarveshController = {
         newCanvasJson: newCanvasJson,
       });
 
-      let { id, ...questionData } = questionValues;
+      let { id, questionData } = questionValues;
 
       await services.questionService.editQuestion(
-        questionValues,
+        questionData,
         {
           where: { id: id },
         },
@@ -668,6 +673,10 @@ const QuestionManagementSarveshController = {
         studentJson: studentJson,
       });
 
+      if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
+      }
+
       let question = await services.questionService.createQuestion(questionValues, {
         transaction: t,
       });
@@ -705,10 +714,12 @@ const QuestionManagementSarveshController = {
         newStudentCanvasJson,
       });
 
+      let { id, questionData } = questionValues;
+
       await services.questionService.editQuestion(
-        questionValues,
+        questionData,
         {
-          where: { id: questionValues.id },
+          where: { id: id },
         },
         { transaction: t }
       );
@@ -766,8 +777,6 @@ const QuestionManagementSarveshController = {
 
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
-      console.log(questionValues);
-
       let labelFillQuestionValues = await createLabelFillQuestionSchema.validateAsync({
         dataGeneratorJson,
         studentJson,
@@ -775,7 +784,9 @@ const QuestionManagementSarveshController = {
         fillAnswerId,
       });
 
-      console.log(labelFillQuestionValues);
+      if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
+      }
 
       let question = await services.questionService.createQuestion(questionValues, {
         transaction: t,
@@ -820,10 +831,12 @@ const QuestionManagementSarveshController = {
         newFillAnswerId,
       });
 
+      let { id, questionData } = questionValues;
+
       await services.questionService.editQuestion(
-        questionValues,
+        questionData,
         {
-          where: { id: questionValues.id },
+          where: { id: id },
         },
         { transaction: t }
       );
@@ -883,15 +896,15 @@ const QuestionManagementSarveshController = {
       let { dataGeneratorJson, studentJson, allowAlgebraInput, ...rest } = req.body;
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
-      console.log(questionValues);
-
       let geogebraQuestionValues = await createGeogebraGraphQuestionSchema.validateAsync({
         dataGeneratorJson,
         studentJson,
         allowAlgebraInput,
       });
 
-      console.log(geogebraQuestionValues);
+      if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
+      }
 
       let question = await services.questionService.createQuestion(questionValues, {
         transaction: t,
@@ -931,16 +944,15 @@ const QuestionManagementSarveshController = {
         newStudentJson,
         allowAlgebraInput,
       });
-      console.log(geogebraQuestionValues);
+
+      let { id, questionData } = questionValues;
 
       await services.questionService.editQuestion(
-        questionValues,
-        { where: { id: questionValues.id } },
+        questionData,
+        { where: { id: id } },
         { transaction: t }
       );
-      console.log(
-        geogebraQuestionValues.newDataGeneratorJson && geogebraQuestionValues.newStudentJson
-      );
+
       if (geogebraQuestionValues.newDataGeneratorJson && geogebraQuestionValues.newStudentJson) {
         await GeogebraGraphQuestion.update(
           {
@@ -955,6 +967,244 @@ const QuestionManagementSarveshController = {
       await t.commit();
 
       res.status(httpStatus.OK).send({ messge: "Geogebra question updated!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async deleteGeogebraQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
+
+      console.log(values);
+
+      await GeogebraGraphQuestion.destroy(
+        { where: { questionId: values.questionId } },
+        { transaction: t }
+      );
+
+      await services.questionService.deleteQuestion(
+        { where: { id: values.questionId } },
+        { transaction: t }
+      );
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Geogebra question deleted!" });
+    } catch (err) {
+      next(err);
+    }
+  },
+  async createDesmosGraphQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let { dataGeneratorJson, studentJson, ...rest } = req.body;
+
+      let questionValues = await createQuestionsSchema.validateAsync(rest);
+
+      if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
+      }
+
+      let desmosGraphQuestionValues = await createDesmosGraphQuestionSchema.validateAsync({
+        dataGeneratorJson,
+        studentJson,
+      });
+
+      let question = await services.questionService.createQuestion(questionValues, {
+        transaction: t,
+      });
+
+      let newQuestionData = question.dataValues;
+
+      let createDesmosQuestion = await DesmosGraphQuestion.create(
+        {
+          questionId: newQuestionData.id,
+          dataGeneratorJson: desmosGraphQuestionValues.dataGeneratorJson,
+          studentJson: desmosGraphQuestionValues.studentJson,
+        },
+        { transaction: t }
+      );
+
+      await t.commit();
+
+      res
+        .status(httpStatus.OK)
+        .send({ message: "Desmos Graph Question created!", desmosQuestion: createDesmosQuestion });
+    } catch (err) {
+      next(err);
+    }
+  },
+  async editDesmosGraphQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let { newDataGeneratorJson, newStudentJson, ...rest } = req.body;
+      let questionValues = await editQuestionSchema.validateAsync(rest);
+
+      let desmosQuestionValues = await editDesmosGraphQuestionSchema.validateAsync({
+        newDataGeneratorJson,
+        newStudentJson,
+      });
+
+      let { id, ...questionData } = questionValues;
+
+      await services.questionService.editQuestion(
+        questionData,
+        { where: { id: id } },
+        { transaction: t }
+      );
+
+      if (desmosQuestionValues.newDataGeneratorJson && desmosQuestionValues.newStudentJson) {
+        await DesmosGraphQuestion.update(
+          {
+            dataGeneratorJson: desmosQuestionValues.newDataGeneratorJson,
+            studentJson: desmosQuestionValues.newStudentJson,
+          },
+          { where: { questionId: id } },
+          { transaction: t }
+        );
+      }
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Desmos Graph Question Updated!" });
+    } catch (err) {
+      next(err);
+    }
+  },
+  async deleteDesmosQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
+
+      console.log(values);
+
+      await DesmosGraphQuestion.destroy(
+        { where: { questionId: values.questionId } },
+        { transaction: t }
+      );
+
+      let whereQuery = { where: { id: values.questionId } };
+
+      await services.questionService.deleteQuestion(whereQuery, { transaction: t });
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Desmos question deleted!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async createHostSpotQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let { dataGeneratorJson, studentJson, hotSpotIds, ...rest } = req.body;
+      let questionValues = await createQuestionsSchema.validateAsync(rest);
+
+      if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
+      }
+
+      let hotSpotQuestionValues = await createHotSpotQuestionSchema.validateAsync({
+        dataGeneratorJson,
+        studentJson,
+        hotSpotIds,
+      });
+
+      let question = await services.questionService.createQuestion(questionValues, {
+        transaction: t,
+      });
+
+      let newQuestionData = question.dataValues;
+
+      console.log(hotSpotQuestionValues.hotSpotIds);
+
+      let hotSpotQuestion = await HotSpotQuestion.create(
+        {
+          questionId: newQuestionData.id,
+          dataGeneratorJson: hotSpotQuestionValues.dataGeneratorJson,
+          studentJson: hotSpotQuestionValues.studentJson,
+          hotSpotIds: hotSpotQuestionValues.hotSpotIds,
+        },
+        { transaction: t }
+      );
+
+      await t.commit();
+
+      res
+        .status(httpStatus.OK)
+        .send({ message: "HotSpot question created", hotSpotQuestion: hotSpotQuestion });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async editHotSpotQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let { newDataGeneratorJson, newStudentJson, hotSpotIds, ...rest } = req.body;
+      let questionValues = await editQuestionSchema.validateAsync(rest);
+
+      console.log(questionValues);
+
+      let hotSpotQuestionValues = await editHotSpotQuestionSchema.validateAsync({
+        newDataGeneratorJson,
+        newStudentJson,
+        hotSpotIds,
+      });
+
+      console.log(hotSpotQuestionValues);
+
+      let { id, ...questionData } = questionValues;
+
+      await services.questionService.editQuestion(
+        questionData,
+        { where: { id: id } },
+        { transaction: t }
+      );
+
+      if (hotSpotQuestionValues.newDataGeneratorJson && hotSpotQuestionValues.newStudentJson) {
+        await HotSpotQuestion.update(
+          {
+            dataGeneratorJson: hotSpotQuestionValues.newDataGeneratorJson,
+            studentJson: hotSpotQuestionValues.newStudentJson,
+          },
+          { where: { questionId: id } },
+          { transaction: t }
+        );
+      }
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "HotSpot question updated" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async deleteHotSpotQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
+
+      console.log(values);
+
+      await HotSpotQuestion.destroy(
+        { where: { questionId: values.questionId } },
+        { transaction: t }
+      );
+
+      let whereQuery = { where: { id: values.questionId } };
+
+      await services.questionService.deleteQuestion(whereQuery, { transaction: t });
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "HotSpot Question deleted!" });
     } catch (err) {
       await t.rollback();
       next(err);

@@ -38,6 +38,7 @@ router.use("/public", PublicRoutes);
 router.use("/accountmanagement", AuthSuperadminSupervisor(), AccountManagement);
 router.use("/boardmanagement", AuthSuperadmin(), BoardRouters);
 
+
 router.use("/ppmsupervisor", AuthSuperadminSupervisor(), PastPaper);
 router.use("/subjectmanagement", AuthSupervisor(), SubjectRouters);
 router.use("/pnmanagement", AuthSupervisor(), PaperNumber);
