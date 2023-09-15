@@ -60,59 +60,133 @@ const QuestionManagement = {
     }
   },
 
-  async createContentQues(req, res, next) {
-    const t = await db.transaction();
+  async uploadFileToS3(req, res, next){
     try {
+      let file = req.file
+      let data = await services.questionService.uploadFileToS3(file);
+      res.status(httpStatus.OK).send(data)
+    } catch (err) {
+      next(err)
+    }
+  },
+  async deleteFileFromS3(req, res, next){
+    try {
+      let fileName = req.query.fileName
+      let data = await services.questionService.deleteFileFromS3(fileName);
+      res.status(httpStatus.OK).send(data)
+    } catch (err) {
+      next(err)
+    }
+  },
+
+  async createContentQues(req, res, next) {
+    // const t = await db.transaction();
+    try {
+      console.log("asvs")
+      console.log("files----->  ",req.files)
       let data = req.body;
-
-      let questionData = {
-        questionType: data.questionType,
-        questionData: data.questionData,
-        sheetId: data.sheetId,
-      };
-
-      let createdQuestion = await services.questionService.createQuestion(questionData, {
-        transaction: t,
-      });
-
-      let files = data.statements;
-      let questionId = await createdQuestion.id;
-
-      const createdFiles = await Promise.all(
-        files.map(async (file) => {
-          let contentFileName = null;
-
-          if (file.content) {
-            contentFileName = await services.questionService.uploadFile(file.content);
-          }
-
-          const createdOption = await QuestionContent.create(
-            {
-              questionId,
-              title: file.title || null,
-              description: file.description || null,
-              caption: file.caption || null,
-              content: contentFileName,
-            },
-            { transaction: t }
-          );
-
-          return createdOption;
-        })
-      );
-
-      await t.commit();
-      res.status(httpStatus.OK).send({
-        question: createdQuestion,
-        files: createdFiles,
-      });
+      // let questionData = {
+      //   questionType: data.questionType,
+      //   questionData: data.questionData,
+      //   sheetId: data.sheetId,
+      // };
+  
+      // let createdQuestion = await services.questionService.createQuestion(questionData, {
+      //   transaction: t,
+      // });
+  
+      // let files = data.files;
+      // let questionId = await createdQuestion.id;
+      // console.log(files)
+      // const createdFiles = await Promise.all(
+      //   files.map(async (file) => {
+      //     let contentFileName = null;
+  
+      //     if (file.content) {
+      //       contentFileName = await services.questionService.uploadFile(file.content);
+      //     }
+  
+      //     const createdOption = await QuestionContent.create(
+      //       {
+      //         questionId,
+      //         title: file.title || null,
+      //         description: file.description || null,
+      //         caption: file.caption || null,
+      //         content: contentFileName,
+      //       },
+      //       { transaction: t }
+      //     );
+  
+      //     return createdOption;
+      //   })
+      // );
+  
+      // await t.commit();
+      res.status(httpStatus.OK)
+      // .send({
+      //   question: createdQuestion,
+      //   files: createdFiles,
+      // });
     } catch (err) {
       console.log(err);
-      await t.rollback();
+      // await t.rollback();
       next(err);
     }
   },
 
+  async createVideoQues(req, res, next) {
+    const t = await db.transaction();
+    try {
+
+      const { questionType, questionData, questionDescription, sheetId, ...rest } = req.body;
+      let questionValues = await createQuestionsSchema.validateAsync({
+          ...rest,
+          sheetId,
+          questionType: questionType,
+          questionData: questionData,
+          questionDescription: questionDescription
+        });
+      
+      const contentFile = req.file;
+
+      const createdQuestion = await services.questionService.createQuestion(
+        {
+          sheetId,
+          questionType,
+          questionData,
+          questionDescription: questionDescription || null ,
+        },
+        { transaction: t }
+      );
+  
+      const questionId = createdQuestion.id;
+      let contentFileName = null;
+      if (contentFile) {
+        contentFileName = await services.questionService.uploadFile(contentFile);
+      }
+
+      const createdOption = await QuestionContent.create(
+        {
+          questionId,
+          content: contentFileName,
+        },
+        {
+          transaction: t,
+        }
+      );
+  
+      await t.commit();
+      res.status(httpStatus.OK).send({
+        question: createdQuestion,
+        files: [createdOption],
+      });
+    } catch (err) {
+      console.error(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+  
   async editContentQues(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1064,8 +1138,7 @@ const QuestionManagement = {
       next(err);
     }
   }
-  
-  
+
 };
 
 module.exports = QuestionManagement;

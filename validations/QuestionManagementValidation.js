@@ -4,6 +4,7 @@ const createQuestionsSchema = Joi.object({
   sheetId: Joi.string().guid().required(),
   questionType: Joi.string().required(),
   questionData: Joi.string().required(),
+  questionDescription: Joi.string(),
   marks: Joi.number(),
   requiredTime: Joi.number(),
   uploaderDescription: Joi.string(),

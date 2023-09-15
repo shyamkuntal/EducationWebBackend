@@ -21,6 +21,10 @@ const Question = db.define("question", {
     type: Sequelize.TEXT,
     allowNull: true,
   },
+  questionDescription: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
   marks: {
     type: Sequelize.INTEGER,
     allowNull: true,

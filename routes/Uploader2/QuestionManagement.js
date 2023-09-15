@@ -28,10 +28,13 @@ router.delete("/deletetruefalsequestion", QuestionManagement.TrueFalseQuesDelete
 router.delete("/deletetruefalseoption", QuestionManagement.DeleteTrueFalseOption);
 router.post("/createtextquestion", QuestionManagement.creatTextQues);
 router.patch("/updatequestion", QuestionManagement.updateQuestion);
-router.post("/createcontentquestion", QuestionManagement.createContentQues);
+router.post("/createcontentquestion", upload.array('content', 10), QuestionManagement.createContentQues);
+router.post("/createvideoquestion", upload.single("content"), QuestionManagement.createVideoQues);
 router.post("/editcontentquestion", QuestionManagement.editContentQues);
 router.post("/createclassifyquestion", QuestionManagement.createClassifyQues);
 
+router.post("/uploadfiletos3", upload.single("file"), QuestionManagement.uploadFileToS3);
+router.post("/deletefilefroms3", QuestionManagement.deleteFileFromS3);
 // Sarvesh
 
 // FillDropDown Apis -
