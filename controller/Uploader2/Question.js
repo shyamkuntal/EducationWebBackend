@@ -75,61 +75,53 @@ const QuestionManagement = {
       let data = await services.questionService.deleteFileFromS3(fileName);
       res.status(httpStatus.OK).send(data)
     } catch (err) {
+      console.log(err)
       next(err)
     }
   },
 
   async createContentQues(req, res, next) {
-    // const t = await db.transaction();
+    const t = await db.transaction();
     try {
-      console.log("asvs")
-      console.log("files----->  ",req.files)
       let data = req.body;
-      // let questionData = {
-      //   questionType: data.questionType,
-      //   questionData: data.questionData,
-      //   sheetId: data.sheetId,
-      // };
+      let questionData = {
+        questionType: data.questionType,
+        questionData: data.questionData,
+        sheetId: data.sheetId,
+      };
   
-      // let createdQuestion = await services.questionService.createQuestion(questionData, {
-      //   transaction: t,
-      // });
+      let createdQuestion = await services.questionService.createQuestion(questionData, {
+        transaction: t,
+      });
   
-      // let files = data.files;
-      // let questionId = await createdQuestion.id;
-      // console.log(files)
-      // const createdFiles = await Promise.all(
-      //   files.map(async (file) => {
-      //     let contentFileName = null;
+      let files = data.files;
+      let questionId = await createdQuestion.id;
+      const createdFiles = await Promise.all(
+        files.map(async (file) => {
   
-      //     if (file.content) {
-      //       contentFileName = await services.questionService.uploadFile(file.content);
-      //     }
+          const createdOption = await QuestionContent.create(
+            {
+              questionId,
+              title: file.title || null,
+              description: file.description || null,
+              caption: file.caption || null,
+              content: file.content,
+            },
+            { transaction: t }
+          );
   
-      //     const createdOption = await QuestionContent.create(
-      //       {
-      //         questionId,
-      //         title: file.title || null,
-      //         description: file.description || null,
-      //         caption: file.caption || null,
-      //         content: contentFileName,
-      //       },
-      //       { transaction: t }
-      //     );
+          return createdOption;
+        })
+      );
   
-      //     return createdOption;
-      //   })
-      // );
-  
-      // await t.commit();
-      res.status(httpStatus.OK)
-      // .send({
-      //   question: createdQuestion,
-      //   files: createdFiles,
-      // });
+      await t.commit();
+      res.status(httpStatus.OK).send({
+        question: createdQuestion,
+        files: createdFiles,
+      });
     } catch (err) {
       console.log(err);
-      // await t.rollback();
+      await t.rollback();
       next(err);
     }
   },
@@ -918,7 +910,7 @@ const QuestionManagement = {
             ? await services.questionService.uploadFile(category.content)
             : null;
 
-          const categoryData = {
+          const categoryData = {  
             category: category.category,
             content: contentFileName,
           };

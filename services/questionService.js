@@ -151,25 +151,24 @@ async function uploadFileToS3(fileObj) {
 
 async function deleteFileFromS3(fileName) {
   try {
-    const fileType = determineFileType(fileName);
+    let filename = fileName.split("/")[1]
+    const fileType = determineFileType(filename);
     const folderName = getFolderName(fileType);
-
+    
     const listParams = {
       Bucket: process.env.AWS_QUESTIONS_BUCKET_NAME,
       Prefix: `${folderName}/`,
     };
     const listResponse = await s3Client.send(new ListObjectsV2Command(listParams));
-    const fileKey = listResponse.Contents.find((obj) => obj.Key === `${folderName}/${fileName}`);
+    const fileKey = listResponse.Contents.find((obj) => obj.Key === fileName);
     
     if (!fileKey) {
       return { message: "File not found" };
     }
 
-    const s3Key = `${folderName}/${fileName}`;
-
     const deleteParams = {
       Bucket: process.env.AWS_QUESTIONS_BUCKET_NAME,
-      Key: s3Key,
+      Key: fileName,
     };
 
     const result = await s3Client.send(new DeleteObjectCommand(deleteParams));
@@ -180,6 +179,7 @@ async function deleteFileFromS3(fileName) {
       return null;
     }
   } catch (err) {
+    console.log(err)
     throw err;
   }
 }
