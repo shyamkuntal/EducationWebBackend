@@ -18,7 +18,7 @@ const QuestionCategory = db.define("questionCategory", {
   },
   content: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 });
 
