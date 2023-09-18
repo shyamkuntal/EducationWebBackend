@@ -2,8 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
 
-// Store mongodb objectId in canvasJson
-const HotSpotQuestion = db.define("hotSpotQuestion", {
+const GeogebraGraphQuestion = db.define("GeogebraGraphQuestion", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -21,15 +20,18 @@ const HotSpotQuestion = db.define("hotSpotQuestion", {
     type: Sequelize.TEXT,
     allowNull: false,
   },
-  hostSpotIds: { type: Sequelize.ARRAY(Sequelize.UUID) },
+  allowAlgebraInput: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
-HotSpotQuestion.belongsTo(Question, {
+GeogebraGraphQuestion.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
-HotSpotQuestion.sync().then(() => {
-  console.log("HotSpotQuestion Created");
+GeogebraGraphQuestion.sync().then(() => {
+  console.log("GeogebraGraphQuestion Created");
 });
 
-module.exports = { HotSpotQuestion };
+module.exports = { GeogebraGraphQuestion };

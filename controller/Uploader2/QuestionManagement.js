@@ -3,7 +3,7 @@ const httpStatus = require("http-status");
 const CONSTANTS = require("../../constants/constants");
 const db = require("../../config/database");
 const { createQuestionsSchema } = require("../../validations/QuestionManagementValidation");
-const { MatchQuestion } = require("../../models/MatchQuestion");
+const { MatchQuestion } = require("../../models/MatchQuestionPair");
 
 
 

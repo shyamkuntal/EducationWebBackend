@@ -4,19 +4,30 @@ const CONSTANTS = require("../../constants/constants");
 const db = require("../../config/database");
 const { McqQuestionOption } = require("../../models/McqQuestionOption");
 const { TrueFalseQuestionOption } = require("../../models/TrueFalseQuestionOption");
-const { McqSchema } = require("../../validations/QuestionManagementValidation");
+const { McqSchema, createQuestionsSchema, createTextQuestionSchema, updateTextQuestionSchema } = require("../../validations/QuestionManagementValidation");
 const { Question } = require("../../models/Question");
 const { QuestionContent } = require("../../models/QuestionContent");
 const { s3Client } = require("../../config/s3");
 const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { QuestionItem } = require("../../models/items");
 const { QuestionCategory } = require("../../models/category");
+const { TableQuestion } = require("../../models/Table");
 
 const QuestionManagement = {
+
   async creatTextQues(req, res, next) {
     const t = await db.transaction();
     try {
-      let question = await services.questionService.createQuestion(req.body, {
+      const { createData, ...rest } = req.body;
+
+      let questionValues = await createQuestionsSchema.validateAsync({
+        ...rest,
+        questionType: CONSTANTS.questionType.Text,
+      });
+
+      let createDataValues = await createTextQuestionSchema.validateAsync(createData);
+
+      let question = await services.questionService.createQuestion(questionValues, {
         transaction: t,
       });
       res.status(httpStatus.OK).send(question);
@@ -27,47 +38,82 @@ const QuestionManagement = {
     }
   },
 
+  async updateQuestion(req, res, next){
+    const t = await db.transaction();
+    try {
+      const { questionId, questionData } = req.body;
+
+      await updateTextQuestionSchema.validateAsync(req.body);
+
+      const updatedData={
+        questionData: questionData
+      }
+
+      let question = await services.questionService.updateQuestion(questionId, updatedData, {
+        transaction: t,
+      });
+      res.status(httpStatus.OK).send(question);
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async uploadFileToS3(req, res, next){
+    try {
+      let file = req.file
+      let data = await services.questionService.uploadFileToS3(file);
+      res.status(httpStatus.OK).send(data)
+    } catch (err) {
+      next(err)
+    }
+  },
+  async deleteFileFromS3(req, res, next){
+    try {
+      let fileName = req.query.fileName
+      let data = await services.questionService.deleteFileFromS3(fileName);
+      res.status(httpStatus.OK).send(data)
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  },
+
   async createContentQues(req, res, next) {
     const t = await db.transaction();
     try {
       let data = req.body;
-
       let questionData = {
         questionType: data.questionType,
         questionData: data.questionData,
         sheetId: data.sheetId,
       };
-
+  
       let createdQuestion = await services.questionService.createQuestion(questionData, {
         transaction: t,
       });
-
-      let files = data.statements;
+  
+      let files = data.files;
       let questionId = await createdQuestion.id;
-
       const createdFiles = await Promise.all(
         files.map(async (file) => {
-          let contentFileName = null;
-
-          if (file.content) {
-            contentFileName = await services.questionService.uploadFile(file.content);
-          }
-
+  
           const createdOption = await QuestionContent.create(
             {
               questionId,
               title: file.title || null,
               description: file.description || null,
               caption: file.caption || null,
-              content: contentFileName,
+              content: file.content,
             },
             { transaction: t }
           );
-
+  
           return createdOption;
         })
       );
-
+  
       await t.commit();
       res.status(httpStatus.OK).send({
         question: createdQuestion,
@@ -80,6 +126,59 @@ const QuestionManagement = {
     }
   },
 
+  async createVideoQues(req, res, next) {
+    const t = await db.transaction();
+    try {
+
+      const { questionType, questionData, questionDescription, sheetId, ...rest } = req.body;
+      let questionValues = await createQuestionsSchema.validateAsync({
+          ...rest,
+          sheetId,
+          questionType: questionType,
+          questionData: questionData,
+          questionDescription: questionDescription
+        });
+      
+      const contentFile = req.file;
+
+      const createdQuestion = await services.questionService.createQuestion(
+        {
+          sheetId,
+          questionType,
+          questionData,
+          questionDescription: questionDescription || null ,
+        },
+        { transaction: t }
+      );
+  
+      const questionId = createdQuestion.id;
+      let contentFileName = null;
+      if (contentFile) {
+        contentFileName = await services.questionService.uploadFile(contentFile);
+      }
+
+      const createdOption = await QuestionContent.create(
+        {
+          questionId,
+          content: contentFileName,
+        },
+        {
+          transaction: t,
+        }
+      );
+  
+      await t.commit();
+      res.status(httpStatus.OK).send({
+        question: createdQuestion,
+        files: [createdOption],
+      });
+    } catch (err) {
+      console.error(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+  
   async editContentQues(req, res, next) {
     const t = await db.transaction();
     try {
@@ -811,7 +910,7 @@ const QuestionManagement = {
             ? await services.questionService.uploadFile(category.content)
             : null;
 
-          const categoryData = {
+          const categoryData = {  
             category: category.category,
             content: contentFileName,
           };
@@ -902,6 +1001,136 @@ const QuestionManagement = {
       next(err);
     }
   },
+
+  async createTableQues(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let data = req.body;
+
+      let questionData = {
+        questionType: data.questionType,
+        questionData: data.questionData,
+        sheetId: data.sheetId,
+      };
+
+      let createdQuestion = await services.questionService.createQuestion(questionData, {
+        transaction: t,
+      });
+
+      let files = data.Files;
+      let questionId = await createdQuestion.id;
+
+      const createdFiles = await Promise.all(
+        files.map(async (file) => {
+
+          const createdOption = await TableQuestion.create(
+            {
+              questionId,
+              item: file.item,
+              tableData: file.tableData,
+              autoPlot: file.autoPlot || false,
+              allowPrefilledText: file.allowPrefilledText || false,
+            },
+            { transaction: t }
+          );
+
+          return createdOption;
+        })
+      );
+
+      await t.commit();
+      res.status(httpStatus.OK).send({
+        question: createdQuestion,
+        files: createdFiles,
+      });
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async editTableQues(req, res, next) {
+    const t = await db.transaction();
+    try {
+      const id = req.body.id; 
+      const data = req.body;
+  
+      const questionUpdateData = {
+        questionType: data.questionType,
+        questionData: data.questionData,
+        sheetId: data.sheetId,
+      };
+  
+      await services.questionService.updateQuestion(id, questionUpdateData, {
+        transaction: t,
+      });
+  
+      const files = data.Files;
+  
+      const updatedFiles = await Promise.all(
+        files.map(async (file) => {
+          const { fileId, item, tableData, autoPlot, allowPrefilledText } = file;
+  
+          if (fileId) {
+            const updatedFile = await TableQuestion.update(
+              {
+                item,
+                tableData,
+                autoPlot: autoPlot || false,
+                allowPrefilledText: allowPrefilledText || false,
+              },
+              { where: { id: fileId }, transaction: t }
+            );
+  
+            return updatedFile;
+          } else {
+            const createdFile = await TableQuestion.create(
+              {
+                questionId: id,
+                item,
+                tableData,
+                autoPlot: autoPlot || false,
+                allowPrefilledText: allowPrefilledText || false,
+              },
+              { transaction: t }
+            );
+  
+            return createdFile;
+          }
+        })
+      );
+  
+      await t.commit();
+      res.status(httpStatus.OK).send({
+        message: "Question and files updated successfully",
+        updatedFiles,
+      });
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async deleteTableQues(req, res, next) {
+    const t = await db.transaction();
+    try {
+      const id = req.query.id; 
+  
+      await TableQuestion.destroy({ where: { questionId: id }, transaction: t });
+  
+      await services.questionService.DeleteQues(id, { transaction: t });
+  
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Question and related files deleted successfully" });
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      next(err);
+    }
+  }
+
 };
 
 module.exports = QuestionManagement;

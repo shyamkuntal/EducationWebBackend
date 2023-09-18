@@ -2,8 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
 
-// Store mongodb objectId in canvasJson
-const HotSpotQuestion = db.define("hotSpotQuestion", {
+const LabelFillQuestion = db.define("labelFillQuestion", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -21,15 +20,22 @@ const HotSpotQuestion = db.define("hotSpotQuestion", {
     type: Sequelize.TEXT,
     allowNull: false,
   },
-  hostSpotIds: { type: Sequelize.ARRAY(Sequelize.UUID) },
+  fillAnswer: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  fillAnswerId: {
+    type: Sequelize.UUID,
+    allowNull: false,
+  },
 });
 
-HotSpotQuestion.belongsTo(Question, {
+LabelFillQuestion.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
-HotSpotQuestion.sync().then(() => {
-  console.log("HotSpotQuestion Created");
+LabelFillQuestion.sync().then(() => {
+  console.log("LabelFillQuestion Created");
 });
 
-module.exports = { HotSpotQuestion };
+module.exports = { LabelFillQuestion };

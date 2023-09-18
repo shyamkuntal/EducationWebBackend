@@ -3,7 +3,7 @@ const db = require("../config/database");
 const { Question } = require("./Question");
 
 // Store html string in question
-const MatchQuestion = db.define("matchQuestion", {
+const MatchQuestionPair = db.define("matchQuestionPair", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -11,7 +11,7 @@ const MatchQuestion = db.define("matchQuestion", {
   },
   questionId: {
     type: Sequelize.UUID,
-    allowNull: true,
+    allowNull: false,
   },
   matchTarget: {
     type: Sequelize.STRING,
@@ -21,31 +21,22 @@ const MatchQuestion = db.define("matchQuestion", {
     type: Sequelize.STRING,
     allowNull: true,
   },
-  distractor:{
+  matchPhraseContent: {
     type: Sequelize.STRING,
     allowNull: true,
   },
-  distractorContent:{
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  MatchPhraseContent:{
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  MatchTargetContent:{
+  matchTargetContent: {
     type: Sequelize.STRING,
     allowNull: true,
   },
 });
 
-MatchQuestion.belongsTo(Question, {
+MatchQuestionPair.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
-
-MatchQuestion.sync().then(() => {
-  console.log("MatchQuestion Created");
+MatchQuestionPair.sync().then(() => {
+  console.log("MatchQuestionPair Created");
 });
 
-module.exports = { MatchQuestion };
+module.exports = { MatchQuestionPair };

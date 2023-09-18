@@ -18,6 +18,10 @@ const Question = db.define("question", {
     allowNull: false,
   },
   questionData: {
+    type: Sequelize.TEXT,
+    allowNull: true,
+  },
+  questionDescription: {
     type: Sequelize.STRING,
     allowNull: true,
   },
