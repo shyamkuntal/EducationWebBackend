@@ -37,7 +37,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async updateQuestion(req, res, next){
     const t = await db.transaction();
     try {
@@ -59,7 +58,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async uploadFileToS3(req, res, next){
     try {
       let file = req.file
@@ -79,7 +77,6 @@ const QuestionManagement = {
       next(err)
     }
   },
-
   async createContentQues(req, res, next) {
     const t = await db.transaction();
     try {
@@ -125,7 +122,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async createVideoQues(req, res, next) {
     const t = await db.transaction();
     try {
@@ -178,7 +174,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-  
   async editContentQues(req, res, next) {
     const t = await db.transaction();
     try {
@@ -259,7 +254,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async McqQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -312,7 +306,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async editMcqQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -402,7 +395,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async DeleteMcqQues(req, res, next) {
     const questionId = req.query.questionId;
 
@@ -431,7 +423,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async DeleteMcqOption(req, res, next) {
     const { questionId, optionId } = req.query;
     console.log(questionId);
@@ -458,7 +449,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async TrueFalse(req, res, next) {
     const t = await db.transaction();
     try {
@@ -511,7 +501,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async TrueFalseQuesDelete(req, res, next) {
     const questionId = req.query.questionId;
 
@@ -539,7 +528,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async DeleteTrueFalseOption(req, res, next) {
     const { questionId, optionId } = req.query;
 
@@ -566,7 +554,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async editTrueFalseQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -655,7 +642,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async createSortQues(req, res, next) {
     const t = await db.transaction();
     try {
@@ -706,7 +692,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async editSortQues(req, res, next) {
     const t = await db.transaction();
     try {
@@ -784,7 +769,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async createClassifyQues(req, res, next) {
     const t = await db.transaction();
     try {
@@ -805,15 +789,10 @@ const QuestionManagement = {
       // console.log(categories)
       const createdCategories = await Promise.all(
         categories.map(async (category) => {
-          let contentFileName = null;
-          let categoryFile = category.content;
-          if (categoryFile) {
-            contentFileName = await services.questionService.uploadFile(categoryFile);
-          }
           let categoryData = {
             questionId,
             category: category.category,
-            content: contentFileName,
+            content: category.content || null,
           };
 
           let createdCategory = await QuestionCategory.create(categoryData, {
@@ -824,16 +803,11 @@ const QuestionManagement = {
 
           const createdItemFiles = await Promise.all(
             items.map(async (file) => {
-              let contentItemFileName = null;
-              let itemFile = category.content;
-              if (itemFile) {
-                contentItemFileName = await services.questionService.uploadFile(itemFile);
-              }
               const createdOption = await QuestionItem.create(
                 {
                   categoryId: createdCategory.id,
                   item: file.item,
-                  content: contentItemFileName,
+                  content: file.content,
                 },
                 { transaction: t }
               );
@@ -853,16 +827,11 @@ const QuestionManagement = {
 
       const createdDistractorFiles = await Promise.all(
         distractor.map(async (file) => {
-          let contentItemFileName = null;
-          let itemFile = file.content;
-          if (itemFile) {
-            contentItemFileName = await services.questionService.uploadFile(itemFile);
-          }
           const createdOption = await QuestionItem.create(
             {
               questionId,
               distractor: file.distractor,
-              content: contentItemFileName,
+              content: file.content,
             },
             { transaction: t }
           );
@@ -883,7 +852,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async editClassifyQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -965,7 +933,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async deleteClassifyQues(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1001,7 +968,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async createTableQues(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1049,7 +1015,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async editTableQues(req, res, next) {
     const t = await db.transaction();
     try {
