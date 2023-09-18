@@ -19,6 +19,7 @@ const BookManagementDataGenerator = require("./DataGenerator/BookManagement");
 const SheetManagementSupervisor = require("./Supervisor/SheetManagement");
 const QuestionManagementUploader2 = require("./Uploader2/QuestionManagement");
 const PublicRoutes = require("./PublicRoutes.js");
+const SupervisorDashboard = require("./Supervisor/DashBoard")
 const Auth = require("./Auth.js");
 const {
   AuthSuperadmin,
@@ -37,6 +38,9 @@ router.use("/public", PublicRoutes);
 
 router.use("/accountmanagement", AuthSuperadminSupervisor(), AccountManagement);
 router.use("/boardmanagement", AuthSuperadmin(), BoardRouters);
+
+router.use("/supervisordashboard", AuthSupervisor(), SupervisorDashboard)
+
 
 router.use("/ppmsupervisor", AuthSuperadminSupervisor(), PastPaper);
 router.use("/subjectmanagement", AuthSupervisor(), SubjectRouters);

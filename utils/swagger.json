@@ -151,7 +151,7 @@
             "type": "string"
           },
           {
-            "name": "varient",
+            "name": "varientId",
             "in": "query",
             "type": "string"
           },
@@ -243,6 +243,16 @@
             "type": "string"
           }
         ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/public/getallvariants": {
+      "get": {
+        "description": "",
         "responses": {
           "default": {
             "description": ""
@@ -860,6 +870,16 @@
         }
       }
     },
+    "/accountmanagement/getallsubjectsmappings": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/boardmanagement/getallboards": {
       "get": {
         "description": "",
@@ -1012,8 +1032,38 @@
         }
       }
     },
-    "/ppmsupervisor/createsheet": {
+    "/ppmsupervisor/createvariant": {
       "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/getallvariants": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/editvariant": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/updatesheet": {
+      "patch": {
         "description": "",
         "parameters": [
           {
@@ -1022,6 +1072,9 @@
             "schema": {
               "type": "object",
               "properties": {
+                "sheetId": {
+                  "example": "any"
+                },
                 "boardId": {
                   "example": "any"
                 },
@@ -1046,9 +1099,6 @@
                 "varient": {
                   "example": "any"
                 },
-                "paperNumberId": {
-                  "example": "any"
-                },
                 "paperNumber": {
                   "example": "any"
                 },
@@ -1062,6 +1112,26 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/deletevariant": {
+      "delete": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/createsheet": {
+      "post": {
+        "description": "",
         "responses": {
           "200": {
             "description": "OK"
@@ -2180,6 +2250,23 @@
         }
       }
     },
+    "/pnmanagement/getcountscarddata": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/topicmanagement/createtopictask": {
       "post": {
         "description": "",
@@ -2873,6 +2960,23 @@
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/bookmanagement/getcountscarddata": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -3858,7 +3962,24 @@
         }
       }
     },
-    "/datagenerator/getalltopictasks": {
+    "/datagenerator/getcountscarddata": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/tpmdatagenerator/getalltopictasks": {
       "get": {
         "description": "",
         "parameters": [
@@ -3950,7 +4071,7 @@
         }
       }
     },
-    "/datagenerator/createtopic": {
+    "/tpmdatagenerator/createtopic": {
       "post": {
         "description": "",
         "responses": {
@@ -3960,40 +4081,7 @@
         }
       }
     },
-    "/datagenerator/createsubtopic": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "importNames": {
-                  "example": "any"
-                },
-                "newNames": {
-                  "example": "any"
-                },
-                "topicTaskId": {
-                  "example": "any"
-                },
-                "topicId": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/datagenerator/createvocabulary": {
+    "/tpmdatagenerator/createsubtopic": {
       "post": {
         "description": "",
         "parameters": [
@@ -4026,7 +4114,40 @@
         }
       }
     },
-    "/datagenerator/submitopictasktosupervisor": {
+    "/tpmdatagenerator/createvocabulary": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "importNames": {
+                  "example": "any"
+                },
+                "newNames": {
+                  "example": "any"
+                },
+                "topicTaskId": {
+                  "example": "any"
+                },
+                "topicId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/tpmdatagenerator/submitopictasktosupervisor": {
       "patch": {
         "description": "",
         "responses": {
@@ -4036,7 +4157,7 @@
         }
       }
     },
-    "/datagenerator/getalltopicsubtopicvocab": {
+    "/tpmdatagenerator/getalltopicsubtopicvocab": {
       "get": {
         "description": "",
         "parameters": [
@@ -4063,7 +4184,7 @@
         }
       }
     },
-    "/datagenerator/gettopicsubtopicvocabbytopictaskid": {
+    "/tpmdatagenerator/gettopicsubtopicvocabbytopictaskid": {
       "get": {
         "description": "",
         "parameters": [
@@ -4080,7 +4201,7 @@
         }
       }
     },
-    "/datagenerator/getsubtopicvocabbytopicid": {
+    "/tpmdatagenerator/getsubtopicvocabbytopicid": {
       "get": {
         "description": "",
         "parameters": [
@@ -4097,7 +4218,7 @@
         }
       }
     },
-    "/datagenerator/getsubtopicvocabbytaskid": {
+    "/tpmdatagenerator/getsubtopicvocabbytaskid": {
       "get": {
         "description": "",
         "parameters": [
@@ -4119,7 +4240,7 @@
         }
       }
     },
-    "/datagenerator/marktopictaskasinprogress": {
+    "/tpmdatagenerator/marktopictaskasinprogress": {
       "patch": {
         "description": "",
         "parameters": [
@@ -4143,7 +4264,7 @@
         }
       }
     },
-    "/datagenerator/marktopictaskascomplete": {
+    "/tpmdatagenerator/marktopictaskascomplete": {
       "patch": {
         "description": "",
         "parameters": [
@@ -4167,7 +4288,7 @@
         }
       }
     },
-    "/datagenerator/editsubtopics": {
+    "/tpmdatagenerator/editsubtopics": {
       "post": {
         "description": "",
         "parameters": [
@@ -4200,7 +4321,7 @@
         }
       }
     },
-    "/datagenerator/editvocabulary": {
+    "/tpmdatagenerator/editvocabulary": {
       "post": {
         "description": "",
         "parameters": [
@@ -4233,7 +4354,7 @@
         }
       }
     },
-    "/datagenerator/deletetopicandrelateddata": {
+    "/tpmdatagenerator/deletetopicandrelateddata": {
       "post": {
         "description": "",
         "parameters": [
@@ -4256,6 +4377,57 @@
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/tpmdatagenerator/getrecheckcomment": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/tpmdatagenerator/geterrorreportfile": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/tpmdatagenerator/getcountscarddata": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -4382,23 +4554,147 @@
     "/bmdatagenerator/addchapters": {
       "post": {
         "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/deletechapter": {
+      "delete": {
+        "description": "",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "chapters": {
-                  "example": "any"
-                }
-              }
-            }
+            "name": "bookTaskId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "bookId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "chapterId",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/setbookinprogressstatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/setbookcompletestatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/updateinprogressbooktaskstatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/updatecompletebooktaskstatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/submittasktosupervior": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/updatechapter": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/geterrorreportfile": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "bookTaskId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/getrecheckcomment": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "bookTaskId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/getcountscarddata": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -4615,6 +4911,23 @@
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/pnreviewer/getcountscarddata": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -5123,6 +5436,23 @@
         }
       }
     },
+    "/tpmreviewer/getcountscarddata": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/bkmreviewer/getallpaginatedbooktask": {
       "get": {
         "description": "",
@@ -5215,7 +5545,7 @@
         }
       }
     },
-    "/bkmreviewer/getallbookbytaskid": {
+    "/bkmreviewer/getallbookchapterbytaskid": {
       "get": {
         "description": "",
         "parameters": [
@@ -5232,7 +5562,7 @@
         }
       }
     },
-    "/bkmreviewer/getallbookbybookid": {
+    "/bkmreviewer/getallchapterbybookid": {
       "get": {
         "description": "",
         "parameters": [
@@ -5259,7 +5589,7 @@
         }
       }
     },
-    "/bkmreviewer/updatecompletestatus": {
+    "/bkmreviewer/updatecompletebooktaskstatus": {
       "patch": {
         "description": "",
         "responses": {
@@ -5360,6 +5690,466 @@
             "type": "string"
           }
         ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/bkmreviewer/setbookinprogressstatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/bkmreviewer/setbookcompletestatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmsupervisor/createsheet": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createquestion": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/longanswer": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/matchquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionType": {
+                  "example": "any"
+                },
+                "questionData": {
+                  "example": "any"
+                },
+                "sheetId": {
+                  "example": "any"
+                },
+                "options": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/mcquestion": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editmcquestion": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletemcquestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletemcqoption": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "optionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/truefalse": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionType": {
+                  "example": "any"
+                },
+                "questionData": {
+                  "example": "any"
+                },
+                "sheetId": {
+                  "example": "any"
+                },
+                "statements": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/edittruefalse": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionId": {
+                  "example": "any"
+                },
+                "questionData": {
+                  "example": "any"
+                },
+                "statementsToUpdate": {
+                  "example": "any"
+                },
+                "statementsToAdd": {
+                  "example": "any"
+                },
+                "statementsToDelete": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletetruefalsequestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletetruefalseoption": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "optionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createcontentquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionType": {
+                  "example": "any"
+                },
+                "questionData": {
+                  "example": "any"
+                },
+                "sheetId": {
+                  "example": "any"
+                },
+                "statements": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editcontentquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionId": {
+                  "example": "any"
+                },
+                "questionData": {
+                  "example": "any"
+                },
+                "filesToAdd": {
+                  "example": "any"
+                },
+                "filesToDelete": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createclassifyquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionType": {
+                  "example": "any"
+                },
+                "questionData": {
+                  "example": "any"
+                },
+                "sheetId": {
+                  "example": "any"
+                },
+                "categories": {
+                  "example": "any"
+                },
+                "distractors": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createfilldropdown": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "dropDownOptions": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/addfilldropdownoptions": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletefilldropdownoption": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/getfilldropdownquestion": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletefilldropdownquestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editfilldropdownoption": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createfilltext": {
+      "post": {
+        "description": "",
         "responses": {
           "default": {
             "description": ""
