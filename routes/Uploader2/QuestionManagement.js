@@ -27,6 +27,8 @@ router.post("/edittruefalse", QuestionManagement.editTrueFalseQuestion);
 router.delete("/deletetruefalsequestion", QuestionManagement.TrueFalseQuesDelete);
 router.delete("/deletetruefalseoption", QuestionManagement.DeleteTrueFalseOption);
 router.post("/createtextquestion", QuestionManagement.creatTextQues);
+router.post("/createaccordianquestion", QuestionManagement.createAccordian);
+// router.post("/updateaccordianquestion", QuestionManagement); 
 router.patch("/updatequestion", QuestionManagement.updateQuestion);
 router.post("/createcontentquestion", upload.array('content', 10), QuestionManagement.createContentQues);
 router.post("/createvideoquestion", upload.single("content"), QuestionManagement.createVideoQues);

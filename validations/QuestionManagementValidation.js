@@ -27,7 +27,7 @@ const createQuestionsSchema = Joi.object({
   isErrorByReviewer: Joi.boolean(),
   // hasSubParts: Joi.boolean(),
   parentQuestionId: Joi.string().guid(),
-  isQuestionSubPart: Joi.boolean().required(),
+  isQuestionSubPart: Joi.boolean(),
   includeExplanation: Joi.string(),
   explanation: Joi.string(),
   questionIndentifier: Joi.string(),

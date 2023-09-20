@@ -12,6 +12,8 @@ const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { QuestionItem } = require("../../models/items");
 const { QuestionCategory } = require("../../models/category");
 const { TableQuestion } = require("../../models/Table");
+const { Accordian } = require("../../models/accordianItems");
+
 
 const QuestionManagement = {
 
@@ -122,6 +124,96 @@ const QuestionManagement = {
       next(err);
     }
   },
+  async createAccordian (req, res, next) {
+    const t = await db.transaction();
+    try {
+      const data = req.body;
+      const questionData = {
+        questionType: data.questionType,
+        questionData: data.questionData,
+        sheetId: data.sheetId,
+      };
+
+      const createdQuestion = await services.questionService.createQuestion(questionData, {
+        transaction: t,
+      });
+  
+      const tabs = data.tabs || [];
+  
+      const createdTabs = await Promise.all(
+        tabs.map(async (tab) => {
+          const createdTab = await Accordian.create(
+            {
+              questionId: createdQuestion.id,
+              title: tab.title || null,
+              content: tab.content,
+            },
+            { transaction: t }
+          );
+          return createdTab;
+        })
+      );
+  
+      await t.commit();
+  
+      res.status(httpStatus.OK).send({
+        question: createdQuestion,
+        tabs: createdTabs,
+      });
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+  async updateAccordian (req, res, next) {
+    const t = await db.transaction();
+  
+    try {
+      const { questionId } = req.params;
+      const data = req.body;
+  
+      await Question.update(data.questionData, {
+        where: { id: questionId },
+        transaction: t,
+      });
+  
+      const tabs = data.tabs || [];
+  
+      await QuestionContent.destroy({
+        where: { questionId },
+        transaction: t,
+      });
+  
+      const createdTabs = await Promise.all(
+        tabs.map(async (tab) => {
+          const createdTab = await QuestionContent.create(
+            {
+              questionId,
+              title: tab.title || null,
+              description: tab.description || null,
+              caption: tab.caption || null,
+              content: tab.content,
+            },
+            { transaction: t }
+          );
+  
+          return createdTab;
+        })
+      );
+  
+      await t.commit();
+  
+      res.status(200).json({
+        message: 'Content question updated successfully',
+        tabs: createdTabs,
+      });
+    } catch (err) {
+      console.error(err);
+      await t.rollback();
+      next(err);
+    }
+  },
   async createVideoQues(req, res, next) {
     const t = await db.transaction();
     try {
@@ -150,13 +242,12 @@ const QuestionManagement = {
       const questionId = createdQuestion.id;
       let contentFileName = null;
       if (contentFile) {
-        contentFileName = await services.questionService.uploadFile(contentFile);
+        contentFileName = await services.questionService.uploadFileToS3(contentFile);
       }
-
       const createdOption = await QuestionContent.create(
         {
           questionId,
-          content: contentFileName,
+          content: contentFileName.fileUrl,
         },
         {
           transaction: t,
@@ -1077,7 +1168,6 @@ const QuestionManagement = {
       next(err);
     }
   },
-
   async deleteTableQues(req, res, next) {
     const t = await db.transaction();
     try {
