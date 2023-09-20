@@ -148,12 +148,12 @@ const createMatchQuestionPairsSchema = Joi.object({
       filename: Joi.string(),
       mimetype: Joi.string(),
       buffer: Joi.string(),
-    }),
+    }).allow(null),
     matchTargetContent: Joi.object({
       filename: Joi.string(),
       mimetype: Joi.string(),
       buffer: Joi.string(),
-    }),
+    }).allow(null),
   }),
 });
 

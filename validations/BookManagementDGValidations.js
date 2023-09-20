@@ -15,7 +15,7 @@ const updateBookSchema = Joi.object({
 const addChapterSchema = Joi.object({
   bookTaskId: Joi.string().guid().required(),
   bookId: Joi.string().guid().required(),
-  chapterNumber: Joi.number().max(225).required(),
+  chapterNumber: Joi.number().required(),
   name: Joi.string().max(225).required(),
 });
 
