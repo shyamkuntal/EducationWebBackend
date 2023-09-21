@@ -12,11 +12,11 @@ const GeogebraGraphQuestion = db.define("GeogebraGraphQuestion", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  dataGeneratorJson: {
+  dataGeneratorData: {
     type: Sequelize.TEXT,
     allowNull: false,
   },
-  studentJson: {
+  studentData: {
     type: Sequelize.TEXT,
     allowNull: false,
   },

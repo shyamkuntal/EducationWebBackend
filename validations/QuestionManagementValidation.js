@@ -230,8 +230,8 @@ const editLabelFillQuestionSchema = Joi.object({
 });
 
 const createGeogebraGraphQuestionSchema = Joi.object({
-  dataGeneratorJson: Joi.string().required(),
-  studentJson: Joi.string().required(),
+  dataGeneratorData: Joi.string().required(),
+  studentData: Joi.string().required(),
   allowAlgebraInput: Joi.boolean().required(),
 });
 

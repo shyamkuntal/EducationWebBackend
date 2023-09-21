@@ -893,12 +893,12 @@ const QuestionManagementSarveshController = {
   async createGeogebraQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { dataGeneratorJson, studentJson, allowAlgebraInput, ...rest } = req.body;
+      let { dataGeneratorData, studentData, allowAlgebraInput, ...rest } = req.body;
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       let geogebraQuestionValues = await createGeogebraGraphQuestionSchema.validateAsync({
-        dataGeneratorJson,
-        studentJson,
+        dataGeneratorData,
+        studentData,
         allowAlgebraInput,
       });
 
@@ -915,8 +915,8 @@ const QuestionManagementSarveshController = {
       let createGeoGebraQuestion = await GeogebraGraphQuestion.create(
         {
           questionId: newQuestionData.id,
-          dataGeneratorJson: geogebraQuestionValues.dataGeneratorJson,
-          studentJson: geogebraQuestionValues.studentJson,
+          dataGeneratorData: geogebraQuestionValues.dataGeneratorData,
+          studentData: geogebraQuestionValues.studentData,
           allowAlgebraInput: geogebraQuestionValues.allowAlgebraInput,
         },
         { transaction: t }

@@ -91,21 +91,21 @@ const TopicManagementController = {
       let userData = await services.userService.finduser(
         values.dataGeneratorId,
         CONSTANTS.roleNames.DataGenerator
-        );
-        
-        let topicTaskData = await services.topicTaskService.findTopicTaskAndUser(values.topicTaskId);
-        
-        let responseMessage = {
-          assinedUserToTask: "",
-          UpdateTaskStatus: "",
-          taskLog: "",
-        };
-        
-        if (!userData && !topicTaskData) {
-          throw new ApiError(httpStatus.BAD_REQUEST, "Wrong user Id or Task Id!");
-        }
-        // Checking if sheet is already assigned to Data Generator
-        console.log("shu---------", topicTaskData, userData.id)
+      );
+
+      let topicTaskData = await services.topicTaskService.findTopicTaskAndUser(values.topicTaskId);
+
+      let responseMessage = {
+        assinedUserToTask: "",
+        UpdateTaskStatus: "",
+        taskLog: "",
+      };
+
+      if (!userData && !topicTaskData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Wrong user Id or Task Id!");
+      }
+      // Checking if sheet is already assigned to Data Generator
+      console.log("shu---------", topicTaskData, userData.id);
 
       if (topicTaskData.assignedToUserId === userData.id) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Task already assigned to Data Generator!");
@@ -325,14 +325,17 @@ const TopicManagementController = {
       );
 
       let topicSubTopicsVocab = [];
+
       if (topicsMappings.length > 0) {
         for (let i = 0; i < topicsMappings.length; i++) {
           // fetch subTopics
-          let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTopicId(
+          let subTopics = await services.topicTaskService.findSubTopicTaskMappingsByTaskId(
+            topicsMappings[i].topicTaskId,
             topicsMappings[i].topicId
           );
           // fetch vocab
-          let vocab = await services.topicTaskService.findVocabTopicTaskMappingsByTopicId(
+          let vocab = await services.topicTaskService.findVocabTaskMappingsByTaskId(
+            topicsMappings[i].topicTaskId,
             topicsMappings[i].topicId
           );
           topicSubTopicsVocab.push({
@@ -349,6 +352,8 @@ const TopicManagementController = {
           });
         }
       }
+
+      // console.log(vocab);
 
       res.status(httpStatus.OK).send(topicSubTopicsVocab);
     } catch (err) {
@@ -587,7 +592,7 @@ const TopicManagementController = {
       next(err);
     }
   },
-  
+
   async getCountsCardData(req, res, next) {
     try {
       const { assignedToUserId } = req.query;
@@ -598,7 +603,7 @@ const TopicManagementController = {
         },
       });
 
-      let countsBySubject = {}; 
+      let countsBySubject = {};
       activeSheets.forEach((sheet) => {
         const subjectId = sheet.subjectId;
 
