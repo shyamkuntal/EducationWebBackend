@@ -28,7 +28,7 @@ const createQuestionsSchema = Joi.object({
   // hasSubParts: Joi.boolean(),
   parentQuestionId: Joi.string().guid(),
   isQuestionSubPart: Joi.boolean(),
-  includeExplanation: Joi.string(),
+  includeExplanation: Joi.boolean(),
   explanation: Joi.string(),
   questionIndentifier: Joi.string(),
   isShuffle: Joi.boolean(),
@@ -198,7 +198,8 @@ const addMatchQuestionPairSchema = Joi.object({
 const deleteMatchPairSchema = Joi.object({ pairId: Joi.string().uuid().required() });
 
 const createDrawingQuestionSchema = Joi.object({
-  canvasJson: Joi.string().required(),
+  dataGeneratorJson: Joi.string().required(),
+  studentJson: Joi.string().required(),
 });
 
 const editDrawingQuestionSchema = Joi.object({
@@ -218,15 +219,11 @@ const editLabelDragQuestionSchema = Joi.object({
 const createLabelFillQuestionSchema = Joi.object({
   dataGeneratorJson: Joi.string().required(),
   studentJson: Joi.string().required(),
-  fillAnswer: Joi.string().required(),
-  fillAnswerId: Joi.string().uuid().required(),
 });
 
 const editLabelFillQuestionSchema = Joi.object({
   newDataGeneratorJson: Joi.string().required(),
   newStudentJson: Joi.string().required(),
-  newFillAnswer: Joi.string().required(),
-  newFillAnswerId: Joi.string().uuid().required(),
 });
 
 const createGeogebraGraphQuestionSchema = Joi.object({

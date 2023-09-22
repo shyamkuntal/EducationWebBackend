@@ -20,14 +20,6 @@ const LabelFillQuestion = db.define("labelFillQuestion", {
     type: Sequelize.TEXT,
     allowNull: false,
   },
-  fillAnswer: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  fillAnswerId: {
-    type: Sequelize.UUID,
-    allowNull: false,
-  },
 });
 
 LabelFillQuestion.belongsTo(Question, {

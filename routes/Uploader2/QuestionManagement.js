@@ -3,9 +3,14 @@ const router = express.Router();
 const QuestionManagementController = require("../../controller/Uploader2/QuestionManagement");
 const QuestionManagement = require("../../controller/Uploader2/Question");
 const QuestionManagementSarveshController = require("../../controller/Uploader2/QuestionManagementSarvesh");
+const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor");
 const upload = require("../../config/multer");
 
 router.post("/createquestion", QuestionManagementController.createQuestion);
+
+router.get("/getassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
+
+router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 
 // Abhishek
 
@@ -28,9 +33,13 @@ router.delete("/deletetruefalsequestion", QuestionManagement.TrueFalseQuesDelete
 router.delete("/deletetruefalseoption", QuestionManagement.DeleteTrueFalseOption);
 router.post("/createtextquestion", QuestionManagement.creatTextQues);
 router.post("/createaccordianquestion", QuestionManagement.createAccordian);
-// router.post("/updateaccordianquestion", QuestionManagement); 
+// router.post("/updateaccordianquestion", QuestionManagement);
 router.patch("/updatequestion", QuestionManagement.updateQuestion);
-router.post("/createcontentquestion", upload.array('content', 10), QuestionManagement.createContentQues);
+router.post(
+  "/createcontentquestion",
+  upload.array("content", 10),
+  QuestionManagement.createContentQues
+);
 router.post("/createvideoquestion", upload.single("content"), QuestionManagement.createVideoQues);
 router.post("/editcontentquestion", QuestionManagement.editContentQues);
 router.post("/createclassifyquestion", QuestionManagement.createClassifyQues);
@@ -136,5 +145,9 @@ router.post("/createhotspotquestion", QuestionManagementSarveshController.create
 router.patch("/edithotspotquestion", QuestionManagementSarveshController.editHotSpotQuestion);
 
 router.delete("/deletehotspotquestion", QuestionManagementSarveshController.deleteHotSpotQuestion);
+
+// Sort Apis -
+
+router.post("/createsortquestion");
 
 module.exports = router;

@@ -21,7 +21,7 @@ const HotSpotQuestion = db.define("hotSpotQuestion", {
     type: Sequelize.TEXT,
     allowNull: false,
   },
-  hostSpotIds: { type: Sequelize.ARRAY(Sequelize.UUID) },
+  hostSpotIds: { type: Sequelize.ARRAY(Sequelize.STRING) },
 });
 
 HotSpotQuestion.belongsTo(Question, {

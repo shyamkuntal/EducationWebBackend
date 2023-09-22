@@ -13,7 +13,11 @@ const DrawingQuestion = db.define("drawingQuestion", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  canvasJson: {
+  dataGeneratorJson: {
+    type: Sequelize.TEXT,
+    allowNull: false,
+  },
+  studentJson: {
     type: Sequelize.TEXT,
     allowNull: false,
   },

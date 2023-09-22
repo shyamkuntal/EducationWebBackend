@@ -563,11 +563,12 @@ const QuestionManagementSarveshController = {
   async createDrawingQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { canvasJson, ...rest } = req.body;
+      let { dataGeneratorJson, studentJson, ...rest } = req.body;
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       let drawingQuestionValues = await createDrawingQuestionSchema.validateAsync({
-        canvasJson: canvasJson,
+        dataGeneratorJson,
+        studentJson,
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
@@ -584,7 +585,8 @@ const QuestionManagementSarveshController = {
       let drawingQuestion = await DrawingQuestion.create(
         {
           questionId: newQuestionData.id,
-          canvasJson: drawingQuestionValues.canvasJson,
+          dataGeneratorJson: drawingQuestionValues.dataGeneratorJson,
+          studentJson: drawingQuestionValues.studentJson,
         },
         { transaction: t }
       );
@@ -773,15 +775,13 @@ const QuestionManagementSarveshController = {
   async createLabelFillQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { dataGeneratorJson, studentJson, fillAnswer, fillAnswerId, ...rest } = req.body;
+      let { dataGeneratorJson, studentJson, ...rest } = req.body;
 
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       let labelFillQuestionValues = await createLabelFillQuestionSchema.validateAsync({
         dataGeneratorJson,
         studentJson,
-        fillAnswer,
-        fillAnswerId,
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
@@ -799,8 +799,6 @@ const QuestionManagementSarveshController = {
           questionId: newQuestionData.id,
           dataGeneratorJson: labelFillQuestionValues.dataGeneratorJson,
           studentJson: labelFillQuestionValues.studentJson,
-          fillAnswer: labelFillQuestionValues.fillAnswer,
-          fillAnswerId: labelFillQuestionValues.fillAnswerId,
         },
         { transaction: t }
       );
@@ -1207,6 +1205,12 @@ const QuestionManagementSarveshController = {
       res.status(httpStatus.OK).send({ message: "HotSpot Question deleted!" });
     } catch (err) {
       await t.rollback();
+      next(err);
+    }
+  },
+  async createSortQuestion(req, res, next) {
+    try {
+    } catch (err) {
       next(err);
     }
   },
