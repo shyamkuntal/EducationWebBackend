@@ -21,6 +21,7 @@ const QuestionManagementUploader2 = require("./Uploader2/QuestionManagement");
 const PublicRoutes = require("./PublicRoutes.js");
 const SupervisorDashboard = require("./Supervisor/DashBoard")
 const Notice = require("./Supervisor/NoticeBoard")
+const Archive = require('./Supervisor/ArchiveMangement')
 const Auth = require("./Auth.js");
 const {
   AuthSuperadmin,
@@ -43,6 +44,7 @@ router.use("/boardmanagement", AuthSuperadmin(), BoardRouters);
 router.use("/supervisordashboard", AuthSupervisor(), SupervisorDashboard)
 router.use("/notice", AuthSupervisor(), Notice)
 
+router.use("/archivemanagement", AuthSupervisor(), Archive)
 router.use("/ppmsupervisor", AuthSuperadminSupervisor(), PastPaper);
 router.use("/subjectmanagement", AuthSupervisor(), SubjectRouters);
 router.use("/pnmanagement", AuthSupervisor(), PaperNumber);
