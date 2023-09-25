@@ -1,3 +1,4 @@
+const { Book, Chapter } = require("../models/Book");
 const { BookTask, BookTaskLog, SpamBookTaskRecheckComments } = require("../models/BookTask");
 const { TaskBookMapping, TaskBookChapterMapping } = require("../models/BookTaskMapping");
 const { User } = require("../models/User");
@@ -8,6 +9,18 @@ const findBookTaskAndUser = async (bookTaskId) => {
       where: { id: bookTaskId },
       include: [{ model: User, as: "supervisor" }],
       raw: true,
+      nest: true,
+    });
+    return task;
+  } catch (err) {
+    throw err;
+  }
+};
+const findBookByBookId = async (bookId) => {
+  try {
+    let task = await Book.findOne({
+      where: { id: bookId },
+      include: [{ model: Chapter, as: "chapter" }],
       nest: true,
     });
     return task;
@@ -107,4 +120,5 @@ module.exports = {
   findOneBookTask,
   findRecheckingComments,
   updateTaskChapterMapping,
+  findBookByBookId,
 };

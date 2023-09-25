@@ -4,6 +4,11 @@ const { SheetManagement } = require("./SheetManagement");
 const { PaperNumber } = require("./PaperNumberSheet");
 
 const SheetManagementPaperNoMapping = db.define("sheetManagementPaperNoMapping", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
   sheetManagementId: {
     type: Sequelize.UUID,
     allowNull: false

@@ -1,9 +1,10 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Board, SubBoard } = require("./Board");
-const { Subject } = require("./Subject");
+const { Subject, SubjectLevel } = require("./Subject");
 const { Variant } = require("./Variants");
 const { sheetModelConstants } = require("../constants/constants.js");
+const { User } = require("./User");
 
 const SheetManagement = db.define("sheetManagement", {
   id: {
@@ -36,8 +37,8 @@ const SheetManagement = db.define("sheetManagement", {
     allowNull: false,
   },
   mypMarkingScheme: {
-    type: Sequelize.STRING,
-    allowNull: false,
+    type: Sequelize.BOOLEAN,
+    default: false,
   },
   answerType: {
     type: Sequelize.STRING,
@@ -53,15 +54,15 @@ const SheetManagement = db.define("sheetManagement", {
   },
   numberOfQuestion: {
     type: Sequelize.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   timeVariable: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  questionVedioLink: {
+  questionVideoLink: {
     type: Sequelize.STRING,
-    allowNull: false,
+    default: false,
   },
   resources: {
     type: Sequelize.STRING,
@@ -73,11 +74,11 @@ const SheetManagement = db.define("sheetManagement", {
   },
   sheetHintForUploader: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   sheetDescForUploader: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   isMultiplePaperNo: {
     type: Sequelize.BOOLEAN,
@@ -104,7 +105,7 @@ const SheetManagement = db.define("sheetManagement", {
     allowNull: true,
   },
   batchHint: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING,
     allowNull: true,
   },
   publishTo: {
@@ -151,6 +152,23 @@ const SheetManagement = db.define("sheetManagement", {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  errorReport: { type: Sequelize.STRING, allowNull: true },
+  errorReportImg: { type: Sequelize.STRING, allowNull: true },
+  reviewerCommentToSupervisor: { type: Sequelize.STRING, allowNull: true },
+  supervisorCommentToReviewer: { type: Sequelize.STRING, allowNull: true },
+  supervisorCommentToUploader2: { type: Sequelize.STRING, allowNull: true },
+  isSpam: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  isArchived: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  isPublished: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 SheetManagement.belongsTo(Board, {
@@ -169,8 +187,99 @@ SheetManagement.belongsTo(Variant, {
   foreignKey: { name: "variantId" },
 });
 
+SheetManagement.belongsTo(SubjectLevel, {
+  foreignKey: { name: "subjectLevelId" },
+});
+
+SheetManagement.belongsTo(User, {
+  foreignKey: { name: "supervisorId" },
+  as: "supervisor",
+});
+
+SheetManagement.belongsTo(User, {
+  foreignKey: { name: "teacherId" },
+  as: "teacher",
+});
+
+SheetManagement.belongsTo(User, {
+  foreignKey: { name: "reviewerId" },
+  as: "reviewer",
+});
+
+SheetManagement.belongsTo(User, {
+  foreignKey: "assignedToUserId",
+  as: "assignedToUserName",
+});
+
+User.hasMany(SheetManagement, {
+  foreignKey: "assignedToUserId",
+});
+
 SheetManagement.sync().then(() => {
   console.log("SheetManagement Created");
 });
 
-module.exports = { SheetManagement };
+const SheetManagementSpamTaskRecheckComments = db.define("SheetManagementSpamTaskRecheckComments", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
+  sheetManagementId: { type: Sequelize.UUID, allowNull: false },
+  reviewerRecheckComment: { type: Sequelize.STRING, allowNull: true },
+});
+
+SheetManagementSpamTaskRecheckComments.sync();
+
+SheetManagementSpamTaskRecheckComments.belongsTo(SheetManagement, {
+  foreignKey: "sheetManagementId",
+});
+
+const SheetManagementTaskCheckList = db.define("SheetManagementTaskCheckList", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
+  sheetManagementId: {
+    type: Sequelize.UUID,
+    allowNull: false,
+  },
+  label: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  isChecked: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+});
+
+SheetManagementTaskCheckList.sync();
+
+SheetManagementTaskCheckList.belongsTo(SheetManagement, {
+  foreignKey: "sheetManagementId",
+});
+
+const SheetManagementLog = db.define("SheetManagementLog", {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true,
+  },
+  sheetManagementId: { type: Sequelize.UUID, allowNull: false },
+  assignee: { type: Sequelize.STRING, allowNull: false },
+  assignedTo: { type: Sequelize.STRING, allowNull: false },
+  logMessage: { type: Sequelize.STRING, allowNull: false },
+});
+
+SheetManagementLog.sync();
+
+SheetManagementLog.belongsTo(SheetManagement, { foreignKey: "sheetManagementId" });
+
+module.exports = {
+  SheetManagement,
+  SheetManagementLog,
+  SheetManagementTaskCheckList,
+  SheetManagementSpamTaskRecheckComments,
+};

@@ -372,7 +372,7 @@ const BookManagementController = {
 
       const bookMapping = await TaskBookChapterMapping.findAll({
         where: { bookId: values },
-        include: [{ model: Chapter, attributes: ["id", "name"] }],
+        include: [{ model: Chapter, attributes: ["id", "chapterNumber" ,"name"] }],
       });
 
       res.status(httpStatus.OK).send(bookMapping);
