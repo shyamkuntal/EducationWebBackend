@@ -18,6 +18,7 @@ const BookManagemnetReviewer = require("./Reviewer/BookManagement");
 const BookManagementDataGenerator = require("./DataGenerator/BookManagement");
 const SheetManagementSupervisor = require("./Supervisor/SheetManagement");
 const QuestionManagementUploader2 = require("./Uploader2/QuestionManagement");
+const TeacherSheetManagement = require("./Teacher/SheetManagement");
 const PublicRoutes = require("./PublicRoutes.js");
 const SupervisorDashboard = require("./Supervisor/DashBoard")
 const Notice = require("./Supervisor/NoticeBoard")
@@ -31,6 +32,7 @@ const {
   AuthReviewer,
   AuthDataGenerator,
   AuthUploader2,
+  AuthTeacher
 } = require("../middlewares/authentication.js");
 
 const router = express.Router();
@@ -64,5 +66,7 @@ router.use("/bkmreviewer", AuthReviewer(), BookManagemnetReviewer);
 
 router.use("/shmsupervisor", AuthSupervisor(), SheetManagementSupervisor);
 router.use("/shmuploader", AuthUploader2(), QuestionManagementUploader2);
+
+router.use("/shmteacher", AuthTeacher(), TeacherSheetManagement);
 
 module.exports = router;

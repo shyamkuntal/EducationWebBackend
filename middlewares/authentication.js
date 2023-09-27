@@ -157,6 +157,29 @@ exports.AuthUploader2 = () => async (req, res, next) => {
   }
 };
 
+exports.AuthTeacher = () => async (req, res, next) => {
+  try {
+    let token = req.headers["authorization"].split(" ")[1];
+
+    let decoded = await services.authService.validateToken(token);
+
+    let teacherRoleDetail = await services.userService.findByRoleName(
+      CONSTANTS.roleNames.Teacher
+    );
+
+    if (teacherRoleDetail.id === decoded.roleId) {
+      req.user = decoded;
+      next();
+    } else {
+      res
+        .status(httpStatus.UNAUTHORIZED)
+        .send({ error: "Invalid Role, Access Denied", status: false });
+    }
+  } catch (err) {
+    res.status(httpStatus.UNAUTHORIZED).send({ error: "Access Denied", status: false });
+  }
+};
+
 exports.Auth = () => async (req, res, next) => {
   try {
     let token = req.headers["authorization"].split(" ")[1];

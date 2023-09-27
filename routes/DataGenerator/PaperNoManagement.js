@@ -21,10 +21,7 @@ router.get("/getassignedsubjects", PastPaperSupervisorController.getUserAssigned
 router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 router.get("/getallboards", BoardManagementController.getAllBoards);
 router.get("/getallsubboards", BoardManagementController.GetSubBoards);
-router.get(
-  "/getsubjectdetailsbyids",
-  SubjectManagementController.getSubjectDetailsByBoardSubBoardGrade
-);
+router.get("/getsubjectdetailsbyids", SubjectManagementController.getSubjectDetailsByBoardSubBoardGrade);
 router.get("/getsubjectbysubjectnameid", SubjectManagementController.getSubjectBySubjectNameId);
 router.patch("/submittosupervisor", PaperNoDGController.SubmitToSupervisor);
 router.patch("/markitasinprogress", PaperNoDGController.MarkitasInProgress);

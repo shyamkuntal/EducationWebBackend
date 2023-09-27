@@ -13,9 +13,7 @@ const {
 } = require("../../validations/PaperNumberReviewerValidations.js");
 
 const PaperNoDGController = {
-  //take care of isarchived and ispublished later
-
-  // Paper Number Controller
+  
   async getCountsCardData(req, res, next) {
     try {
       const { assignedToUserId } = req.query;

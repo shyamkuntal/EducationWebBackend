@@ -34,5 +34,24 @@ const createSheetSchema = Joi.object({
   endPageNo: Joi.number(),
   supervisorId: Joi.string().uuid().required(),
 });
-
-module.exports = { createSheetSchema };
+const assignSheetToUploaderSchema = Joi.object({
+  sheetId: Joi.string().guid().required(),
+  uploader2Id: Joi.string().guid().required(),
+  supervisorComments: Joi.string().max(225),
+});
+const assignSheetToReviewerSchema = Joi.object({
+  sheetId: Joi.string().guid().required(),
+  reviewerId: Joi.string().guid().required(),
+  supervisorComments: Joi.string().max(225),
+});
+const assignSheetToTeacherSchema = Joi.object({
+  sheetId: Joi.string().guid().required(),
+  teacherId: Joi.string().guid().required(),
+  supervisorComments: Joi.string().max(225),
+});
+module.exports = { 
+  createSheetSchema ,
+  assignSheetToUploaderSchema,
+  assignSheetToReviewerSchema,
+  assignSheetToTeacherSchema,
+};

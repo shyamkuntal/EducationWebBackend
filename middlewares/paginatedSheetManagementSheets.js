@@ -35,17 +35,23 @@ const paginatedSheetManagementSheets = () => {
     if (req.query.subjectId) {
       filters.subjectId = req.query.subjectId;
     }
+    if (req.query.subjectLevelId) {
+      filters.subjectLevelId = req.query.subjectLevelId;
+    }
     if (req.query.subBoardId) {
       filters.subBoardId = req.query.subBoardId;
     }
     if (req.query.grade) {
       filters.grade = req.query.grade;
     }
-    if (req.query.statusForDataGenerator) {
-      filters.statusForDataGenerator = req.query.statusForDataGenerator;
+    if (req.query.statusForUploader2) {
+      filters.statusForUploader2 = req.query.statusForUploader2;
     }
     if (req.query.statusForReviewer) {
       filters.statusForReviewer = req.query.statusForReviewer;
+    }
+    if (req.query.statusForTeacher) {
+      filters.statusForTeacher = req.query.statusForTeacher;
     }
     if (req.query.search) {
       filters.boardName = { $regex: req.query.search, $options: "i" };
@@ -59,6 +65,18 @@ const paginatedSheetManagementSheets = () => {
       filters.createdAt = {
         [Op.gte]: today,
       };
+    }
+    if (req.query.sheetType) {
+      filters.sheetType = req.query.sheetType;
+    }
+    if (req.query.answerType) {
+      filters.answerType = req.query.answerType;
+    }
+    if (req.query.lifeCycle) {
+      filters.lifeCycle = req.query.lifeCycle;
+    }
+    if (req.query.questionVideoLink) {
+      filters.questionVideoLink = req.query.questionVideoLink;
     }
 
     const startIndex = (page - 1) * limit;
@@ -105,7 +123,7 @@ const paginatedSheetManagementSheets = () => {
           "year",
           "season",
           "variantId",
-          "school",
+          "school", 
           "testType",
           "batchHint",
           "publishTo",
@@ -119,6 +137,7 @@ const paginatedSheetManagementSheets = () => {
           "statusForSupervisor",
           "statusForUploader",
           "statusForReviewer",
+          "statusForTeacher",
           "errorReport",
           "errorReportImg",
           "reviewerCommentToSupervisor",

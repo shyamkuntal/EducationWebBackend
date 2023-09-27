@@ -386,6 +386,11 @@ const PastPaperSupervisorController = {
             as: "paperNumberSheets",
             attributes: ["statusForDataGenerator", "statusForReviewer"]
           },
+          {
+            model: SheetManagement,
+            as: "sheetManagements",
+            attributes: ["statusForUploader", "statusForReviewer"]
+          },
         ],
       });
 

@@ -152,6 +152,10 @@ const SheetManagement = db.define("sheetManagement", {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  statusForTeacher: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
   errorReport: { type: Sequelize.STRING, allowNull: true },
   errorReportImg: { type: Sequelize.STRING, allowNull: true },
   reviewerCommentToSupervisor: { type: Sequelize.STRING, allowNull: true },
@@ -194,6 +198,11 @@ SheetManagement.belongsTo(SubjectLevel, {
 SheetManagement.belongsTo(User, {
   foreignKey: { name: "supervisorId" },
   as: "supervisor",
+});
+
+SheetManagement.belongsTo(User, {
+  foreignKey: { name: "uploader2Id" },
+  as: "uploader2",
 });
 
 SheetManagement.belongsTo(User, {
