@@ -1,12 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const QuestionManagementController = require("../../controller/Uploader2/QuestionManagement");
-const QuestionManagement = require("../../controller/Uploader2/Question");
+const QuestionManagementController = require("../../controller/Uploader2/Question");
 const QuestionManagementSarveshController = require("../../controller/Uploader2/QuestionManagementSarvesh");
 const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor");
+const paginatedSheetManagementSheets = require("../../middlewares/paginatedSheetManagementSheets");
 const upload = require("../../config/multer");
 
-router.post("/createquestion", QuestionManagementController.createQuestion);
+// router.post("/createquestion", QuestionManagementController.createQuestion);
+
+router.get("/getallshmsheets", paginatedSheetManagementSheets(), (req, res) => {
+  res.json(res.paginatedResults);
+});
 
 router.get("/getassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
 
@@ -15,139 +19,134 @@ router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 // Abhishek
 
 router.post("/longanswer", QuestionManagementController.createLongAnswer);
-router.post(
-  "/matchquestion",
-  upload.array("optionFiles", 10),
-  QuestionManagementController.MatchQues
-);
 
 // Shyam
 
-router.post("/mcquestion", QuestionManagement.McqQuestion);
-router.post("/editmcquestion", QuestionManagement.editMcqQuestion);
-router.delete("/deletemcquestion", QuestionManagement.DeleteMcqQues);
-router.delete("/deletemcqoption", QuestionManagement.DeleteMcqOption);
-router.post("/truefalse", QuestionManagement.TrueFalse);
-router.post("/edittruefalse", QuestionManagement.editTrueFalseQuestion);
-router.delete("/deletetruefalsequestion", QuestionManagement.TrueFalseQuesDelete);
-router.delete("/deletetruefalseoption", QuestionManagement.DeleteTrueFalseOption);
-router.post("/createtextquestion", QuestionManagement.creatTextQues);
-router.post("/createaccordianquestion", QuestionManagement.createAccordian);
-// router.post("/updateaccordianquestion", QuestionManagement);
-router.patch("/updatequestion", QuestionManagement.updateQuestion);
+router.post("/mcquestion", QuestionManagementController.McqQuestion);
+router.post("/editmcquestion", QuestionManagementController.editMcqQuestion);
+router.delete("/deletemcquestion", QuestionManagementController.DeleteMcqQues);
+router.delete("/deletemcqoption", QuestionManagementController.DeleteMcqOption);
+router.post("/truefalse", QuestionManagementController.TrueFalse);
+router.post("/edittruefalse", QuestionManagementController.editTrueFalseQuestion);
+router.delete("/deletetruefalsequestion", QuestionManagementController.TrueFalseQuesDelete);
+router.delete("/deletetruefalseoption", QuestionManagementController.DeleteTrueFalseOption);
+router.post("/createtextquestion", QuestionManagementController.creatTextQues);
+router.post("/createaccordianquestion", QuestionManagementController.createAccordian);
+// router.post("/updateaccordianquestion", QuestionManagementController);
+router.patch("/updatequestion", QuestionManagementController.updateQuestion);
 router.post(
   "/createcontentquestion",
   upload.array("content", 10),
-  QuestionManagement.createContentQues
+  QuestionManagementController.createContentQues
 );
-router.post("/createvideoquestion", upload.single("content"), QuestionManagement.createVideoQues);
-router.post("/editcontentquestion", QuestionManagement.editContentQues);
-router.post("/createclassifyquestion", QuestionManagement.createClassifyQues);
+router.post(
+  "/createvideoquestion",
+  upload.single("content"),
+  QuestionManagementController.createVideoQues
+);
+router.post("/editcontentquestion", QuestionManagementController.editContentQues);
+router.post("/createclassifyquestion", QuestionManagementController.createClassifyQues);
 
-router.post("/uploadfiletos3", upload.single("file"), QuestionManagement.uploadFileToS3);
-router.post("/deletefilefroms3", QuestionManagement.deleteFileFromS3);
+router.post("/uploadfiletos3", upload.single("file"), QuestionManagementController.uploadFileToS3);
+router.post("/deletefilefroms3", QuestionManagementController.deleteFileFromS3);
 // Sarvesh
 
 // FillDropDown Apis -
-router.post("/createfilldropdown", QuestionManagementSarveshController.createFillDropDown);
-router.post("/addfilldropdownoptions", QuestionManagementSarveshController.addFillDropDownOptions);
-router.delete(
-  "/deletefilldropdownoption",
-  QuestionManagementSarveshController.deleteFillDropDownOption
-);
-router.get("/getfilldropdownquestion", QuestionManagementSarveshController.getfillDropDownOptions);
+router.post("/createfilldropdown", QuestionManagementController.createFillDropDown);
+router.post("/addfilldropdownoptions", QuestionManagementController.addFillDropDownOptions);
+router.delete("/deletefilldropdownoption", QuestionManagementController.deleteFillDropDownOption);
+router.get("/getfilldropdownquestion", QuestionManagementController.getfillDropDownOptions);
 
 router.delete(
   "/deletefilldropdownquestion",
-  QuestionManagementSarveshController.deleteFillDropDownQuestion
+  QuestionManagementController.deleteFillDropDownQuestion
 );
 
-router.patch("/editfilldropdownoption", QuestionManagementSarveshController.editFillDropDownOption);
+router.patch("/editfilldropdownoption", QuestionManagementController.editFillDropDownOption);
 
 // FillText Apis -
-router.post("/createfilltext", QuestionManagementSarveshController.createFillTextQuestion);
+router.post("/createfilltext", QuestionManagementController.createFillTextQuestion);
 
-router.delete("/deletefilltext", QuestionManagementSarveshController.deleteFillTextQuestion);
+router.delete("/deletefilltext", QuestionManagementController.deleteFillTextQuestion);
 
-router.patch("/editquestion", QuestionManagementSarveshController.editQuestion);
+router.patch("/editquestion", QuestionManagementController.editQuestion);
 
 // Match Apis -
 
-router.post("/creatematchquestion", QuestionManagementSarveshController.createMatchQuestion);
+router.post("/creatematchquestion", QuestionManagementController.createMatchQuestion);
 
-router.patch("/editmatchquestion", QuestionManagementSarveshController.editMatchQuestion);
+router.patch("/editmatchquestion", QuestionManagementController.editMatchQuestion);
 
-router.post("/addmatchquestionpairs", QuestionManagementSarveshController.addMatchQuestionPair);
+router.post("/addmatchquestionpairs", QuestionManagementController.addMatchQuestionPair);
 
-router.delete("/deletematchquestionpair", QuestionManagementSarveshController.deleteMatchPair);
+router.delete("/deletematchquestionpair", QuestionManagementController.deleteMatchPair);
 
-router.delete("/deletematchquestion", QuestionManagementSarveshController.deleteMatchQuestion);
+router.delete("/deletematchquestion", QuestionManagementController.deleteMatchQuestion);
 
 // Drawing Apis -
 
-router.post("/createdrawingquestion", QuestionManagementSarveshController.createDrawingQuestion);
+router.post("/createdrawingquestion", QuestionManagementController.createDrawingQuestion);
 
-router.patch("/editdrawingquestion", QuestionManagementSarveshController.editDrawingQuestion);
+router.patch("/editdrawingquestion", QuestionManagementController.editDrawingQuestion);
 
-router.delete("/deletedrawingquestion", QuestionManagementSarveshController.deleteDrawingQuestion);
+router.delete("/deletedrawingquestion", QuestionManagementController.deleteDrawingQuestion);
 
 // Label drag Apis -
 
-router.post(
-  "/createlabeldragquestion",
-  QuestionManagementSarveshController.createLabelDragQuestion
-);
+router.post("/createlabeldragquestion", QuestionManagementController.createLabelDragQuestion);
 
-router.patch("/editlabeldragquestion", QuestionManagementSarveshController.editLabelDragQuestion);
+router.patch("/editlabeldragquestion", QuestionManagementController.editLabelDragQuestion);
 
-router.delete(
-  "/deletelabeldragquestion",
-  QuestionManagementSarveshController.deleteLabelDrawQuestion
-);
+router.delete("/deletelabeldragquestion", QuestionManagementController.deleteLabelDrawQuestion);
 
 // Label Fill Apis -
 
-router.post(
-  "/createlabelfillquestion",
-  QuestionManagementSarveshController.createLabelFillQuestion
-);
+router.post("/createlabelfillquestion", QuestionManagementController.createLabelFillQuestion);
 
-router.patch("/editlabelfillquestion", QuestionManagementSarveshController.editLabelFillQuestion);
+router.patch("/editlabelfillquestion", QuestionManagementController.editLabelFillQuestion);
 
-router.delete(
-  "/deletelabelfillquestion",
-  QuestionManagementSarveshController.deleteLabelFillQuestion
-);
+router.delete("/deletelabelfillquestion", QuestionManagementController.deleteLabelFillQuestion);
 
 // Geogebra Graph Apis -
 
-router.post("/creategeogebraquestion", QuestionManagementSarveshController.createGeogebraQuestion);
+router.post("/creategeogebraquestion", QuestionManagementController.createGeogebraQuestion);
 
-router.patch("/editgeogebraquestion", QuestionManagementSarveshController.editGeogebraQuestion);
+router.patch("/editgeogebraquestion", QuestionManagementController.editGeogebraQuestion);
 
-router.delete(
-  "/deletegeogebraquestion",
-  QuestionManagementSarveshController.deleteGeogebraQuestion
-);
+router.delete("/deletegeogebraquestion", QuestionManagementController.deleteGeogebraQuestion);
 
 // Desmos graph Apis -
 
-router.post("/createdesmosquestion", QuestionManagementSarveshController.createDesmosGraphQuestion);
+router.post("/createdesmosquestion", QuestionManagementController.createDesmosGraphQuestion);
 
-router.patch("/editdesmosquestion", QuestionManagementSarveshController.editDesmosGraphQuestion);
+router.patch("/editdesmosquestion", QuestionManagementController.editDesmosGraphQuestion);
 
-router.delete("/deletedesmosquestion", QuestionManagementSarveshController.deleteDesmosQuestion);
+router.delete("/deletedesmosquestion", QuestionManagementController.deleteDesmosQuestion);
 
 // HotSpot Apis -
 
-router.post("/createhotspotquestion", QuestionManagementSarveshController.createHostSpotQuestion);
+router.post("/createhotspotquestion", QuestionManagementController.createHostSpotQuestion);
 
-router.patch("/edithotspotquestion", QuestionManagementSarveshController.editHotSpotQuestion);
+router.patch("/edithotspotquestion", QuestionManagementController.editHotSpotQuestion);
 
-router.delete("/deletehotspotquestion", QuestionManagementSarveshController.deleteHotSpotQuestion);
+router.delete("/deletehotspotquestion", QuestionManagementController.deleteHotSpotQuestion);
 
 // Sort Apis -
 
-router.post("/createsortquestion");
+router.post("/createsortquestion", QuestionManagementController.createSortQuestion);
+
+router.patch("/editsortquestion", QuestionManagementController.editSortQuestion);
+
+router.post("/addsortquestionoption", QuestionManagementController.addSortQuestionOption);
+
+router.delete("/deletesortquestionoption", QuestionManagementController.deleteSortQuestionOption);
+
+router.delete("/deletesortquestion", QuestionManagementController.deleteSortQuestion);
+
+// getQuestion api
+
+router.get("/getquestions", QuestionManagementController.getQuestions);
+
+router.patch("/updatesheetinprogress", QuestionManagementController.updateSheetInprogress);
 
 module.exports = router;

@@ -2,7 +2,8 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
 
-const QuestionItem = db.define("questionItem", {
+// Store html string in option
+const SortQuestionOption = db.define("sortQuestionOption", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -10,14 +11,10 @@ const QuestionItem = db.define("questionItem", {
   },
   questionId: {
     type: Sequelize.UUID,
-    allowNull: true,
+    allowNull: false,
   },
-  categoryId: {
-    type: Sequelize.UUID,
-    allowNull: true,
-  },
-  item: {
-    type: Sequelize.STRING,
+  option: {
+    type: Sequelize.TEXT,
     allowNull: true,
   },
   content: {
@@ -26,12 +23,12 @@ const QuestionItem = db.define("questionItem", {
   },
 });
 
-QuestionItem.belongsTo(Question, {
+SortQuestionOption.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
-QuestionItem.sync().then(() => {
-  console.log("QuestionItem Created");
+SortQuestionOption.sync().then(() => {
+  console.log("McqQuestion Created");
 });
 
-module.exports = { QuestionItem };
+module.exports = { SortQuestionOption };

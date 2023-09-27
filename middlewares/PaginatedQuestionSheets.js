@@ -1,24 +1,21 @@
+const constants = require("../constants/constants.js");
 const { Board, SubBoard } = require("../models/Board.js");
-const { SheetManagement } = require("../models/SheetManagement.js");
-const { Subject, SubjectLevel } = require("../models/Subject.js");
+const { Sheet } = require("../models/PastPaperSheet.js");
+const { SubjectLevel, Subject } = require("../models/Subject.js");
 const { User } = require("../models/User.js");
 const { Variant } = require("../models/Variants.js");
 
-const paginatedSheetManagementSheets = () => {
+const paginatedSheetResults = () => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const filters = {
       isArchived: false,
-      isPublished: false,
-      isSpam: false,
+      // isPublished: true,
     };
 
     if (req.query.isSpam) {
       filters.isSpam = req.query.isSpam;
-    }
-    if (req.query.isArchived) {
-      filters.isArchived = req.query.isArchived;
     }
     if (req.query.isPublished) {
       filters.isPublished = req.query.isPublished;
@@ -35,27 +32,38 @@ const paginatedSheetManagementSheets = () => {
     if (req.query.subjectId) {
       filters.subjectId = req.query.subjectId;
     }
-    if (req.query.subjectLevelId) {
-      filters.subjectLevelId = req.query.subjectLevelId;
-    }
     if (req.query.subBoardId) {
       filters.subBoardId = req.query.subBoardId;
     }
     if (req.query.grade) {
       filters.grade = req.query.grade;
     }
-    if (req.query.statusForUploader2) {
-      filters.statusForUploader2 = req.query.statusForUploader2;
+    if (req.query.statusForPastPaper) {
+      filters.statusForPastPaper = req.query.statusForPastPaper;
     }
     if (req.query.statusForReviewer) {
       filters.statusForReviewer = req.query.statusForReviewer;
     }
-    if (req.query.statusForTeacher) {
-      filters.statusForTeacher = req.query.statusForTeacher;
+    if (req.query.subjectLevelId) {
+      filters.subjectLevelId = req.query.subjectLevelId;
     }
+    if (req.query.year) {
+      filters.year = req.query.year;
+    }
+    if (req.query.season) {
+      filters.season = req.query.season;
+    }
+    if (req.query.varient) {
+      filters.varient = req.query.varient;
+    }
+    if (req.query.paperNumber) {
+      filters.paperNumber = req.query.paperNumber;
+    }
+
     if (req.query.search) {
       filters.boardName = { $regex: req.query.search, $options: "i" };
     }
+
     if (req.query.time === "today") {
       filters.createdAt = {
         [Op.gte]: today,
@@ -66,24 +74,13 @@ const paginatedSheetManagementSheets = () => {
         [Op.gte]: today,
       };
     }
-    if (req.query.sheetType) {
-      filters.sheetType = req.query.sheetType;
-    }
-    if (req.query.answerType) {
-      filters.answerType = req.query.answerType;
-    }
-    if (req.query.lifeCycle) {
-      filters.lifeCycle = req.query.lifeCycle;
-    }
-    if (req.query.questionVideoLink) {
-      filters.questionVideoLink = req.query.questionVideoLink;
-    }
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
+
     const results = {};
 
-    const count = await SheetManagement.count({ where: filters });
+    const count = await Sheet.count({ where: filters });
     if (endIndex < count) {
       results.next = {
         page: page + 1,
@@ -99,7 +96,7 @@ const paginatedSheetManagementSheets = () => {
     }
 
     try {
-      const ShmSheets = await SheetManagement.findAll({
+      const subjects = await Sheet.findAll({
         attributes: [
           "id",
           "boardId",
@@ -107,45 +104,27 @@ const paginatedSheetManagementSheets = () => {
           "grade",
           "subjectId",
           "subjectLevelId",
-          "sheetType",
-          "mypMarkingScheme",
-          "answerType",
-          "pricingSchForStudents",
-          "pricingSchForTeachers",
-          "numberOfQuestion",
-          "timeVariable",
-          "questionVideoLink",
-          "resources",
-          "isMCQQuestion",
-          "sheetHintForUploader",
-          "sheetDescForUploader",
-          "isMultiplePaperNo",
           "year",
           "season",
-          "variantId",
-          "school", 
-          "testType",
-          "batchHint",
-          "publishTo",
-          "assignOn",
+          "varient",
+          "paperNumber",
+          "resources",
           "lifeCycle",
           "supervisorId",
-          "uploader2Id",
+          "pastPaperId",
           "reviewerId",
-          "teacherId",
           "assignedToUserId",
           "statusForSupervisor",
-          "statusForUploader",
           "statusForReviewer",
-          "statusForTeacher",
+          "statusForPastPaper",
           "errorReport",
           "errorReportImg",
           "reviewerCommentToSupervisor",
           "supervisorCommentToReviewer",
-          "supervisorCommentToUploader2",
+          "supervisorCommentToPastPaper",
           "isSpam",
           "isArchived",
-          "isPublished",
+          "assignOn",
         ],
         include: [
           {
@@ -158,9 +137,13 @@ const paginatedSheetManagementSheets = () => {
             attributes: ["boardName"],
           },
           {
+            model: SubjectLevel,
+            attributes: ["subjectLevelName"],
+            required: false,
+          },
+          {
             model: Subject,
             where: req.query.subjectNameId ? { subjectNameId: req.query.subjectNameId } : {},
-            attributes: ["id", "boardId", "subBoardId", "grade", "subjectNameId"],
           },
           {
             model: User,
@@ -176,27 +159,19 @@ const paginatedSheetManagementSheets = () => {
             model: Variant,
             attributes: ["id", "name"],
           },
-          {
-            model: SubjectLevel,
-            attributes: ["subjectLevelName"],
-            required: false,
-          },
         ],
         where: filters,
         limit,
         offset: startIndex,
-        raw: true,
-        nest: true,
       });
 
-      results.results = ShmSheets;
-
+      results.results = subjects;
       res.paginatedResults = results;
       next();
     } catch (err) {
-      next(err);
+      res.status(500).json({ status: 501, error: err.message });
     }
   };
 };
 
-module.exports = paginatedSheetManagementSheets;
+module.exports = paginatedSheetResults;

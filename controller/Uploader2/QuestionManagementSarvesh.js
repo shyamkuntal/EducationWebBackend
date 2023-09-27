@@ -28,6 +28,10 @@ const {
   editDesmosGraphQuestionSchema,
   createHotSpotQuestionSchema,
   editHotSpotQuestionSchema,
+  createSortQuestionSchema,
+  editSortQuestionSchema,
+  addSortQuestionOptionSchema,
+  deleteSortQuestionOptionSchema,
 } = require("../../validations/QuestionManagementValidation");
 const { FillDropDownOption } = require("../../models/FillDropDownOption");
 const { Question } = require("../../models/Question");
@@ -40,6 +44,7 @@ const { GeogebraGraphQuestion } = require("../../models/GeogebraGraphQuestion");
 const { DesmosGraphQuestion } = require("../../models/DesmosGraphQuestion");
 const { HotSpotQuestion } = require("../../models/HotSpotQuestion");
 const { Sequelize } = require("sequelize");
+const { SortQuestionOption } = require("../../models/sortQuestionOptions");
 
 const QuestionManagementSarveshController = {
   async createFillDropDown(req, res, next) {
@@ -1118,8 +1123,6 @@ const QuestionManagementSarveshController = {
 
       let newQuestionData = question.dataValues;
 
-      console.log(hotSpotQuestionValues.hotSpotIds);
-
       let hotSpotQuestion = await HotSpotQuestion.create(
         {
           questionId: newQuestionData.id,
@@ -1153,8 +1156,6 @@ const QuestionManagementSarveshController = {
         newStudentJson,
         hotSpotIds,
       });
-
-      console.log(hotSpotQuestionValues);
 
       let { id, ...questionData } = questionValues;
 
@@ -1209,8 +1210,148 @@ const QuestionManagementSarveshController = {
     }
   },
   async createSortQuestion(req, res, next) {
+    const t = await db.transaction();
     try {
+      let { options, ...rest } = req.body;
+
+      let questionValues = await createQuestionsSchema.validateAsync(rest);
+
+      let sortQuestionValues = await createSortQuestionSchema.validateAsync({ options });
+      console.log(questionValues);
+      console.log(sortQuestionValues);
+
+      let question = await services.questionService.createQuestion(questionValues, {
+        transaction: t,
+      });
+
+      let newQuestionData = question.dataValues;
+      let sortQuestionOptions = sortQuestionValues.options;
+
+      for (let i = 0; i < sortQuestionOptions.length; i++) {
+        await SortQuestionOption.create(
+          {
+            questionId: newQuestionData.id,
+            option: sortQuestionOptions[i].option,
+            content: sortQuestionOptions.content,
+          },
+          { transaction: t }
+        );
+      }
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Sort Question created!" });
     } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async editSortQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let { optionsToBeUpdated, ...rest } = req.body;
+      let questionValues = await editQuestionSchema.validateAsync(rest);
+
+      let sortQuestionValues = await editSortQuestionSchema.validateAsync({ optionsToBeUpdated });
+
+      let { id, ...questionData } = questionValues;
+
+      await services.questionService.editQuestion(
+        questionData,
+        { where: { id: id } },
+        { transaction: t }
+      );
+
+      let sortQuestionOptionToBeUpdated = sortQuestionValues.optionsToBeUpdated;
+
+      for (let i = 0; i < sortQuestionOptionToBeUpdated.length; i++) {
+        let dataToBeUpdated = {
+          option: sortQuestionOptionToBeUpdated[i].option,
+          content: sortQuestionOptionToBeUpdated[i].content,
+        };
+        await SortQuestionOption.update(
+          dataToBeUpdated,
+          { where: { id: sortQuestionOptionToBeUpdated[i].id, questionId: id } },
+          { transaction: t }
+        );
+      }
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Sort Question Updated!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async addSortQuestionOption(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await addSortQuestionOptionSchema.validateAsync(req.body);
+
+      console.log(values);
+      let sortOptionsToBeAdded = values.optionsToBeAdded;
+
+      for (let i = 0; i < sortOptionsToBeAdded.length; i++) {
+        await SortQuestionOption.create(
+          {
+            questionId: values.questionId,
+            option: sortOptionsToBeAdded[i].option,
+            content: sortOptionsToBeAdded.content,
+          },
+          { transaction: t }
+        );
+      }
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Sort Questions Options Added!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async deleteSortQuestionOption(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await deleteSortQuestionOptionSchema.validateAsync({
+        optionId: req.query.optionId,
+      });
+      console.log(values);
+
+      await SortQuestionOption.destroy({ where: { id: values.optionId } }, { transaction: t });
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Sort option deleted!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async deleteSortQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
+
+      console.log(values);
+
+      await SortQuestionOption.destroy(
+        { where: { questionId: values.questionId } },
+        { transaction: t }
+      );
+
+      await services.questionService.deleteQuestion(
+        { where: { id: values.questionId } },
+        { transaction: t }
+      );
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Sort question deleted!" });
+    } catch (err) {
+      await t.rollback();
       next(err);
     }
   },

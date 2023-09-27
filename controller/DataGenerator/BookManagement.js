@@ -224,7 +224,7 @@ const BookManagementDGController = {
     const t = await db.transaction();
     try {
       let values = await updateInprogressTaskStatusSchema.validateAsync(req.body);
-      console.log(values);
+
       let whereQuery = { where: { id: values.bookTaskId }, raw: true };
 
       let bookTaskData = await services.bookTaskService.findOneBookTask(whereQuery);
@@ -430,7 +430,7 @@ const BookManagementDGController = {
         },
       });
 
-      let countsBySubject = {}; 
+      let countsBySubject = {};
       activeSheets.forEach((sheet) => {
         const subjectId = sheet.subjectId;
 

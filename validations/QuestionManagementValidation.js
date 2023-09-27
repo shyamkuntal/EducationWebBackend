@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const CONSTANTS = require("../constants/constants");
 
 const createQuestionsSchema = Joi.object({
   sheetId: Joi.string().guid().required(),
@@ -80,7 +81,9 @@ const optionSchema = Joi.object({
 });
 
 const McqSchema = Joi.object({
-  questionType: Joi.string().valid("MCQ").required(),
+  questionType: Joi.string()
+    .valid(CONSTANTS.questionType.MCQ_Single, CONSTANTS.questionType.MCQ_Multiple)
+    .required(),
   questionData: Joi.string().required(),
   sheetId: Joi.string().guid().required(),
   options: Joi.array()
@@ -144,16 +147,8 @@ const createMatchQuestionPairsSchema = Joi.object({
   pairs: Joi.array().items({
     matchPhrase: Joi.string().required(),
     matchTarget: Joi.string().required(),
-    matchPhraseContent: Joi.object({
-      filename: Joi.string(),
-      mimetype: Joi.string(),
-      buffer: Joi.string(),
-    }).allow(null),
-    matchTargetContent: Joi.object({
-      filename: Joi.string(),
-      mimetype: Joi.string(),
-      buffer: Joi.string(),
-    }).allow(null),
+    matchPhraseContent: Joi.string().allow(null),
+    matchTargetContent: Joi.string().allow(null),
   }),
 });
 
@@ -168,12 +163,12 @@ const editMatchQuestionPairsSchema = Joi.object({
       filename: Joi.string(),
       mimetype: Joi.string(),
       buffer: Joi.string(),
-    }),
+    }).allow(null),
     newMatchTargetContent: Joi.object({
       filename: Joi.string(),
       mimetype: Joi.string(),
       buffer: Joi.string(),
-    }),
+    }).allow(null),
   }),
 });
 
@@ -186,12 +181,12 @@ const addMatchQuestionPairSchema = Joi.object({
       filename: Joi.string(),
       mimetype: Joi.string(),
       buffer: Joi.string(),
-    }),
+    }).allow(null),
     matchTargetContent: Joi.object({
       filename: Joi.string(),
       mimetype: Joi.string(),
       buffer: Joi.string(),
-    }),
+    }).allow(null),
   }),
 });
 
@@ -227,8 +222,8 @@ const editLabelFillQuestionSchema = Joi.object({
 });
 
 const createGeogebraGraphQuestionSchema = Joi.object({
-  dataGeneratorData: Joi.string().required(),
-  studentData: Joi.string().required(),
+  dataGeneratorJson: Joi.string().required(),
+  studentJson: Joi.string().required(),
   allowAlgebraInput: Joi.boolean().required(),
 });
 
@@ -258,6 +253,33 @@ const editHotSpotQuestionSchema = Joi.object({
   newDataGeneratorJson: Joi.string().required(),
   newStudentJson: Joi.string().required(),
   hotSpotIds: Joi.array().items(Joi.string().uuid()),
+});
+
+const createSortQuestionSchema = Joi.object({
+  options: Joi.array().items({
+    option: Joi.string().required(),
+    content: Joi.string().allow(null),
+  }),
+});
+
+const editSortQuestionSchema = Joi.object({
+  optionsToBeUpdated: Joi.array().items({
+    id: Joi.string().uuid(),
+    option: Joi.string().required(),
+    content: Joi.string().allow(null),
+  }),
+});
+
+const addSortQuestionOptionSchema = Joi.object({
+  questionId: Joi.string().uuid().required(),
+  optionsToBeAdded: Joi.array().items({
+    option: Joi.string().required(),
+    content: Joi.string().allow(null),
+  }),
+});
+
+const deleteSortQuestionOptionSchema = Joi.object({
+  optionId: Joi.string().uuid().required(),
 });
 
 module.exports = {
@@ -290,4 +312,8 @@ module.exports = {
   editDesmosGraphQuestionSchema,
   createHotSpotQuestionSchema,
   editHotSpotQuestionSchema,
+  createSortQuestionSchema,
+  editSortQuestionSchema,
+  addSortQuestionOptionSchema,
+  deleteSortQuestionOptionSchema,
 };

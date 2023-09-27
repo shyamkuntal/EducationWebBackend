@@ -9,7 +9,7 @@ module.exports = Object.freeze({
     Simulation: "simultaion",
     Long_Answer: "longAnswer",
     MCQ_Single: "mcqSingle",
-    MCQ_Multile: "mcqMultiple",
+    MCQ_Multiple: "mcqMultiple",
     True_False: "trueFalse",
     Fill_Text: "fillText",
     Fill_Dropdown: "fillDropdown",
