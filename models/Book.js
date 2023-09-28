@@ -22,6 +22,11 @@ const Book = db.define("book", {
   publisher: {
     type: Sequelize.STRING,
     allowNull: true,
+  },
+  isArchived: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    default: false
   }
 });
 
