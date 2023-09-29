@@ -39,7 +39,6 @@ const Sheet = db.define("PastPaperSheet", {
     allowNull: false,
   },
   season: { type: Sequelize.STRING, allowNull: false },
-
   varient: {
     type: Sequelize.STRING,
     allowNull: true,
