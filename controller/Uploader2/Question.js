@@ -2542,7 +2542,9 @@ const QuestionManagementController = {
   async createLongAnswer(req, res, next) {
     const t = await db.transaction();
     try {
-      let question = await services.questionService.createQuestion(req.body, {
+      let values = await createQuestionsSchema.validateAsync(req.body);
+
+      let question = await services.questionService.createQuestion(values, {
         transaction: t,
       });
       res.status(httpStatus.OK).send(question);
@@ -2558,7 +2560,11 @@ const QuestionManagementController = {
 
       console.log(values);
 
-      let questions = await Question.findAll({ where: { sheetId: values.sheetId }, raw: true });
+      let questions = await Question.findAll({
+        where: { sheetId: values.sheetId },
+        order: [["createdAt", "ASC"]],
+        raw: true,
+      });
 
       let questionDetails = [];
 

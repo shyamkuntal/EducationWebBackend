@@ -17,6 +17,10 @@ const Question = db.define("question", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  questionId: {
+    type: Sequelize.UUID,
+    defaultValue: null,
+  },
   questionData: {
     type: Sequelize.TEXT,
     allowNull: true,
@@ -148,6 +152,10 @@ const Question = db.define("question", {
 
 Question.sync().then(() => {
   console.log("Question Created");
+});
+
+Question.belongsTo(Question, {
+  foreignKey: { name: "questionId" },
 });
 
 Question.belongsTo(SheetManagement, {
