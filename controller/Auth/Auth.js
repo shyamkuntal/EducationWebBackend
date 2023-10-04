@@ -20,9 +20,9 @@ const AuthController = {
       let token = "";
       // Creating jwt for user
       if (values.remember === true) {
-        token = await services.authService.generateCmsAuthToken(user, "7d");
+        token = await services.authService.generateCmsAuthToken(user, "30d");
       } else {
-        token = await services.authService.generateCmsAuthToken(user, "1d");
+        token = await services.authService.generateCmsAuthToken(user, "10d");
       }
 
       let userDetailsToBeSent = {

@@ -15,13 +15,12 @@ router.get("/getallshmsheets", paginatedSheetManagementSheets(), (req, res) => {
 router.get("/getassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
 
 router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
-
-// Abhishek
-
 router.post("/longanswer", QuestionManagementController.createLongAnswer);
-
-// Shyam
-
+// router.post(
+//   "/matchquestion",
+//   upload.array("optionFiles", 10),
+//   QuestionManagementController.MatchQues
+// );
 router.post("/mcquestion", QuestionManagementController.McqQuestion);
 router.post("/editmcquestion", QuestionManagementController.editMcqQuestion);
 router.delete("/deletemcquestion", QuestionManagementController.DeleteMcqQues);
@@ -49,8 +48,6 @@ router.post("/createclassifyquestion", QuestionManagementController.createClassi
 
 router.post("/uploadfiletos3", upload.single("file"), QuestionManagementController.uploadFileToS3);
 router.post("/deletefilefroms3", QuestionManagementController.deleteFileFromS3);
-// Sarvesh
-
 // FillDropDown Apis -
 router.post("/createfilldropdown", QuestionManagementController.createFillDropDown);
 router.post("/addfilldropdownoptions", QuestionManagementController.addFillDropDownOptions);

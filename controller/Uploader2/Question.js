@@ -38,11 +38,11 @@ const {
   addSortQuestionOptionSchema,
   deleteSortQuestionOptionSchema,
 } = require("../../validations/QuestionManagementValidation");
-
 const {
   getQuestionsSchema,
   updateSheetStatusSchema,
 } = require("../../validations/SheetManagementUploaderValidations");
+
 const { Question } = require("../../models/Question");
 const { QuestionContent } = require("../../models/QuestionContent");
 const { s3Client } = require("../../config/s3");
@@ -1280,7 +1280,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async addFillDropDownOptions(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1309,7 +1308,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async deleteFillDropDownOption(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1325,7 +1323,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async editFillDropDownOption(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1402,7 +1399,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async createFillTextQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1426,7 +1422,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async deleteFillTextQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1480,7 +1475,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async createMatchQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1561,7 +1555,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async editMatchQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1652,7 +1645,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async addMatchQuestionPair(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1712,7 +1704,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async deleteMatchPair(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1728,7 +1719,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async deleteMatchQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1825,7 +1815,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async deleteDrawingQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1851,7 +1840,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async createLabelDragQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1893,7 +1881,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async editLabelDragQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1937,7 +1924,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async deleteLabelDrawQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -1960,7 +1946,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async createLabelFillQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -2002,7 +1987,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async editLabelFillQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -2052,7 +2036,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async deleteLabelFillQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -2076,7 +2059,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async createGeogebraQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -2119,7 +2101,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async editGeogebraQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -2284,7 +2265,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async createHostSpotQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -2368,7 +2348,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async deleteHotSpotQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -2513,7 +2492,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async deleteSortQuestion(req, res, next) {
     const t = await db.transaction();
     try {
@@ -2767,7 +2745,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async updateSheetInprogress(req, res, next) {
     const t = await db.transaction();
     try {
