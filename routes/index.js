@@ -10,6 +10,7 @@ const PaperNumberDataGenerator = require("./DataGenerator/PaperNoManagement");
 const TopicManagementDataGenerator = require("./DataGenerator/TopicManagement");
 const AccountManagement = require("./Supervisor/AccountManagement");
 const BookManagement = require("./Supervisor/BookManagement");
+const NoticeBoard = require("./Supervisor/NoticeBoard")
 const PastPaperReviewer = require("./Reviewer/PastPaperReviewer");
 const PastPaperUploader = require("./PastPaperUploader/PastPaperUploader");
 const TopicManagement = require("./Supervisor/TopicManagement");
