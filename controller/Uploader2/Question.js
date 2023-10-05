@@ -393,26 +393,25 @@ const QuestionManagementController = {
   async McqQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let data = await McqSchema.validateAsync(req.body);
+      let { options, ...rest } = req.body;
+      let data = await McqSchema.validateAsync({ options: options });
 
-      let questionData = {
-        questionType: data.questionType,
-        questionData: data.questionData,
-        sheetId: data.sheetId,
-      };
+      let questionValues = await createQuestionsSchema.validateAsync(rest);
 
-      let createdQuestion = await services.questionService.createQuestion(questionData, {
+      console.log(questionValues);
+
+      let createdQuestion = await services.questionService.createQuestion(questionValues, {
         transaction: t,
       });
 
-      let options = data.options;
+      let mcqOptions = data.options;
       let questionId = await createdQuestion.id;
 
       const createdOptions = await Promise.all(
-        options.map(async (option) => {
+        mcqOptions.map(async (option) => {
           let contentFileName = null;
 
-          if (option.content) {
+          if (mcqOptions.content) {
             contentFileName = await services.questionService.uploadFile(option.content);
           }
 
@@ -588,19 +587,14 @@ const QuestionManagementController = {
   async TrueFalse(req, res, next) {
     const t = await db.transaction();
     try {
-      let data = req.body;
+      let { statements, ...rest } = req.body;
 
-      let questionData = {
-        questionType: data.questionType,
-        questionData: data.questionData,
-        sheetId: data.sheetId,
-      };
+      let questionValues = await createQuestionsSchema.validateAsync(rest);
 
-      let createdQuestion = await services.questionService.createQuestion(questionData, {
+      let createdQuestion = await services.questionService.createQuestion(questionValues, {
         transaction: t,
       });
 
-      let statements = data.statements;
       let questionId = await createdQuestion.id;
 
       const createdStatements = await Promise.all(
@@ -1660,39 +1654,39 @@ const QuestionManagementController = {
           matchPhrase: dataToBeAdded[i].matchPhrase,
           matchTarget: dataToBeAdded[i].matchTarget,
         };
-        if (dataToBeAdded[i].matchPhraseContent) {
-          let buffer = Buffer.from(
-            dataToBeAdded[i].matchPhraseContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
-            "base64"
-          );
+        // if (dataToBeAdded[i].matchPhraseContent) {
+        //   let buffer = Buffer.from(
+        //     dataToBeAdded[i].matchPhraseContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
+        //     "base64"
+        //   );
 
-          let fileObj = {
-            originalname: dataToBeAdded[i].matchPhraseContent.filename,
-            mimetype: dataToBeAdded[i].matchPhraseContent.mimetype,
-            buffer: buffer,
-          };
+        //   let fileObj = {
+        //     originalname: dataToBeAdded[i].matchPhraseContent.filename,
+        //     mimetype: dataToBeAdded[i].matchPhraseContent.mimetype,
+        //     buffer: buffer,
+        //   };
 
-          let fileName = await services.questionService.uploadFile(fileObj);
-          console.log(fileName);
-          dataToBeCreated.matchPhraseContent = fileName;
-        }
+        //   let fileName = await services.questionService.uploadFile(fileObj);
+        //   console.log(fileName);
+        //   dataToBeCreated.matchPhraseContent = fileName;
+        // }
 
-        if (dataToBeAdded[i].matchTargetContent) {
-          let buffer = Buffer.from(
-            dataToBeAdded[i].matchTargetContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
-            "base64"
-          );
+        // if (dataToBeAdded[i].matchTargetContent) {
+        //   let buffer = Buffer.from(
+        //     dataToBeAdded[i].matchTargetContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
+        //     "base64"
+        //   );
 
-          let fileObj = {
-            originalname: dataToBeAdded[i].matchTargetContent.filename,
-            mimetype: dataToBeAdded[i].matchTargetContent.mimetype,
-            buffer: buffer,
-          };
+        //   let fileObj = {
+        //     originalname: dataToBeAdded[i].matchTargetContent.filename,
+        //     mimetype: dataToBeAdded[i].matchTargetContent.mimetype,
+        //     buffer: buffer,
+        //   };
 
-          let fileName = await services.questionService.uploadFile(fileObj);
-          console.log(fileName);
-          dataToBeCreated.matchTargetContent = fileName;
-        }
+        //   let fileName = await services.questionService.uploadFile(fileObj);
+        //   console.log(fileName);
+        //   dataToBeCreated.matchTargetContent = fileName;
+        // }
         await MatchQuestionPair.create(dataToBeCreated, { transaction: t });
       }
 
@@ -1742,11 +1736,11 @@ const QuestionManagementController = {
   async createDrawingQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { dataGeneratorJson, studentJson, ...rest } = req.body;
+      let { uploaderJson, studentJson, ...rest } = req.body;
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       let drawingQuestionValues = await createDrawingQuestionSchema.validateAsync({
-        dataGeneratorJson,
+        uploaderJson,
         studentJson,
       });
 
@@ -1764,7 +1758,7 @@ const QuestionManagementController = {
       let drawingQuestion = await DrawingQuestion.create(
         {
           questionId: newQuestionData.id,
-          dataGeneratorJson: drawingQuestionValues.dataGeneratorJson,
+          uploaderJson: drawingQuestionValues.uploaderJson,
           studentJson: drawingQuestionValues.studentJson,
         },
         { transaction: t }
@@ -1843,13 +1837,13 @@ const QuestionManagementController = {
   async createLabelDragQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { dataGeneratorJson, studentJson, ...rest } = req.body;
+      let { uploaderJson, studentJson, ...rest } = req.body;
 
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       let labelDragQuestionValues = await createLabelDragQuestionSchema.validateAsync({
-        dataGeneratorJson: dataGeneratorJson,
-        studentJson: studentJson,
+        uploaderJson,
+        studentJson,
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
@@ -1865,7 +1859,7 @@ const QuestionManagementController = {
       let createLabelDragQuestion = await LabelDragQuestion.create(
         {
           questionId: newQuestionData.id,
-          dataGeneratorJson: labelDragQuestionValues.dataGeneratorJson,
+          uploaderJson: labelDragQuestionValues.uploaderJson,
           studentJson: labelDragQuestionValues.studentJson,
         },
         { transaction: t }
@@ -1884,11 +1878,11 @@ const QuestionManagementController = {
   async editLabelDragQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { newDataGeneratorCanvasJson, newStudentCanvasJson, ...rest } = req.body;
+      let { newuploaderJson, newStudentCanvasJson, ...rest } = req.body;
       let questionValues = await editQuestionSchema.validateAsync(rest);
 
       let labelDragQuestionValues = await editLabelDragQuestionSchema.validateAsync({
-        newDataGeneratorCanvasJson,
+        newuploaderJson,
         newStudentCanvasJson,
       });
 
@@ -1902,13 +1896,10 @@ const QuestionManagementController = {
         { transaction: t }
       );
 
-      if (
-        labelDragQuestionValues.newDataGeneratorCanvasJson &&
-        labelDragQuestionValues.newStudentCanvasJson
-      ) {
+      if (labelDragQuestionValues.newuploaderJson && labelDragQuestionValues.newStudentCanvasJson) {
         await LabelDragQuestion.update(
           {
-            dataGeneratorJson: labelDragQuestionValues.newDataGeneratorCanvasJson,
+            uploaderJson: labelDragQuestionValues.newuploaderJson,
             studentJson: labelDragQuestionValues.newStudentCanvasJson,
           },
           { where: { questionId: questionValues.id } },
@@ -2062,13 +2053,14 @@ const QuestionManagementController = {
   async createGeogebraQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { dataGeneratorJson, studentJson, allowAlgebraInput, ...rest } = req.body;
+      let { uploaderJson, studentJson, allowAlgebraInput, graphType, ...rest } = req.body;
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       let geogebraQuestionValues = await createGeogebraGraphQuestionSchema.validateAsync({
-        dataGeneratorJson,
+        uploaderJson,
         studentJson,
         allowAlgebraInput,
+        graphType,
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
@@ -2084,9 +2076,10 @@ const QuestionManagementController = {
       let createGeoGebraQuestion = await GeogebraGraphQuestion.create(
         {
           questionId: newQuestionData.id,
-          dataGeneratorJson: geogebraQuestionValues.dataGeneratorJson,
+          uploaderJson: geogebraQuestionValues.uploaderJson,
           studentJson: geogebraQuestionValues.studentJson,
           allowAlgebraInput: geogebraQuestionValues.allowAlgebraInput,
+          graphType: geogebraQuestionValues.graphType,
         },
         { transaction: t }
       );
@@ -2104,11 +2097,11 @@ const QuestionManagementController = {
   async editGeogebraQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { newDataGeneratorJson, newStudentJson, allowAlgebraInput, ...rest } = req.body;
+      let { newUploaderJson, newStudentJson, allowAlgebraInput, ...rest } = req.body;
       let questionValues = await editQuestionSchema.validateAsync(rest);
 
       let geogebraQuestionValues = await editGeogebraGraphQuestionSchema.validateAsync({
-        newDataGeneratorJson,
+        newUploaderJson,
         newStudentJson,
         allowAlgebraInput,
       });
@@ -2121,10 +2114,10 @@ const QuestionManagementController = {
         { transaction: t }
       );
 
-      if (geogebraQuestionValues.newDataGeneratorJson && geogebraQuestionValues.newStudentJson) {
+      if (geogebraQuestionValues.newUploaderJson && geogebraQuestionValues.newStudentJson) {
         await GeogebraGraphQuestion.update(
           {
-            dataGeneratorJson: geogebraQuestionValues.newDataGeneratorJson,
+            dataGeneratorJson: geogebraQuestionValues.newUploaderJson,
             studentJson: geogebraQuestionValues.newStudentJson,
             allowAlgebraInput: geogebraQuestionValues.allowAlgebraInput,
           },
@@ -2167,7 +2160,7 @@ const QuestionManagementController = {
   async createDesmosGraphQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { dataGeneratorJson, studentJson, ...rest } = req.body;
+      let { uploaderJson, studentJson, ...rest } = req.body;
 
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
@@ -2176,7 +2169,7 @@ const QuestionManagementController = {
       }
 
       let desmosGraphQuestionValues = await createDesmosGraphQuestionSchema.validateAsync({
-        dataGeneratorJson,
+        uploaderJson,
         studentJson,
       });
 
@@ -2189,7 +2182,7 @@ const QuestionManagementController = {
       let createDesmosQuestion = await DesmosGraphQuestion.create(
         {
           questionId: newQuestionData.id,
-          dataGeneratorJson: desmosGraphQuestionValues.dataGeneratorJson,
+          uploaderJson: desmosGraphQuestionValues.uploaderJson,
           studentJson: desmosGraphQuestionValues.studentJson,
         },
         { transaction: t }
@@ -2207,11 +2200,11 @@ const QuestionManagementController = {
   async editDesmosGraphQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { newDataGeneratorJson, newStudentJson, ...rest } = req.body;
+      let { newUploaderJson, newStudentJson, ...rest } = req.body;
       let questionValues = await editQuestionSchema.validateAsync(rest);
 
       let desmosQuestionValues = await editDesmosGraphQuestionSchema.validateAsync({
-        newDataGeneratorJson,
+        newUploaderJson,
         newStudentJson,
       });
 
@@ -2226,7 +2219,7 @@ const QuestionManagementController = {
       if (desmosQuestionValues.newDataGeneratorJson && desmosQuestionValues.newStudentJson) {
         await DesmosGraphQuestion.update(
           {
-            dataGeneratorJson: desmosQuestionValues.newDataGeneratorJson,
+            uploaderJson: desmosQuestionValues.newUploaderJson,
             studentJson: desmosQuestionValues.newStudentJson,
           },
           { where: { questionId: id } },
@@ -2268,7 +2261,7 @@ const QuestionManagementController = {
   async createHostSpotQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { dataGeneratorJson, studentJson, hotSpotIds, ...rest } = req.body;
+      let { uploaderJson, studentJson, hotSpotIds, ...rest } = req.body;
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
@@ -2276,7 +2269,7 @@ const QuestionManagementController = {
       }
 
       let hotSpotQuestionValues = await createHotSpotQuestionSchema.validateAsync({
-        dataGeneratorJson,
+        uploaderJson,
         studentJson,
         hotSpotIds,
       });
@@ -2290,7 +2283,7 @@ const QuestionManagementController = {
       let hotSpotQuestion = await HotSpotQuestion.create(
         {
           questionId: newQuestionData.id,
-          dataGeneratorJson: hotSpotQuestionValues.dataGeneratorJson,
+          uploaderJson: hotSpotQuestionValues.uploaderJson,
           studentJson: hotSpotQuestionValues.studentJson,
           hotSpotIds: hotSpotQuestionValues.hotSpotIds,
         },
@@ -2310,13 +2303,13 @@ const QuestionManagementController = {
   async editHotSpotQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { newDataGeneratorJson, newStudentJson, hotSpotIds, ...rest } = req.body;
+      let { newUploaderJson, newStudentJson, hotSpotIds, ...rest } = req.body;
       let questionValues = await editQuestionSchema.validateAsync(rest);
 
       console.log(questionValues);
 
       let hotSpotQuestionValues = await editHotSpotQuestionSchema.validateAsync({
-        newDataGeneratorJson,
+        newUploaderJson,
         newStudentJson,
         hotSpotIds,
       });
@@ -2332,7 +2325,7 @@ const QuestionManagementController = {
       if (hotSpotQuestionValues.newDataGeneratorJson && hotSpotQuestionValues.newStudentJson) {
         await HotSpotQuestion.update(
           {
-            dataGeneratorJson: hotSpotQuestionValues.newDataGeneratorJson,
+            uploaderJson: hotSpotQuestionValues.newUploaderJson,
             studentJson: hotSpotQuestionValues.newStudentJson,
           },
           { where: { questionId: id } },
@@ -2660,7 +2653,7 @@ const QuestionManagementController = {
 
             let drawingQuestionData = await DrawingQuestion.findOne({
               where: { questionId: questions[i].id },
-              attributes: ["dataGeneratorJson", "studentJson", "questionId"],
+              attributes: ["uploaderJson", "studentJson", "questionId"],
             });
 
             drawingQuestion.canvasData = drawingQuestionData;
@@ -2686,7 +2679,7 @@ const QuestionManagementController = {
 
             let labelDragQuestionData = await LabelDragQuestion.findOne({
               where: { questionId: questions[i].id },
-              attributes: ["dataGeneratorJson", "studentJson", "questionId"],
+              attributes: ["uploaderJson", "studentJson", "questionId"],
             });
 
             labelDragQuestion.canvasData = labelDragQuestionData;
@@ -2700,7 +2693,7 @@ const QuestionManagementController = {
 
             let hotSpotQuestionData = await HotSpotQuestion.findOne({
               where: { questionId: questions[i].id },
-              attributes: ["dataGeneratorJson", "studentJson", "questionId"],
+              attributes: ["uploaderJson", "studentJson", "questionId"],
             });
 
             hotSpotQuestion.canvasData = hotSpotQuestionData;
@@ -2714,7 +2707,7 @@ const QuestionManagementController = {
 
             let desmosQuestionData = await DesmosGraphQuestion.findOne({
               where: { questionId: questions[i].id },
-              attributes: ["dataGeneratorJson", "studentJson", "questionId"],
+              attributes: ["uploaderJson", "studentJson", "questionId"],
             });
 
             desmosQuestion.graphData = desmosQuestionData;
@@ -2728,7 +2721,7 @@ const QuestionManagementController = {
 
             let geoGebraQuestionData = await GeogebraGraphQuestion.findOne({
               where: { questionId: questions[i].id },
-              attributes: ["dataGeneratorJson", "studentJson", "questionId"],
+              attributes: ["uploaderJson", "studentJson", "graphType", "questionId"],
             });
 
             geoGebraQuestion.graphData = geoGebraQuestionData;

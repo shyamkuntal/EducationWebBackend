@@ -81,22 +81,13 @@ const optionSchema = Joi.object({
 });
 
 const McqSchema = Joi.object({
-  questionType: Joi.string()
-    .valid(CONSTANTS.questionType.MCQ_Single, CONSTANTS.questionType.MCQ_Multiple)
-    .required(),
-  questionData: Joi.string().required(),
-  sheetId: Joi.string().guid().required(),
   options: Joi.array()
     .items(
       Joi.object({
         option: Joi.string().required(),
         isCorrectOption: Joi.boolean().required(),
-        feedback: Joi.string().required(),
-        content: Joi.object({
-          filename: Joi.string().required(),
-          mimetype: Joi.string().required(),
-          buffer: Joi.string().required(),
-        }).optional(),
+        feedback: Joi.string().allow(""),
+        content: Joi.string().optional().allow(""),
       })
     )
     .required(),
@@ -193,7 +184,7 @@ const addMatchQuestionPairSchema = Joi.object({
 const deleteMatchPairSchema = Joi.object({ pairId: Joi.string().uuid().required() });
 
 const createDrawingQuestionSchema = Joi.object({
-  dataGeneratorJson: Joi.string().required(),
+  uploaderJson: Joi.string().required(),
   studentJson: Joi.string().required(),
 });
 
@@ -202,7 +193,7 @@ const editDrawingQuestionSchema = Joi.object({
 });
 
 const createLabelDragQuestionSchema = Joi.object({
-  dataGeneratorJson: Joi.string().required(),
+  uploaderJson: Joi.string().required(),
   studentJson: Joi.string().required(),
 });
 
@@ -222,35 +213,36 @@ const editLabelFillQuestionSchema = Joi.object({
 });
 
 const createGeogebraGraphQuestionSchema = Joi.object({
-  dataGeneratorJson: Joi.string().required(),
-  studentJson: Joi.string().required(),
+  uploaderJson: Joi.string().required(),
+  studentJson: Joi.string(),
+  graphType: Joi.string().required(),
   allowAlgebraInput: Joi.boolean().required(),
 });
 
 const editGeogebraGraphQuestionSchema = Joi.object({
   newDataGeneratorJson: Joi.string().required(),
-  newStudentJson: Joi.string().required(),
+  newStudentJson: Joi.string(),
   allowAlgebraInput: Joi.boolean().required(),
 });
 
 const createDesmosGraphQuestionSchema = Joi.object({
-  dataGeneratorJson: Joi.string().required(),
+  uploaderJson: Joi.string().required(),
   studentJson: Joi.string().required(),
 });
 
 const editDesmosGraphQuestionSchema = Joi.object({
-  newDataGeneratorJson: Joi.string().required(),
+  newUploaderJson: Joi.string().required(),
   newStudentJson: Joi.string().required(),
 });
 
 const createHotSpotQuestionSchema = Joi.object({
-  dataGeneratorJson: Joi.string().required(),
+  uploaderJson: Joi.string().required(),
   studentJson: Joi.string().required(),
   hotSpotIds: Joi.array().items(Joi.string().uuid()),
 });
 
 const editHotSpotQuestionSchema = Joi.object({
-  newDataGeneratorJson: Joi.string().required(),
+  newUploaderJson: Joi.string().required(),
   newStudentJson: Joi.string().required(),
   hotSpotIds: Joi.array().items(Joi.string().uuid()),
 });

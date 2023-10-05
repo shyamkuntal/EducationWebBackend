@@ -12,13 +12,17 @@ const GeogebraGraphQuestion = db.define("GeogebraGraphQuestion", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  dataGeneratorJson: {
+  uploaderJson: {
     type: Sequelize.TEXT,
     allowNull: false,
   },
   studentJson: {
     type: Sequelize.TEXT,
-    allowNull: false,
+    allowNull: true,
+  },
+  graphType: {
+    type: Sequelize.STRING,
+    allowNull: true,
   },
   allowAlgebraInput: {
     type: Sequelize.BOOLEAN,

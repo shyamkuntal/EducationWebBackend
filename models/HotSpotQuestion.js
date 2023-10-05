@@ -13,7 +13,7 @@ const HotSpotQuestion = db.define("hotSpotQuestion", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  dataGeneratorJson: {
+  uploaderJson: {
     type: Sequelize.TEXT,
     allowNull: false,
   },

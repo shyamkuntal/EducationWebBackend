@@ -30,12 +30,15 @@ const McqQuestionOption = db.define("mcqQuestionOption", {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  shuffleOptions: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 McqQuestionOption.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
-
 
 McqQuestionOption.sync().then(() => {
   console.log("McqQuestion Created");

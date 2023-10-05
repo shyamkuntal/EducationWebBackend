@@ -13,7 +13,7 @@ const LabelDragQuestion = db.define("labelDragQuestion", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  dataGeneratorJson: {
+  uploaderJson: {
     type: Sequelize.TEXT,
     allowNull: false,
   },
