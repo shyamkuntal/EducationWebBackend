@@ -2090,6 +2090,7 @@ const QuestionManagementController = {
 
       await t.commit();
     } catch (err) {
+      console.log(err)
       await t.rollback();
       next(err);
     }
@@ -2721,7 +2722,7 @@ const QuestionManagementController = {
 
             let geoGebraQuestionData = await GeogebraGraphQuestion.findOne({
               where: { questionId: questions[i].id },
-              attributes: ["uploaderJson", "studentJson", "graphType", "questionId"],
+              attributes: ["uploaderJson", "studentJson", "questionId"],
             });
 
             geoGebraQuestion.graphData = geoGebraQuestionData;
@@ -2735,6 +2736,7 @@ const QuestionManagementController = {
 
       res.status(httpStatus.OK).send(questionDetails);
     } catch (err) {
+      console.log(err)
       next(err);
     }
   },

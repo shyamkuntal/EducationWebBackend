@@ -128,6 +128,10 @@ const SheetManagement = db.define("sheetManagement", {
     type: Sequelize.UUID,
     allowNull: true,
   },
+  pricerId: {
+    type: Sequelize.UUID,
+    allowNull: true,
+  },
   teacherId: {
     type: Sequelize.UUID,
     allowNull: true,
@@ -149,6 +153,10 @@ const SheetManagement = db.define("sheetManagement", {
     allowNull: true,
   },
   statusForReviewer: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  statusForPricer: {
     type: Sequelize.STRING,
     allowNull: true,
   },
@@ -208,6 +216,11 @@ SheetManagement.belongsTo(User, {
 SheetManagement.belongsTo(User, {
   foreignKey: { name: "teacherId" },
   as: "teacher",
+});
+
+SheetManagement.belongsTo(User, {
+  foreignKey: { name: "pricerId" },
+  as: "pricer",
 });
 
 SheetManagement.belongsTo(User, {
