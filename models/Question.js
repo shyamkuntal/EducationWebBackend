@@ -148,6 +148,10 @@ const Question = db.define("question", {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
+  isCalculatorAllowed: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 Question.sync().then(() => {
