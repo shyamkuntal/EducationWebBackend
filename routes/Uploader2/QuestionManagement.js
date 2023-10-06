@@ -146,4 +146,8 @@ router.get("/getquestions", QuestionManagementController.getQuestions);
 
 router.patch("/updatesheetinprogress", QuestionManagementController.updateSheetInprogress);
 
+router.patch("/updatesheetcomplete", QuestionManagementController.updateSheetComplete);
+
+router.patch("/submitsheettosupervisor", QuestionManagementController.submitToSupervisor);
+
 module.exports = router;

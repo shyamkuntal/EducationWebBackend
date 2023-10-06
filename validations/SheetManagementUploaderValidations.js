@@ -9,4 +9,9 @@ const getQuestionsSchema = Joi.object({
   sheetId: Joi.string().uuid(),
 });
 
-module.exports = { updateSheetStatusSchema, getQuestionsSchema };
+const submitSheetToSupervisorSchema = Joi.object({
+  sheetId: Joi.string().guid().required(),
+  uploaderId: Joi.string().guid().required(),
+});
+
+module.exports = { updateSheetStatusSchema, getQuestionsSchema, submitSheetToSupervisorSchema };

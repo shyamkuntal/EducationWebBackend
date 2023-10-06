@@ -41,6 +41,7 @@ const {
 const {
   getQuestionsSchema,
   updateSheetStatusSchema,
+  submitSheetToSupervisorSchema,
 } = require("../../validations/SheetManagementUploaderValidations");
 
 const { Question } = require("../../models/Question");
@@ -62,6 +63,7 @@ const { ApiError } = require("../../middlewares/apiError");
 const { FillDropDownOption } = require("../../models/FillDropDownOption");
 const { SortQuestionOption } = require("../../models/sortQuestionOptions");
 const { SheetManagement } = require("../../models/SheetManagement");
+const { User } = require("../../models/User");
 
 const QuestionManagementController = {
   async creatTextQues(req, res, next) {
@@ -2782,6 +2784,127 @@ const QuestionManagementController = {
       await t.commit();
       res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
     } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async updateSheetComplete(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await updateSheetStatusSchema.validateAsync(req.body);
+
+      console.log(values);
+
+      let whereQuery = { where: { id: values.sheetId }, raw: true };
+
+      let sheetData = await SheetManagement.findOne(whereQuery);
+
+      let assignedTo = sheetData.assignedToUserId;
+      let lifeCycle = sheetData.lifeCycle;
+      let previousStatus = sheetData.statusForUploader;
+
+      if (!sheetData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Sheet not found!");
+      }
+
+      if (assignedTo !== values.uploaderId || lifeCycle !== CONSTANTS.roleNames.Uploader2) {
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          "Sheet not assigned to Uploader or lifecycle mismatch"
+        );
+      }
+
+      if (previousStatus === CONSTANTS.sheetStatuses.Complete) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Current task status is already Complete");
+      }
+
+      let dataToBeUpdated = {
+        statusForUploader: CONSTANTS.sheetStatuses.Complete,
+      };
+
+      let whereQueryForSheetUpdate = { where: { id: sheetData.id } };
+
+      await SheetManagement.update(dataToBeUpdated, whereQueryForSheetUpdate, { transaction: t });
+
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async submitToSupervisor(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = await submitSheetToSupervisorSchema.validateAsync(req.body);
+
+      let responseMessage = {
+        assinedUserToSheet: "",
+        UpdateSheetStatus: "",
+        sheetLog: "",
+      };
+
+      let whereQueryForFindSheet = {
+        where: {
+          id: values.sheetId,
+        },
+        include: [
+          { model: User, as: "assignedToUserName", attributes: ["id", "Name", "userName"] },
+          { model: User, as: "supervisor", attributes: ["id", "Name", "userName"] },
+        ],
+        raw: true,
+        nest: true,
+      };
+
+      let sheetData = await SheetManagement.findOne(whereQueryForFindSheet);
+
+      if (!sheetData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
+      }
+
+      if (sheetData.assignedToUserId === sheetData.supervisorId) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Task already assigned to supervisor!");
+      }
+
+      // Checking if sheet status is complete for reviewer
+      if (sheetData.statusForUploader !== CONSTANTS.sheetStatuses.Complete) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Please mark it as complete first");
+      }
+
+      //UPDATE sheet assignment & sheet status
+      let dataToBeUpdated = {
+        assignedToUserId: sheetData.supervisorId,
+        statusForSupervisor: CONSTANTS.sheetStatuses.Complete,
+      };
+
+      let whereQuery = {
+        where: { id: sheetData.id },
+      };
+
+      await SheetManagement.update(dataToBeUpdated, whereQuery, {
+        transaction: t,
+      });
+
+      responseMessage.assinedUserToSheet = "Sheet assigned to supervisor successfully";
+      responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
+
+      // Create sheetLog
+
+      await services.sheetManagementService.createSheetLog(
+        values.sheetId,
+        sheetData.assignedToUserName.userName,
+        sheetData.supervisor.userName,
+        CONSTANTS.sheetLogsMessages.uploaderAssignToSupervisor,
+        { transaction: t }
+      );
+
+      responseMessage.sheetLog = "Log record for assignment to supervisor added successfully";
+
+      await t.commit();
+
+      res.status(httpStatus.OK).send(responseMessage);
+    } catch (err) {
+      console.log(err);
       await t.rollback();
       next(err);
     }
