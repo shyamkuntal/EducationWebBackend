@@ -1,6 +1,6 @@
 const { Board, SubBoard } = require("../models/Board.js");
 const { SheetManagement } = require("../models/SheetManagement.js");
-const { Subject, SubjectLevel } = require("../models/Subject.js");
+const { Subject, SubjectLevel, subjectName } = require("../models/Subject.js");
 const { User } = require("../models/User.js");
 const { Variant } = require("../models/Variants.js");
 
@@ -123,7 +123,7 @@ const paginatedSheetManagementSheets = () => {
           "year",
           "season",
           "variantId",
-          "school", 
+          "school",
           "testType",
           "batchHint",
           "publishTo",
@@ -161,6 +161,7 @@ const paginatedSheetManagementSheets = () => {
             model: Subject,
             where: req.query.subjectNameId ? { subjectNameId: req.query.subjectNameId } : {},
             attributes: ["id", "boardId", "subBoardId", "grade", "subjectNameId"],
+            include: [{ model: subjectName, attributes: ["subjectName"] }],
           },
           {
             model: User,

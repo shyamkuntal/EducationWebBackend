@@ -4,6 +4,7 @@ const QuestionManagementController = require("../../controller/Uploader2/Questio
 const QuestionManagementSarveshController = require("../../controller/Uploader2/QuestionManagementSarvesh");
 const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor");
 const paginatedSheetManagementSheets = require("../../middlewares/paginatedSheetManagementSheets");
+const BoardManagementController = require("../../controller/SuperAdmin/BoardM");
 const upload = require("../../config/multer");
 
 // router.post("/createquestion", QuestionManagementController.createQuestion);
@@ -149,5 +150,8 @@ router.patch("/updatesheetinprogress", QuestionManagementController.updateSheetI
 router.patch("/updatesheetcomplete", QuestionManagementController.updateSheetComplete);
 
 router.patch("/submitsheettosupervisor", QuestionManagementController.submitToSupervisor);
+
+router.get("/getallboards", BoardManagementController.getAllBoards);
+router.get("/getallsubboards", BoardManagementController.GetSubBoards);
 
 module.exports = router;
