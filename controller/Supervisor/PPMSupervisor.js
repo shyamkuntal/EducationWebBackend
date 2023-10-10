@@ -493,24 +493,6 @@ const PastPaperSupervisorController = {
     }
   },
 
-  async ToggleArchiveSheet(req, res) {
-    const id = req.params.sheetid;
-    // const isArchived = req.body.isArchived;
-    try {
-      const sheet = await Sheet.findByPk(id);
-
-      if (!sheet) {
-        return res.status(404).json({ message: "sheet not found" });
-      }
-
-      sheet.isArchived = true;
-      await sheet.save();
-      res.json({ status: 200, sheet });
-    } catch (err) {
-      return res.json({ status: 501, error: err.message });
-    }
-  },
-
   async AssignSheetToPastPaper(req, res) {
     try {
       let values = await assignUploderUserToSheetSchema.validateAsync(req.body);
@@ -844,6 +826,23 @@ const PastPaperSupervisorController = {
       const countsArray = Object.values(countsBySubject);
 
       res.send(countsArray);
+    } catch (err) {
+      return res.json({ status: 501, error: err.message });
+    }
+  },
+
+  async ToggleArchiveSheet(req, res) {
+    const id = req.query.sheetid;
+    try {
+      const sheet = await Sheet.findByPk(id);
+
+      if (!sheet) {
+        return res.status(404).json({ message: "sheet not found" });
+      }
+
+      sheet.isArchived = true;
+      await sheet.save();
+      res.json({ status: 200, sheet });
     } catch (err) {
       return res.json({ status: 501, error: err.message });
     }

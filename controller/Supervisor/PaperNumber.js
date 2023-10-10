@@ -315,7 +315,7 @@ const PaperNumberSheetController = {
         },
       });
 
-      let countsBySubject = {}; 
+      let countsBySubject = {};
       activeSheets.forEach((sheet) => {
         const subjectId = sheet.subjectId;
 
@@ -364,6 +364,44 @@ const PaperNumberSheetController = {
     }
   },
 
+  async ArchiveAllPaperNumber(req, res) {
+    const id = req.query.paperNumberSheetId;
+    try {
+      const sheet = await PaperNumberSheet.findByPk(id);
+
+      if (!sheet) {
+        return res.status(404).json({ message: "Sheet not found" });
+      }
+
+      let whereQuery = { where: { paperNumberSheetId: id }, raw: true };
+      let paperNumber = await services.paperNumberService.findPaperNumber(whereQuery);
+
+      for (const mapping of paperNumber) {
+        await services.paperNumberService.updatePaperNumber(
+          { isArchive: true },
+          { where: { id: mapping.id } }
+        );
+      }
+
+      sheet.isArchived = true;
+      await sheet.save();
+
+      res.json({ status: 200, sheet, paperNumber });
+    } catch (err) {
+      return res.json({ status: 501, error: err.message });
+    }
+  },
+
+  async ArchiveSinglePaperNo(req, res, next) {
+    try {
+      const id = req.query.id;
+      let paperNumber = await PaperNumber.update({ isArchive: true }, { where: { id: id } });
+      res.status(httpStatus.OK).send({ message: "Archived Succesfully", paperNumber });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  },
 };
 
 module.exports = PaperNumberSheetController;

@@ -19,6 +19,7 @@ const { Board, SubBoard } = require("../../models/Board");
 const { ApiError } = require("../../middlewares/apiError");
 const db = require("../../config/database");
 const { TopicTask } = require("../../models/TopicTask");
+const { TaskSubTopicMapping, TaskVocabularyMapping, TaskTopicMapping } = require("../../models/TopicTaskMapping");
 
 const TopicManagementController = {
   async createTopicTask(req, res, next) {
@@ -651,6 +652,150 @@ const TopicManagementController = {
       return res.json({ status: 501, error: err.message });
     }
   },
+
+  async ArchiveAllTopicDataByTask(req, res) {
+    const topicTaskId = req.query.topicTaskId;
+    const t = await db.transaction();
+  
+    try {
+      const task = await TopicTask.findByPk(topicTaskId);
+  
+      if (!task) {
+        await t.rollback();
+        return res.status(404).json({ message: "Task not found" });
+      }
+  
+      let topicMappings = await TaskTopicMapping.findAll({
+        where: { topicTaskId: topicTaskId },
+      });
+  
+      for (const topicMapping of topicMappings) {
+        let topicId = topicMapping.topicId;
+  
+        await services.topicTaskService.updateTaskTopicMapping(
+          { isArchived: true },
+          { where: { topicTaskId, topicId } },
+          { transaction: t }
+        );
+  
+        let subTopicMappings = await TaskSubTopicMapping.findAll({
+          where: { topicTaskId, topicId },
+        });
+  
+        for (const subTopicMapping of subTopicMappings) {
+          await services.topicTaskService.updateTaskSubTopicMapping(
+            { isArchived: true },
+            { where: { topicTaskId, topicId, subTopicId: subTopicMapping.subTopicId } },
+            { transaction: t }
+          );
+        }
+  
+        let vocabMappings = await TaskVocabularyMapping.findAll({
+          where: { topicTaskId, topicId },
+        });
+  
+        for (const vocabMapping of vocabMappings) {
+          await services.topicTaskService.updateTaskVocabularyMapping(
+            { isArchived: true },
+            { where: { topicTaskId, topicId, vocabularyId: vocabMapping.vocabularyId } },
+            { transaction: t }
+          );
+        }
+      }
+  
+      task.isArchived = true;
+      await task.save({ transaction: t });
+  
+      await t.commit();
+  
+      res.status(httpStatus.OK).send({ message: "Task and related mappings archived successfully" });
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      return res.json({ status: 501, error: err.message });
+    }
+  },
+
+  async ArchiveVocab(req, res) {
+    const {vocabularyId, topicTaskId, topicId} = req.query;
+    try {
+      const vocabMapping = await TaskVocabularyMapping.findOne({
+        where: { vocabularyId, topicTaskId, topicId },
+      });
+  
+      if (!vocabMapping) {
+        return res.status(404).json({ message: "Vocabulary mapping not found" });
+      }
+  
+      vocabMapping.isArchived = true;
+      await vocabMapping.save();
+  
+      res.status(httpStatus.OK).send({ message: "Vocabulary mapping archived successfully" });
+    } catch (err) {
+      return res.json({ status: 501, error: err.message });
+    }
+  },
+  async ArchiveSubTopic(req, res) {
+    const {subTopicId, topicTaskId, topicId} = req.query;
+    try {
+      const subTopicMapping = await TaskSubTopicMapping.findOne({
+        where: { subTopicId, topicTaskId, topicId },
+      });
+  
+      if (!subTopicMapping) {
+        return res.status(404).json({ message: "Sub-topic mapping not found" });
+      }
+  
+      subTopicMapping.isArchived = true;
+      await subTopicMapping.save();
+  
+      res.status(httpStatus.OK).send({ message: "Sub-topic mapping archived successfully" });
+    } catch (err) {
+      return res.json({ status: 501, error: err.message });
+    }
+  },
+  async ArchiveAllTopicAndData(req, res, next) {
+    const { topicTaskId, topicId } = req.query;
+    const t = await db.transaction();
+    try {
+      const task = await TopicTask.findByPk(topicTaskId);
+  
+      if (!task) {
+        await t.rollback();
+        return res.status(404).json({ message: "Task not found" });
+      }
+  
+      let topic = await TaskTopicMapping.findOne({where: {topicId, topicTaskId}});
+      let subTopicMappings = await services.topicTaskService.findSubTopicTaskMappingsByTaskId(topicTaskId, topicId);
+      let vocabMappings = await services.topicTaskService.findVocabTaskMappingsByTaskId(topicTaskId, topicId);
+  
+      for (const mapping of subTopicMappings) {
+        await services.topicTaskService.updateTaskSubTopicMapping(
+          { isArchived: true },
+          { where: { topicTaskId, topicId, subTopicId: mapping.subTopic.id } },
+          { transaction: t }
+        );
+      }
+      for (const mapping of vocabMappings) {
+        await services.topicTaskService.updateTaskVocabularyMapping(
+          { isArchived: true },
+          { where: { topicTaskId, topicId, vocabularyId: mapping.vocabulary.id } },
+          { transaction: t }
+        );
+      }
+
+      topic.isArchived = true;
+      await topic.save({ transaction: t });
+  
+      await t.commit(); 
+      res.status(httpStatus.OK).send({ message: "Task and related mappings archived successfully", vocabMappings });
+    } catch (err) {
+      console.log(err)
+      await t.rollback();
+      next(err)
+    }
+  }
+  
 };
 
 module.exports = TopicManagementController;

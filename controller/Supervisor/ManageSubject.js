@@ -349,31 +349,6 @@ const SubjectManagementController = {
     }
   },
 
-  async ToggleArchiveLevel(req, res, next) {
-    try {
-      // Update sub-boards
-      let values = await archiveSubjectsLevels.validateAsync(req.body);
-      let dataTobeUpdated = { isArchived: values.isArchived };
-      let whereQuery = {
-        where: { id: values.levelsId, subjectId: values.subjectId },
-      };
-
-      let updateSubjectLevels;
-      if (values.levelsId && values.levelsId.length > 0) {
-        updateSubjectLevels = await services.subjectService.updateSubjectLevels(
-          dataTobeUpdated,
-          whereQuery
-        );
-      }
-
-      if (updateSubjectLevels.length >= 1) {
-        res.status(httpStatus.OK).send({ message: "levels archived successfully" });
-      }
-    } catch (err) {
-      next(err);
-    }
-  },
-
   async createsubjectName(req, res) {
     try {
       const name = req.body.subjectName;
@@ -567,6 +542,63 @@ const SubjectManagementController = {
       next(err);
     }
   },
+
+  async ToggleArchiveLevel(req, res, next) {
+    try {
+      let values = await archiveSubjectsLevels.validateAsync(req.body);
+      let dataTobeUpdated = { isArchived: values.isArchived };
+      let whereQuery = {
+        where: { id: values.levelsId, subjectId: values.subjectId },
+      };
+
+      let updateSubjectLevels;
+      if (values.levelsId && values.levelsId.length > 0) {
+        updateSubjectLevels = await services.subjectService.updateSubjectLevels(
+          dataTobeUpdated,
+          whereQuery
+        );
+      }
+
+      if (updateSubjectLevels.length >= 1) {
+        res.status(httpStatus.OK).send({ message: "levels archived successfully" });
+      }
+    } catch (err) {
+      next(err);
+    }
+  },
+  async SubjectArchive(req, res, next) {
+    try {
+      let subjectId = req.body.subjectId;
+
+      let dataToBeUpdated = { isArchived: true };
+
+      let whereQuery = {
+        where: { subjectId: subjectId },
+      };
+      let levels = await services.subjectService.findSubjectLevels(whereQuery)
+
+      let updateSubjectLevels;
+      
+      for(const item of levels) {
+        updateSubjectLevels = await services.subjectService.updateSubjectLevels(
+          dataToBeUpdated,
+          { where: { id: item.id, subjectId: subjectId } }
+        );
+      }
+
+      let updateSubject = await services.subjectService.updateSubject(
+        { isArchived: true },
+        { where: { id: subjectId } }
+      );
+  
+      if (updateSubject && updateSubjectLevels.length >= 1) {
+        res.status(httpStatus.OK).send({ message: "Subject and levels archived successfully" });
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
+  
 };
 
 module.exports = SubjectManagementController;

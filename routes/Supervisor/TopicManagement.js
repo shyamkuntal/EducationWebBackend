@@ -72,4 +72,9 @@ router.get("/gettopictaskbyid", TopicManagementController.getTopicTaskById);
 // /api/topicmanagement/geterrorreportfile
 router.get("/geterrorreportfile", TopicManagementController.getErrorReportFile);
 
+router.patch("/archivealltopicdata", TopicManagementController.ArchiveAllTopicAndData);
+router.patch("/archivedatabytask", TopicManagementController.ArchiveAllTopicDataByTask);
+router.patch("/archivesubtopic", TopicManagementController.ArchiveSubTopic);
+router.patch("/archivevocab", TopicManagementController.ArchiveVocab);
+
 module.exports = router;
