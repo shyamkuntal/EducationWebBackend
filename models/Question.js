@@ -123,7 +123,7 @@ const Question = db.define("question", {
     type: Sequelize.UUID,
     allowNull: true,
   },
-  isQuestionSubPart: {
+  hasSubPart: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
     allowNull: false,
