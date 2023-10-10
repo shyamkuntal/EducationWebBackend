@@ -2531,11 +2531,13 @@ const QuestionManagementController = {
   async getQuestions(req, res, next) {
     try {
       let values = await getQuestionsSchema.validateAsync({ sheetId: req.query.sheetId });
+      var whereQuery = { sheetId: values.sheetId }
 
-      console.log(values);
+      if (req.query.isCheckedByPricer)
+        whereQuery = { ...whereQuery, isCheckedByPricer:req.query.isCheckedByPricer }
 
       let questions = await Question.findAll({
-        where: { sheetId: values.sheetId },
+        where: whereQuery,
         order: [["createdAt", "ASC"]],
         raw: true,
       });

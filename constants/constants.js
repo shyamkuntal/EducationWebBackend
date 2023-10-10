@@ -49,6 +49,7 @@ module.exports = Object.freeze({
     supervisorAssignToTeacher: " Assigned sheet to Teacher ",
     supervisorAssignToReviewer: " Assigned task to reviewer ",
     reviewerAssignToSupervisor: "Completed sheet review and assigned back to",
+    pricerAssignToSupervisor: "Completed sheet pricing and assigned back to",
     pastPaperrAssignToSupervisor: "Completed sheet assigned back to ",
     reviewerAssignToSupervisorErrorReport: "found an error in the sheet and send back to",
     DataGeneratorAssignToSupervisor: "Completed sheet assigned back to",
