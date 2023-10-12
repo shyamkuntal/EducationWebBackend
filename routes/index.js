@@ -10,7 +10,7 @@ const PaperNumberDataGenerator = require("./DataGenerator/PaperNoManagement");
 const TopicManagementDataGenerator = require("./DataGenerator/TopicManagement");
 const AccountManagement = require("./Supervisor/AccountManagement");
 const BookManagement = require("./Supervisor/BookManagement");
-const NoticeBoard = require("./Supervisor/NoticeBoard")
+const NoticeBoard = require("./Supervisor/NoticeBoard");
 const PastPaperReviewer = require("./Reviewer/PastPaperReviewer");
 const PastPaperUploader = require("./PastPaperUploader/PastPaperUploader");
 const TopicManagement = require("./Supervisor/TopicManagement");
@@ -22,9 +22,9 @@ const QuestionManagementUploader2 = require("./Uploader2/QuestionManagement");
 const TeacherSheetManagement = require("./Teacher/SheetManagement");
 const PricerSheetManagement = require("./Pricer/SheetManagement");
 const PublicRoutes = require("./PublicRoutes.js");
-const SupervisorDashboard = require("./Supervisor/DashBoard")
-const Notice = require("./Supervisor/NoticeBoard")
-const Archive = require('./Supervisor/ArchiveMangement')
+const SupervisorDashboard = require("./Supervisor/DashBoard");
+const Notice = require("./Supervisor/NoticeBoard");
+const Archive = require("./Supervisor/ArchiveMangement");
 const Auth = require("./Auth.js");
 const {
   AuthSuperadmin,
@@ -35,7 +35,7 @@ const {
   AuthDataGenerator,
   AuthUploader2,
   AuthTeacher,
-  AuthPricer
+  AuthPricer,
 } = require("../middlewares/authentication.js");
 
 const router = express.Router();
@@ -46,10 +46,10 @@ router.use("/public", PublicRoutes);
 router.use("/accountmanagement", AuthSuperadminSupervisor(), AccountManagement);
 router.use("/boardmanagement", AuthSuperadmin(), BoardRouters);
 
-router.use("/supervisordashboard", AuthSupervisor(), SupervisorDashboard)
-router.use("/notice", AuthSupervisor(), Notice)
+router.use("/supervisordashboard", AuthSupervisor(), SupervisorDashboard);
+router.use("/notice", AuthSupervisor(), Notice);
 
-router.use("/archivemanagement", AuthSupervisor(), Archive)
+router.use("/archivemanagement", AuthSupervisor(), Archive);
 router.use("/ppmsupervisor", AuthSuperadminSupervisor(), PastPaper);
 router.use("/subjectmanagement", AuthSupervisor(), SubjectRouters);
 router.use("/pnmanagement", AuthSupervisor(), PaperNumber);

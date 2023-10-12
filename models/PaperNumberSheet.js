@@ -109,6 +109,10 @@ PaperNumberSheet.belongsTo(User, {
   as: "assignedToUserName",
 });
 
+Subject.hasMany(PaperNumberSheet, {
+  foreignKey: "subjectId",
+});
+
 User.hasMany(PaperNumberSheet, {
   foreignKey: "assignedToUserId",
 });

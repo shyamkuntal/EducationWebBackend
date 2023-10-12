@@ -35,7 +35,16 @@ const TaskTopicMapping = db.define("taskTopicMapping", {
 TaskTopicMapping.belongsTo(TopicTask, {
   foreignKey: { name: "topicTaskId" },
 });
+
+TopicTask.hasMany(TaskTopicMapping, {
+  foreignKey: { name: "topicTaskId" },
+});
+
 TaskTopicMapping.belongsTo(Topic, {
+  foreignKey: { name: "topicId" },
+});
+
+Topic.belongsTo(TaskTopicMapping, {
   foreignKey: { name: "topicId" },
 });
 

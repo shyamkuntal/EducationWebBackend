@@ -105,6 +105,10 @@ TopicTask.belongsTo(Subject, {
   foreignKey: { name: "subjectId" },
 });
 
+Subject.hasMany(TopicTask, {
+  foreignKey: { name: "subjectId" },
+});
+
 TopicTask.belongsTo(User, {
   foreignKey: { name: "supervisorId" },
   as: "supervisor",
