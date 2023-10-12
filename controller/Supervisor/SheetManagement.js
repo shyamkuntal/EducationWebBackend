@@ -1,6 +1,11 @@
 const CONSTANTS = require("../../constants/constants.js");
 const httpStatus = require("http-status");
-const { createSheetSchema, assignSheetToUploaderSchema, assignSheetToReviewerSchema, assignSheetToTeacherSchema } = require("../../validations/SheetManagementValidations.js");
+const {
+  createSheetSchema,
+  assignSheetToUploaderSchema,
+  assignSheetToReviewerSchema,
+  assignSheetToTeacherSchema,
+} = require("../../validations/SheetManagementValidations.js");
 const { SheetManagement, SheetManagementLog } = require("../../models/SheetManagement.js");
 const db = require("../../config/database");
 const { SheetManagementPaperNoMapping } = require("../../models/SheetManagementPaperNoMapping.js");
@@ -9,7 +14,6 @@ const { SheetManagementBookMapping } = require("../../models/SheetManagementBook
 const services = require("../../services/index");
 
 const SheetManagementController = {
-
   async createSheet(req, res, next) {
     const t = await db.transaction();
     try {
@@ -20,7 +24,7 @@ const SheetManagementController = {
       });
 
       const mappingEntries = [];
-      if(values.sheetType === "Books"){
+      if (values.sheetType === "Books") {
         let bookMapping = await SheetManagementBookMapping.create(
           {
             sheetManagementId: sheet.id,
@@ -29,41 +33,46 @@ const SheetManagementController = {
             chapterName: values.chapterName,
             startPageNo: values.startPageNo,
             endPageNo: values.endPageNo,
-          },{
-          transaction: t,
-        });
-        console.log("bookMapping", bookMapping)
+          },
+          {
+            transaction: t,
+          }
+        );
+        console.log("bookMapping", bookMapping);
       }
 
-      if(values.sheetType === "Top School" || values.sheetType === "Past Paper"){
-        let paperNumbers = values.paperNumber
+      if (values.sheetType === "Top School" || values.sheetType === "Past Paper") {
+        let paperNumbers = values.paperNumber;
         for (let item of paperNumbers) {
-          const mapping = await SheetManagementPaperNoMapping.create({
-            sheetManagementId: sheet.id,
-            paperNoId: item,
-          }, {
-            transaction: t,
-          });
+          const mapping = await SheetManagementPaperNoMapping.create(
+            {
+              sheetManagementId: sheet.id,
+              paperNoId: item,
+            },
+            {
+              transaction: t,
+            }
+          );
           mappingEntries.push(mapping);
         }
       }
 
       await t.commit();
-      res.status(httpStatus.OK).send({sheet, mappingEntries});
+      res.status(httpStatus.OK).send({ sheet, mappingEntries });
     } catch (err) {
-      console.log(err)
+      console.log(err);
       await t.rollback();
       next(err);
     }
   },
 
-  async FindBookByBookId(req, res, next){
-    const id = req.query.bookId
+  async FindBookByBookId(req, res, next) {
+    const id = req.query.bookId;
     try {
-      const book = await findBookByBookId(id)
+      const book = await findBookByBookId(id);
       res.status(httpStatus.OK).send(book);
     } catch (err) {
-      next(err)
+      next(err);
     }
   },
 
@@ -91,7 +100,6 @@ const SheetManagementController = {
         if (sheetData.assignedToUserId === userData.id) {
           res.status(httpStatus.OK).send({ message: "Sheet already assigned to Uploader" });
         } else {
-
           let dataToBeUpdatedInTaskTable = {
             assignedToUserId: userData.id,
             uploader2Id: userData.id,
@@ -158,11 +166,9 @@ const SheetManagementController = {
       };
 
       if (userData && sheetData) {
-
         if (sheetData.assignedToUserId === userData.id) {
           res.status(httpStatus.OK).send({ message: "Sheet already assigned to Reviewer" });
         } else {
-
           let dataToBeUpdatedInTaskTable = {
             assignedToUserId: userData.id,
             reviewerId: userData.id,
@@ -229,11 +235,9 @@ const SheetManagementController = {
       };
 
       if (userData && sheetData) {
-
         if (sheetData.assignedToUserId === userData.id) {
           res.status(httpStatus.OK).send({ message: "Sheet already assigned to Teacher" });
         } else {
-
           let dataToBeUpdatedInTaskTable = {
             assignedToUserId: userData.id,
             teacherId: userData.id,
@@ -289,7 +293,7 @@ const SheetManagementController = {
 
       let whereQueryForTaskFind = { where: { id: sheetId }, raw: true };
 
-      let task = await services.sheetManagementService.findSheet (whereQueryForTaskFind);
+      let task = await services.sheetManagementService.findSheet(whereQueryForTaskFind);
 
       if (!task) {
         return res.status(httpStatus.BAD_REQUEST).send({ message: "Sheet not found" });
@@ -324,19 +328,28 @@ const SheetManagementController = {
 
   async getSheetLogs(req, res, next) {
     try {
-      let sheetId = req.query.sheetId
+      let sheetId = req.query.sheetId;
 
       let logs = await SheetManagementLog.findAll({
         where: { sheetManagementId: sheetId },
         order: [["createdAt", "ASC"]],
       });
-      
+
       res.status(httpStatus.OK).send(logs);
     } catch (err) {
       next(err);
     }
   },
 
+  async ArchiveSheet(req, res, next) {
+    try {
+      var sheet = await SheetManagement.update({ isArchived: true }, { where: req.body });
+      res.status(httpStatus.OK).send({ message: "Archived Succesfully", sheet });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  },
 };
 
 module.exports = SheetManagementController;

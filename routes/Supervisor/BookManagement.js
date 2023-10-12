@@ -54,4 +54,8 @@ router.get(
 
 router.get("/getcountscarddata", BookManagementController.getCountsCardData);
 
+router.patch("/archivebooktask", BookManagementController.ArchiveAllBookDataByTask)
+router.patch("/archivebook", BookManagementController.ArchiveBookAndData)
+router.patch("/archivechapter", BookManagementController.ArchiveChapter)
+
 module.exports = router;

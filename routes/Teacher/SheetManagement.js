@@ -29,5 +29,12 @@ router.post("/editvocabmapping", TeacherSheetManagementController.editVocabMappi
 router.get("/gettopicsubtopicvocabmappingsforquestion", TeacherSheetManagementController.getTopicSubTopicVocabMappingsForQuestion);
 router.get("/getquestions", QuestionManagementController.getQuestions);
 
+router.patch("/editquestion", QuestionManagementController.editQuestion);
+
+router.patch("/markquestionaserror", TeacherSheetManagementController.markQuestionAsError);
+router.patch("/markquestionaschecked", TeacherSheetManagementController.markQuestionAsChecked);
+router.patch("/removequestionaserror", TeacherSheetManagementController.removeQuestionAsError);
+router.patch("/removequestionaschecked", TeacherSheetManagementController.removeQuestionAsChecked);
+
 
 module.exports = router;

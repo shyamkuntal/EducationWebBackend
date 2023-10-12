@@ -19,8 +19,15 @@ router.get("/getallshmsheets", paginatedSheetManagementSheets(), (req, res) => {
     res.json(res.paginatedResults);
 });
 
+router.patch("/updateinprogressstatus", PricerSheetManagementController.updateInProgressTaskStatus)
+router.patch("/updatecompletestatus", PricerSheetManagementController.updateCompletedTaskStatus)
+
 router.get("/gettopicsubtopicvocabmappingsforquestion", PricerSheetManagementController.getTopicSubTopicVocabMappingsForQuestion);
+router.patch("/addprice", PricerSheetManagementController.addPriceForQuestion);
+router.patch("/removeprice", PricerSheetManagementController.removePriceForQuestion);
 router.get("/getquestions", QuestionManagementController.getQuestions);
+
+router.patch("/assigntosupervisor", PricerSheetManagementController.AssignSheetToSupervisor)
 
 
 module.exports = router;

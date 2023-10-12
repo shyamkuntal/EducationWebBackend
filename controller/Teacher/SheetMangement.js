@@ -253,6 +253,89 @@ const TeacherSheetManagementController = {
       next(err);
     }
   },
+  async markQuestionAsChecked(req, res, next){
+    const t = await db.transaction();
+    try {
+      const { questionId, questionData } = req.body;
+
+      const updatedData = {
+        isCheckedByTeacher: true,
+        isErrorByTeacher: false
+      };
+
+      let question = await services.questionService.updateQuestion(questionId, updatedData, {
+        transaction: t,
+      });
+
+      res.status(httpStatus.OK).send(question);
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async markQuestionAsError(req, res, next){
+    const t = await db.transaction();
+    try {
+      const { questionId, errorReport } = req.body;
+
+      const updatedData = {
+        isCheckedByTeacher: false,
+        isErrorByTeacher: true,
+        errorReportByTeacher: errorReport
+      };
+
+      let question = await services.questionService.updateQuestion(questionId, updatedData, {
+        transaction: t,
+      });
+
+      res.status(httpStatus.OK).send(question);
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async removeQuestionAsError(req, res, next){
+    const t = await db.transaction();
+    try {
+      const questionId = req.query.questionId;
+
+      const updatedData = {
+        isErrorByTeacher: false,
+      };
+
+      let question = await services.questionService.updateQuestion(questionId, updatedData, {
+        transaction: t,
+      });
+
+      res.status(httpStatus.OK).send(question);
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async removeQuestionAsChecked(req, res, next){
+    const t = await db.transaction();
+    try {
+      const questionId = req.query.questionId;
+
+      const updatedData = {
+        isCheckedByTeacher: false
+      };
+
+      let question = await services.questionService.updateQuestion(questionId, updatedData, {
+        transaction: t,
+      });
+
+      res.status(httpStatus.OK).send(question);
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
 };
 
 module.exports = TeacherSheetManagementController;

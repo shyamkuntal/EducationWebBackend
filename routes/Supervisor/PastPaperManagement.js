@@ -51,15 +51,17 @@ router.get("/:sheetid/getsheet/", PastPaperSupervisorController.getsinglesheet);
 
 router.patch("/:sheetid/togglepublishsheet", PastPaperSupervisorController.TogglePublishSheet);
 
-router.patch("/:sheetid/togglearchivesheet", PastPaperSupervisorController.ToggleArchiveSheet);
-router.patch("/assignsheettopastpaper", PastPaperSupervisorController.AssignSheetToPastPaper);
 router.patch("/assignsheettoreviewer", PastPaperSupervisorController.AssignSheetToReviewer);
+router.patch("/assignsheettopastpaper", PastPaperSupervisorController.AssignSheetToPastPaper);
 
 router.get("/getpastpaper", PastPaperSupervisorController.getPastPaper);
 
 router.get(
   "/getpapernumberbyboardsubBoardgradesubject",
   PastPaperSupervisorController.getPaperNumberbyBoardSubBoardGradeSubject
-);
+  );
+  
+router.patch("/togglearchivesheet", PastPaperSupervisorController.ToggleArchiveSheet);
+
 
 module.exports = router;

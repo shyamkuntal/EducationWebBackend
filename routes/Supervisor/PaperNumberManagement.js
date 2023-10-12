@@ -37,4 +37,7 @@ router.get("/getdistinctpapernumbers", PaperNumberSheetController.getDistinctPap
 
 router.get("/getcountscarddata", PaperNumberSheetController.getCountsCardData);
 
+router.patch("/archiveallpaperno", PaperNumberSheetController.ArchiveAllPaperNumber);
+router.patch("/archivepapernumber", PaperNumberSheetController.ArchiveSinglePaperNo);
+
 module.exports = router;

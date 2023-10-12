@@ -183,7 +183,7 @@ const findSubTopicTaskMappingsByTaskId = async (topicTaskId, topicId) => {
   try {
     let mappings = await TaskSubTopicMapping.findAll({
       where: { topicTaskId, topicId },
-      attributes: ["topicId", "topicTaskId", "errorReport", "isError"],
+      attributes: ["topicId", "topicTaskId", "errorReport", "isError", "isArchived"],
       include: [{ model: SubTopic, attributes: ["id", "name"] }],
     });
 
@@ -197,7 +197,7 @@ const findVocabTaskMappingsByTaskId = async (topicTaskId, topicId) => {
   try {
     let mappings = await TaskVocabularyMapping.findAll({
       where: { topicTaskId, topicId },
-      attributes: ["topicId", "topicTaskId", "errorReport", "isError"],
+      attributes: ["topicId", "topicTaskId", "errorReport", "isError", "isArchived"],
       include: [{ model: Vocabulary, attributes: ["id", "name"] }],
     });
     return mappings;

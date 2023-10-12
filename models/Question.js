@@ -152,6 +152,10 @@ const Question = db.define("question", {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
+  subQuestionNumberingScheme: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
 });
 
 Question.sync().then(() => {

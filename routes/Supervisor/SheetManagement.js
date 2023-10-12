@@ -21,4 +21,6 @@ router.patch("/assignsheettoteacher", SheetManagementController.assignSheetToTea
 
 router.get("/getsheetlogs", SheetManagementController.getSheetLogs);
 
+router.patch("/archivesheet", SheetManagementController.ArchiveSheet);
+
 module.exports = router;
