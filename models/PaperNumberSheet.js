@@ -221,6 +221,10 @@ PaperNumber.belongsTo(PaperNumberSheet, {
   foreignKey: "paperNumberSheetId",
 });
 
+PaperNumberSheet.hasMany(PaperNumber, {
+  foreignKey: "paperNumberSheetId",
+});
+
 module.exports = {
   PaperNumberSheet,
   PaperNumberSheetLog,

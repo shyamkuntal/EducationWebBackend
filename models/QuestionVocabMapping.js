@@ -11,22 +11,30 @@ const QuestionVocabMapping = db.define("questionVocabMapping", {
   },
   questionId: {
     type: Sequelize.UUID,
-    allowNull: false
+    allowNull: false,
   },
   vocabId: {
     type: Sequelize.UUID,
-    allowNull: false
+    allowNull: false,
   },
 });
 
 QuestionVocabMapping.belongsTo(Question, {
-  foreignKey: { name: "questionId" }
+  foreignKey: { name: "questionId" },
+});
+
+Question.hasMany(QuestionVocabMapping, {
+  foreignKey: { name: "questionId" },
 });
 
 QuestionVocabMapping.belongsTo(Vocabulary, {
-  foreignKey: { name: "vocabId" }
+  foreignKey: { name: "vocabId" },
 });
 
-QuestionVocabMapping.sync()
+Vocabulary.hasMany(QuestionVocabMapping, {
+  foreignKey: { name: "vocabId" },
+});
+
+QuestionVocabMapping.sync();
 
 module.exports = { QuestionVocabMapping };

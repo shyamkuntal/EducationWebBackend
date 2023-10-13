@@ -11,21 +11,30 @@ const QuestionTopicMapping = db.define("questionTopicMapping", {
   },
   questionId: {
     type: Sequelize.UUID,
-    allowNull: false
+    allowNull: false,
   },
   topicId: {
     type: Sequelize.UUID,
-    allowNull: false
+    allowNull: false,
   },
 });
 
 QuestionTopicMapping.belongsTo(Question, {
-  foreignKey: { name: "questionId" }
-});
-QuestionTopicMapping.belongsTo(Topic, {
-  foreignKey: { name: "topicId" }
+  foreignKey: { name: "questionId" },
 });
 
-QuestionTopicMapping.sync()
+Question.hasMany(QuestionTopicMapping, {
+  foreignKey: { name: "questionId" },
+});
+
+QuestionTopicMapping.belongsTo(Topic, {
+  foreignKey: { name: "topicId" },
+});
+
+Topic.hasMany(QuestionTopicMapping, {
+  foreignKey: { name: "topicId" },
+});
+
+QuestionTopicMapping.sync();
 
 module.exports = { QuestionTopicMapping };

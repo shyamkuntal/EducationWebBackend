@@ -44,9 +44,13 @@ TaskTopicMapping.belongsTo(Topic, {
   foreignKey: { name: "topicId" },
 });
 
-Topic.belongsTo(TaskTopicMapping, {
-  foreignKey: { name: "topicId" },
-});
+// Topic.hasMany(TaskTopicMapping, {
+//   foreignKey: { name: "topicId" },
+// });
+
+// Topic.belongsTo(TaskTopicMapping, {
+//   foreignKey: { name: "topicId" },
+// });
 
 TaskTopicMapping.sync().then(() => {
   console.log("TaskTopic Created");
@@ -90,6 +94,7 @@ TaskSubTopicMapping.belongsTo(TopicTask, {
 TaskTopicMapping.belongsTo(Topic, {
   foreignKey: { name: "topicId" },
 });
+
 TaskSubTopicMapping.belongsTo(SubTopic, {
   foreignKey: { name: "subTopicId" },
 });
@@ -136,6 +141,7 @@ TaskVocabularyMapping.belongsTo(TopicTask, {
 TaskVocabularyMapping.belongsTo(Topic, {
   foreignKey: { name: "topicId" },
 });
+
 TaskVocabularyMapping.belongsTo(Vocabulary, {
   foreignKey: { name: "vocabularyId" },
 });

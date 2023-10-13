@@ -2,11 +2,14 @@ const { Board, SubBoard } = require("../../models/Board");
 const { Subject, SubjectLevel } = require("../../models/Subject");
 const { SheetManagement } = require("../../models/SheetManagement");
 const { Variant } = require("../../models/Variants");
-const { PaperNumberSheet } = require("../../models/PaperNumberSheet");
+const { PaperNumberSheet, PaperNumber } = require("../../models/PaperNumberSheet");
 const { TopicTask } = require("../../models/TopicTask");
 const { TaskTopicMapping } = require("../../models/TopicTaskMapping");
+const { QuestionTopicMapping } = require("../../models/QuestionTopicMapping");
 const { Topic } = require("../../models/Topic");
 const { Question } = require("../../models/Question");
+const { QuestionVocabMapping } = require("../../models/QuestionVocabMapping");
+const { Vocabulary } = require("../../models/Vocabulary");
 const { where, Model } = require("sequelize");
 
 const AllFilteredApi = {
@@ -16,7 +19,6 @@ const AllFilteredApi = {
       console.log("success");
       const Result = await Board.findAll();
       res.send(Result);
-      s;
     } catch (error) {
       console.log(error);
       res.status(500).send("Internal Server Error"); // Handle the error appropriately
@@ -42,10 +44,12 @@ const AllFilteredApi = {
 
   async getAllSubjects(req, res) {
     try {
-      const boardId = req.query.id; // Assuming boardId is passed in the request params
+      const boardId = req.query.id;
+      const grade = req.query.grade; // Assuming boardId is passed in the request params
       const Result = await Subject.findAll({
         where: {
           subBoardId: boardId,
+          grade: grade,
         },
         include: ["subjectName"], // Include the associated Child model
       });
@@ -190,10 +194,15 @@ const AllFilteredApi = {
   async getAllPaperNumber(req, res) {
     try {
       const subjectId = req.query.id; // Assuming boardId is passed in the request params
-      const Result = await PaperNumberSheet.findAll({
-        where: {
-          subjectId: subjectId,
-        },
+      const Result = await PaperNumber.findAll({
+        include: [
+          {
+            model: PaperNumberSheet,
+            where: {
+              subjectId: subjectId,
+            },
+          },
+        ],
       });
       res.send(Result);
     } catch (error) {
@@ -205,6 +214,7 @@ const AllFilteredApi = {
   async getAllTopicsUsingSubjectID(req, res) {
     try {
       const subjectId = req.query.id;
+      console.log(subjectId, "id");
       const topics = await TaskTopicMapping.findAll({
         include: [
           {
@@ -220,7 +230,7 @@ const AllFilteredApi = {
       });
       let TopicNameArray = [];
       topics.forEach((topic) => {
-        TopicNameArray.push(topic.topic);
+        TopicNameArray.push({ topic: topic?.topic, topicTaskId: topic.topicTaskId });
       });
       res.send(TopicNameArray);
     } catch (error) {
@@ -246,34 +256,34 @@ const AllFilteredApi = {
       let paperNo = req.query.paperNo;
       let level = req.query.level;
 
-      if (board !== undefined) {
+      if (board) {
         whereClauseForSheet.boardId = board;
       }
-      if (subboard !== undefined) {
+      if (subboard) {
         whereClauseForSheet.subBoardId == subboard;
       }
-      if (grade !== undefined) {
+      if (grade) {
         whereClauseForSheet.grade = grade;
       }
-      if (year !== undefined) {
+      if (year) {
         whereClauseForSheet.year = year;
       }
-      if (season !== undefined) {
+      if (season) {
         whereClauseForSheet.season = season;
       }
-      if (variant !== undefined) {
-        whereClauseForSheet.variantID = variant;
+      if (variant) {
+        whereClauseForSheet.variantId = variant;
       }
-      if (subject !== undefined) {
+      if (subject) {
         whereClauseForSheet.subjectId = subject;
       }
-      if (level !== undefined) {
-        whereClauseForLevel.levelID = level;
+      if (level) {
+        whereClauseForLevel.id = level;
       }
-      if (paperNo !== undefined) {
+      if (paperNo) {
         whereClauseForPaperNo.id = paperNo;
       }
-      if (topic !== undefined) {
+      if (topic) {
         whereClauseForTopic.topicId = topic;
       }
 
@@ -304,6 +314,22 @@ const AllFilteredApi = {
                     ],
                   },
                 ],
+              },
+            ],
+          },
+          {
+            model: QuestionTopicMapping,
+            include: [
+              {
+                model: Topic,
+              },
+            ],
+          },
+          {
+            model: QuestionVocabMapping,
+            include: [
+              {
+                model: Vocabulary,
               },
             ],
           },
