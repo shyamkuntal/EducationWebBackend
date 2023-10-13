@@ -167,8 +167,13 @@ const SheetManagement = db.define("sheetManagement", {
   errorReport: { type: Sequelize.STRING, allowNull: true },
   errorReportImg: { type: Sequelize.STRING, allowNull: true },
   reviewerCommentToSupervisor: { type: Sequelize.STRING, allowNull: true },
+  teacherCommentToSupervisor: { type: Sequelize.STRING, allowNull: true },
+  pricerCommentToSupervisor: { type: Sequelize.STRING, allowNull: true },
+  uploader2CommentToSupervisor: { type: Sequelize.STRING, allowNull: true },
   supervisorCommentToReviewer: { type: Sequelize.STRING, allowNull: true },
   supervisorCommentToUploader2: { type: Sequelize.STRING, allowNull: true },
+  supervisorCommentToTeacher: { type: Sequelize.STRING, allowNull: true },
+  supervisorCommentToPricer: { type: Sequelize.STRING, allowNull: true },
   isSpam: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,

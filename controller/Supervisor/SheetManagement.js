@@ -5,6 +5,7 @@ const {
   assignSheetToUploaderSchema,
   assignSheetToReviewerSchema,
   assignSheetToTeacherSchema,
+  assignSheetToPricerSchema,
 } = require("../../validations/SheetManagementValidations.js");
 const { SheetManagement, SheetManagementLog } = require("../../models/SheetManagement.js");
 const db = require("../../config/database");
@@ -244,7 +245,7 @@ const SheetManagementController = {
             lifeCycle: CONSTANTS.roleNames.Teacher,
             statusForSupervisor: CONSTANTS.sheetStatuses.NotStarted,
             statusForTeacher: CONSTANTS.sheetStatuses.NotStarted,
-            supervisorCommentToUploader: values.supervisorComments,
+            supervisorCommentToTeacher: values.supervisorComments,
           };
 
           let updatedSheet = await SheetManagement.update(dataToBeUpdatedInTaskTable, {
@@ -285,38 +286,104 @@ const SheetManagementController = {
     }
   },
 
-  async togglePublishSheetTask(req, res, next) {
+  async assignSheetToPricer(req, res, next) {
+    const t = await db.transaction();
     try {
-      let sheetId = req.query.sheetId;
+      let values = await assignSheetToPricerSchema.validateAsync(req.body);
+
+      let userData = await services.userService.finduser(
+        values.pricerId,
+        CONSTANTS.roleNames.Pricer
+      );
+
+      let sheetData = await services.sheetManagementService.findSheetAndUser(values.sheetId);
+
+      let responseMessage = {
+        assinedUserToTask: "",
+        UpdateSheetStatus: "",
+        taskLog: "",
+      };
+
+      if (userData && sheetData) {
+        if (sheetData.assignedToUserId === userData.id) {
+          res.status(httpStatus.OK).send({ message: "Sheet already assigned to Pricer" });
+        } else {
+          let dataToBeUpdatedInTaskTable = {
+            assignedToUserId: userData.id,
+            pricerId: userData.id,
+            lifeCycle: CONSTANTS.roleNames.Pricer,
+            statusForSupervisor: CONSTANTS.sheetStatuses.NotStarted,
+            statusForPricer: CONSTANTS.sheetStatuses.NotStarted,
+            supervisorCommentToPricer: values.supervisorComments,
+          };
+
+          let updatedSheet = await SheetManagement.update(dataToBeUpdatedInTaskTable, {
+            where: { id: values.sheetId },
+            returning: true,
+            transaction: t,
+          });
+
+          if (updatedSheet.length > 0) {
+            responseMessage.assinedUserToTask =
+              "Sheet assigned to Teacher and lifeCycle updated successfully";
+            responseMessage.UpdateTaskStatus = "Sheet Statuses updated successfully";
+          }
+
+          let createLog = await services.sheetManagementService.createSheetLog(
+            sheetData.id,
+            sheetData.supervisor.Name,
+            userData.Name,
+            CONSTANTS.sheetLogsMessages.supervisorAssignToPricer,
+            { transaction: t }
+          );
+
+          if (createLog) {
+            responseMessage.taskLog =
+              "Log record for task assignment to Pricer added successfully";
+          }
+
+          await t.commit();
+          res.status(httpStatus.OK).send(responseMessage);
+        }
+      } else {
+        res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Task Id" });
+      }
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async publishShmSheetTask(req, res, next) {
+    try {
+      let values = req.body;
 
       let responseMessage = {};
 
-      let whereQueryForTaskFind = { where: { id: sheetId }, raw: true };
+      let whereQueryForTaskFind = { where: { id: values.sheetId }, raw: true };
 
       let task = await services.sheetManagementService.findSheet(whereQueryForTaskFind);
 
       if (!task) {
         return res.status(httpStatus.BAD_REQUEST).send({ message: "Sheet not found" });
       }
-
+    
       let taskData = task[0];
 
       let dataToBeUpdated = {
         isPublished: !taskData.isPublished,
+        publishTo: values.publishTo,
         isSpam: false,
       };
 
-      let whereQuery = {
-        where: { id: sheetId },
-      };
-
       let updateTask = await SheetManagement.update(dataToBeUpdated, {
-        whereQuery,
+        where: { id: values.sheetId },
         returning: true,
       });
 
       if (updateTask.length > 0) {
-        responseMessage.message = `sheet IsPublished set to ${dataToBeUpdated.isPublished}`;
+        responseMessage.message = `sheet is Published to ${dataToBeUpdated.publishTo}`;
       }
 
       res.status(httpStatus.OK).send({ responseMessage });

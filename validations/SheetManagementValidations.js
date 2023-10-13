@@ -49,9 +49,15 @@ const assignSheetToTeacherSchema = Joi.object({
   teacherId: Joi.string().guid().required(),
   supervisorComments: Joi.string().max(225),
 });
+const assignSheetToPricerSchema = Joi.object({
+  sheetId: Joi.string().guid().required(),
+  pricerId: Joi.string().guid().required(),
+  supervisorComments: Joi.string().max(225),
+});
 module.exports = { 
   createSheetSchema ,
   assignSheetToUploaderSchema,
   assignSheetToReviewerSchema,
   assignSheetToTeacherSchema,
+  assignSheetToPricerSchema
 };
