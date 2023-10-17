@@ -2,7 +2,7 @@ const Joi = require("joi");
 const CONSTANTS = require("../constants/constants");
 
 const createQuestionsSchema = Joi.object({
-  sheetId: Joi.string().guid().required(),
+  sheetId: Joi.string().guid(),
   questionType: Joi.string().required(),
   questionData: Joi.string().required(),
   questionDescription: Joi.string(),
@@ -26,13 +26,13 @@ const createQuestionsSchema = Joi.object({
   isErrorByTeacher: Joi.boolean(),
   isCheckedByReviewer: Joi.boolean(),
   isErrorByReviewer: Joi.boolean(),
-  // hasSubParts: Joi.boolean(),
   parentQuestionId: Joi.string().guid(),
-  isQuestionSubPart: Joi.boolean(),
+  hasSubPart: Joi.boolean(),
   includeExplanation: Joi.boolean(),
   explanation: Joi.string(),
   questionIndentifier: Joi.string(),
   isShuffle: Joi.boolean(),
+  subQuestionNumberingScheme: Joi.string(),
 });
 
 const createTextQuestionSchema = Joi.array().items({

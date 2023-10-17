@@ -2531,16 +2531,16 @@ const QuestionManagementController = {
   async getQuestions(req, res, next) {
     try {
       let values = await getQuestionsSchema.validateAsync({ sheetId: req.query.sheetId });
-      var whereQuery = { sheetId: values.sheetId };
+      let whereQuery = { sheetId: values.sheetId };
 
       if (req.query.isCheckedByPricer)
-        whereQuery = { ...whereQuery, isCheckedByPricer:  req.query.isCheckedByPricer };
+        whereQuery = { ...whereQuery, isCheckedByPricer: req.query.isCheckedByPricer };
 
       if (req.query.isCheckedByReviewer)
-        whereQuery = { ...whereQuery, isCheckedByReviewer: req.query.isCheckedByReviewer }
+        whereQuery = { ...whereQuery, isCheckedByReviewer: req.query.isCheckedByReviewer };
 
       if (req.query.isErrorByReviewer)
-        whereQuery = { ...whereQuery, isErrorByReviewer: req.query.isErrorByReviewer }
+        whereQuery = { ...whereQuery, isErrorByReviewer: req.query.isErrorByReviewer };
 
       let questions = await Question.findAll({
         where: whereQuery,
@@ -2548,223 +2548,7 @@ const QuestionManagementController = {
         raw: true,
       });
 
-      let questionDetails = [];
-
-      for (let i = 0; i < questions.length; i++) {
-        let type = questions[i].questionType;
-
-        switch (type) {
-          case CONSTANTS.questionType.Text:
-            questionDetails.push(questions[i]);
-            break;
-
-          case CONSTANTS.questionType.Image:
-            questionDetails.push(questions[i]);
-            break;
-
-          case CONSTANTS.questionType.Audio:
-            questionDetails.push(questions[i]);
-            break;
-
-          case CONSTANTS.questionType.Video:
-            questionDetails.push(questions[i]);
-            break;
-
-          case CONSTANTS.questionType.Simulation:
-            questionDetails.push(questions[i]);
-            break;
-
-          case CONSTANTS.questionType.PDF:
-            questionDetails.push(questions[i]);
-            break;
-
-          case CONSTANTS.questionType.Long_Answer:
-            questionDetails.push(questions[i]);
-            break;
-
-          case CONSTANTS.questionType.MCQ_Single:
-            let mcqQuestion = questions[i];
-
-            let mcqOptions = await McqQuestionOption.findAll({
-              where: { questionId: questions[i].id },
-            });
-
-            mcqQuestion.options = mcqOptions;
-
-            questionDetails.push(mcqQuestion);
-
-            break;
-          case CONSTANTS.questionType.MCQ_Multiple:
-            let mcqMutipleQuestion = questions[i];
-
-            let mcqMultipleOptions = await McqQuestionOption.findAll({
-              where: { questionId: questions[i].id },
-            });
-
-            mcqMutipleQuestion.options = mcqMultipleOptions;
-
-            questionDetails.push(mcqMutipleQuestion);
-            break;
-
-          case CONSTANTS.questionType.True_False:
-            let trueFalseQuestion = questions[i];
-
-            let trueFalseStatements = await TrueFalseQuestionOption.findAll({
-              where: { questionId: questions[i].id },
-            });
-
-            trueFalseQuestion.options = trueFalseStatements;
-
-            questionDetails.push(trueFalseQuestion);
-            break;
-
-          case CONSTANTS.questionType.Fill_Text:
-            questionDetails.push(questions[i]);
-            break;
-
-          case CONSTANTS.questionType.Fill_Dropdown:
-            let dropDownQuestion = questions[i];
-
-            let dropDownQuestionOptions = await FillDropDownOption.findAll({
-              where: { questionId: questions[i].id },
-            });
-
-            dropDownQuestion.options = dropDownQuestionOptions;
-
-            questionDetails.push(dropDownQuestion);
-
-            break;
-
-          case CONSTANTS.questionType.Match:
-            let matchQuestion = questions[i];
-
-            let matchQuestionOptions = await MatchQuestionPair.findAll({
-              where: { questionId: questions[i].id },
-            });
-
-            matchQuestion.options = matchQuestionOptions;
-
-            questionDetails.push(matchQuestion);
-
-            break;
-
-          case CONSTANTS.questionType.Sort:
-            let sortQuestion = questions[i];
-
-            let sortQuestionOptions = await SortQuestionOption.findAll({
-              where: { questionId: questions[i].id },
-            });
-
-            sortQuestion.options = sortQuestionOptions;
-
-            questionDetails.push(sortQuestion);
-            break;
-
-          case CONSTANTS.questionType.Classify:
-            let classifyQuestion = questions[i];
-
-            let classifyQuestionCategory = await QuestionCategory.findAll({
-              where: { questionId: questions[i].id },
-              raw: true,
-            });
-
-            for (let i = 0; i < classifyQuestionCategory.length; i++) {
-              let classifyQuestionCategoryOptions = await QuestionItem.findAll({
-                where: { categoryId: classifyQuestionCategory[i].id },
-              });
-
-              classifyQuestionCategory[i].options = classifyQuestionCategoryOptions;
-            }
-
-            classifyQuestion.categories = classifyQuestionCategory;
-
-            questionDetails.push(classifyQuestion);
-            break;
-
-          case CONSTANTS.questionType.Drawing:
-            let drawingQuestion = questions[i];
-
-            let drawingQuestionData = await DrawingQuestion.findOne({
-              where: { questionId: questions[i].id },
-              attributes: ["uploaderJson", "studentJson", "questionId"],
-            });
-
-            drawingQuestion.canvasData = drawingQuestionData;
-
-            questionDetails.push(drawingQuestion);
-            break;
-
-          case CONSTANTS.questionType.Label_Fill:
-            let labelFillQuestion = questions[i];
-
-            let labelFillQuestionData = await LabelFillQuestion.findOne({
-              where: { questionId: questions[i].id },
-              attributes: ["dataGeneratorJson", "studentJson", "questionId"],
-            });
-
-            labelFillQuestion.canvasData = labelFillQuestionData;
-
-            questionDetails.push(labelFillQuestion);
-            break;
-
-          case CONSTANTS.questionType.Label_Drag:
-            let labelDragQuestion = questions[i];
-
-            let labelDragQuestionData = await LabelDragQuestion.findOne({
-              where: { questionId: questions[i].id },
-              attributes: ["uploaderJson", "studentJson", "questionId"],
-            });
-
-            labelDragQuestion.canvasData = labelDragQuestionData;
-
-            questionDetails.push(labelDragQuestion);
-
-            break;
-
-          case CONSTANTS.questionType.Hotspot:
-            let hotSpotQuestion = questions[i];
-
-            let hotSpotQuestionData = await HotSpotQuestion.findOne({
-              where: { questionId: questions[i].id },
-              attributes: ["uploaderJson", "studentJson", "questionId"],
-            });
-
-            hotSpotQuestion.canvasData = hotSpotQuestionData;
-
-            questionDetails.push(hotSpotQuestion);
-
-            break;
-
-          case CONSTANTS.questionType.Desmos_Graph:
-            let desmosQuestion = questions[i];
-
-            let desmosQuestionData = await DesmosGraphQuestion.findOne({
-              where: { questionId: questions[i].id },
-              attributes: ["uploaderJson", "studentJson", "questionId"],
-            });
-
-            desmosQuestion.graphData = desmosQuestionData;
-
-            questionDetails.push(desmosQuestion);
-
-            break;
-
-          case CONSTANTS.questionType.Geogebra_Graph:
-            let geoGebraQuestion = questions[i];
-
-            let geoGebraQuestionData = await GeogebraGraphQuestion.findOne({
-              where: { questionId: questions[i].id },
-              attributes: ["uploaderJson", "studentJson", "questionId"],
-            });
-
-            geoGebraQuestion.graphData = geoGebraQuestionData;
-
-            questionDetails.push(geoGebraQuestion);
-            break;
-
-          default:
-        }
-      }
+      let questionDetails = await services.questionService.findQuestions(questions);
 
       res.status(httpStatus.OK).send(questionDetails);
     } catch (err) {

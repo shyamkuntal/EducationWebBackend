@@ -16,9 +16,7 @@ router.get("/getallbookchapterbytaskid", BookManagementController.getAllBookChap
 router.get("/getallchapterbybookid", BookManagementController.getAllChapterByBookId);
 
 // /api/bkmreviewer/updateinprogresstaskstatus
-router.patch(
-  "/updateinprogresstaskstatus", ReviewerBookController.updateInProgressTaskStatus
-);
+router.patch("/updateinprogresstaskstatus", ReviewerBookController.updateInProgressTaskStatus);
 
 // api/tpmreviewer/updatecompletestatus
 router.patch("/updatecompletebooktaskstatus", ReviewerBookController.updateCompleteTaskStatus);

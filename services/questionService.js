@@ -8,6 +8,22 @@ const { PutObjectCommand, ListObjectsV2Command } = require("@aws-sdk/client-s3")
 const db = require("../config/database");
 const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { MatchQuestionPair } = require("../models/MatchQuestionPair");
+const CONSTANTS = require("../constants/constants");
+const { QuestionItem } = require("../models/items");
+const { QuestionCategory } = require("../models/category");
+const { TableQuestion } = require("../models/Table");
+const { Accordian } = require("../models/accordianItems");
+const { DrawingQuestion } = require("../models/DrawingQuestion");
+const { LabelDragQuestion } = require("../models/LabelDragQuestion");
+const { LabelFillQuestion } = require("../models/LabelFillQuestion");
+const { GeogebraGraphQuestion } = require("../models/GeogebraGraphQuestion");
+const { DesmosGraphQuestion } = require("../models/DesmosGraphQuestion");
+const { HotSpotQuestion } = require("../models/HotSpotQuestion");
+const { FillDropDownOption } = require("../models/FillDropDownOption");
+const { SortQuestionOption } = require("../models/sortQuestionOptions");
+const { McqQuestionOption } = require("../models/McqQuestionOption");
+const { TrueFalseQuestionOption } = require("../models/TrueFalseQuestionOption");
+const { QuestionContent } = require("../models/QuestionContent");
 
 const createQuestion = async (dataToBeCreated, options) => {
   try {
@@ -151,17 +167,17 @@ async function uploadFileToS3(fileObj) {
 
 async function deleteFileFromS3(fileName) {
   try {
-    let filename = fileName.split("/")[1]
+    let filename = fileName.split("/")[1];
     const fileType = determineFileType(filename);
     const folderName = getFolderName(fileType);
-    
+
     const listParams = {
       Bucket: process.env.AWS_QUESTIONS_BUCKET_NAME,
       Prefix: `${folderName}/`,
     };
     const listResponse = await s3Client.send(new ListObjectsV2Command(listParams));
     const fileKey = listResponse.Contents.find((obj) => obj.Key === fileName);
-    
+
     if (!fileKey) {
       return { message: "File not found" };
     }
@@ -179,7 +195,7 @@ async function deleteFileFromS3(fileName) {
       return null;
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
     throw err;
   }
 }
@@ -221,6 +237,505 @@ async function DeleteQues(questionId) {
   }
 }
 
+const findQuestions = async (questions) => {
+  let questionDetails = [];
+
+  if (questions.length > 0) {
+    for (let i = 0; i < questions.length; i++) {
+      let type = questions[i].questionType;
+
+      if (questions[i].hasSubPart) {
+        let subParts = [];
+
+        let whereQuery = { parentQuestionId: questions[i].id };
+
+        let questionsWithSubPart = await Question.findAll({
+          where: whereQuery,
+          order: [["createdAt", "ASC"]],
+          raw: true,
+        });
+
+        for (let j = 0; j < questionsWithSubPart.length; j++) {
+          let questionwithSubpartType = questionsWithSubPart[j].questionType;
+          switch (questionwithSubpartType) {
+            case CONSTANTS.questionType.Long_Answer:
+              subParts.push(questionsWithSubPart[j]);
+              break;
+
+            case CONSTANTS.questionType.MCQ_Single:
+              let mcqQuestion = questionsWithSubPart[j];
+
+              let mcqOptions = await McqQuestionOption.findAll({
+                where: { questionId: questionsWithSubPart[j].id },
+              });
+
+              mcqQuestion.options = mcqOptions;
+
+              subParts.push(mcqQuestion);
+
+              break;
+            case CONSTANTS.questionType.MCQ_Multiple:
+              let mcqMutipleQuestion = questionsWithSubPart[j];
+
+              let mcqMultipleOptions = await McqQuestionOption.findAll({
+                where: { questionId: questionsWithSubPart[j].id },
+              });
+
+              mcqMutipleQuestion.options = mcqMultipleOptions;
+
+              subParts.push(mcqMutipleQuestion);
+              break;
+
+            case CONSTANTS.questionType.True_False:
+              let trueFalseQuestion = questionsWithSubPart[j];
+
+              let trueFalseStatements = await TrueFalseQuestionOption.findAll({
+                where: { questionId: questionsWithSubPart[j].id },
+              });
+
+              trueFalseQuestion.options = trueFalseStatements;
+
+              subParts.push(trueFalseQuestion);
+              break;
+
+            case CONSTANTS.questionType.Fill_Text:
+              subParts.push(questionsWithSubPart[j]);
+              break;
+
+            case CONSTANTS.questionType.Fill_Dropdown:
+              let dropDownQuestion = questionsWithSubPart[j];
+
+              let dropDownQuestionOptions = await FillDropDownOption.findAll({
+                where: { questionId: questionsWithSubPart[j].id },
+              });
+
+              dropDownQuestion.options = dropDownQuestionOptions;
+
+              subParts.push(dropDownQuestion);
+
+              break;
+
+            case CONSTANTS.questionType.Match:
+              let matchQuestion = questionsWithSubPart[j];
+
+              let matchQuestionOptions = await MatchQuestionPair.findAll({
+                where: { questionId: questionsWithSubPart[j].id },
+              });
+
+              matchQuestion.options = matchQuestionOptions;
+
+              subParts.push(matchQuestion);
+
+              break;
+
+            case CONSTANTS.questionType.Sort:
+              let sortQuestion = questionsWithSubPart[j];
+
+              let sortQuestionOptions = await SortQuestionOption.findAll({
+                where: { questionId: questionsWithSubPart[j].id },
+              });
+
+              sortQuestion.options = sortQuestionOptions;
+
+              subParts.push(sortQuestion);
+              break;
+
+            case CONSTANTS.questionType.Classify:
+              let classifyQuestion = questionsWithSubPart[j];
+
+              let classifyQuestionCategory = await QuestionCategory.findAll({
+                where: { questionId: questionsWithSubPart[j].id },
+                raw: true,
+              });
+
+              for (let i = 0; i < classifyQuestionCategory.length; i++) {
+                let classifyQuestionCategoryOptions = await QuestionItem.findAll({
+                  where: { categoryId: classifyQuestionCategory[i].id },
+                });
+
+                classifyQuestionCategory[i].options = classifyQuestionCategoryOptions;
+              }
+
+              classifyQuestion.categories = classifyQuestionCategory;
+
+              subParts.push(classifyQuestion);
+              break;
+
+            case CONSTANTS.questionType.Drawing:
+              let drawingQuestion = questionsWithSubPart[j];
+
+              let drawingQuestionData = await DrawingQuestion.findOne({
+                where: { questionId: questionsWithSubPart[j].id },
+                attributes: ["uploaderJson", "studentJson", "questionId"],
+              });
+
+              drawingQuestion.canvasData = drawingQuestionData;
+
+              subParts.push(drawingQuestion);
+              break;
+
+            case CONSTANTS.questionType.Label_Fill:
+              let labelFillQuestion = questionsWithSubPart[j];
+
+              let labelFillQuestionData = await LabelFillQuestion.findOne({
+                where: { questionId: questionsWithSubPart[j].id },
+                attributes: ["dataGeneratorJson", "studentJson", "questionId"],
+              });
+
+              labelFillQuestion.canvasData = labelFillQuestionData;
+
+              subParts.push(labelFillQuestion);
+              break;
+
+            case CONSTANTS.questionType.Label_Drag:
+              let labelDragQuestion = questionsWithSubPart[j];
+
+              let labelDragQuestionData = await LabelDragQuestion.findOne({
+                where: { questionId: questionsWithSubPart[j].id },
+                attributes: ["uploaderJson", "studentJson", "questionId"],
+              });
+
+              labelDragQuestion.canvasData = labelDragQuestionData;
+
+              subParts.push(labelDragQuestion);
+
+              break;
+
+            case CONSTANTS.questionType.Hotspot:
+              let hotSpotQuestion = questionsWithSubPart[j];
+
+              let hotSpotQuestionData = await HotSpotQuestion.findOne({
+                where: { questionId: questionsWithSubPart[j].id },
+                attributes: ["uploaderJson", "studentJson", "questionId"],
+              });
+
+              hotSpotQuestion.canvasData = hotSpotQuestionData;
+
+              subParts.push(hotSpotQuestion);
+
+              break;
+
+            case CONSTANTS.questionType.Desmos_Graph:
+              let desmosQuestion = questionsWithSubPart[j];
+
+              let desmosQuestionData = await DesmosGraphQuestion.findOne({
+                where: { questionId: questionsWithSubPart[j].id },
+                attributes: ["uploaderJson", "studentJson", "questionId"],
+              });
+
+              desmosQuestion.graphData = desmosQuestionData;
+
+              subParts.push(desmosQuestion);
+
+              break;
+
+            case CONSTANTS.questionType.Geogebra_Graph:
+              let geoGebraQuestion = questionsWithSubPart[j];
+
+              let geoGebraQuestionData = await GeogebraGraphQuestion.findOne({
+                where: { questionId: questionsWithSubPart[j].id },
+                attributes: ["uploaderJson", "studentJson", "questionId"],
+              });
+
+              geoGebraQuestion.graphData = geoGebraQuestionData;
+
+              subParts.push(geoGebraQuestion);
+              break;
+
+            // Content Type question
+
+            case CONSTANTS.questionType.Text:
+              questionDetails.push(questionsWithSubPart[j]);
+              break;
+
+            case CONSTANTS.questionType.Image:
+              let imageQuestion = questionsWithSubPart[j];
+              let image = await QuestionContent.findAll({
+                where: { questionId: questionsWithSubPart[j].id },
+              });
+              imageQuestion.imagesData = image;
+              questionDetails.push(imageQuestion);
+              break;
+            case CONSTANTS.questionType.Audio:
+              let audioQuestion = questionsWithSubPart[j];
+              let audio = await QuestionContent.findAll({
+                where: { questionId: questionsWithSubPart[j].id },
+              });
+              audioQuestion.audioData = audio;
+              questionDetails.push(audioQuestion);
+              break;
+            case CONSTANTS.questionType.Video:
+              let videoQuestion = questionsWithSubPart[j];
+              let video = await QuestionContent.findOne({
+                where: { questionId: questionsWithSubPart[j].id },
+              });
+              videoQuestion.videoData = video[0];
+              questionDetails.push(videoQuestion);
+              break;
+            case CONSTANTS.questionType.Simulation:
+              let simulationQuestion = questionsWithSubPart[j];
+              let simulation = await QuestionContent.findOne({
+                where: { questionId: questionsWithSubPart[j].id },
+              });
+              simulationQuestion.simulationData = simulation[0];
+              questionDetails.push(simulationQuestion);
+              break;
+            case CONSTANTS.questionType.PDF:
+              let pdfQuestion = questionsWithSubPart[j];
+              let pdf = await QuestionContent.findAll({
+                where: { questionId: questionsWithSubPart[j].id },
+              });
+              pdfQuestion.pdfData = pdf;
+              questionDetails.push(pdfQuestion);
+              break;
+
+            default:
+          }
+        }
+
+        questionDetails.push({ ...questions[i], subParts });
+      } else {
+        switch (type) {
+          case CONSTANTS.questionType.Long_Answer:
+            questionDetails.push(questions[i]);
+            break;
+
+          case CONSTANTS.questionType.MCQ_Single:
+            let mcqQuestion = questions[i];
+
+            let mcqOptions = await McqQuestionOption.findAll({
+              where: { questionId: questions[i].id },
+            });
+
+            mcqQuestion.options = mcqOptions;
+
+            questionDetails.push(mcqQuestion);
+
+            break;
+          case CONSTANTS.questionType.MCQ_Multiple:
+            let mcqMutipleQuestion = questions[i];
+
+            let mcqMultipleOptions = await McqQuestionOption.findAll({
+              where: { questionId: questions[i].id },
+            });
+
+            mcqMutipleQuestion.options = mcqMultipleOptions;
+
+            questionDetails.push(mcqMutipleQuestion);
+            break;
+
+          case CONSTANTS.questionType.True_False:
+            let trueFalseQuestion = questions[i];
+
+            let trueFalseStatements = await TrueFalseQuestionOption.findAll({
+              where: { questionId: questions[i].id },
+            });
+
+            trueFalseQuestion.options = trueFalseStatements;
+
+            questionDetails.push(trueFalseQuestion);
+            break;
+
+          case CONSTANTS.questionType.Fill_Text:
+            questionDetails.push(questions[i]);
+            break;
+
+          case CONSTANTS.questionType.Fill_Dropdown:
+            let dropDownQuestion = questions[i];
+
+            let dropDownQuestionOptions = await FillDropDownOption.findAll({
+              where: { questionId: questions[i].id },
+            });
+
+            dropDownQuestion.options = dropDownQuestionOptions;
+
+            questionDetails.push(dropDownQuestion);
+
+            break;
+
+          case CONSTANTS.questionType.Match:
+            let matchQuestion = questions[i];
+
+            let matchQuestionOptions = await MatchQuestionPair.findAll({
+              where: { questionId: questions[i].id },
+            });
+
+            matchQuestion.options = matchQuestionOptions;
+
+            questionDetails.push(matchQuestion);
+
+            break;
+
+          case CONSTANTS.questionType.Sort:
+            let sortQuestion = questions[i];
+
+            let sortQuestionOptions = await SortQuestionOption.findAll({
+              where: { questionId: questions[i].id },
+            });
+
+            sortQuestion.options = sortQuestionOptions;
+
+            questionDetails.push(sortQuestion);
+            break;
+
+          case CONSTANTS.questionType.Classify:
+            let classifyQuestion = questions[i];
+
+            let classifyQuestionCategory = await QuestionCategory.findAll({
+              where: { questionId: questions[i].id },
+              raw: true,
+            });
+
+            for (let i = 0; i < classifyQuestionCategory.length; i++) {
+              let classifyQuestionCategoryOptions = await QuestionItem.findAll({
+                where: { categoryId: classifyQuestionCategory[i].id },
+              });
+
+              classifyQuestionCategory[i].options = classifyQuestionCategoryOptions;
+            }
+
+            classifyQuestion.categories = classifyQuestionCategory;
+
+            questionDetails.push(classifyQuestion);
+            break;
+
+          case CONSTANTS.questionType.Drawing:
+            let drawingQuestion = questions[i];
+
+            let drawingQuestionData = await DrawingQuestion.findOne({
+              where: { questionId: questions[i].id },
+              attributes: ["uploaderJson", "studentJson", "questionId"],
+            });
+
+            drawingQuestion.canvasData = drawingQuestionData;
+
+            questionDetails.push(drawingQuestion);
+            break;
+
+          case CONSTANTS.questionType.Label_Fill:
+            let labelFillQuestion = questions[i];
+
+            let labelFillQuestionData = await LabelFillQuestion.findOne({
+              where: { questionId: questions[i].id },
+              attributes: ["dataGeneratorJson", "studentJson", "questionId"],
+            });
+
+            labelFillQuestion.canvasData = labelFillQuestionData;
+
+            questionDetails.push(labelFillQuestion);
+            break;
+
+          case CONSTANTS.questionType.Label_Drag:
+            let labelDragQuestion = questions[i];
+
+            let labelDragQuestionData = await LabelDragQuestion.findOne({
+              where: { questionId: questions[i].id },
+              attributes: ["uploaderJson", "studentJson", "questionId"],
+            });
+
+            labelDragQuestion.canvasData = labelDragQuestionData;
+
+            questionDetails.push(labelDragQuestion);
+
+            break;
+
+          case CONSTANTS.questionType.Hotspot:
+            let hotSpotQuestion = questions[i];
+
+            let hotSpotQuestionData = await HotSpotQuestion.findOne({
+              where: { questionId: questions[i].id },
+              attributes: ["uploaderJson", "studentJson", "questionId"],
+            });
+
+            hotSpotQuestion.canvasData = hotSpotQuestionData;
+
+            questionDetails.push(hotSpotQuestion);
+
+            break;
+
+          case CONSTANTS.questionType.Desmos_Graph:
+            let desmosQuestion = questions[i];
+
+            let desmosQuestionData = await DesmosGraphQuestion.findOne({
+              where: { questionId: questions[i].id },
+              attributes: ["uploaderJson", "studentJson", "questionId"],
+            });
+
+            desmosQuestion.graphData = desmosQuestionData;
+
+            questionDetails.push(desmosQuestion);
+
+            break;
+
+          case CONSTANTS.questionType.Geogebra_Graph:
+            let geoGebraQuestion = questions[i];
+
+            let geoGebraQuestionData = await GeogebraGraphQuestion.findOne({
+              where: { questionId: questions[i].id },
+              attributes: ["uploaderJson", "studentJson", "questionId"],
+            });
+
+            geoGebraQuestion.graphData = geoGebraQuestionData;
+
+            questionDetails.push(geoGebraQuestion);
+            break;
+
+          // Content Type question
+
+          case CONSTANTS.questionType.Text:
+            questionDetails.push(questions[i]);
+            break;
+
+          case CONSTANTS.questionType.Image:
+            let imageQuestion = questions[i];
+            let image = await QuestionContent.findAll({
+              where: { questionId: questions[i].id },
+            });
+            imageQuestion.imagesData = image;
+            questionDetails.push(imageQuestion);
+            break;
+          case CONSTANTS.questionType.Audio:
+            let audioQuestion = questions[i];
+            let audio = await QuestionContent.findAll({
+              where: { questionId: questions[i].id },
+            });
+            audioQuestion.audioData = audio;
+            questionDetails.push(audioQuestion);
+            break;
+          case CONSTANTS.questionType.Video:
+            let videoQuestion = questions[i];
+            let video = await QuestionContent.findOne({
+              where: { questionId: questions[i].id },
+            });
+            videoQuestion.videoData = video[0];
+            questionDetails.push(videoQuestion);
+            break;
+          case CONSTANTS.questionType.Simulation:
+            let simulationQuestion = questions[i];
+            let simulation = await QuestionContent.findOne({
+              where: { questionId: questions[i].id },
+            });
+            simulationQuestion.simulationData = simulation[0];
+            questionDetails.push(simulationQuestion);
+            break;
+          case CONSTANTS.questionType.PDF:
+            let pdfQuestion = questions[i];
+            let pdf = await QuestionContent.findAll({
+              where: { questionId: questions[i].id },
+            });
+            pdfQuestion.pdfData = pdf;
+            questionDetails.push(pdfQuestion);
+            break;
+
+          default:
+        }
+      }
+    }
+  }
+
+  return questionDetails;
+};
+
 module.exports = {
   createQuestion,
   checkFillDropDownOptions,
@@ -233,4 +748,5 @@ module.exports = {
   updateQuestion,
   DeleteQues,
   deleteFileFromS3,
+  findQuestions,
 };

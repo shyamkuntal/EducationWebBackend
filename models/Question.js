@@ -11,7 +11,7 @@ const Question = db.define("question", {
   },
   sheetId: {
     type: Sequelize.UUID,
-    allowNull: false,
+    allowNull: true,
   },
   questionType: {
     type: Sequelize.STRING,
