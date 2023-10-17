@@ -2534,7 +2534,13 @@ const QuestionManagementController = {
       var whereQuery = { sheetId: values.sheetId };
 
       if (req.query.isCheckedByPricer)
-        whereQuery = { ...whereQuery, isCheckedByPricer: req.query.isCheckedByPricer };
+        whereQuery = { ...whereQuery, isCheckedByPricer:  req.query.isCheckedByPricer };
+
+      if (req.query.isCheckedByReviewer)
+        whereQuery = { ...whereQuery, isCheckedByReviewer: req.query.isCheckedByReviewer }
+
+      if (req.query.isErrorByReviewer)
+        whereQuery = { ...whereQuery, isErrorByReviewer: req.query.isErrorByReviewer }
 
       let questions = await Question.findAll({
         where: whereQuery,

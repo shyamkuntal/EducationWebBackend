@@ -89,6 +89,12 @@ const Question = db.define("question", {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  errorReportImgByReviewer: { type: Sequelize.STRING, allowNull: true },
+  errorForTopicSubTopicVocabByReviewer: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  errorImgForTopicSubTopicVocabByReviewer: { type: Sequelize.STRING, allowNull: true },
   isPremium: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,

@@ -13,3 +13,4 @@ module.exports.bookTaskService = require("./bookTaskService.js");
 module.exports.bookService = require("./bookService.js");
 module.exports.questionService = require("./questionService.js");
 module.exports.sheetManagementService = require("./SheetManagementSupervisor.js");
+module.exports.sheetManagementReviewerService = require('./sheetManagementService.js')
