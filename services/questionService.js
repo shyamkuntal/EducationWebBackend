@@ -466,7 +466,7 @@ const findQuestions = async (questions) => {
               break;
             case CONSTANTS.questionType.Video:
               let videoQuestion = questionsWithSubPart[j];
-              let video = await QuestionContent.findOne({
+              let video = await QuestionContent.findAll({
                 where: { questionId: questionsWithSubPart[j].id },
               });
               videoQuestion.videoData = video[0];
@@ -474,7 +474,7 @@ const findQuestions = async (questions) => {
               break;
             case CONSTANTS.questionType.Simulation:
               let simulationQuestion = questionsWithSubPart[j];
-              let simulation = await QuestionContent.findOne({
+              let simulation = await QuestionContent.findAll({
                 where: { questionId: questionsWithSubPart[j].id },
               });
               simulationQuestion.simulationData = simulation[0];
@@ -704,7 +704,7 @@ const findQuestions = async (questions) => {
             break;
           case CONSTANTS.questionType.Video:
             let videoQuestion = questions[i];
-            let video = await QuestionContent.findOne({
+            let video = await QuestionContent.findAll({
               where: { questionId: questions[i].id },
             });
             videoQuestion.videoData = video[0];
@@ -712,7 +712,7 @@ const findQuestions = async (questions) => {
             break;
           case CONSTANTS.questionType.Simulation:
             let simulationQuestion = questions[i];
-            let simulation = await QuestionContent.findOne({
+            let simulation = await QuestionContent.findAll({
               where: { questionId: questions[i].id },
             });
             simulationQuestion.simulationData = simulation[0];

@@ -6,7 +6,7 @@ module.exports = Object.freeze({
     Video: "video",
     Audio: "audio",
     Accordian: "accordian",
-    Simulation: "simultaion",
+    Simulation: "simulation",
     Long_Answer: "longAnswer",
     MCQ_Single: "mcqSingle",
     MCQ_Multiple: "mcqMultiple",
