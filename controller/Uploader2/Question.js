@@ -2092,7 +2092,7 @@ const QuestionManagementController = {
 
       await t.commit();
     } catch (err) {
-      console.log(err)
+      console.log(err);
       await t.rollback();
       next(err);
     }
@@ -2531,10 +2531,10 @@ const QuestionManagementController = {
   async getQuestions(req, res, next) {
     try {
       let values = await getQuestionsSchema.validateAsync({ sheetId: req.query.sheetId });
-      var whereQuery = { sheetId: values.sheetId }
+      var whereQuery = { sheetId: values.sheetId };
 
       if (req.query.isCheckedByPricer)
-        whereQuery = { ...whereQuery, isCheckedByPricer:req.query.isCheckedByPricer }
+        whereQuery = { ...whereQuery, isCheckedByPricer: req.query.isCheckedByPricer };
 
       let questions = await Question.findAll({
         where: whereQuery,
@@ -2547,9 +2547,31 @@ const QuestionManagementController = {
       for (let i = 0; i < questions.length; i++) {
         let type = questions[i].questionType;
 
-        console.log(type);
-
         switch (type) {
+          case CONSTANTS.questionType.Text:
+            questionDetails.push(questions[i]);
+            break;
+
+          case CONSTANTS.questionType.Image:
+            questionDetails.push(questions[i]);
+            break;
+
+          case CONSTANTS.questionType.Audio:
+            questionDetails.push(questions[i]);
+            break;
+
+          case CONSTANTS.questionType.Video:
+            questionDetails.push(questions[i]);
+            break;
+
+          case CONSTANTS.questionType.Simulation:
+            questionDetails.push(questions[i]);
+            break;
+
+          case CONSTANTS.questionType.PDF:
+            questionDetails.push(questions[i]);
+            break;
+
           case CONSTANTS.questionType.Long_Answer:
             questionDetails.push(questions[i]);
             break;
@@ -2740,10 +2762,11 @@ const QuestionManagementController = {
 
       res.status(httpStatus.OK).send(questionDetails);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       next(err);
     }
   },
+
   async updateSheetInprogress(req, res, next) {
     const t = await db.transaction();
     try {

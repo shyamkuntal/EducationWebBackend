@@ -579,6 +579,7 @@ const BookManagementController = {
       }
 
       task.isArchived = true;
+      task.isSpam = false;
       await task.save({ transaction: t });
   
       await t.commit();
@@ -613,11 +614,13 @@ const BookManagementController = {
   
       for (const mapping of [...subTopicMappings]) {
         mapping.isArchived = true;
+        mapping.isSpam = false;
         await mapping.save({ transaction: t });
       }
       
       let dataToBeUpdated = {
         isArchived: true,
+        isSpam: false
       };
 
       await services.bookTaskService.updateTaskBookMapping(
@@ -655,6 +658,7 @@ const BookManagementController = {
 
       let dataToBeUpdated = {
         isArchived: true,
+        isSpam: false
       };
 
       await services.bookTaskService.updateTaskChapterMapping(

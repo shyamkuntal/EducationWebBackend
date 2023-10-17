@@ -378,12 +378,13 @@ const PaperNumberSheetController = {
 
       for (const mapping of paperNumber) {
         await services.paperNumberService.updatePaperNumber(
-          { isArchive: true },
+          { isArchive: true, isSpam: false },
           { where: { id: mapping.id } }
         );
       }
 
       sheet.isArchived = true;
+      sheet.isSpam = false;
       await sheet.save();
 
       res.json({ status: 200, sheet, paperNumber });
@@ -395,7 +396,7 @@ const PaperNumberSheetController = {
   async ArchiveSinglePaperNo(req, res, next) {
     try {
       const id = req.query.id;
-      let paperNumber = await PaperNumber.update({ isArchive: true }, { where: { id: id } });
+      let paperNumber = await PaperNumber.update({ isArchive: true, isSpam: false }, { where: { id: id } });
       res.status(httpStatus.OK).send({ message: "Archived Succesfully", paperNumber });
     } catch (err) {
       console.log(err);

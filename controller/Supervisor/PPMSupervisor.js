@@ -841,6 +841,7 @@ const PastPaperSupervisorController = {
       }
 
       sheet.isArchived = true;
+      sheet.isSpam = false;
       await sheet.save();
       res.json({ status: 200, sheet });
     } catch (err) {

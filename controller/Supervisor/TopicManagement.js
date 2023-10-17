@@ -673,7 +673,7 @@ const TopicManagementController = {
         let topicId = topicMapping.topicId;
   
         await services.topicTaskService.updateTaskTopicMapping(
-          { isArchived: true },
+          { isArchived: true, isSpam:false },
           { where: { topicTaskId, topicId } },
           { transaction: t }
         );
@@ -684,7 +684,7 @@ const TopicManagementController = {
   
         for (const subTopicMapping of subTopicMappings) {
           await services.topicTaskService.updateTaskSubTopicMapping(
-            { isArchived: true },
+            { isArchived: true, isSpam: false },
             { where: { topicTaskId, topicId, subTopicId: subTopicMapping.subTopicId } },
             { transaction: t }
           );
@@ -696,7 +696,7 @@ const TopicManagementController = {
   
         for (const vocabMapping of vocabMappings) {
           await services.topicTaskService.updateTaskVocabularyMapping(
-            { isArchived: true },
+            { isArchived: true, isSpam: false },
             { where: { topicTaskId, topicId, vocabularyId: vocabMapping.vocabularyId } },
             { transaction: t }
           );
@@ -704,6 +704,7 @@ const TopicManagementController = {
       }
   
       task.isArchived = true;
+      task.isSpam = true;
       await task.save({ transaction: t });
   
       await t.commit();
@@ -728,6 +729,7 @@ const TopicManagementController = {
       }
   
       vocabMapping.isArchived = true;
+      vocabMapping.isSpam = false
       await vocabMapping.save();
   
       res.status(httpStatus.OK).send({ message: "Vocabulary mapping archived successfully" });
@@ -747,6 +749,7 @@ const TopicManagementController = {
       }
   
       subTopicMapping.isArchived = true;
+      subTopicMapping.isSpam = false
       await subTopicMapping.save();
   
       res.status(httpStatus.OK).send({ message: "Sub-topic mapping archived successfully" });
@@ -771,20 +774,21 @@ const TopicManagementController = {
   
       for (const mapping of subTopicMappings) {
         await services.topicTaskService.updateTaskSubTopicMapping(
-          { isArchived: true },
+          { isArchived: true, isSpam: false },
           { where: { topicTaskId, topicId, subTopicId: mapping.subTopic.id } },
           { transaction: t }
         );
       }
       for (const mapping of vocabMappings) {
         await services.topicTaskService.updateTaskVocabularyMapping(
-          { isArchived: true },
+          { isArchived: true, isSpam: false },
           { where: { topicTaskId, topicId, vocabularyId: mapping.vocabulary.id } },
           { transaction: t }
         );
       }
 
       topic.isArchived = true;
+      topic.isSpam = false
       await topic.save({ transaction: t });
   
       await t.commit(); 
