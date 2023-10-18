@@ -132,17 +132,17 @@ const QuestionManagementController = {
     const t = await db.transaction();
     try {
       let data = req.body;
-      let questionData = {
-        questionType: data.questionType,
-        questionData: data.questionData,
-        sheetId: data.sheetId,
-      };
 
-      let createdQuestion = await services.questionService.createQuestion(questionData, {
+      let { files, ...rest } = req.body;
+
+      let questionValues = await createQuestionsSchema.validateAsync({
+        ...rest,
+      });
+
+      let createdQuestion = await services.questionService.createQuestion(questionValues, {
         transaction: t,
       });
 
-      let files = data.files;
       let questionId = await createdQuestion.id;
       const createdFiles = await Promise.all(
         files.map(async (file) => {
@@ -175,18 +175,18 @@ const QuestionManagementController = {
   async createAccordian(req, res, next) {
     const t = await db.transaction();
     try {
-      const data = req.body;
-      const questionData = {
-        questionType: data.questionType,
-        questionData: data.questionData,
-        sheetId: data.sheetId,
-      };
+      let { tabs, ...rest } = req.body;
 
-      const createdQuestion = await services.questionService.createQuestion(questionData, {
+      let questionValues = await createQuestionsSchema.validateAsync({
+        ...rest,
+        questionType: CONSTANTS.questionType.Accordian,
+      });
+
+      const createdQuestion = await services.questionService.createQuestion(questionValues, {
         transaction: t,
       });
 
-      const tabs = data.tabs || [];
+      console.log(tabs);
 
       const createdTabs = await Promise.all(
         tabs.map(async (tab) => {
@@ -265,26 +265,16 @@ const QuestionManagementController = {
   async createVideoQues(req, res, next) {
     const t = await db.transaction();
     try {
-      const { questionType, questionData, questionDescription, sheetId, ...rest } = req.body;
+      const { file, ...rest } = req.body;
       let questionValues = await createQuestionsSchema.validateAsync({
         ...rest,
-        sheetId,
-        questionType: questionType,
-        questionData: questionData,
-        questionDescription: questionDescription,
       });
 
       const contentFile = req.file;
 
-      const createdQuestion = await services.questionService.createQuestion(
-        {
-          sheetId,
-          questionType,
-          questionData,
-          questionDescription: questionDescription || null,
-        },
-        { transaction: t }
-      );
+      const createdQuestion = await services.questionService.createQuestion(questionValues, {
+        transaction: t,
+      });
 
       const questionId = createdQuestion.id;
       let contentFileName = null;

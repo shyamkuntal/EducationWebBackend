@@ -5,7 +5,7 @@ const createQuestionsSchema = Joi.object({
   sheetId: Joi.string().guid(),
   questionType: Joi.string().required(),
   questionData: Joi.string().required(),
-  questionDescription: Joi.string(),
+  questionDescription: Joi.string().allow(""),
   marks: Joi.number(),
   requiredTime: Joi.number(),
   uploaderDescription: Joi.string(),
