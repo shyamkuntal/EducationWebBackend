@@ -488,6 +488,14 @@ const findQuestions = async (questions) => {
               pdfQuestion.pdfData = pdf;
               questionDetails.push(pdfQuestion);
               break;
+            case CONSTANTS.questionType.Accordian:
+              let accordianQuestion = questionsWithSubPart[j];
+              let accordian = await Accordian.findAll({
+                where: { questionId: questionsWithSubPart[j].id },
+              });
+              accordianQuestion.accordianData = accordian;
+              questionDetails.push(accordianQuestion);
+              break;
 
             default:
           }
@@ -725,6 +733,14 @@ const findQuestions = async (questions) => {
             });
             pdfQuestion.pdfData = pdf;
             questionDetails.push(pdfQuestion);
+            break;
+          case CONSTANTS.questionType.Accordian:
+            let accordianQuestion = questions[i];
+            let accordian = await Accordian.findAll({
+              where: { questionId: questions[i].id },
+            });
+            accordianQuestion.accordianData = accordian;
+            questionDetails.push(accordianQuestion);
             break;
 
           default:
