@@ -27,7 +27,26 @@ const uploadSheetManagementErrorReportFile = async (fileName, fileObj) => {
     }
 };
 
+const getFilesUrlFromS3 = async (fileName) => {
+    try {
+        let getFilesParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: fileName,
+        };
+
+        const getFileCommand = new GetObjectCommand(getFilesParams);
+
+        const fileUrl = await getSignedUrl(s3Client, getFileCommand, {
+            expiresIn: 3600,
+        });
+
+        return fileUrl;
+    } catch (err) {
+        throw err;
+    }
+};
+
 module.exports = {
-    uploadSheetManagementErrorReportFile
-  };
-  
+    uploadSheetManagementErrorReportFile,
+    getFilesUrlFromS3
+};

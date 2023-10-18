@@ -162,6 +162,14 @@ const Question = db.define("question", {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  reviewerHighlightErrorPdf: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  reviewerHighlightErrorErrors: {
+    type: Sequelize.TEXT,
+    allowNull: true,
+  },
 });
 
 Question.sync().then(() => {

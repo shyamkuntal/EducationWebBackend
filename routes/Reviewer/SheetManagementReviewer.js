@@ -24,9 +24,13 @@ router.patch("/unseterrorquestion", SheetManagementController.unsetErrorQuestion
 
 router.patch("/adderrorquestion", upload.single("errorReportFile"), SheetManagementController.addErrorReportToQuestion);
 router.patch("/addtopicsubtopicvocaberrorquestion", upload.single("errorReportFile"), SheetManagementController.addTopicSubTopicVocabErrorReportToQuestion);
+router.patch("/addhighlighterrorpdf", upload.single("file"), SheetManagementController.addHighlightPdfToQuestion);
+
+router.get("/highlighterrorpdf", SheetManagementController.getHighlightPdfQuestion);
+router.patch("/highlighterrors", SheetManagementController.saveHighlightDataInQuestions);
 
 router.get("/gettopicsubtopicvocabmappingsforquestion", SheetManagementController.getTopicSubTopicVocabMappingsForQuestion);
 router.patch("/assigntosupervisor", SheetManagementController.AssignSheetToSupervisor)
-
+router.patch("/addsheeterror", SheetManagementController.reportSheetError);
 
 module.exports = router;
