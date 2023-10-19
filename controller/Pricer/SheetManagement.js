@@ -13,6 +13,7 @@ const {
 } = require("../../validations/PricerValidation");
 const { SheetManagement } = require("../../models/SheetManagement");
 const { Question } = require("../../models/Question");
+const { ApiError } = require("../../middlewares/apiError.js");
 
 const PricerSheetManagementController = {
     async getTopicSubTopicVocabMappingsForQuestion(req, res, next) {
@@ -133,6 +134,7 @@ const PricerSheetManagementController = {
     async addPriceForQuestion(req, res, next) {
         const t = await db.transaction();
         try {
+            console.log(req.body)
             let whereQuery = { where: { id: req.body.id }, raw: true };
 
             let question = await Question.findOne(whereQuery);
@@ -141,31 +143,73 @@ const PricerSheetManagementController = {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
             }
 
+            if (question.hasSubPart) {
+                let whereQuery = { parentQuestionId: question.id };
+
+                let subPart = await Question.findAll({
+                    where: whereQuery,
+                    order: [["createdAt", "ASC"]],
+                    raw: true,
+                }, { transaction: t });
+
+                for (var i = 0; i < subPart.length; i++) {
+                    let whereQuery = { where: { id: subPart[i].id }, raw: true };
+                    let request = {
+                        priceForTeacher: Number(req.body.priceForTeacher[i]),
+                        priceForStudent: Number(req.body.priceForStudent[i]),
+                        isCheckedByPricer: true
+                    }
+                    await Question.update(request, whereQuery, { transaction: t })
+                }
+            }
+
             let request = {
-                priceForTeacher: Number(req.body.priceForTeacher),
-                priceForStudent: Number(req.body.priceForStudent),
+                priceForTeacher: question.hasSubPart ? Number(req.body.priceForTeacher.reduce((partialSum, a) => partialSum + Number(a), 0)) : Number(req.body.priceForTeacher),
+                priceForStudent: question.hasSubPart ? Number(req.body.priceForStudent.reduce((partialSum, a) => partialSum + Number(a), 0)) : Number(req.body.priceForStudent),
                 isCheckedByPricer: true
             }
 
             let values = await updatePriceInQuestionSchema.validateAsync(request);
-            await Question.update(values, whereQuery)
+            await Question.update(values, whereQuery, { transaction: t })
 
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
         } catch (err) {
             await t.rollback();
+            console.log(err)
             next(err);
         }
     },
     async removePriceForQuestion(req, res, next) {
         const t = await db.transaction();
         try {
+            console.log(req.body)
             let whereQuery = { where: { id: req.body.id }, raw: true };
 
             let question = await Question.findOne(whereQuery);
 
             if (!question) {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
+            }
+
+            if (question.hasSubPart) {
+                let whereQuery = { parentQuestionId: question.id };
+
+                let subPart = await Question.findAll({
+                    where: whereQuery,
+                    order: [["createdAt", "ASC"]],
+                    raw: true,
+                }, { transaction: t });
+
+                for (var i = 0; i < subPart.length; i++) {
+                    let whereQuery = { where: { id: subPart[i].id }, raw: true };
+                    let request = {
+                        priceForTeacher: null,
+                        priceForStudent: null,
+                        isCheckedByPricer: false
+                    }
+                    await Question.update(request, whereQuery, { transaction: t })
+                }
             }
 
             let request = {
@@ -173,12 +217,14 @@ const PricerSheetManagementController = {
                 priceForStudent: null,
                 isCheckedByPricer: false
             }
-            await Question.update(request, whereQuery)
+
+            await Question.update(request, whereQuery, { transaction: t })
+
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
         } catch (err) {
-            console.log(err)
             await t.rollback();
+            console.log(err)
             next(err);
         }
     },
