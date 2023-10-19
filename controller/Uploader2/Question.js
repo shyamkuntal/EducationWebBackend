@@ -91,12 +91,14 @@ const QuestionManagementController = {
   async updateQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      const { questionId, questionData } = req.body;
+      const { questionId, questionData, explanation, includeExplanation } = req.body;
 
       await updateTextQuestionSchema.validateAsync(req.body);
 
       const updatedData = {
         questionData: questionData,
+        explanation: explanation,
+        includeExplanation: includeExplanation
       };
 
       let question = await services.questionService.updateQuestion(questionId, updatedData, {

@@ -42,6 +42,8 @@ const createTextQuestionSchema = Joi.array().items({
 const updateTextQuestionSchema = Joi.object({
   questionId: Joi.string().guid().required(),
   questionData: Joi.string().max(1000).required(),
+  explanation: Joi.string().max(1000),
+  includeExplanation: Joi.boolean(),
 });
 
 const createFillDropDownQuestionOptionsSchema = Joi.array().items({
