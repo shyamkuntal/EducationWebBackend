@@ -98,7 +98,7 @@ const QuestionManagementController = {
       const updatedData = {
         questionData: questionData,
         explanation: explanation,
-        includeExplanation: includeExplanation
+        includeExplanation: includeExplanation,
       };
 
       let question = await services.questionService.updateQuestion(questionId, updatedData, {
@@ -117,7 +117,7 @@ const QuestionManagementController = {
       let data = await services.questionService.uploadFileToS3(file);
       res.status(httpStatus.OK).send(data);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       next(err);
     }
   },
@@ -439,11 +439,12 @@ const QuestionManagementController = {
   async editMcqQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let data = await McqSchema.validateAsync(req.body);
+      console.log("success");
+      let data = req?.body;
       let questionId = data.questionId;
 
       // Update the McqQuestion
-      if (data.questionData) {
+      if (questionId) {
         await services.questionService.updateQuestion(questionId, {
           questionData: data.questionData,
         });
@@ -2401,20 +2402,16 @@ const QuestionManagementController = {
   async editSortQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { optionsToBeUpdated, ...rest } = req.body;
-      let questionValues = await editQuestionSchema.validateAsync(rest);
-
-      let sortQuestionValues = await editSortQuestionSchema.validateAsync({ optionsToBeUpdated });
-
+      let { options, type, ...rest } = req.body;
+      let questionValues = req.body;
+      let sortQuestionValues = options;
       let { id, ...questionData } = questionValues;
-
       await services.questionService.editQuestion(
         questionData,
         { where: { id: id } },
         { transaction: t }
       );
-
-      let sortQuestionOptionToBeUpdated = sortQuestionValues.optionsToBeUpdated;
+      let sortQuestionOptionToBeUpdated = sortQuestionValues;
 
       for (let i = 0; i < sortQuestionOptionToBeUpdated.length; i++) {
         let dataToBeUpdated = {

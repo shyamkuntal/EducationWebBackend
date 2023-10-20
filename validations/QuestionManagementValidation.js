@@ -108,6 +108,8 @@ const deleteQuestionSchema = Joi.object({ questionId: Joi.string().guid().requir
 
 const editQuestionSchema = Joi.object({
   id: Joi.string().guid().required(),
+  sheetId: Joi.string().guid(),
+  questionType: Joi.string(),
   questionData: Joi.string(),
   marks: Joi.number(),
   requiredTime: Joi.string(),
