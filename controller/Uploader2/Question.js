@@ -117,6 +117,7 @@ const QuestionManagementController = {
       let data = await services.questionService.uploadFileToS3(file);
       res.status(httpStatus.OK).send(data);
     } catch (err) {
+      console.log(err)
       next(err);
     }
   },
