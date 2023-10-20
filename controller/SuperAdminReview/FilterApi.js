@@ -214,7 +214,11 @@ const AllFilteredApi = {
   async getAllTopicsUsingSubjectID(req, res) {
     try {
       const subjectId = req.query.id;
-      console.log(subjectId, "id");
+      let whereClauseForTopic = {};
+      const topicId = req.query.topicId;
+      if (topicId) {
+        whereClauseForTopic.id = topicId;
+      }
       const topics = await TaskTopicMapping.findAll({
         include: [
           {
@@ -225,6 +229,7 @@ const AllFilteredApi = {
           },
           {
             model: Topic,
+            where: whereClauseForTopic,
           },
         ],
       });
@@ -322,8 +327,10 @@ const AllFilteredApi = {
             include: [
               {
                 model: Topic,
+                // whereClauseForTopic,
               },
             ],
+            where: whereClauseForTopic,
           },
           {
             model: QuestionVocabMapping,
