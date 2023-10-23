@@ -2202,32 +2202,29 @@ const QuestionManagementController = {
   async editDesmosGraphQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { newUploaderJson, newStudentJson, ...rest } = req.body;
-      let questionValues = await editQuestionSchema.validateAsync(rest);
+      let { uploaderJson, studentJson, ...rest } = req.body;
+      let questionValues = req.body;
+       
+      let desmosQuestionValues = {uploaderJson, studentJson, }
 
-      let desmosQuestionValues = await editDesmosGraphQuestionSchema.validateAsync({
-        newUploaderJson,
-        newStudentJson,
-      });
-
-      let { id, ...questionData } = questionValues;
+      let { questionId, ...questionData } = questionValues;
 
       await services.questionService.editQuestion(
         questionData,
-        { where: { id: id } },
+        { where: { id: questionId } },
         { transaction: t }
       );
 
-      if (desmosQuestionValues.newDataGeneratorJson && desmosQuestionValues.newStudentJson) {
+      // if (desmosQuestionValues.newDataGeneratorJson && desmosQuestionValues.newStudentJson) {
         await DesmosGraphQuestion.update(
           {
-            uploaderJson: desmosQuestionValues.newUploaderJson,
-            studentJson: desmosQuestionValues.newStudentJson,
+            uploaderJson: desmosQuestionValues.uploaderJson,
+            studentJson: desmosQuestionValues.studentJson,
           },
-          { where: { questionId: id } },
+          { where: { questionId: questionId } },
           { transaction: t }
         );
-      }
+      // }
 
       await t.commit();
 
