@@ -63,8 +63,13 @@ const { ApiError } = require("../../middlewares/apiError");
 const { FillDropDownOption } = require("../../models/FillDropDownOption");
 const { SortQuestionOption } = require("../../models/sortQuestionOptions");
 const { SheetManagement } = require("../../models/SheetManagement");
+const{QuestionTopicMapping} = require("../../models/QuestionTopicMapping")
+const{QuestionSubTopicMapping} = require("../../models/QuestionSubTopicMapping")
+const{QuestionVocabMapping} = require("../../models/QuestionVocabMapping")
+// const{McqQuestionOption} = require("../../models/McqQuestionOption")
 const { User } = require("../../models/User");
 const { where } = require("sequelize");
+const { Vocabulary } = require("../../models/Vocabulary");
 
 const QuestionManagementController = {
   async creatTextQues(req, res, next) {
@@ -533,6 +538,31 @@ const QuestionManagementController = {
     const t = await db.transaction();
 
     try {
+      await QuestionTopicMapping.destroy({
+        where:{
+          questionId,
+        }
+       })
+  
+  
+       await QuestionSubTopicMapping.destroy({
+        where:{
+          questionId,
+        }
+       })
+  
+  
+       await QuestionVocabMapping.destroy({
+        where:{
+          questionId,
+        }
+       })
+
+       await McqQuestionOption.destroy({
+        where:{
+          questionId,
+        }
+       })
       const question = await Question.findByPk(questionId);
       if (!question) {
         await t.rollback();
@@ -636,6 +666,26 @@ const QuestionManagementController = {
     try {
       const question = await Question.findByPk(questionId);
 
+      await QuestionTopicMapping.destroy({
+        where:{
+          questionId,
+        }
+       })
+  
+  
+       await QuestionSubTopicMapping.destroy({
+        where:{
+          questionId,
+        }
+       })
+  
+  
+       await QuestionVocabMapping.destroy({
+        where:{
+          questionId,
+        }
+       })
+
       if (!question) {
         await t.rollback();
         return res.status(httpStatus.NOT_FOUND).json({ message: "Question not found" });
@@ -659,8 +709,11 @@ const QuestionManagementController = {
     const { questionId, optionId } = req.query;
 
     const t = await db.transaction();
-
+  
     try {
+     
+     
+  
       const option = await TrueFalseQuestionOption.findOne({
         where: { id: optionId, questionId: questionId },
       });
@@ -1067,7 +1120,28 @@ const QuestionManagementController = {
   async deleteClassifyQues(req, res, next) {
     const t = await db.transaction();
     try {
-      const { questionId } = req.params;
+      const { questionId } = req.query;
+      console.log(questionId,"id")
+
+     await QuestionTopicMapping.destroy({
+      where:{
+        questionId,
+      }
+     })
+
+
+     await QuestionSubTopicMapping.destroy({
+      where:{
+        questionId,
+      }
+     })
+
+
+     await QuestionVocabMapping.destroy({
+      where:{
+        questionId,
+      }
+     })
 
       await QuestionItem.destroy({
         where: {
@@ -2236,10 +2310,27 @@ const QuestionManagementController = {
   async deleteDesmosQuestion(req, res, next) {
     const t = await db.transaction();
     try {
+      let questionId= req.query.questionId
+      await QuestionTopicMapping.destroy({
+        where:{
+          questionId,
+        }
+       })
+  
+  
+       await QuestionSubTopicMapping.destroy({
+        where:{
+          questionId,
+        }
+       })
+  
+  
+       await QuestionVocabMapping.destroy({
+        where:{
+          questionId,
+        }
+       })
       let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
-
-      console.log(values);
-
       await DesmosGraphQuestion.destroy(
         { where: { questionId: values.questionId } },
         { transaction: t }
@@ -2483,6 +2574,26 @@ const QuestionManagementController = {
   async deleteSortQuestion(req, res, next) {
     const t = await db.transaction();
     try {
+      let questionId= req.query.questionId
+      await QuestionTopicMapping.destroy({
+        where:{
+          questionId,
+        }
+       })
+  
+  
+       await QuestionSubTopicMapping.destroy({
+        where:{
+          questionId,
+        }
+       })
+  
+  
+       await QuestionVocabMapping.destroy({
+        where:{
+          questionId,
+        }
+       })
       let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
 
       console.log(values);
