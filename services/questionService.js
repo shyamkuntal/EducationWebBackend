@@ -216,6 +216,22 @@ async function updateQuestion(questionId, updatedData) {
   }
 }
 
+async function updateCategory(categoryId, categoryData) {
+  try {
+    const question = await QuestionCategory.findByPk(categoryId);
+
+    if (!question) {
+      throw new Error(`Question with ID ${categoryId} not found`);
+    }
+
+    await question.update(categoryData);
+
+    return question;
+  } catch (err) {
+    throw err;
+  }
+}
+
 async function DeleteQues(questionId) {
   const t = await db.transaction();
   try {
@@ -1132,4 +1148,5 @@ module.exports = {
   DeleteQues,
   deleteFileFromS3,
   findQuestions,
+  updateCategory,
 };

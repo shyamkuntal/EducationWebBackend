@@ -64,6 +64,7 @@ const { FillDropDownOption } = require("../../models/FillDropDownOption");
 const { SortQuestionOption } = require("../../models/sortQuestionOptions");
 const { SheetManagement } = require("../../models/SheetManagement");
 const { User } = require("../../models/User");
+const { where } = require("sequelize");
 
 const QuestionManagementController = {
   async creatTextQues(req, res, next) {
@@ -568,7 +569,7 @@ const QuestionManagementController = {
         await t.rollback();
         return res.status(httpStatus.NOT_FOUND).json({ message: "Option not found" });
       }
-
+      //////////////////////////////////s
       await option.destroy({ transaction: t });
 
       await t.commit();
@@ -981,8 +982,11 @@ const QuestionManagementController = {
   async editClassifyQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      const questionId = req.params.questionId;
+      console.log(req?.body, "data");
+      const questionId = req.body.questionId;
+      console.log(questionId);
       const data = req.body;
+      console.log(data.categories, "data");
 
       await services.questionService.updateQuestion(
         questionId,
@@ -998,7 +1002,7 @@ const QuestionManagementController = {
 
       // Update or create categories
       const updatedCategories = await Promise.all(
-        categories.map(async (category) => {
+        categories?.map(async (category) => {
           const categoryId = category.id;
           const contentFileName = category.content
             ? await services.questionService.uploadFile(category.content)
@@ -1021,23 +1025,24 @@ const QuestionManagementController = {
             categoryId = createdCategory.id;
           }
 
-          const items = category.items;
+          const items = category.options;
 
           const updatedItemFiles = await Promise.all(
             items.map(async (file) => {
               const itemId = file.id;
-              const contentItemFileName = file.content
-                ? await services.questionService.uploadFile(file.content)
-                : null;
+              console.log(file,"item")
+              // const contentItemFileName = file.content
+              //   ? await services.questionService.uploadFileToS3(file.content)
+              //   : null;
 
               const itemData = {
                 categoryId,
                 item: file.item,
-                content: contentItemFileName,
+                content: file.content,
               };
 
               if (itemId) {
-                await QuestionItem.save(itemId, itemData, { transaction: t });
+                await QuestionItem.update(itemData,{where:{id:itemId}}, { transaction: t });
               } else {
                 await QuestionItem.create(itemData, { transaction: t });
               }

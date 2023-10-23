@@ -26,6 +26,8 @@ router.post("/mcquestion", QuestionManagementController.McqQuestion);
 router.post("/editmcquestion", QuestionManagementController.editMcqQuestion);
 router.delete("/deletemcquestion", QuestionManagementController.DeleteMcqQues);
 router.delete("/deletemcqoption", QuestionManagementController.DeleteMcqOption);
+router.post("/editClassifyQuestion", QuestionManagementController.editClassifyQuestion);
+router.delete("/deletetClassifyQuestion", QuestionManagementController.deleteClassifyQues);
 router.post("/truefalse", QuestionManagementController.TrueFalse);
 router.post("/edittruefalse", QuestionManagementController.editTrueFalseQuestion);
 router.delete("/deletetruefalsequestion", QuestionManagementController.TrueFalseQuesDelete);
