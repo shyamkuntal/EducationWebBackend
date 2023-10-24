@@ -63,9 +63,9 @@ const { ApiError } = require("../../middlewares/apiError");
 const { FillDropDownOption } = require("../../models/FillDropDownOption");
 const { SortQuestionOption } = require("../../models/sortQuestionOptions");
 const { SheetManagement } = require("../../models/SheetManagement");
-const{QuestionTopicMapping} = require("../../models/QuestionTopicMapping")
-const{QuestionSubTopicMapping} = require("../../models/QuestionSubTopicMapping")
-const{QuestionVocabMapping} = require("../../models/QuestionVocabMapping")
+const { QuestionTopicMapping } = require("../../models/QuestionTopicMapping");
+const { QuestionSubTopicMapping } = require("../../models/QuestionSubTopicMapping");
+const { QuestionVocabMapping } = require("../../models/QuestionVocabMapping");
 // const{McqQuestionOption} = require("../../models/McqQuestionOption")
 const { User } = require("../../models/User");
 const { where } = require("sequelize");
@@ -99,7 +99,7 @@ const QuestionManagementController = {
     try {
       const { questionId, questionData, explanation, includeExplanation } = req.body;
 
-      await updateTextQuestionSchema.validateAsync(req.body);
+      await editQuestionSchema.validateAsync(req.body);
 
       const updatedData = {
         questionData: questionData,
@@ -195,8 +195,6 @@ const QuestionManagementController = {
         transaction: t,
       });
 
-      console.log(tabs);
-
       const createdTabs = await Promise.all(
         tabs.map(async (tab) => {
           const createdTab = await Accordian.create(
@@ -227,7 +225,7 @@ const QuestionManagementController = {
     const t = await db.transaction();
 
     try {
-      const { questionId } = req.params;
+      const { questionId } = req.body;
       const data = req.body;
 
       await Question.update(data.questionData, {
@@ -237,19 +235,17 @@ const QuestionManagementController = {
 
       const tabs = data.tabs || [];
 
-      await QuestionContent.destroy({
+      await Accordian.destroy({
         where: { questionId },
         transaction: t,
       });
 
       const createdTabs = await Promise.all(
         tabs.map(async (tab) => {
-          const createdTab = await QuestionContent.create(
+          const createdTab = await Accordian.create(
             {
               questionId,
-              title: tab.title || null,
-              description: tab.description || null,
-              caption: tab.caption || null,
+              title: tab.title,
               content: tab.content,
             },
             { transaction: t }
@@ -311,6 +307,47 @@ const QuestionManagementController = {
       next(err);
     }
   },
+  async editVideoSimulationQues(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let data = req.body;
+      let questionId = data.questionId;
+
+      if (data.questionData) {
+        await services.questionService.updateQuestion(questionId, {
+          questionData: data.questionData,
+          questionDescription: data.questionDescription,
+        });
+      }
+
+      let questionContentData = await QuestionContent.findByPk(data.content.id);
+
+      let updatedData;
+      if (questionContentData) {
+        let dataToBeUpdated = {
+          content: data.content.content,
+        };
+        let response = await QuestionContent.update(dataToBeUpdated, {
+          where: { id: data.content.id },
+        });
+        updatedData = response.data;
+      } else {
+        res.status(httpStatus.OK).send({
+          message: "QuestionContent Not Found",
+        });
+      }
+
+      await t.commit();
+      res.status(httpStatus.OK).send({
+        message: "Question updated successfully",
+        filesUpdated: updatedData,
+      });
+    } catch (err) {
+      console.error(err);
+      await t.rollback();
+      next(err);
+    }
+  },
   async editContentQues(req, res, next) {
     const t = await db.transaction();
     try {
@@ -320,45 +357,28 @@ const QuestionManagementController = {
       if (data.questionData) {
         await services.questionService.updateQuestion(questionId, {
           questionData: data.questionData,
+          questionDescription: data.questionDescription,
         });
       }
 
       let filesToAdd = data.filesToAdd || [];
       let filesToDelete = data.filesToDelete || [];
-
       const updatedFiles = [];
 
-      await Promise.all(
+      const createdFiles = await Promise.all(
         filesToAdd.map(async (file) => {
-          let contentFileName = null;
-
-          if (file.content) {
-            contentFileName = await services.questionService.uploadFile(file.content);
-          }
-          const fileId = file.id;
-          const existingFile = await QuestionContent.findByPk(fileId);
-
-          if (existingFile) {
-            existingFile.title = file.title || existingFile.title;
-            existingFile.caption = file.caption || existingFile.caption;
-            existingFile.description = file.description || existingFile.description;
-
-            await existingFile.save({ transaction: t });
-            updatedFiles.push(existingFile);
-          } else {
-            const createdOption = await QuestionContent.create(
-              {
-                questionId,
-                title: file.title || null,
-                description: file.description || null,
-                caption: file.caption || null,
-                content: contentFileName || null,
-              },
-              { transaction: t }
-            );
-
-            updatedFiles.push(createdOption);
-          }
+          const createdOption = await QuestionContent.create(
+            {
+              questionId,
+              title: file.title || null,
+              description: file.description || null,
+              caption: file.caption || null,
+              content: file.content,
+            },
+            { transaction: t }
+          );
+          updatedFiles.push(createdOption);
+          return createdOption;
         })
       );
 
@@ -539,30 +559,28 @@ const QuestionManagementController = {
 
     try {
       await QuestionTopicMapping.destroy({
-        where:{
+        where: {
           questionId,
-        }
-       })
-  
-  
-       await QuestionSubTopicMapping.destroy({
-        where:{
-          questionId,
-        }
-       })
-  
-  
-       await QuestionVocabMapping.destroy({
-        where:{
-          questionId,
-        }
-       })
+        },
+      });
 
-       await McqQuestionOption.destroy({
-        where:{
+      await QuestionSubTopicMapping.destroy({
+        where: {
           questionId,
-        }
-       })
+        },
+      });
+
+      await QuestionVocabMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await McqQuestionOption.destroy({
+        where: {
+          questionId,
+        },
+      });
       const question = await Question.findByPk(questionId);
       if (!question) {
         await t.rollback();
@@ -667,24 +685,22 @@ const QuestionManagementController = {
       const question = await Question.findByPk(questionId);
 
       await QuestionTopicMapping.destroy({
-        where:{
+        where: {
           questionId,
-        }
-       })
-  
-  
-       await QuestionSubTopicMapping.destroy({
-        where:{
+        },
+      });
+
+      await QuestionSubTopicMapping.destroy({
+        where: {
           questionId,
-        }
-       })
-  
-  
-       await QuestionVocabMapping.destroy({
-        where:{
+        },
+      });
+
+      await QuestionVocabMapping.destroy({
+        where: {
           questionId,
-        }
-       })
+        },
+      });
 
       if (!question) {
         await t.rollback();
@@ -709,11 +725,8 @@ const QuestionManagementController = {
     const { questionId, optionId } = req.query;
 
     const t = await db.transaction();
-  
+
     try {
-     
-     
-  
       const option = await TrueFalseQuestionOption.findOne({
         where: { id: optionId, questionId: questionId },
       });
@@ -1058,7 +1071,7 @@ const QuestionManagementController = {
         categories?.map(async (category) => {
           const categoryId = category.id;
           const contentFileName = category.content
-            ? await services.questionService.uploadFile(category.content)
+            ? await services.questionService.uploadFileToS3(category.content)
             : null;
 
           const categoryData = {
@@ -1083,7 +1096,7 @@ const QuestionManagementController = {
           const updatedItemFiles = await Promise.all(
             items.map(async (file) => {
               const itemId = file.id;
-              console.log(file,"item")
+              console.log(file, "item");
               // const contentItemFileName = file.content
               //   ? await services.questionService.uploadFileToS3(file.content)
               //   : null;
@@ -1095,7 +1108,7 @@ const QuestionManagementController = {
               };
 
               if (itemId) {
-                await QuestionItem.update(itemData,{where:{id:itemId}}, { transaction: t });
+                await QuestionItem.update(itemData, { where: { id: itemId } }, { transaction: t });
               } else {
                 await QuestionItem.create(itemData, { transaction: t });
               }
@@ -1121,27 +1134,25 @@ const QuestionManagementController = {
     const t = await db.transaction();
     try {
       const { questionId } = req.query;
-      console.log(questionId,"id")
+      console.log(questionId, "id");
 
-     await QuestionTopicMapping.destroy({
-      where:{
-        questionId,
-      }
-     })
+      await QuestionTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
 
+      await QuestionSubTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
 
-     await QuestionSubTopicMapping.destroy({
-      where:{
-        questionId,
-      }
-     })
-
-
-     await QuestionVocabMapping.destroy({
-      where:{
-        questionId,
-      }
-     })
+      await QuestionVocabMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
 
       await QuestionItem.destroy({
         where: {
@@ -1851,35 +1862,33 @@ const QuestionManagementController = {
   async editDrawingQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { newCanvasJson, questionId, ...rest } = req.body;
-      let questionValues = await editQuestionSchema.validateAsync(rest);
+      let { uploaderJson, studentJson, questionId, questionData, sheetId, ...rest } = req.body;
 
+      // let questionValues = await editQuestionSchema.validateAsync(rest);
       let drawingQuestionValues = await editDrawingQuestionSchema.validateAsync({
-        newCanvasJson: newCanvasJson,
+        uploaderJson: uploaderJson,
+        studentJson: studentJson,
       });
 
-      let { id, questionData } = questionValues;
-
-      await services.questionService.editQuestion(
-        questionData,
-        {
-          where: { id: id },
-        },
+      await Question.update(
+        { questionData: questionData, ...rest },
+        { where: { id: questionId } },
         { transaction: t }
       );
-
-      if (drawingQuestionValues.newCanvasJson && drawingQuestionValues.newCanvasJson.length > 0) {
-        await DrawingQuestion.update(
-          { canvasJson: drawingQuestionValues.newCanvasJson },
-          { where: { questionId: id } },
-          { transaction: t }
-        );
-      }
+      await DrawingQuestion.update(
+        {
+          studentJson: drawingQuestionValues.studentJson,
+          uploaderJson: drawingQuestionValues.uploaderJson,
+        },
+        { where: { questionId: questionId } },
+        { transaction: t }
+      );
 
       await t.commit();
 
       res.status(httpStatus.OK).send({ message: "drawing Question Updated!" });
     } catch (err) {
+      console.log(err);
       await t.rollback();
       next(err);
     }
@@ -1890,14 +1899,29 @@ const QuestionManagementController = {
       let values = await deleteQuestionSchema.validateAsync({
         questionId: req.query.questionId,
       });
+      let questionId = values.questionId;
+      await QuestionTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
 
-      await DrawingQuestion.destroy(
-        { where: { questionId: values.questionId } },
-        { transaction: t }
-      );
+      await QuestionSubTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await QuestionVocabMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await DrawingQuestion.destroy({ where: { questionId } }, { transaction: t });
 
       await services.questionService.deleteQuestion(
-        { where: { id: values.questionId } },
+        { where: { id: questionId } },
         { transaction: t }
       );
 
@@ -1953,34 +1977,32 @@ const QuestionManagementController = {
   async editLabelDragQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { newuploaderJson, newStudentCanvasJson, ...rest } = req.body;
+      let { uploaderJson, studentJson, ...rest } = req.body;
       let questionValues = await editQuestionSchema.validateAsync(rest);
 
       let labelDragQuestionValues = await editLabelDragQuestionSchema.validateAsync({
-        newuploaderJson,
-        newStudentCanvasJson,
+        uploaderJson,
+        studentJson,
       });
 
-      let { id, questionData } = questionValues;
+      let { questionId, questionData } = questionValues;
 
-      await services.questionService.editQuestion(
-        questionData,
+      await Question.update(
+        {questionData, ...rest},
         {
-          where: { id: id },
+          where: { id: questionId },
         },
         { transaction: t }
       );
 
-      if (labelDragQuestionValues.newuploaderJson && labelDragQuestionValues.newStudentCanvasJson) {
-        await LabelDragQuestion.update(
-          {
-            uploaderJson: labelDragQuestionValues.newuploaderJson,
-            studentJson: labelDragQuestionValues.newStudentCanvasJson,
-          },
-          { where: { questionId: questionValues.id } },
-          { transaction: t }
-        );
-      }
+      await LabelDragQuestion.update(
+        {
+          uploaderJson: labelDragQuestionValues.uploaderJson,
+          studentJson: labelDragQuestionValues.studentJson,
+        },
+        { where: { questionId: questionValues.questionId } },
+        { transaction: t }
+      );
 
       await t.commit();
 
@@ -1990,12 +2012,30 @@ const QuestionManagementController = {
       next(err);
     }
   },
-  async deleteLabelDrawQuestion(req, res, next) {
+  async deleteLabelDragQuestion(req, res, next) {
     const t = await db.transaction();
     try {
       let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
 
       console.log(values);
+      let questionId = values.questionId;
+      await QuestionTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await QuestionSubTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await QuestionVocabMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
 
       await LabelDragQuestion.destroy(
         { where: { questionId: values.questionId } },
@@ -2056,48 +2096,38 @@ const QuestionManagementController = {
   async editLabelFillQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { newDataGeneratorJson, newStudentJson, newFillAnswer, newFillAnswerId, ...rest } =
-        req.body;
+      let { dataGeneratorJson, studentJson, ...rest } = req.body;
 
       let questionValues = await editQuestionSchema.validateAsync(rest);
 
       let labelFillQuestionValues = await editLabelFillQuestionSchema.validateAsync({
-        newDataGeneratorJson,
-        newStudentJson,
-        newFillAnswer,
-        newFillAnswerId,
+        dataGeneratorJson,
+        studentJson,
       });
 
-      let { id, questionData } = questionValues;
+      let { questionId, questionData } = questionValues;
 
-      await services.questionService.editQuestion(
-        questionData,
+      await Question.update(
+        { questionData, ...rest },
         {
-          where: { id: id },
+          where: { id: questionId },
         },
         { transaction: t }
       );
-      if (
-        labelFillQuestionValues.newDataGeneratorJson &&
-        labelFillQuestionValues.newStudentJson &&
-        labelFillQuestionValues.newFillAnswer &&
-        labelFillQuestionValues.fillAnswerId
-      ) {
-        await LabelFillQuestion.update(
-          {
-            dataGeneratorJson: labelFillQuestionValues.newDataGeneratorJson,
-            studentJson: labelFillQuestionValues.newStudentJson,
-            fillAnswer: labelFillQuestionValues.newFillAnswer,
-            fillAnswerId: labelFillQuestionValues.fillAnswerId,
-          },
-          { where: { questionId: questionValues.id } }
-        );
-      }
+
+      await LabelFillQuestion.update(
+        {
+          dataGeneratorJson: labelFillQuestionValues.dataGeneratorJson,
+          studentJson: labelFillQuestionValues.studentJson,
+        },
+        { where: { questionId: questionId } }
+      );
 
       await t.commit();
 
       res.status(httpStatus.OK).send({ message: "Label Fill question updated!" });
     } catch (err) {
+      console.log(err);
       await t.rollback();
       next(err);
     }
@@ -2107,8 +2137,24 @@ const QuestionManagementController = {
     try {
       let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
 
-      console.log(values);
+      let questionId = values.questionId;
+      await QuestionTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
 
+      await QuestionSubTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await QuestionVocabMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
       await LabelFillQuestion.destroy(
         { where: { questionId: values.questionId } },
         { transaction: t }
@@ -2216,6 +2262,25 @@ const QuestionManagementController = {
 
       console.log(values);
 
+      let questionId = values.questionId;
+      await QuestionTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await QuestionSubTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await QuestionVocabMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
       await GeogebraGraphQuestion.destroy(
         { where: { questionId: values.questionId } },
         { transaction: t }
@@ -2278,8 +2343,8 @@ const QuestionManagementController = {
     try {
       let { uploaderJson, studentJson, ...rest } = req.body;
       let questionValues = req.body;
-       
-      let desmosQuestionValues = {uploaderJson, studentJson, }
+
+      let desmosQuestionValues = { uploaderJson, studentJson };
 
       let { questionId, ...questionData } = questionValues;
 
@@ -2290,14 +2355,14 @@ const QuestionManagementController = {
       );
 
       // if (desmosQuestionValues.newDataGeneratorJson && desmosQuestionValues.newStudentJson) {
-        await DesmosGraphQuestion.update(
-          {
-            uploaderJson: desmosQuestionValues.uploaderJson,
-            studentJson: desmosQuestionValues.studentJson,
-          },
-          { where: { questionId: questionId } },
-          { transaction: t }
-        );
+      await DesmosGraphQuestion.update(
+        {
+          uploaderJson: desmosQuestionValues.uploaderJson,
+          studentJson: desmosQuestionValues.studentJson,
+        },
+        { where: { questionId: questionId } },
+        { transaction: t }
+      );
       // }
 
       await t.commit();
@@ -2310,26 +2375,24 @@ const QuestionManagementController = {
   async deleteDesmosQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let questionId= req.query.questionId
+      let questionId = req.query.questionId;
       await QuestionTopicMapping.destroy({
-        where:{
+        where: {
           questionId,
-        }
-       })
-  
-  
-       await QuestionSubTopicMapping.destroy({
-        where:{
+        },
+      });
+
+      await QuestionSubTopicMapping.destroy({
+        where: {
           questionId,
-        }
-       })
-  
-  
-       await QuestionVocabMapping.destroy({
-        where:{
+        },
+      });
+
+      await QuestionVocabMapping.destroy({
+        where: {
           questionId,
-        }
-       })
+        },
+      });
       let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
       await DesmosGraphQuestion.destroy(
         { where: { questionId: values.questionId } },
@@ -2437,6 +2500,25 @@ const QuestionManagementController = {
       let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
 
       console.log(values);
+
+      let questionId = values.questionId;
+      await QuestionTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await QuestionSubTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await QuestionVocabMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
 
       await HotSpotQuestion.destroy(
         { where: { questionId: values.questionId } },
@@ -2574,26 +2656,24 @@ const QuestionManagementController = {
   async deleteSortQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let questionId= req.query.questionId
+      let questionId = req.query.questionId;
       await QuestionTopicMapping.destroy({
-        where:{
+        where: {
           questionId,
-        }
-       })
-  
-  
-       await QuestionSubTopicMapping.destroy({
-        where:{
+        },
+      });
+
+      await QuestionSubTopicMapping.destroy({
+        where: {
           questionId,
-        }
-       })
-  
-  
-       await QuestionVocabMapping.destroy({
-        where:{
+        },
+      });
+
+      await QuestionVocabMapping.destroy({
+        where: {
           questionId,
-        }
-       })
+        },
+      });
       let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
 
       console.log(values);
@@ -2659,7 +2739,6 @@ const QuestionManagementController = {
       next(err);
     }
   },
-
   async updateSheetInprogress(req, res, next) {
     const t = await db.transaction();
     try {

@@ -107,9 +107,11 @@ const editFillDropDownQuestionOptionsSchema = Joi.object({
 const deleteQuestionSchema = Joi.object({ questionId: Joi.string().guid().required() });
 
 const editQuestionSchema = Joi.object({
-  id: Joi.string().guid().required(),
+  id: Joi.string().guid(),
+  questionId: Joi.string().guid(),
   sheetId: Joi.string().guid(),
   questionType: Joi.string(),
+  type: Joi.string(),
   questionData: Joi.string(),
   marks: Joi.number(),
   requiredTime: Joi.string(),
@@ -193,7 +195,8 @@ const createDrawingQuestionSchema = Joi.object({
 });
 
 const editDrawingQuestionSchema = Joi.object({
-  newCanvasJson: Joi.string().required(),
+  uploaderJson: Joi.string().required(),
+  studentJson: Joi.string().required(),
 });
 
 const createLabelDragQuestionSchema = Joi.object({
@@ -202,8 +205,8 @@ const createLabelDragQuestionSchema = Joi.object({
 });
 
 const editLabelDragQuestionSchema = Joi.object({
-  newDataGeneratorCanvasJson: Joi.string().required(),
-  newStudentCanvasJson: Joi.string().required(),
+  uploaderJson: Joi.string().required(),
+  studentJson: Joi.string().required(),
 });
 
 const createLabelFillQuestionSchema = Joi.object({
@@ -212,8 +215,8 @@ const createLabelFillQuestionSchema = Joi.object({
 });
 
 const editLabelFillQuestionSchema = Joi.object({
-  newDataGeneratorJson: Joi.string().required(),
-  newStudentJson: Joi.string().required(),
+  dataGeneratorJson: Joi.string().required(),
+  studentJson: Joi.string().required(),
 });
 
 const createGeogebraGraphQuestionSchema = Joi.object({

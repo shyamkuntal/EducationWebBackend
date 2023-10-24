@@ -34,7 +34,7 @@ router.delete("/deletetruefalsequestion", QuestionManagementController.TrueFalse
 router.delete("/deletetruefalseoption", QuestionManagementController.DeleteTrueFalseOption);
 router.post("/createtextquestion", QuestionManagementController.creatTextQues);
 router.post("/createaccordianquestion", QuestionManagementController.createAccordian);
-// router.post("/updateaccordianquestion", QuestionManagementController);
+router.post("/updateaccordianquestion", QuestionManagementController.updateAccordian);
 router.patch("/updatequestion", QuestionManagementController.updateQuestion);
 router.post(
   "/createcontentquestion",
@@ -45,6 +45,10 @@ router.post(
   "/createvideoquestion",
   upload.single("content"),
   QuestionManagementController.createVideoQues
+);
+router.post(
+  "/editvideosimulationques",
+  QuestionManagementController.editVideoSimulationQues
 );
 router.post("/editcontentquestion", QuestionManagementController.editContentQues);
 router.post("/createclassifyquestion", QuestionManagementController.createClassifyQues);
@@ -97,7 +101,7 @@ router.post("/createlabeldragquestion", QuestionManagementController.createLabel
 
 router.patch("/editlabeldragquestion", QuestionManagementController.editLabelDragQuestion);
 
-router.delete("/deletelabeldragquestion", QuestionManagementController.deleteLabelDrawQuestion);
+router.delete("/deletelabeldragquestion", QuestionManagementController.deleteLabelDragQuestion);
 
 // Label Fill Apis -
 
