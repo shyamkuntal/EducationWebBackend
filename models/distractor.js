@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const { Question } = require("./Question");
+const {QuestionContent} = require("./QuestionContent")
 
 const QuestionDistractor = db.define("questionContent", {
   id: {

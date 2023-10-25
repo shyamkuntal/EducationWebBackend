@@ -66,6 +66,7 @@ const { SheetManagement } = require("../../models/SheetManagement");
 const { QuestionTopicMapping } = require("../../models/QuestionTopicMapping");
 const { QuestionSubTopicMapping } = require("../../models/QuestionSubTopicMapping");
 const { QuestionVocabMapping } = require("../../models/QuestionVocabMapping");
+const {QuestionDistractor} = require("../../models/distractor");
 // const{McqQuestionOption} = require("../../models/McqQuestionOption")
 const { User } = require("../../models/User");
 const { where } = require("sequelize");
@@ -476,7 +477,7 @@ const QuestionManagementController = {
         });
       }
 
-      let updatedOptions = data.optionsToUpdate || [];
+      let updatedOptions = data.options || [];
       let optionsToAdd = data.optionsToAdd || [];
       let optionsToDelete = data.optionsToDelete || [];
 
@@ -515,7 +516,7 @@ const QuestionManagementController = {
             contentFileName = await services.questionService.uploadFile(option.content);
           }
 
-          const existingOption = await McqQuestionOption.findByPk(option.optionId);
+          const existingOption = await McqQuestionOption.findByPk(option.id);
 
           if (existingOption) {
             existingOption.option = option.option || existingOption.option;
@@ -526,6 +527,18 @@ const QuestionManagementController = {
 
             await existingOption.save({ transaction: t });
             updatedOptionsList.push(existingOption);
+          }
+          else{
+            await McqQuestionOption.create(
+              {
+                questionId,
+                option: option.option,
+                isCorrectOption: option.isCorrectOption,
+                feedback: option.feedback || null,
+                content: contentFileName || null,
+              },
+              { transaction: t }
+            );
           }
         })
       );
@@ -605,7 +618,6 @@ const QuestionManagementController = {
   },
   async DeleteMcqOption(req, res, next) {
     const { questionId, optionId } = req.query;
-    console.log(questionId);
     const t = await db.transaction();
 
     try {
@@ -723,14 +735,16 @@ const QuestionManagementController = {
   },
   async DeleteTrueFalseOption(req, res, next) {
     const { questionId, optionId } = req.query;
-
+  
     const t = await db.transaction();
 
     try {
       const option = await TrueFalseQuestionOption.findOne({
         where: { id: optionId, questionId: questionId },
       });
-
+     
+      console.log(option,"option")
+      
       if (!option) {
         await t.rollback();
         return res.status(httpStatus.NOT_FOUND).json({ message: "Option not found" });
@@ -759,7 +773,7 @@ const QuestionManagementController = {
         });
       }
 
-      let updatedStatements = data.statementsToUpdate || [];
+      let updatedStatements = data.statements || [];
       let statementsToAdd = data.statementsToAdd || [];
       let statementsToDelete = data.statementsToDelete || [];
 
@@ -767,25 +781,42 @@ const QuestionManagementController = {
 
       // add new statements
       await Promise.all(
-        statementsToAdd.map(async (statement) => {
+        updatedStatements.map(async (statement) => {
           let contentFileName = null;
 
-          if (statement.content) {
-            contentFileName = await services.questionService.uploadFile(statement.content);
+          if (statement.id) {
+            // contentFileName = await services.questionService.uploadFile(statement.content);
+            await TrueFalseQuestionOption.update(
+              {
+                statement: statement.statement,
+                isCorrectOption: statement.isCorrectOption,
+                feedback: statement.feedback || null,
+                content: statement.contentFileName || null,
+              },
+              {
+                where: {
+                  id: statement.id
+                }
+              }
+            );
+        
+          }
+          else{
+            const createdStatement = await TrueFalseQuestionOption.create(
+              {
+                questionId,
+                statement: statement.statement,
+                isCorrectOption: statement.isCorrectOption,
+                feedback: statement.feedback || null,
+                content: contentFileName || null,
+              },
+              { transaction: t }
+            );
+  
+            updatedStatementsList.push(createdStatement);
           }
 
-          const createdStatement = await TrueFalseQuestionOption.create(
-            {
-              questionId,
-              statement: statement.statement,
-              isCorrectOption: statement.isCorrectOption,
-              feedback: statement.feedback || null,
-              content: contentFileName || null,
-            },
-            { transaction: t }
-          );
-
-          updatedStatementsList.push(createdStatement);
+         
         })
       );
 
@@ -889,7 +920,8 @@ const QuestionManagementController = {
     const t = await db.transaction();
     try {
       let data = req.body;
-      let questionId = data.questionId;
+      let questionId = data.id;
+      console.log(questionId,"id")
 
       if (data.questionData) {
         await services.questionService.updateQuestion(questionId, {
@@ -909,10 +941,11 @@ const QuestionManagementController = {
           if (file.content) {
             contentFileName = await services.questionService.uploadFile(file.content);
           }
-          const fileId = file.id;
-          const existingFile = await QuestionContent.findByPk(fileId);
+          const fileId = file?.id;
+          
 
-          if (existingFile) {
+          if (fileId) {
+            const existingFile = await QuestionContent.findByPk(fileId);
             existingFile.title = file.item || existingFile.item;
             existingFile.content = contentFileName || existingFile.content;
 
@@ -1048,82 +1081,98 @@ const QuestionManagementController = {
   async editClassifyQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      console.log(req?.body, "data");
       const questionId = req.body.questionId;
-      console.log(questionId);
-      const data = req.body;
-      console.log(data.categories, "data");
-
-      await services.questionService.updateQuestion(
-        questionId,
-        {
-          questionType: data.questionType,
-          questionData: data.questionData,
-          sheetId: data.sheetId,
-        },
-        { transaction: t }
-      );
-
-      const categories = data.categories;
-
-      // Update or create categories
-      const updatedCategories = await Promise.all(
-        categories?.map(async (category) => {
-          const categoryId = category.id;
-          const contentFileName = category.content
-            ? await services.questionService.uploadFileToS3(category.content)
-            : null;
-
-          const categoryData = {
-            category: category.category,
-            content: contentFileName,
-          };
-
-          if (categoryId) {
-            await services.questionService.updateCategory(categoryId, categoryData, {
-              transaction: t,
-            });
-          } else {
-            const createdCategory = await QuestionCategory.create(questionId, ...categoryData, {
-              transaction: t,
-            });
-
-            categoryId = createdCategory.id;
-          }
-
-          const items = category.options;
-
-          const updatedItemFiles = await Promise.all(
-            items.map(async (file) => {
-              const itemId = file.id;
-              console.log(file, "item");
-              // const contentItemFileName = file.content
-              //   ? await services.questionService.uploadFileToS3(file.content)
-              //   : null;
-
-              const itemData = {
-                categoryId,
-                item: file.item,
-                content: file.content,
+      const data = req.body; 
+      if(!questionId){
+        createClassifyQues(req,res,next)
+      }
+      else{
+        await services.questionService.updateQuestion(
+          questionId,
+          {
+            questionType: data.questionType,
+            questionData: data.questionData,
+            sheetId: data.sheetId,
+          },
+          { transaction: t }
+        );
+  
+        const categories = data.categories;
+        console.log(categories,"cat")
+  
+        // Update or create categories
+        if(categories?.length>0){
+          const updatedCategories = await Promise.all(
+            
+            data?.categories?.map(async(category) => {
+              console.log(category,"cat")
+              let categoryId = category?.id;
+              console.log(categoryId)
+              // // const contentFileName = category.content
+              // //   ? await services.questionService.uploadFileToS3(category.content)
+              // //   : null;
+    
+              const categoryData = {
+                category: category?.category,
+                content: "",
               };
-
-              if (itemId) {
-                await QuestionItem.update(itemData, { where: { id: itemId } }, { transaction: t });
+    
+              if (categoryId) {
+                
+                await services.questionService.updateCategory(categoryId, categoryData, {
+                  transaction: t,
+                });
               } else {
-                await QuestionItem.create(itemData, { transaction: t });
+                let categoryData = {
+                  questionId,
+                  category: category.category,
+                  content: category.content || null,
+                };
+      
+                let createdCategory = await QuestionCategory.create(categoryData, {
+                  transaction: t,
+                });
+                console.log("success2")
+                categoryId = createdCategory?.id;
               }
+    
+              const items = category.options;
+              console.log(items,"item")
+              const updatedItemFiles = await Promise.all(
+                items?.map(async (file) => {
+                  const itemId = file?.id;
+                  console.log(file, "item");
+                  // const contentItemFileName = file.content
+                  //   ? await services.questionService.uploadFileToS3(file.content)
+                  //   : null;
+    
+                  const itemData = {
+                    categoryId:category.id,
+                    item: file.item,
+                    content: file.content,
+                  };
+    
+                  if (itemId) {
+                    await QuestionItem.update(itemData, { where: { id: itemId } }, { transaction: t });
+                  } else {
+                    await QuestionItem.create(itemData, { transaction: t });
+                  }
+                })
+              );
+    
+              return {
+                category: categoryData,
+                items: updatedItemFiles,
+              };
             })
           );
+        }
+        
+        await t.commit();
+        res.status(httpStatus.OK).send({ message: "Question updated successfully" });
+      }
 
-          return {
-            category: categoryData,
-            items: updatedItemFiles,
-          };
-        })
-      );
-
-      await t.commit();
-      res.status(httpStatus.OK).send({ message: "Question updated successfully" });
+      
     } catch (err) {
       console.log(err);
       await t.rollback();
@@ -1176,6 +1225,52 @@ const QuestionManagementController = {
       const question = await Question.findByPk(questionId);
       await question.destroy({ transaction: t });
 
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Question and related data deleted successfully" });
+    } catch (err) {
+      console.error(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+  async deleteClassifyIteam(req, res, next) {
+    const t = await db.transaction();
+    try {
+      const { itemId } = req.query;
+      await QuestionItem.destroy({
+        where: {
+          id:itemId
+        },
+        transaction: t,
+      });
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Question and related data deleted successfully" });
+    } catch (err) {
+      console.error(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+  async deleteClassifycategory(req, res, next) {
+    const t = await db.transaction();
+    try {
+      const { categoryId } = req.query;
+      await QuestionCategory.destroy({  where: { id: categoryId},transaction: t });
+      await t.commit();
+
+      res.status(httpStatus.OK).send({ message: "Question and related data deleted successfully" });
+    } catch (err) {
+      console.error(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+  async deleteClassifydistractor(req, res, next) {
+    const t = await db.transaction();
+    try {
+      const { distractorID } = req.query;
+      const question = await QuestionDistractor.destroy({  where: { categoryId: distractorID },transaction: t });
+      await question.destroy({ transaction: t });
       await t.commit();
       res.status(httpStatus.OK).send({ message: "Question and related data deleted successfully" });
     } catch (err) {
@@ -2593,11 +2688,24 @@ const QuestionManagementController = {
           option: sortQuestionOptionToBeUpdated[i].option,
           content: sortQuestionOptionToBeUpdated[i].content,
         };
-        await SortQuestionOption.update(
-          dataToBeUpdated,
-          { where: { id: sortQuestionOptionToBeUpdated[i].id, questionId: id } },
-          { transaction: t }
-        );
+        if(sortQuestionOptionToBeUpdated[i].id){
+          await SortQuestionOption.update(
+            dataToBeUpdated,
+            { where: { id: sortQuestionOptionToBeUpdated[i].id, questionId: id } },
+            { transaction: t }
+          );
+        }
+        else{
+          await SortQuestionOption.create(
+            {
+              questionId: id,
+              option: sortQuestionOptionToBeUpdated[i].option,
+              content: sortQuestionOptionToBeUpdated.content,
+            },
+            { transaction: t }
+          );
+        }
+       
       }
 
       await t.commit();
