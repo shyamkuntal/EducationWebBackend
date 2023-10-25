@@ -150,7 +150,7 @@ const SheetManagementController = {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
             }
 
-            await Question.update({ isCheckedByReviewer: true }, whereQuery)
+            await Question.update({ isCheckedByReviewer: true, isErrorByReviewer: false }, whereQuery)
 
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
@@ -190,7 +190,7 @@ const SheetManagementController = {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
             }
 
-            await Question.update({ isErrorByReviewer: true }, whereQuery)
+            await Question.update({ isErrorByReviewer: true, isCheckedByReviewer: false }, whereQuery)
 
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });

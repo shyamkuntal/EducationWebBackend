@@ -73,7 +73,6 @@ router.use("/shmsupervisor", AuthSupervisor(), SheetManagementSupervisor);
 router.use("/shmuploader", AuthUploader2(), QuestionManagementUploader2);
 
 router.use("/shmteacher", AuthTeacher(), TeacherSheetManagement);
-
 router.use("/shmpricer", AuthPricer(), PricerSheetManagement);
 
 module.exports = router;
