@@ -145,6 +145,8 @@ const paginatedSheetManagementSheets = () => {
           "reviewerCommentToSupervisor",
           "supervisorCommentToReviewer",
           "supervisorCommentToUploader2",
+          "supervisorCommentToPricer",
+          "supervisorCommentToTeacher",
           "isSpam",
           "isArchived",
           "isPublished",

@@ -32,7 +32,14 @@ const updateInprogressTaskStatusSchema = Joi.object({
 const updatePriceInQuestionSchema = Joi.object({
     priceForTeacher: Joi.number().required(),
     priceForStudent: Joi.number().required(),
-    isCheckedByPricer: Joi.boolean().required()
+    isCheckedByPricer: Joi.boolean().required(),
+    isErrorByReviewer: Joi.boolean()
+});
+
+const addErrorReportToSheetSchema = Joi.object({
+    sheetId: Joi.string().guid().required(),
+    pricerId: Joi.string().guid().required(),
+    errorReport: Joi.string().max(225).required(),
 });
 
 module.exports = {
@@ -42,5 +49,6 @@ module.exports = {
     getRecheckingComments,
     getPricerSheetsSchema,
     updateInprogressTaskStatusSchema,
-    updatePriceInQuestionSchema
+    updatePriceInQuestionSchema,
+    addErrorReportToSheetSchema
 };

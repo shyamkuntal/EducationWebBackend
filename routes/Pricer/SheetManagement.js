@@ -27,7 +27,9 @@ router.patch("/addprice", PricerSheetManagementController.addPriceForQuestion);
 router.patch("/removeprice", PricerSheetManagementController.removePriceForQuestion);
 router.get("/getquestions", QuestionManagementController.getQuestions);
 
+router.get("/sheeterrorsbyreviewer", PricerSheetManagementController.getErrorsForQuestion);
 router.patch("/assigntosupervisor", PricerSheetManagementController.AssignSheetToSupervisor)
+router.patch("/addsheeterror", PricerSheetManagementController.reportSheetError);
 
 
 module.exports = router;

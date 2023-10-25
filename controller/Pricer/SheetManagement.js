@@ -9,11 +9,14 @@ const { User } = require('../../models/User')
 const { Topic, SubTopic } = require("../../models/Topic");
 const { Vocabulary } = require("../../models/Vocabulary");
 const {
-    updateInprogressTaskStatusSchema, updatePriceInQuestionSchema, assignSupervisorUserToSheetSchema,
+    updateInprogressTaskStatusSchema, updatePriceInQuestionSchema, assignSupervisorUserToSheetSchema, addErrorReportToSheetSchema
 } = require("../../validations/PricerValidation");
 const { SheetManagement } = require("../../models/SheetManagement");
 const { Question } = require("../../models/Question");
 const { ApiError } = require("../../middlewares/apiError.js");
+const { s3Client } = require("../../config/s3");
+const { PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const PricerSheetManagementController = {
     async getTopicSubTopicVocabMappingsForQuestion(req, res, next) {
@@ -157,7 +160,8 @@ const PricerSheetManagementController = {
                     let request = {
                         priceForTeacher: Number(req.body.priceForTeacher[i]),
                         priceForStudent: Number(req.body.priceForStudent[i]),
-                        isCheckedByPricer: true
+                        isCheckedByPricer: true,
+                        isErrorByReviewer: false
                     }
                     await Question.update(request, whereQuery, { transaction: t })
                 }
@@ -166,7 +170,8 @@ const PricerSheetManagementController = {
             let request = {
                 priceForTeacher: question.hasSubPart ? Number(req.body.priceForTeacher.reduce((partialSum, a) => partialSum + Number(a), 0)) : Number(req.body.priceForTeacher),
                 priceForStudent: question.hasSubPart ? Number(req.body.priceForStudent.reduce((partialSum, a) => partialSum + Number(a), 0)) : Number(req.body.priceForStudent),
-                isCheckedByPricer: true
+                isCheckedByPricer: true,
+                isErrorByReviewer: false
             }
 
             let values = await updatePriceInQuestionSchema.validateAsync(request);
@@ -286,6 +291,114 @@ const PricerSheetManagementController = {
         } catch (err) {
             console.log(err);
             await t.rollback();
+            next(err);
+        }
+    },
+    async reportSheetError(req, res, next) {
+        const t = await db.transaction();
+        try {
+            let values = await addErrorReportToSheetSchema.validateAsync(req.body);
+
+            // checking sheet
+            let whereQueryForFindSheet = {
+                where: {
+                    id: values.sheetId,
+                },
+                include: [
+                    { model: User, as: "assignedToUserName", attributes: ["id", "Name", "userName"] },
+                    { model: User, as: "supervisor", attributes: ["id", "Name", "userName"] },
+                ],
+                raw: true,
+                nest: true,
+            };
+            let whereQuery = { where: { id: values.sheetId }, raw: true };
+
+            let sheetData = await SheetManagement.findOne(whereQueryForFindSheet);
+
+            if (!sheetData) {
+                throw new ApiError(httpStatus.BAD_REQUEST, "Sheet not found!");
+            }
+
+            if (
+                values.pricerId !== sheetData.pricerId ||
+                sheetData.assignedToUserId !== sheetData.pricerId
+            ) {
+                throw new ApiError(httpStatus.BAD_REQUEST, "Pricer not assigned to sheet!");
+            }
+
+            let dataToBeUpdated = {
+                assignedToUserId: sheetData.supervisorId,
+                statusForPricer: CONSTANTS.sheetStatuses.Complete,
+                statusForSupervisor: CONSTANTS.sheetStatuses.Complete,
+                pricerCommentToSupervisor: values.errorReport,
+                isSpam: true,
+            };
+
+            await SheetManagement.update(dataToBeUpdated, whereQuery, {
+                transaction: t,
+            });
+
+            // Create sheetLog
+            await services.sheetManagementService.createSheetLog(
+                values.sheetId,
+                sheetData.assignedToUserName.userName,
+                sheetData.supervisor.userName,
+                CONSTANTS.sheetLogsMessages.pricerAssignToSupervisor,
+                { transaction: t }
+            );
+
+            await t.commit();
+            res.status(httpStatus.OK).send({ message: "Added To Spam Succesfully" });
+        } catch (err) {
+            await t.rollback();
+            console.log(err)
+            next(err);
+        }
+    },
+    async getErrorsForQuestion(req, res, next) {
+        try {
+            // checking sheet
+            let whereQuery = { where: { id: req.query.questionId }, raw: true };
+
+            let questionData = await Question.findOne(whereQuery);
+
+            if (!questionData) {
+                throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
+            }
+
+            const getFilesUrlFromS3 = async (fileName) => {
+                try {
+                    let getFilesParams = {
+                        Bucket: process.env.AWS_BUCKET_NAME,
+                        Key: fileName,
+                    };
+
+                    const getFileCommand = new GetObjectCommand(getFilesParams);
+
+                    const fileUrl = await getSignedUrl(s3Client, getFileCommand, {
+                        expiresIn: 3600,
+                    });
+
+                    return fileUrl;
+                } catch (err) {
+                    throw err;
+                }
+            };
+
+
+            let fileUrl = "";
+
+            if (questionData.errorReportImgByReviewer)
+                fileUrl = await getFilesUrlFromS3(
+                    questionData.errorReportImgByReviewer
+                );
+
+            res.status(httpStatus.OK).send({
+                errorReport: questionData.errorReportByReviewer ? questionData.errorReportByReviewer : "",
+                errorReportFileUrl: { fileUrl, 'name': questionData.errorReportImgByReviewer },
+            });
+        } catch (err) {
+            console.log(err)
             next(err);
         }
     },
