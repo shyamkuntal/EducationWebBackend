@@ -466,15 +466,15 @@ const QuestionManagementController = {
   async editMcqQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      console.log("success");
+      // console.log("success");
       let data = req?.body;
+      console.log(data,"data")
       let questionId = data.questionId;
 
       // Update the McqQuestion
       if (questionId) {
-        await services.questionService.updateQuestion(questionId, {
-          questionData: data.questionData,
-        });
+        const response = await services.questionService.updateQuestion(questionId, data);
+        console.log(response,"res")
       }
 
       let updatedOptions = data.options || [];
@@ -768,9 +768,7 @@ const QuestionManagementController = {
       let questionId = data.questionId;
 
       if (data.questionData) {
-        await services.questionService.updateQuestion(questionId, {
-          questionData: data.questionData,
-        });
+        await services.questionService.updateQuestion(questionId,data);
       }
 
       let updatedStatements = data.statements || [];
@@ -1089,11 +1087,7 @@ const QuestionManagementController = {
       else{
         await services.questionService.updateQuestion(
           questionId,
-          {
-            questionType: data.questionType,
-            questionData: data.questionData,
-            sheetId: data.sheetId,
-          },
+          data,
           { transaction: t }
         );
   
@@ -1337,7 +1331,7 @@ const QuestionManagementController = {
         sheetId: data.sheetId,
       };
 
-      await services.questionService.updateQuestion(id, questionUpdateData, {
+      await services.questionService.updateQuestion(id, data, {
         transaction: t,
       });
 
@@ -1813,7 +1807,7 @@ const QuestionManagementController = {
         }
 
         await services.questionService.editQuestion(
-          questionData,
+          {questionData,...rest},
           { where: { id: id } },
           { transaction: t }
         );

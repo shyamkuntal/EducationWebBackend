@@ -3,6 +3,7 @@ const CONSTANTS = require("../constants/constants");
 
 const createQuestionsSchema = Joi.object({
   sheetId: Joi.string().guid(),
+  parentQuestionId:Joi.string().guid(),
   questionType: Joi.string().required(),
   questionData: Joi.string().required(),
   questionDescription: Joi.string().allow(""),
