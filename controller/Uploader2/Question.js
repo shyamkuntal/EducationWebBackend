@@ -1733,17 +1733,14 @@ const QuestionManagementController = {
   async editMatchQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { pairsToBeUpdated, pairsToBeAdded, ...rest } = req.body;
-      let questionValues = await editQuestionSchema.validateAsync(rest);
+      let { options, pairsToBeAdded, ...rest } = req.body;
+      let questionValues = req.body;
 
-      let updateValues = await editMatchQuestionPairsSchema.validateAsync({
-        pairsToBeUpdated,
-        pairsToBeAdded,
-      });
+      let updateValues = options
 
       let { id, ...questionData } = questionValues;
 
-      const updatePairs = updateValues.pairsToBeUpdated;
+      const updatePairs = options;
 
       if (updatePairs && updatePairs.length > 0) {
         for (let i = 0; i < updatePairs.length; i++) {
@@ -1752,57 +1749,67 @@ const QuestionManagementController = {
             matchTarget: updatePairs[i].matchTarget,
           };
 
-          if (updatePairs[i].newMatchPhraseContent && updatePairs[i].matchPhraseContent) {
-            let buffer = Buffer.from(
-              updatePairs[i].newMatchPhraseContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
-              "base64"
-            );
+          // if (updatePairs[i].newMatchPhraseContent && updatePairs[i].matchPhraseContent) {
+          //   let buffer = Buffer.from(
+          //     updatePairs[i].newMatchPhraseContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
+          //     "base64"
+          //   );
 
-            let fileObj = {
-              originalname: updatePairs[i].newMatchPhraseContent.filename,
-              mimetype: updatePairs[i].newMatchPhraseContent.mimetype,
-              buffer: buffer,
-            };
+          //   let fileObj = {
+          //     originalname: updatePairs[i].newMatchPhraseContent.filename,
+          //     mimetype: updatePairs[i].newMatchPhraseContent.mimetype,
+          //     buffer: buffer,
+          //   };
 
-            let fileName = await services.questionService.uploadFile(fileObj);
+          //   let fileName = await services.questionService.uploadFile(fileObj);
 
-            dataToBeUpdated.matchPhraseContent = fileName;
+          //   dataToBeUpdated.matchPhraseContent = fileName;
+
+          //   // Deleting previous matchTargetContent
+          //   await services.questionService.deleteS3File({
+          //     fileName: updatePairs[i].matchPhraseContent,
+          //   });
+          // }
+
+          // if (updatePairs[i].newMatchTargetContent && updatePairs[i].matchTargetContent) {
+          //   let buffer = Buffer.from(
+          //     updatePairs[i].newMatchTargetContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
+          //     "base64"
+          //   );
+
+          //   let fileObj = {
+          //     originalname: updatePairs[i].newMatchTargetContent.filename,
+          //     mimetype: updatePairs[i].newMatchTargetContent.mimetype,
+          //     buffer: buffer,
+          //   };
+
+          //   let fileName = await services.questionService.uploadFile(fileObj);
+
+          //   dataToBeUpdated.matchTargetContent = fileName;
 
             // Deleting previous matchTargetContent
-            await services.questionService.deleteS3File({
-              fileName: updatePairs[i].matchPhraseContent,
-            });
-          }
-
-          if (updatePairs[i].newMatchTargetContent && updatePairs[i].matchTargetContent) {
-            let buffer = Buffer.from(
-              updatePairs[i].newMatchTargetContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
-              "base64"
+          //   await services.questionService.deleteS3File({
+          //     fileName: updatePairs[i].matchTargetContent,
+          //   });
+          // }
+          
+          if(updatePairs[i]?.id){
+            await MatchQuestionPair.update(
+              dataToBeUpdated,
+              {
+                where: { id: updatePairs[i].id, questionId: id },
+              },
+              { transaction: t }
             );
-
-            let fileObj = {
-              originalname: updatePairs[i].newMatchTargetContent.filename,
-              mimetype: updatePairs[i].newMatchTargetContent.mimetype,
-              buffer: buffer,
-            };
-
-            let fileName = await services.questionService.uploadFile(fileObj);
-
-            dataToBeUpdated.matchTargetContent = fileName;
-
-            // Deleting previous matchTargetContent
-            await services.questionService.deleteS3File({
-              fileName: updatePairs[i].matchTargetContent,
-            });
           }
-
-          await MatchQuestionPair.update(
-            dataToBeUpdated,
-            {
-              where: { id: updatePairs[i].id, questionId: id },
-            },
-            { transaction: t }
-          );
+          else{
+            await MatchQuestionPair.create({...dataToBeUpdated,questionId: id },
+              {
+                where: {questionId: id },
+              },
+              { transaction: t });
+          }
+          
         }
 
         await services.questionService.editQuestion(
@@ -1881,6 +1888,7 @@ const QuestionManagementController = {
   },
   async deleteMatchPair(req, res, next) {
     const t = await db.transaction();
+    
     try {
       let values = await deleteMatchPairSchema.validateAsync({ pairId: req.query.pairId });
 
@@ -1894,13 +1902,37 @@ const QuestionManagementController = {
       next(err);
     }
   },
+  
   async deleteMatchQuestion(req, res, next) {
     const t = await db.transaction();
+    let questionId= req.query.questionId
     try {
       let values = await deleteQuestionSchema.validateAsync({
         questionId: req.query.questionId,
       });
+      await QuestionTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
 
+      await QuestionSubTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await QuestionVocabMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await MatchQuestionPair.destroy({
+        where: {
+          questionId,
+        },
+      });  
       await services.questionService.deleteQuestion(
         { where: { id: values.questionId } },
         { transaction: t }
