@@ -328,7 +328,7 @@ const BookManagementController = {
       let values = req.query.bookTaskId;
 
       const bookMapping = await TaskBookMapping.findAll({
-        where: { bookTaskId: values },
+        where: { bookTaskId: values, isArchived: false },
         include: [{ model: Book, attributes: ["id", "name", "subTitle", "author", "publisher"] }],
       });
 
@@ -337,7 +337,7 @@ const BookManagementController = {
         for (let i = 0; i < bookMapping.length; i++) {
           // fetch Chapters
           const chapter = await TaskBookChapterMapping.findAll({
-            where: { bookTaskId: values, bookId: bookMapping[i].bookId },
+            where: { bookTaskId: values, bookId: bookMapping[i].bookId, isArchived: false },
             attributes: [
               "bookTaskId",
               "bookId",
@@ -566,25 +566,25 @@ const BookManagementController = {
         return res.status(404).json({ message: "Task not found" });
       }
   
-      let topicMappings = await TaskBookMapping.findAll({
+      let bookMappings = await TaskBookMapping.findAll({
         where: { bookTaskId: id },
       });
-      let subTopicMappings = await TaskBookChapterMapping.findAll({
+      let chapterMappings = await TaskBookChapterMapping.findAll({
         where: { bookTaskId: id },
       });
-  
-      for (const mapping of [...topicMappings, ...subTopicMappings]) {
+      
+      for (const mapping of [...bookMappings, ...chapterMappings]) {
         mapping.isArchived = true;
         await mapping.save({ transaction: t });
       }
-
+2
       task.isArchived = true;
       task.isSpam = false;
       await task.save({ transaction: t });
   
       await t.commit();
   
-      res.status(httpStatus.OK).send({ message: "Task and related mappings archived successfully" });
+      res.status(httpStatus.OK).send({ message: "Task and related mappings archived successfully", bookMappings, chapterMappings });
     } catch (err) {
       await t.rollback(); 
       return res.json({ status: 501, error: err.message });

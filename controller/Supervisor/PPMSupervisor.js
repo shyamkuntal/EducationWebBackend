@@ -832,7 +832,7 @@ const PastPaperSupervisorController = {
   },
 
   async ToggleArchiveSheet(req, res) {
-    const id = req.query.sheetid;
+    const id = req.query.sheetId;
     try {
       const sheet = await Sheet.findByPk(id);
 
