@@ -169,6 +169,7 @@ async function uploadFileToS3(fileObj) {
 }
 
 async function deleteFileFromS3(fileName) {
+  console.log(fileName)
   try {
     let filename = fileName.split("/")[1];
     const fileType = determineFileType(filename);

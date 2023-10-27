@@ -66,7 +66,7 @@ const { SheetManagement } = require("../../models/SheetManagement");
 const { QuestionTopicMapping } = require("../../models/QuestionTopicMapping");
 const { QuestionSubTopicMapping } = require("../../models/QuestionSubTopicMapping");
 const { QuestionVocabMapping } = require("../../models/QuestionVocabMapping");
-const {QuestionDistractor} = require("../../models/distractor");
+const { QuestionDistractor } = require("../../models/distractor");
 // const{McqQuestionOption} = require("../../models/McqQuestionOption")
 const { User } = require("../../models/User");
 const { where } = require("sequelize");
@@ -98,7 +98,7 @@ const QuestionManagementController = {
   async updateQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      const { questionId, questionData, explanation, includeExplanation } = req.body;
+      const { questionId, questionData, explanation, includeExplanation, ...rest } = req.body;
 
       await editQuestionSchema.validateAsync(req.body);
 
@@ -106,6 +106,7 @@ const QuestionManagementController = {
         questionData: questionData,
         explanation: explanation,
         includeExplanation: includeExplanation,
+        ...rest,
       };
 
       let question = await services.questionService.updateQuestion(questionId, updatedData, {
@@ -142,7 +143,6 @@ const QuestionManagementController = {
     const t = await db.transaction();
     try {
       let data = req.body;
-
       let { files, ...rest } = req.body;
 
       let questionValues = await createQuestionsSchema.validateAsync({
@@ -178,6 +178,48 @@ const QuestionManagementController = {
       });
     } catch (err) {
       console.log(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+  async deleteContentQues(req, res, next) {
+    const t = await db.transaction();
+    try {
+      const { questionId, questionType } = req.query;
+
+      const existingQuestion = await Question.findByPk(questionId);
+      if (!existingQuestion) {
+        return res.status(httpStatus.NOT_FOUND).send({ message: "Question not found" });
+      }
+
+      let questionContents = await QuestionContent.findAll(
+        { where: { questionId: questionId } },
+        { transaction: t }
+      );
+
+      await Promise.all(
+        questionContents.map(async (content) => {
+          if (content.content) {
+            let fileName = content.content.split("/")[3] + "/" + content.content.split("/")[4];
+            await services.questionService.deleteFileFromS3(fileName);
+          }
+        })
+      );
+
+      if (questionType === CONSTANTS.questionType.Accordian) {
+        await Accordian.destroy({ where: { questionId: questionId } }, { transaction: t });
+      }
+
+      await QuestionContent.destroy({ where: { questionId: questionId } }, { transaction: t });
+
+      await Question.destroy({ where: { id: questionId } }, { transaction: t });
+
+      await t.commit();
+      res
+        .status(httpStatus.OK)
+        .send({ message: "Question and associated content deleted successfully" });
+    } catch (err) {
+      console.error(err);
       await t.rollback();
       next(err);
     }
@@ -226,13 +268,16 @@ const QuestionManagementController = {
     const t = await db.transaction();
 
     try {
-      const { questionId } = req.body;
+      const { questionId, ...rest } = req.body;
       const data = req.body;
 
-      await Question.update(data.questionData, {
-        where: { id: questionId },
-        transaction: t,
-      });
+      await Question.update(
+        { ...rest },
+        {
+          where: { id: questionId },
+          transaction: t,
+        }
+      );
 
       const tabs = data.tabs || [];
 
@@ -311,15 +356,15 @@ const QuestionManagementController = {
   async editVideoSimulationQues(req, res, next) {
     const t = await db.transaction();
     try {
-      let data = req.body;
+      let { ...rest } = req.body;
+      let data = req.body
       let questionId = data.questionId;
 
-      if (data.questionData) {
-        await services.questionService.updateQuestion(questionId, {
-          questionData: data.questionData,
-          questionDescription: data.questionDescription,
-        });
-      }
+      await services.questionService.updateQuestion(questionId, {
+        questionData: data.questionData,
+        questionDescription: data.questionDescription,
+        ...rest,
+      });
 
       let questionContentData = await QuestionContent.findByPk(data.content.id);
 
@@ -352,22 +397,19 @@ const QuestionManagementController = {
   async editContentQues(req, res, next) {
     const t = await db.transaction();
     try {
-      let data = req.body;
-      let questionId = data.questionId;
+      let { questionData, filesToAdd, filesToDelete, questionId, ...rest } = req.body;
 
-      if (data.questionData) {
-        await services.questionService.updateQuestion(questionId, {
-          questionData: data.questionData,
-          questionDescription: data.questionDescription,
-        });
-      }
+      await services.questionService.updateQuestion(questionId, {
+        questionData: questionData,
+        ...rest,
+      });
 
-      let filesToAdd = data.filesToAdd || [];
-      let filesToDelete = data.filesToDelete || [];
+      let FilesToAdd = filesToAdd || [];
+      let FilesToDelete = filesToDelete || [];
       const updatedFiles = [];
 
       const createdFiles = await Promise.all(
-        filesToAdd.map(async (file) => {
+        FilesToAdd.map(async (file) => {
           const createdOption = await QuestionContent.create(
             {
               questionId,
@@ -385,7 +427,7 @@ const QuestionManagementController = {
 
       // Delete files
       await Promise.all(
-        filesToDelete.map(async (fileId) => {
+        FilesToDelete.map(async (fileId) => {
           await QuestionContent.destroy({
             where: { id: fileId.id },
             transaction: t,
@@ -468,13 +510,13 @@ const QuestionManagementController = {
     try {
       // console.log("success");
       let data = req?.body;
-      console.log(data,"data")
+      console.log(data, "data");
       let questionId = data.questionId;
 
       // Update the McqQuestion
       if (questionId) {
         const response = await services.questionService.updateQuestion(questionId, data);
-        console.log(response,"res")
+        console.log(response, "res");
       }
 
       let updatedOptions = data.options || [];
@@ -527,8 +569,7 @@ const QuestionManagementController = {
 
             await existingOption.save({ transaction: t });
             updatedOptionsList.push(existingOption);
-          }
-          else{
+          } else {
             await McqQuestionOption.create(
               {
                 questionId,
@@ -735,16 +776,16 @@ const QuestionManagementController = {
   },
   async DeleteTrueFalseOption(req, res, next) {
     const { questionId, optionId } = req.query;
-  
+
     const t = await db.transaction();
 
     try {
       const option = await TrueFalseQuestionOption.findOne({
         where: { id: optionId, questionId: questionId },
       });
-     
-      console.log(option,"option")
-      
+
+      console.log(option, "option");
+
       if (!option) {
         await t.rollback();
         return res.status(httpStatus.NOT_FOUND).json({ message: "Option not found" });
@@ -768,7 +809,7 @@ const QuestionManagementController = {
       let questionId = data.questionId;
 
       if (data.questionData) {
-        await services.questionService.updateQuestion(questionId,data);
+        await services.questionService.updateQuestion(questionId, data);
       }
 
       let updatedStatements = data.statements || [];
@@ -793,13 +834,11 @@ const QuestionManagementController = {
               },
               {
                 where: {
-                  id: statement.id
-                }
+                  id: statement.id,
+                },
               }
             );
-        
-          }
-          else{
+          } else {
             const createdStatement = await TrueFalseQuestionOption.create(
               {
                 questionId,
@@ -810,11 +849,9 @@ const QuestionManagementController = {
               },
               { transaction: t }
             );
-  
+
             updatedStatementsList.push(createdStatement);
           }
-
-         
         })
       );
 
@@ -919,7 +956,7 @@ const QuestionManagementController = {
     try {
       let data = req.body;
       let questionId = data.id;
-      console.log(questionId,"id")
+      console.log(questionId, "id");
 
       if (data.questionData) {
         await services.questionService.updateQuestion(questionId, {
@@ -940,7 +977,6 @@ const QuestionManagementController = {
             contentFileName = await services.questionService.uploadFile(file.content);
           }
           const fileId = file?.id;
-          
 
           if (fileId) {
             const existingFile = await QuestionContent.findByPk(fileId);
@@ -1080,39 +1116,32 @@ const QuestionManagementController = {
     const t = await db.transaction();
     try {
       const questionId = req.body.questionId;
-      const data = req.body; 
-      if(!questionId){
-        createClassifyQues(req,res,next)
-      }
-      else{
-        await services.questionService.updateQuestion(
-          questionId,
-          data,
-          { transaction: t }
-        );
-  
+      const data = req.body;
+      if (!questionId) {
+        createClassifyQues(req, res, next);
+      } else {
+        await services.questionService.updateQuestion(questionId, data, { transaction: t });
+
         const categories = data.categories;
-        console.log(categories,"cat")
-  
+        console.log(categories, "cat");
+
         // Update or create categories
-        if(categories?.length>0){
+        if (categories?.length > 0) {
           const updatedCategories = await Promise.all(
-            
-            data?.categories?.map(async(category) => {
-              console.log(category,"cat")
+            data?.categories?.map(async (category) => {
+              console.log(category, "cat");
               let categoryId = category?.id;
-              console.log(categoryId)
+              console.log(categoryId);
               // // const contentFileName = category.content
               // //   ? await services.questionService.uploadFileToS3(category.content)
               // //   : null;
-    
+
               const categoryData = {
                 category: category?.category,
                 content: "",
               };
-    
+
               if (categoryId) {
-                
                 await services.questionService.updateCategory(categoryId, categoryData, {
                   transaction: t,
                 });
@@ -1122,16 +1151,16 @@ const QuestionManagementController = {
                   category: category.category,
                   content: category.content || null,
                 };
-      
+
                 let createdCategory = await QuestionCategory.create(categoryData, {
                   transaction: t,
                 });
-                console.log("success2")
+                console.log("success2");
                 categoryId = createdCategory?.id;
               }
-    
+
               const items = category.options;
-              console.log(items,"item")
+              console.log(items, "item");
               const updatedItemFiles = await Promise.all(
                 items?.map(async (file) => {
                   const itemId = file?.id;
@@ -1139,21 +1168,25 @@ const QuestionManagementController = {
                   // const contentItemFileName = file.content
                   //   ? await services.questionService.uploadFileToS3(file.content)
                   //   : null;
-    
+
                   const itemData = {
-                    categoryId:category.id,
+                    categoryId: category.id,
                     item: file.item,
                     content: file.content,
                   };
-    
+
                   if (itemId) {
-                    await QuestionItem.update(itemData, { where: { id: itemId } }, { transaction: t });
+                    await QuestionItem.update(
+                      itemData,
+                      { where: { id: itemId } },
+                      { transaction: t }
+                    );
                   } else {
                     await QuestionItem.create(itemData, { transaction: t });
                   }
                 })
               );
-    
+
               return {
                 category: categoryData,
                 items: updatedItemFiles,
@@ -1161,12 +1194,10 @@ const QuestionManagementController = {
             })
           );
         }
-        
+
         await t.commit();
         res.status(httpStatus.OK).send({ message: "Question updated successfully" });
       }
-
-      
     } catch (err) {
       console.log(err);
       await t.rollback();
@@ -1233,7 +1264,7 @@ const QuestionManagementController = {
       const { itemId } = req.query;
       await QuestionItem.destroy({
         where: {
-          id:itemId
+          id: itemId,
         },
         transaction: t,
       });
@@ -1249,7 +1280,7 @@ const QuestionManagementController = {
     const t = await db.transaction();
     try {
       const { categoryId } = req.query;
-      await QuestionCategory.destroy({  where: { id: categoryId},transaction: t });
+      await QuestionCategory.destroy({ where: { id: categoryId }, transaction: t });
       await t.commit();
 
       res.status(httpStatus.OK).send({ message: "Question and related data deleted successfully" });
@@ -1263,7 +1294,10 @@ const QuestionManagementController = {
     const t = await db.transaction();
     try {
       const { distractorID } = req.query;
-      const question = await QuestionDistractor.destroy({  where: { categoryId: distractorID },transaction: t });
+      const question = await QuestionDistractor.destroy({
+        where: { categoryId: distractorID },
+        transaction: t,
+      });
       await question.destroy({ transaction: t });
       await t.commit();
       res.status(httpStatus.OK).send({ message: "Question and related data deleted successfully" });
@@ -1730,7 +1764,7 @@ const QuestionManagementController = {
       let { options, pairsToBeAdded, ...rest } = req.body;
       let questionValues = req.body;
 
-      let updateValues = options
+      let updateValues = options;
 
       let { id, ...questionData } = questionValues;
 
@@ -1781,13 +1815,13 @@ const QuestionManagementController = {
 
           //   dataToBeUpdated.matchTargetContent = fileName;
 
-            // Deleting previous matchTargetContent
+          // Deleting previous matchTargetContent
           //   await services.questionService.deleteS3File({
           //     fileName: updatePairs[i].matchTargetContent,
           //   });
           // }
-          
-          if(updatePairs[i]?.id){
+
+          if (updatePairs[i]?.id) {
             await MatchQuestionPair.update(
               dataToBeUpdated,
               {
@@ -1795,19 +1829,19 @@ const QuestionManagementController = {
               },
               { transaction: t }
             );
-          }
-          else{
-            await MatchQuestionPair.create({...dataToBeUpdated,questionId: id },
+          } else {
+            await MatchQuestionPair.create(
+              { ...dataToBeUpdated, questionId: id },
               {
-                where: {questionId: id },
+                where: { questionId: id },
               },
-              { transaction: t });
+              { transaction: t }
+            );
           }
-          
         }
 
         await services.questionService.editQuestion(
-          {questionData,...rest},
+          { questionData, ...rest },
           { where: { id: id } },
           { transaction: t }
         );
@@ -1882,7 +1916,7 @@ const QuestionManagementController = {
   },
   async deleteMatchPair(req, res, next) {
     const t = await db.transaction();
-    
+
     try {
       let values = await deleteMatchPairSchema.validateAsync({ pairId: req.query.pairId });
 
@@ -1896,10 +1930,10 @@ const QuestionManagementController = {
       next(err);
     }
   },
-  
+
   async deleteMatchQuestion(req, res, next) {
     const t = await db.transaction();
-    let questionId= req.query.questionId
+    let questionId = req.query.questionId;
     try {
       let values = await deleteQuestionSchema.validateAsync({
         questionId: req.query.questionId,
@@ -1926,7 +1960,7 @@ const QuestionManagementController = {
         where: {
           questionId,
         },
-      });  
+      });
       await services.questionService.deleteQuestion(
         { where: { id: values.questionId } },
         { transaction: t }
@@ -2109,7 +2143,7 @@ const QuestionManagementController = {
       let { questionId, questionData } = questionValues;
 
       await Question.update(
-        {questionData, ...rest},
+        { questionData, ...rest },
         {
           where: { id: questionId },
         },
@@ -2340,33 +2374,32 @@ const QuestionManagementController = {
   async editGeogebraQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { newUploaderJson, newStudentJson, allowAlgebraInput, ...rest } = req.body;
+      let { uploaderJson, studentJson, allowAlgebraInput, graphType, ...rest } = req.body;
       let questionValues = await editQuestionSchema.validateAsync(rest);
 
       let geogebraQuestionValues = await editGeogebraGraphQuestionSchema.validateAsync({
-        newUploaderJson,
-        newStudentJson,
+        uploaderJson,
+        studentJson,
+        graphType,
         allowAlgebraInput,
       });
 
-      let { id, questionData } = questionValues;
+      let { questionId, questionData } = questionValues;
 
       await services.questionService.editQuestion(
-        questionData,
-        { where: { id: id } },
+        { questionData, ...rest },
+        { where: { id: questionId } },
         { transaction: t }
       );
 
-      if (geogebraQuestionValues.newUploaderJson && geogebraQuestionValues.newStudentJson) {
-        await GeogebraGraphQuestion.update(
-          {
-            dataGeneratorJson: geogebraQuestionValues.newUploaderJson,
-            studentJson: geogebraQuestionValues.newStudentJson,
-            allowAlgebraInput: geogebraQuestionValues.allowAlgebraInput,
-          },
-          { where: { questionId: questionValues.id } }
-        );
-      }
+      await GeogebraGraphQuestion.update(
+        {
+          dataGeneratorJson: geogebraQuestionValues.dataGeneratorJson,
+          studentJson: geogebraQuestionValues.studentJson,
+          allowAlgebraInput: geogebraQuestionValues.allowAlgebraInput,
+        },
+        { where: { questionId: questionValues.questionId } }
+      );
 
       await t.commit();
 
@@ -2577,35 +2610,32 @@ const QuestionManagementController = {
   async editHotSpotQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let { newUploaderJson, newStudentJson, hotSpotIds, ...rest } = req.body;
+      let { uploaderJson, studentJson, hotSpotIds, ...rest } = req.body;
       let questionValues = await editQuestionSchema.validateAsync(rest);
 
       console.log(questionValues);
 
       let hotSpotQuestionValues = await editHotSpotQuestionSchema.validateAsync({
-        newUploaderJson,
-        newStudentJson,
+        uploaderJson,
+        studentJson,
         hotSpotIds,
       });
 
-      let { id, ...questionData } = questionValues;
+      let { questionId, ...questionData } = questionValues;
 
       await services.questionService.editQuestion(
-        questionData,
-        { where: { id: id } },
+        { questionData, ...rest },
+        { where: { id: questionId } },
         { transaction: t }
       );
-
-      if (hotSpotQuestionValues.newDataGeneratorJson && hotSpotQuestionValues.newStudentJson) {
-        await HotSpotQuestion.update(
-          {
-            uploaderJson: hotSpotQuestionValues.newUploaderJson,
-            studentJson: hotSpotQuestionValues.newStudentJson,
-          },
-          { where: { questionId: id } },
-          { transaction: t }
-        );
-      }
+      await HotSpotQuestion.update(
+        {
+          uploaderJson: hotSpotQuestionValues.uploaderJson,
+          studentJson: hotSpotQuestionValues.studentJson,
+        },
+        { where: { questionId: questionId } },
+        { transaction: t }
+      );
 
       await t.commit();
 
@@ -2714,14 +2744,13 @@ const QuestionManagementController = {
           option: sortQuestionOptionToBeUpdated[i].option,
           content: sortQuestionOptionToBeUpdated[i].content,
         };
-        if(sortQuestionOptionToBeUpdated[i].id){
+        if (sortQuestionOptionToBeUpdated[i].id) {
           await SortQuestionOption.update(
             dataToBeUpdated,
             { where: { id: sortQuestionOptionToBeUpdated[i].id, questionId: id } },
             { transaction: t }
           );
-        }
-        else{
+        } else {
           await SortQuestionOption.create(
             {
               questionId: id,
@@ -2731,7 +2760,6 @@ const QuestionManagementController = {
             { transaction: t }
           );
         }
-       
       }
 
       await t.commit();

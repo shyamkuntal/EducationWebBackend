@@ -44,6 +44,7 @@ router.post(
   upload.array("content", 10),
   QuestionManagementController.createContentQues
 );
+router.delete( "/deletecontentquestion", QuestionManagementController.deleteContentQues);
 router.post(
   "/createvideoquestion",
   upload.single("content"),

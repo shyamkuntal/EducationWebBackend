@@ -29,6 +29,7 @@ const createQuestionsSchema = Joi.object({
   isErrorByReviewer: Joi.boolean(),
   parentQuestionId: Joi.string().guid(),
   hasSubPart: Joi.boolean(),
+  isQuestionSubPart: Joi.boolean(),
   includeExplanation: Joi.boolean(),
   explanation: Joi.string(),
   questionIndentifier: Joi.string(),
@@ -109,6 +110,7 @@ const deleteQuestionSchema = Joi.object({ questionId: Joi.string().guid().requir
 
 const editQuestionSchema = Joi.object({
   id: Joi.string().guid(),
+  parentQuestionId: Joi.string().guid(),
   questionId: Joi.string().guid(),
   sheetId: Joi.string().guid(),
   questionType: Joi.string(),
@@ -228,8 +230,9 @@ const createGeogebraGraphQuestionSchema = Joi.object({
 });
 
 const editGeogebraGraphQuestionSchema = Joi.object({
-  newDataGeneratorJson: Joi.string().required(),
-  newStudentJson: Joi.string(),
+  uploaderJson: Joi.string().required(),
+  studentJson: Joi.string(),
+  graphType: Joi.string(),
   allowAlgebraInput: Joi.boolean().required(),
 });
 
@@ -250,8 +253,8 @@ const createHotSpotQuestionSchema = Joi.object({
 });
 
 const editHotSpotQuestionSchema = Joi.object({
-  newUploaderJson: Joi.string().required(),
-  newStudentJson: Joi.string().required(),
+  uploaderJson: Joi.string().required(),
+  studentJson: Joi.string().required(),
   hotSpotIds: Joi.array().items(Joi.string().uuid()),
 });
 
