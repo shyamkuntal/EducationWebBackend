@@ -2459,7 +2459,7 @@ const QuestionManagementController = {
 
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
-      if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+      if (questionValues.hasSubPart === true && !questionValues.parentQuestionId) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 

@@ -13,11 +13,11 @@ const Accordian = db.define("accordianItem", {
     allowNull: false,
   },
   title: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     allowNull: true,
   },
   content: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     allowNull: true,
   },
 });

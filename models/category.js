@@ -13,7 +13,7 @@ const QuestionCategory = db.define("questionCategory", {
     allowNull: false,
   },
   category: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     allowNull: true,
   },
   content: {

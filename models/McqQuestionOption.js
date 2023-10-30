@@ -14,7 +14,7 @@ const McqQuestionOption = db.define("mcqQuestionOption", {
     allowNull: false,
   },
   option: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     allowNull: true,
   },
   isCorrectOption: {
@@ -23,7 +23,7 @@ const McqQuestionOption = db.define("mcqQuestionOption", {
     allowNull: false,
   },
   feedback: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     allowNull: true,
   },
   content: {

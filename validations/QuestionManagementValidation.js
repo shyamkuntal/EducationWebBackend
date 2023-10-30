@@ -39,24 +39,24 @@ const createQuestionsSchema = Joi.object({
 
 const createTextQuestionSchema = Joi.array().items({
   sheetId: Joi.string().guid().required(),
-  questionData: Joi.string().max(1000).required(),
+  questionData: Joi.string().required(),
 });
 const updateTextQuestionSchema = Joi.object({
   questionId: Joi.string().guid().required(),
-  questionData: Joi.string().max(1000).required(),
-  explanation: Joi.string().max(1000),
+  questionData: Joi.string().required(),
+  explanation: Joi.string(),
   includeExplanation: Joi.boolean(),
 });
 
 const createFillDropDownQuestionOptionsSchema = Joi.array().items({
-  option: Joi.string().max(225).required(),
+  option: Joi.string().required(),
   isCorrectOption: Joi.boolean().required(),
 });
 
 const addFillDropDownQuestionOptionsSchema = Joi.object({
   questionId: Joi.string().guid().required(),
   optionsToBeAdded: Joi.array().items({
-    option: Joi.string().max(225).required(),
+    option: Joi.string().required(),
     isCorrectOption: Joi.boolean().required(),
   }),
 });
@@ -101,7 +101,7 @@ const editFillDropDownQuestionOptionsSchema = Joi.object({
   questionId: Joi.string().guid().required(),
   dataToBeUpdated: Joi.array().items({
     id: Joi.string().guid().required(),
-    option: Joi.string().max(225).required(),
+    option: Joi.string().required(),
     isCorrectOption: Joi.boolean().required(),
   }),
 });
@@ -129,8 +129,8 @@ const editQuestionSchema = Joi.object({
   difficultyLevel: Joi.string(),
   levelTagging: Joi.string(),
   commandTerm: Joi.string(),
-  errorReportByTeacher: Joi.string().max(225),
-  errorReportByReviewer: Joi.string().max(225),
+  errorReportByTeacher: Joi.string(),
+  errorReportByReviewer: Joi.string(),
   isPremium: Joi.boolean(),
   isCheckedByPricer: Joi.boolean(),
   isCheckedByTeacher: Joi.boolean(),
@@ -138,7 +138,7 @@ const editQuestionSchema = Joi.object({
   isCheckedByReviewer: Joi.boolean(),
   isErrorByReviewer: Joi.boolean(),
   includeExplanation: Joi.boolean(),
-  explanation: Joi.string().max(225),
+  explanation: Joi.string(),
   questionIndentifier: Joi.string(),
   isShuffle: Joi.boolean(),
 });

@@ -17,7 +17,7 @@ const QuestionItem = db.define("questionItem", {
     allowNull: true,
   },
   item: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     allowNull: true,
   },
   content: {
