@@ -8,6 +8,7 @@ const createQuestionsSchema = Joi.object({
   questionData: Joi.string().required(),
   questionDescription: Joi.string().allow(""),
   marks: Joi.number(),
+  isQuestionSubPart:Joi.boolean(),
   requiredTime: Joi.number(),
   uploaderDescription: Joi.string(),
   videoLink: Joi.string().uri(),
