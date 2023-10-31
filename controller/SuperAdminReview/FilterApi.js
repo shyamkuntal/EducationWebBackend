@@ -15,8 +15,6 @@ const { where, Model } = require("sequelize");
 const AllFilteredApi = {
   async getAllBoards(req, res) {
     try {
-      console.log(req, "req");
-      console.log("success");
       const Result = await Board.findAll();
       res.send(Result);
     } catch (error) {

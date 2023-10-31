@@ -97,6 +97,7 @@ const subjectName = db.define("subjectName", {
 });
 
 Subject.belongsTo(subjectName, { foreignKey: "subjectNameId" });
+subjectName.hasMany(Subject, { foreignKey: "subjectNameId" });
 
 subjectName.sync().then(() => {
   console.log("subjectName created");
