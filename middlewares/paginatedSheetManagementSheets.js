@@ -1,4 +1,5 @@
 const { Board, SubBoard } = require("../models/Board.js");
+const { Question } = require("../models/Question.js");
 const { SheetManagement } = require("../models/SheetManagement.js");
 const { Subject, SubjectLevel, subjectName } = require("../models/Subject.js");
 const { User } = require("../models/User.js");
@@ -13,6 +14,8 @@ const paginatedSheetManagementSheets = () => {
       isPublished: false,
       isSpam: false,
     };
+
+    const filterForQuestion = {}
 
     if (req.query.isSpam) {
       filters.isSpam = req.query.isSpam;
@@ -50,6 +53,7 @@ const paginatedSheetManagementSheets = () => {
     if (req.query.statusForReviewer) {
       filters.statusForReviewer = req.query.statusForReviewer;
     }
+    
     if (req.query.statusForTeacher) {
       filters.statusForTeacher = req.query.statusForTeacher;
     }
@@ -77,6 +81,13 @@ const paginatedSheetManagementSheets = () => {
     }
     if (req.query.questionVideoLink) {
       filters.questionVideoLink = req.query.questionVideoLink;
+    }
+
+    if (req.query.isErrorByTeacher) {
+      filterForQuestion.isErrorByTeacher = req.query.isErrorByTeacher;
+    }
+    if (req.query.isErrorByReviewer) {
+      filterForQuestion.isErrorByReviewer = req.query.isErrorByReviewer;
     }
 
     const startIndex = (page - 1) * limit;

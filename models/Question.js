@@ -184,6 +184,10 @@ Question.belongsTo(SheetManagement, {
   foreignKey: { name: "sheetId" },
 });
 
+SheetManagement.hasMany(Question, {
+  foreignKey: { name: "sheetId" },
+});
+
 Question.belongsTo(Question, {
   foreignKey: { name: "parentQuestionId" },
   as: "subQuestion",

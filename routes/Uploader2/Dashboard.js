@@ -10,6 +10,10 @@ router.get("/getallSpamQuestionByUser", DashboardApi.getAllSpamQuestionByUSer);
 router.get("/getallSheetbySubjectid", DashboardApi.getAllSheetBySubjectIdandUserId);
 router.get("/getallReportedErrorbySubjectid", DashboardApi.getAllReportedErrorBySubjectIdandUserId);
 router.get("/getallSpamQuestionbySubjectid", DashboardApi.getAllSpamQuestionBySubjectIdandUserId);
+router.get("/getallBoardForUploader2", DashboardApi. getAllBoards);
+router.get("/getallSubBoardForUploader2", DashboardApi.getAllSubBoards);
+// router.get("/getallGradeForUploader2", DashboardApi.getAllSubjects);
+router.get("/getallSubjectForUploader2", DashboardApi.getAllSubjects);
 
 
 // router.post("/editmcquestion", QuestionManagementController.editMcqQuestion);
