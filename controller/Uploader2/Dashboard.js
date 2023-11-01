@@ -54,7 +54,26 @@ const DashboardApi = {
 
   async getAllSpamQuestionByUSer(req, res) {
     try {
-      const id= req.query.id; // Assuming boardId is passed in the request params
+      const id= req.query.id; 
+      let filters = {}
+      if (req.query.boardId) {
+        filters.boardId = req.query.boardId;
+      }
+      if (req.query.subjectId) {
+        filters.subjectId = req.query.subjectId;
+      }
+      if (req.query.subBoardId) {
+        filters.subBoardId = req.query.subBoardId;
+      }
+      if (req.query.grade) {
+        filters.grade = req.query.grade;
+      }
+      if (req.query.isSpam) {
+        filters.isSpam = true
+      }
+      if (req.query.uploader2Id) {
+        filters.uploader2Id = req.query.uploader2Id;
+      }
       const Result = await Question.findAll({
         where: {
             isErrorByTeacher: true,
@@ -63,10 +82,7 @@ const DashboardApi = {
         include:[
         {
             model:SheetManagement,
-            where:{
-                uploader2Id: id,
-                 isSpam:true
-            }
+            where:filters
         }
         ]
       });

@@ -29,6 +29,9 @@ const paginatedSheetManagementSheets = () => {
     if (req.query.assignedToUserId) {
       filters.assignedToUserId = req.query.assignedToUserId;
     }
+    if (req.query.uploader2Id) {
+      filters.uploader2Id = req.query.uploader2Id;
+    }
     if (req.query.supervisorId) {
       filters.supervisorId = req.query.supervisorId;
     }
