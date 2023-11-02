@@ -980,8 +980,6 @@ const QuestionManagementSarveshController = {
     try {
       let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
 
-      console.log(values);
-
       await GeogebraGraphQuestion.destroy(
         { where: { questionId: values.questionId } },
         { transaction: t }

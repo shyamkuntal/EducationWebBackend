@@ -187,6 +187,7 @@ const UserSubjectMapping = db.define("usersubjectmapping", {
     allowNull: false,
   },
 });
+
 UserSubjectMapping.belongsTo(subjectName, {
   foreignKey: "subjectNameIds",
   targetKey: "id",
@@ -194,6 +195,7 @@ UserSubjectMapping.belongsTo(subjectName, {
 });
 
 User.hasMany(UserSubjectMapping, { foreignKey: "userId" });
+
 UserSubjectMapping.belongsTo(User, { foreignKey: "userId" });
 
 UserSubjectMapping.sync().then(() => {

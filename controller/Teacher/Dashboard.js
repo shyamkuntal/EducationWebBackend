@@ -11,6 +11,7 @@ const DashboardApi = {
   async getAllSubjectByUserId(req, res) {
     try {
       const id = req.query.id
+      console.log("-------",id)
       const Result = await UserSubjectMapping.findAll({where:{userId:id},include:[{model:subjectName,include:[{model:Subject}]}]});
       res.send(Result);
     } catch (error) {
@@ -22,9 +23,10 @@ const DashboardApi = {
   async getAllSheetByUserId(req, res) {
     try {
       const id = req.query.id;
+      console.log("-------",id)
       const Result = await SheetManagement.findAll({
         where: {
-            uploader2Id: id,
+            teacherId: id,
             isSpam:false
         },
       });
@@ -40,7 +42,7 @@ const DashboardApi = {
       const id = req.query.id;
       const Result = await SheetManagement.findAll({
         where: {
-            uploader2Id: id,
+            teacherId: id,
             isSpam:true
         },
       });
@@ -70,8 +72,8 @@ const DashboardApi = {
       if (req.query.isSpam) {
         filters.isSpam = true
       }
-      if (req.query.uploader2Id) {
-        filters.uploader2Id = req.query.uploader2Id;
+      if (req.query.teacher2Id) {
+        filters.teacher2Id = req.query.teacher2Id;
       }
       const Result = await Question.findAll({
         where: {
@@ -101,7 +103,7 @@ const DashboardApi = {
       if(subjectNameId){
         Result = await SheetManagement.findAll({
           where: {
-              uploader2Id: id,
+            teacherId: id,
               isSpam:false,
           },
           include:{
@@ -122,7 +124,7 @@ const DashboardApi = {
       else{
         Result = await SheetManagement.findAll({
           where: {
-              uploader2Id: id,
+            teacherId: id,
               isSpam:false
           },
         }); 
@@ -147,7 +149,7 @@ const DashboardApi = {
       if(subjectNameId){
         Result = await SheetManagement.findAll({
           where: {
-              uploader2Id: id,
+            teacherId: id,
               isSpam:true,
           },
           include:{
@@ -170,7 +172,7 @@ const DashboardApi = {
       else{
        Result = await SheetManagement.findAll({
           where: {
-              uploader2Id: id,
+            teacherId: id,
               isSpam:true
           },
         });
@@ -197,7 +199,7 @@ const DashboardApi = {
           {
               model:SheetManagement,
               where:{
-                  uploader2Id: id,
+                teacherId: id,
                    isSpam:true,
               },
               include:{
@@ -227,7 +229,7 @@ const DashboardApi = {
           {
               model:SheetManagement,
               where:{
-                uploader2Id: id,
+                teacherId: id,
                  isSpam:true,
             },
           }
@@ -313,7 +315,7 @@ const DashboardApi = {
     }
   },
 
-  async getAllNoticeForUploader2(req, res) {
+  async getAllNoticeForTeacher(req, res) {
     try {
       const userId = req.query.id; // Assuming boardId is passed in the request params
       const Result = await Notice.findAll({

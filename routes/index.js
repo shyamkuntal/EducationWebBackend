@@ -40,6 +40,7 @@ const {
   AuthTeacher,
   AuthPricer,
 } = require("../middlewares/authentication.js");
+const TeacherDashboard = require("./Teacher/Dashboard")
 
 const router = express.Router();
 router.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -76,7 +77,11 @@ router.use("/shmsupervisor", AuthSupervisor(), SheetManagementSupervisor);
 router.use("/shmuploader", AuthUploader2(), QuestionManagementUploader2);
 
 router.use("/shmteacher", AuthTeacher(), TeacherSheetManagement);
+router.use("/teacherDashboard",AuthTeacher(),TeacherDashboard)
+
 router.use("/shmpricer", AuthPricer(), PricerSheetManagement);
+
 router.use("/uploader_dashboard",AuthUploader2(),Uploader2_Dashboard)
+
 
 module.exports = router;

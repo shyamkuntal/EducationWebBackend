@@ -30,7 +30,7 @@ const createUser = async (Name, userName, email, password, roleId) => {
     let user = await User.create({
       Name,
       userName,
-      email,
+      email: email.toLowerCase(),
       password,
       roleId,
     });
@@ -81,7 +81,7 @@ const getUserAssignedSubjects = async (userId) => {
 
 const findUserByEmail = async (email) => {
   try {
-    let user = await User.findOne({ where: { email: email }, raw: true });
+    let user = await User.findOne({ where: { email: email.toLowerCase(), }, raw: true });
 
     return user;
   } catch (err) {
@@ -112,7 +112,7 @@ const findRoleById = async (roleId) => {
 const checkUserEmailPassword = async (email, password, roleId) => {
   try {
     let user = await User.findOne({
-      where: { email: email, roleId: roleId },
+      where: { email: email.toLowerCase(), roleId: roleId },
       include: [{ model: Roles, attributes: ["roleName"] }],
       nest: true,
     });
@@ -122,13 +122,13 @@ const checkUserEmailPassword = async (email, password, roleId) => {
         if (await user.validPassword(password, user.password)) {
           return user;
         } else {
-          throw new ApiError(httpStatus.BAD_REQUEST, "Invalid password!");
+          throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Email or Password!");
         }
       } else {
         throw new ApiError(httpStatus.BAD_REQUEST, "Access Denied, Invalid Role!");
       }
     } else {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Email does not exist!");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Email or Password!");
     }
   } catch (err) {
     throw err;
@@ -138,7 +138,7 @@ const checkUserEmailPassword = async (email, password, roleId) => {
 const checkUserEmail = async (email, roleId) => {
   try {
     let user = await User.findOne({
-      where: { email: email, roleId: roleId },
+      where: { email: email.toLowerCase(), roleId: roleId },
       include: [{ model: Roles, attributes: ["roleName"] }],
       raw: true,
       nest: true,
