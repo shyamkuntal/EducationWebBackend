@@ -4,13 +4,13 @@ const {
 } = require("../validations/SheetManagementUploaderValidations");
 
 
-const questionCount = (req) => {
+const questionCountRecheck = (req) => {
     return async (req, res, next) => {
         try {
             let values = await getQuestionsSchema.validateAsync({ sheetId: req.query.sheetId });
-            let all = await Question.count({ where: { sheetId: values.sheetId } });
-            let checked = await Question.count({ where: { sheetId: values.sheetId, isCheckedByReviewer: true } })
-            let error = await Question.count({ where: { sheetId: values.sheetId, isErrorByReviewer: true } })
+            let all = await Question.count({ where: { sheetId: values.sheetId, isErrorByReviewer: true, isReCheckedByReviewer: false } });
+            let checked = await Question.count({ where: { sheetId: values.sheetId, isCheckedByReviewer: true, isReCheckedByReviewer: true } })
+            let error = await Question.count({ where: { sheetId: values.sheetId, isErrorByReviewer: true, isReCheckedByReviewer: true } })
 
             res.allQuestions = all
             res.checkedQuestions = checked
@@ -23,4 +23,4 @@ const questionCount = (req) => {
 };
 
 
-module.exports = questionCount;
+module.exports = questionCountRecheck;

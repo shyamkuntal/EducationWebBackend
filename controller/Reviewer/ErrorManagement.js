@@ -18,127 +18,7 @@ const { ApiError } = require("../../middlewares/apiError.js");
 const { s3Client } = require("../../config/s3");
 const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
 
-const SheetManagementController = {
-    async updateInProgressTaskStatus(req, res, next) {
-        const t = await db.transaction();
-        try {
-            let values = await updateInprogressTaskStatusSchema.validateAsync(req.body);
-
-            let whereQuery = { where: { id: values.sheetId }, raw: true };
-
-            let sheetData = await SheetManagement.findOne(whereQuery);
-
-            if (!sheetData) {
-                throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
-            }
-
-            let assignedTo = sheetData.assignedToUserId;
-            let lifeCycle = sheetData.lifeCycle;
-            let previousStatus = sheetData.statusForReviewer;
-
-            if (assignedTo !== values.reviewerId || lifeCycle !== CONSTANTS.roleNames.Reviewer) {
-                throw new ApiError(
-                    httpStatus.BAD_REQUEST,
-                    "Task not assigned to Reviewer or lifecycle mismatch"
-                );
-            }
-
-            if (previousStatus === CONSTANTS.sheetStatuses.InProgress) {
-                throw new ApiError(httpStatus.BAD_REQUEST, "Current sheet status is already Inprogress");
-            }
-
-            await SheetManagement.update({
-                statusForReviewer: CONSTANTS.sheetStatuses.InProgress
-            }, whereQuery)
-
-            await t.commit();
-            res.status(httpStatus.OK).send({ message: "Task Status Updated successfully!" });
-        } catch (err) {
-            await t.rollback();
-            next(err);
-        }
-    },
-    async updateCompleteTaskStatus(req, res, next) {
-        const t = await db.transaction();
-        try {
-            let values = await updateInprogressTaskStatusSchema.validateAsync(req.body);
-
-            let whereQuery = { where: { id: values.sheetId }, raw: true };
-
-            let sheetData = await SheetManagement.findOne(whereQuery);
-
-            if (!sheetData) {
-                throw new ApiError(httpStatus.BAD_REQUEST, "Sheet not found!");
-            }
-
-            let assignedTo = sheetData.assignedToUserId;
-            let lifeCycle = sheetData.lifeCycle;
-            let previousStatus = sheetData.statusForReviewer;
-
-            if (assignedTo !== values.reviewerId || lifeCycle !== CONSTANTS.roleNames.Reviewer) {
-                throw new ApiError(
-                    httpStatus.BAD_REQUEST,
-                    "Task not assigned to Reviewer or lifecycle mismatch"
-                );
-            }
-
-            if (previousStatus === CONSTANTS.sheetStatuses.Complete) {
-                throw new ApiError(httpStatus.BAD_REQUEST, "Current sheet status is already Complete");
-            }
-
-            await SheetManagement.update({
-                statusForReviewer: CONSTANTS.sheetStatuses.Complete
-            }, whereQuery)
-
-            await t.commit();
-            res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
-        } catch (err) {
-            await t.rollback();
-            next(err);
-        }
-    },
-    async getTopicSubTopicVocabMappingsForQuestion(req, res, next) {
-        try {
-            const questionId = req.query.questionId;
-
-            const topicMappings = await QuestionTopicMapping.findAll({
-                where: {
-                    questionId,
-                },
-                attributes: ["topicId"],
-                include: [{ model: Topic, attributes: ["name"] }],
-                raw: true,
-            });
-
-            const subTopicMappings = await QuestionSubTopicMapping.findAll({
-                where: {
-                    questionId,
-                },
-                attributes: ["subTopicId"],
-                include: [{ model: SubTopic, attributes: ["name"] }],
-                raw: true,
-            });
-
-            const vocabMappings = await QuestionVocabMapping.findAll({
-                where: {
-                    questionId,
-                },
-                attributes: ["vocabId"],
-                include: [{ model: Vocabulary, attributes: ["name"] }],
-                raw: true,
-            });
-
-            res.status(httpStatus.OK).send({
-                questionId,
-                topicMappings,
-                subTopicMappings,
-                vocabMappings,
-            });
-        } catch (err) {
-            console.log(err);
-            next(err);
-        }
-    },
+const ErrorManagementController = {
     async checkQuestion(req, res, next) {
         const t = await db.transaction();
         try {
@@ -150,7 +30,7 @@ const SheetManagementController = {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
             }
 
-            await Question.update({ isCheckedByReviewer: true, isErrorByReviewer: false }, whereQuery)
+            await Question.update({ isCheckedByReviewer: true, isErrorByReviewer: false, isReCheckedByReviewer: true }, whereQuery)
 
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
@@ -170,7 +50,7 @@ const SheetManagementController = {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
             }
 
-            await Question.update({ isCheckedByReviewer: false }, whereQuery)
+            await Question.update({ isCheckedByReviewer: false, isErrorByReviewer: true, isReCheckedByReviewer: false }, whereQuery)
 
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
@@ -190,7 +70,7 @@ const SheetManagementController = {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
             }
 
-            await Question.update({ isErrorByReviewer: true, isCheckedByReviewer: false }, whereQuery)
+            await Question.update({ isErrorByReviewer: true, isReCheckedByReviewer: true }, whereQuery)
 
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
@@ -210,93 +90,12 @@ const SheetManagementController = {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
             }
 
-            await Question.update({ isErrorByReviewer: false }, whereQuery)
+            await Question.update({ isReCheckedByReviewer: false }, whereQuery)
 
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
         } catch (err) {
             await t.rollback();
-            next(err);
-        }
-    },
-    async addErrorReportToQuestion(req, res, next) {
-        const t = await db.transaction();
-        try {
-            let values = await addErrorReportSchema.validateAsync({
-                ...req.body,
-                errorReportFile: req.file,
-            });
-
-            let questionData = await Question.findOne({ where: { id: values.questionId } });
-
-            if (!questionData) {
-                throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
-            }
-            let uploadFile;
-
-            if (req.file) {
-                let fileName =
-                    process.env.AWS_BUCKET_SHEETMANAGEMENT_ERROR_REPORT_IMAGES_FOLDER +
-                    "/" +
-                    generateFileName(values.errorReportFile.originalname);
-
-                uploadFile = await services.sheetManagementReviewerService.uploadSheetManagementErrorReportFile(
-                    fileName,
-                    values.errorReportFile
-                );
-            }
-
-            let dataToBeUpdated = {
-                errorReportByReviewer: values.errorReport,
-                errorReportImgByReviewer: uploadFile,
-            };
-
-            await Question.update(dataToBeUpdated, { where: { id: values.questionId } })
-            await t.commit();
-            res.status(httpStatus.OK).send({ message: "Updated Error In Question Sucessfully" });
-        } catch (err) {
-            await t.rollback();
-            next(err);
-        }
-    },
-    async addTopicSubTopicVocabErrorReportToQuestion(req, res, next) {
-        const t = await db.transaction();
-        try {
-            let values = await addErrorReportSchema.validateAsync({
-                ...req.body,
-                errorReportFile: req.file,
-            });
-
-            let questionData = await Question.findOne({ where: { id: values.questionId } });
-
-            if (!questionData) {
-                throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
-            }
-            let uploadFile;
-
-            if (req.file) {
-                let fileName =
-                    process.env.AWS_BUCKET_SHEETMANAGEMENT_ERROR_REPORT_IMAGES_FOLDER +
-                    "/" +
-                    generateFileName(values.errorReportFile.originalname);
-
-                uploadFile = await services.sheetManagementReviewerService.uploadSheetManagementErrorReportFile(
-                    fileName,
-                    values.errorReportFile
-                );
-            }
-
-            let dataToBeUpdated = {
-                errorForTopicSubTopicVocabByReviewer: values.errorReport,
-                errorImgForTopicSubTopicVocabByReviewer: uploadFile,
-            };
-
-            await Question.update(dataToBeUpdated, { where: { id: values.questionId } })
-            await t.commit();
-            res.status(httpStatus.OK).send({ message: "Updated Error In Question Sucessfully" });
-        } catch (err) {
-            await t.rollback();
-            console.log(err)
             next(err);
         }
     },
@@ -353,11 +152,6 @@ const SheetManagementController = {
                 { transaction: t }
             );
             responseMessage.sheetLog = "Log record for assignment to supervisor added successfully";
-
-            await Question.update({ isReCheckedByReviewer: false }, { sheetId: values.sheetId }, {
-                transaction: t,
-            });
-
             await t.commit();
             res.status(httpStatus.OK).send(responseMessage);
         } catch (err) {
@@ -420,6 +214,7 @@ const SheetManagementController = {
             }
 
             let fileUrl = await services.sheetManagementReviewerService.getFilesUrlFromS3(questionData.reviewerHighlightErrorPdf);
+
             res.status(httpStatus.OK).send({ pdf: fileUrl, errors: questionData.reviewerHighlightErrorErrors });
 
         } catch (err) {
@@ -481,6 +276,10 @@ const SheetManagementController = {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Reviewer not assigned to sheet!");
             }
 
+            if (sheetData.isSpam === true) {
+                throw new ApiError(httpStatus.BAD_REQUEST, "Error Report already exists!!");
+            }
+
             let dataToBeUpdated = {
                 assignedToUserId: sheetData.supervisorId,
                 statusForReviewer: CONSTANTS.sheetStatuses.Complete,
@@ -502,12 +301,6 @@ const SheetManagementController = {
                 { transaction: t }
             );
 
-            console.log("IN")
-            await Question.update({ isReCheckedByReviewer: false }, { where: { sheetId: values.sheetId } }, {
-                transaction: t,
-            });
-            console.log("OUT")
-
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Added To Spam Succesfully" });
         } catch (err) {
@@ -518,4 +311,4 @@ const SheetManagementController = {
     },
 }
 
-module.exports = SheetManagementController;
+module.exports = ErrorManagementController;

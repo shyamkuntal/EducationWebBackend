@@ -170,6 +170,11 @@ const Question = db.define("question", {
     type: Sequelize.TEXT,
     allowNull: true,
   },
+  isReCheckedByReviewer: {
+    type: Sequelize.BOOLEAN,
+    allowNull: true,
+    defaultValue: false
+  }
 });
 
 Question.sync().then(() => {

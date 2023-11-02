@@ -2887,6 +2887,9 @@ const QuestionManagementController = {
       if (req.query.isErrorByReviewer)
         whereQuery = { ...whereQuery, isErrorByReviewer: req.query.isErrorByReviewer };
 
+      if (req.query.isReCheckedByReviewer)
+        whereQuery = { ...whereQuery, isReCheckedByReviewer: req.query.isReCheckedByReviewer };
+
       let questions = await Question.findAll({
         where: whereQuery,
         order: [["createdAt", "ASC"]],
