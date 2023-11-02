@@ -1,11 +1,12 @@
 
 
 const { Question } = require("../../models/Question");
-const{UserSubjectMapping} = require("../../models/User")
+const{UserSubjectMapping, User} = require("../../models/User")
 const {SheetManagement} = require("../../models/SheetManagement");
 const { subjectName, Subject } = require("../../models/Subject");
 const { where } = require("sequelize");
 const { SubBoard, Board } = require("../../models/Board");
+const { Notice } = require("../../models/Notice");
 
 
 const DashboardApi = {
@@ -98,25 +99,37 @@ const DashboardApi = {
       const id = req.query.id;
       const subjectNameId = req.query.subjectId
       console.log(subjectNameId,"id")
-      const Result = await SheetManagement.findAll({
-        where: {
-            uploader2Id: id,
-            isSpam:false,
-        },
-        include:{
-          model:Subject,
-          include:[{
-            model:subjectName,
+      let Result;
+      if(subjectNameId){
+        Result = await SheetManagement.findAll({
+          where: {
+              uploader2Id: id,
+              isSpam:false,
+          },
+          include:{
+            model:Subject,
+            include:[{
+              model:subjectName,
+              where:{
+                 id:subjectNameId
+              }
+            }
+            ],
             where:{
-               id:subjectNameId
+              subjectNameId:subjectNameId
             }
           }
-          ],
-          where:{
-            subjectNameId:subjectNameId
-          }
-        }
-      });
+        });
+      }
+      else{
+        Result = await SheetManagement.findAll({
+          where: {
+              uploader2Id: id,
+              isSpam:false
+          },
+        }); 
+      }
+      
       res.send(Result);
     } catch (error) {
       console.error(error);
@@ -129,27 +142,41 @@ const DashboardApi = {
     try {
       const id = req.query.id;
       const subjectNameId = req.query.subjectId
-      const Result = await SheetManagement.findAll({
-        where: {
-            uploader2Id: id,
-            isSpam:true,
-        },
-        include:{
-          model:Subject,
-          include:[{
-            model:subjectName,
-            where:{
-               id:subjectNameId
-            }
+      // if(!subjectNameId){
+      //   getAllSheetOfReportedError(req,res)
+      // }
+      let Result;
+      if(subjectNameId){
+        Result = await SheetManagement.findAll({
+          where: {
+              uploader2Id: id,
+              isSpam:true,
           },
-          
-          ]
-          ,
-          where:{
-            subjectNameId:subjectNameId
+          include:{
+            model:Subject,
+            include:[{
+              model:subjectName,
+              where:{
+                 id:subjectNameId
+              }
+            },
+            
+            ]
+            ,
+            where:{
+              subjectNameId:subjectNameId
+            }
           }
-        }
-      });
+        });
+      }
+      else{
+       Result = await SheetManagement.findAll({
+          where: {
+              uploader2Id: id,
+              isSpam:true
+          },
+        });
+      }
       res.send(Result);
     } catch (error) {
       console.error(error);
@@ -161,34 +188,55 @@ const DashboardApi = {
     try {
       const id= req.query.id; // Assuming boardId is passed in the request params
       const subjectNameId = req.query.subjectId
-      const Result = await Question.findAll({
-        where: {
-            isErrorByTeacher: true,
-            isErrorByReviewer:true
-        },
-        include:[
-        {
-            model:SheetManagement,
-            where:{
+      let Result;
+      if(subjectNameId){
+        Result = await Question.findAll({
+          where: {
+              isErrorByTeacher: true,
+              isErrorByReviewer:true
+          },
+          include:[
+          {
+              model:SheetManagement,
+              where:{
+                  uploader2Id: id,
+                   isSpam:true,
+              },
+              include:{
+                model:Subject,
+                include:[{
+                  model:subjectName,
+                  where:{
+                     id:subjectNameId
+                  }
+                }
+                ],
+                where:{
+                  subjectNameId:subjectNameId
+                }
+              }
+          }
+          ]
+        });
+      }
+      else{
+        Result = await Question.findAll({
+          where: {
+              isErrorByTeacher: true,
+              isErrorByReviewer:true
+          },
+          include:[
+          {
+              model:SheetManagement,
+              where:{
                 uploader2Id: id,
                  isSpam:true,
             },
-            include:{
-              model:Subject,
-              include:[{
-                model:subjectName,
-                where:{
-                   id:subjectNameId
-                }
-              }
-              ],
-              where:{
-                subjectNameId:subjectNameId
-              }
-            }
-        }
-        ]
-      });
+          }
+          ]
+        });
+      }
+      
       res.send(Result);
     } catch (error) {
       console.error(error);
@@ -266,6 +314,52 @@ const DashboardApi = {
       res.status(500).send("Internal Server Error");
     }
   },
+
+  async getAllNoticeForUploader2(req, res) {
+    try {
+      const userId = req.query.id; // Assuming boardId is passed in the request params
+      const Result = await Notice.findAll({
+        include:[
+          {
+            model:User
+          }
+        ],
+        where: {
+          reciever:userId,
+          deleteByReciever:false,
+          deleteBySender:false
+        },
+       
+      });
+      res.send(Result);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  },
+
+  async deleteNoticeFromReciver(req, res) {
+    try {
+      const userId = req.query.id; 
+      const id = req.query.noticeId; 
+      const result = await Notice.findOne({
+        where: {
+          id: id,
+          reciever: userId,
+        },
+      });
+      if (result) {
+        await result.update({ deleteByReciever: true }, { fields: ['deleteByReciever'] });
+        res.send(result);
+      } else {
+        res.status(404).send("Notice not found");
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }    
+  },
+
 
 };
 

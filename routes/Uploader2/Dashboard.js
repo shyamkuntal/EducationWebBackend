@@ -14,7 +14,8 @@ router.get("/getallBoardForUploader2", DashboardApi. getAllBoards);
 router.get("/getallSubBoardForUploader2", DashboardApi.getAllSubBoards);
 // router.get("/getallGradeForUploader2", DashboardApi.getAllSubjects);
 router.get("/getallSubjectForUploader2", DashboardApi.getAllSubjects);
-
+router.get("/getallNoticeForUploader2", DashboardApi.getAllNoticeForUploader2);
+router.delete("/deleteNoticeFromReciver", DashboardApi.deleteNoticeFromReciver);
 
 // router.post("/editmcquestion", QuestionManagementController.editMcqQuestion);
 // router.delete("/deletemcquestion", QuestionManagementController.DeleteMcqQues);
