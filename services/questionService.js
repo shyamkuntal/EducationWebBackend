@@ -24,6 +24,7 @@ const { SortQuestionOption } = require("../models/sortQuestionOptions");
 const { McqQuestionOption } = require("../models/McqQuestionOption");
 const { TrueFalseQuestionOption } = require("../models/TrueFalseQuestionOption");
 const { QuestionContent } = require("../models/QuestionContent");
+const { QuestionDistractor } = require("../models/distractor");
 
 const createQuestion = async (dataToBeCreated, options) => {
   try {
@@ -664,6 +665,9 @@ const findQuestions = async (questions) => {
               where: whereQuery,
               order: [["createdAt", "ASC"]],
               raw: true,
+              include:[
+                {model:QuestionDistractor}
+              ]
             });
 
             subParts = await findQuestionSubParts(questionsWithSubPart);
@@ -681,8 +685,12 @@ const findQuestions = async (questions) => {
           let matchQuestionOptions = await MatchQuestionPair.findAll({
             where: { questionId: questions[i].id },
           });
-
           matchQuestion.options = matchQuestionOptions;
+
+          let QuestionDistractorOptions = await QuestionDistractor.findAll({
+            where: { questionId: questions[i].id },
+          });
+          matchQuestion.distractor = QuestionDistractorOptions;
 
           if (questions[i].hasSubPart) {
             let subParts = [];
@@ -693,6 +701,9 @@ const findQuestions = async (questions) => {
               where: whereQuery,
               order: [["createdAt", "ASC"]],
               raw: true,
+              include:[
+                {model:QuestionDistractor}
+              ]
             });
 
             subParts = await findQuestionSubParts(questionsWithSubPart);

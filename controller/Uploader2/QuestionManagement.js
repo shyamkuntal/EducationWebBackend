@@ -26,7 +26,6 @@ const QuestionManagementController = {
       const createdOptions = await Promise.all(
         options.map(async (option) => {
           let contentFileName = null;
-
           if (option.content) {
             contentFileName = await services.questionService.uploadFile(option.content);
           }

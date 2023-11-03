@@ -1713,44 +1713,30 @@ const QuestionManagementController = {
           matchPhrase: matchPairs[i].matchPhrase,
           matchTarget: matchPairs[i].matchTarget,
         };
-        // if (matchPairs[i].matchPhraseContent) {
-        //   let buffer = Buffer.from(
-        //     matchPairs[i].matchPhraseContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
-        //     "base64"
-        //   );
-
-        //   let fileObj = {
-        //     originalname: matchPairs[i].matchPhraseContent.filename,
-        //     mimetype: matchPairs[i].matchPhraseContent.mimetype,
-        //     buffer: buffer,
-        //   };
-
-        //   let fileName = await services.questionService.uploadFile(fileObj);
-        //   console.log(fileName);
-        //   dataToBeCreated.matchPhraseContent = fileName;
-        // }
-
-        // if (matchPairs[i].matchTargetContent) {
-        //   let buffer = Buffer.from(
-        //     matchPairs[i].matchTargetContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
-        //     "base64"
-        //   );
-
-        //   let fileObj = {
-        //     originalname: matchPairs[i].matchTargetContent.filename,
-        //     mimetype: matchPairs[i].matchTargetContent.mimetype,
-        //     buffer: buffer,
-        //   };
-
-        //   let fileName = await services.questionService.uploadFile(fileObj);
-        //   console.log(fileName);
-        //   dataToBeCreated.matchTargetContent = fileName;
-        // }
+        
         await MatchQuestionPair.create(dataToBeCreated, { transaction: t });
       }
 
-      await t.commit();
+      
+      let distractor = questionValues.distractors;
 
+      const createdDistractorFiles = await Promise.all(
+        distractor.map(async (file) => {
+          const createdOption = await QuestionDistractor.create(
+            {
+              questionId:newQuestionData.id,
+              distractor: file.distractor,
+              content: file.content,
+            },
+            { transaction: t }
+          );
+
+          return createdOption;
+        })
+      );
+
+      await t.commit();
+      console.log(createdDistractorFiles,"files of distracor")
       res.status(httpStatus.OK).send({ message: "created question & added match pairs" });
     } catch (err) {
       await t.rollback();
@@ -1763,64 +1749,21 @@ const QuestionManagementController = {
     try {
       let { options, pairsToBeAdded, ...rest } = req.body;
       let questionValues = req.body;
-
+      console.log("success1")
       let updateValues = options;
 
       let { id, ...questionData } = questionValues;
 
       const updatePairs = options;
-
+      console.log("success2")
       if (updatePairs && updatePairs.length > 0) {
+        console.log("success21")
         for (let i = 0; i < updatePairs.length; i++) {
           let dataToBeUpdated = {
             matchPhrase: updatePairs[i].matchPhrase,
             matchTarget: updatePairs[i].matchTarget,
           };
-
-          // if (updatePairs[i].newMatchPhraseContent && updatePairs[i].matchPhraseContent) {
-          //   let buffer = Buffer.from(
-          //     updatePairs[i].newMatchPhraseContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
-          //     "base64"
-          //   );
-
-          //   let fileObj = {
-          //     originalname: updatePairs[i].newMatchPhraseContent.filename,
-          //     mimetype: updatePairs[i].newMatchPhraseContent.mimetype,
-          //     buffer: buffer,
-          //   };
-
-          //   let fileName = await services.questionService.uploadFile(fileObj);
-
-          //   dataToBeUpdated.matchPhraseContent = fileName;
-
-          //   // Deleting previous matchTargetContent
-          //   await services.questionService.deleteS3File({
-          //     fileName: updatePairs[i].matchPhraseContent,
-          //   });
-          // }
-
-          // if (updatePairs[i].newMatchTargetContent && updatePairs[i].matchTargetContent) {
-          //   let buffer = Buffer.from(
-          //     updatePairs[i].newMatchTargetContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
-          //     "base64"
-          //   );
-
-          //   let fileObj = {
-          //     originalname: updatePairs[i].newMatchTargetContent.filename,
-          //     mimetype: updatePairs[i].newMatchTargetContent.mimetype,
-          //     buffer: buffer,
-          //   };
-
-          //   let fileName = await services.questionService.uploadFile(fileObj);
-
-          //   dataToBeUpdated.matchTargetContent = fileName;
-
-          // Deleting previous matchTargetContent
-          //   await services.questionService.deleteS3File({
-          //     fileName: updatePairs[i].matchTargetContent,
-          //   });
-          // }
-
+          console.log("success3")
           if (updatePairs[i]?.id) {
             await MatchQuestionPair.update(
               dataToBeUpdated,
@@ -1829,7 +1772,23 @@ const QuestionManagementController = {
               },
               { transaction: t }
             );
+            console.log("success4")
+            // const createdDistractorFiles = await Promise.all(
+            //   distractor.map(async (file) => {
+            //     const createdOption = await QuestionDistractor.create(
+            //       {
+            //         questionId:id,
+            //         distractor: file.distractor,
+            //         content: file.content,
+            //       },
+            //       { transaction: t }
+            //     );
+      
+            //     return createdOption;
+            //   })
+            // );
           } else {
+            console.log("success5")
             await MatchQuestionPair.create(
               { ...dataToBeUpdated, questionId: id },
               {
@@ -1838,6 +1797,21 @@ const QuestionManagementController = {
               { transaction: t }
             );
           }
+          console.log("success6")
+          // const createdDistractorFiles = await Promise.all(
+          //   distractor.map(async (file) => {
+          //     const createdOption = await QuestionDistractor.update(
+          //       {
+          //         distractor: file.distractor,
+          //         content: file.content,
+          //       },
+          //       { where: { id: file.id } },
+          //       { transaction: t }
+          //     );
+    
+          //     return createdOption;
+          //   })
+          // );
         }
 
         await services.questionService.editQuestion(
@@ -1845,6 +1819,11 @@ const QuestionManagementController = {
           { where: { id: id } },
           { transaction: t }
         );
+        console.log("success7")
+         
+      let distractor = questionValues.distractors;
+
+      
 
         await t.commit();
 

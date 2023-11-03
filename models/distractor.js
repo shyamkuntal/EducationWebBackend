@@ -3,7 +3,7 @@ const db = require("../config/database");
 const { Question } = require("./Question");
 const {QuestionContent} = require("./QuestionContent")
 
-const QuestionDistractor = db.define("questionContent", {
+const QuestionDistractor = db.define("questionDistractor", {
   id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -23,11 +23,11 @@ const QuestionDistractor = db.define("questionContent", {
   },
 });
 
-QuestionContent.belongsTo(Question, {
+QuestionDistractor.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
-QuestionContent.sync().then(() => {
+QuestionDistractor.sync().then(() => {
   console.log("QuestionDistractor Created");
 });
 
