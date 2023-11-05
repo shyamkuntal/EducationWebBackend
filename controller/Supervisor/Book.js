@@ -16,7 +16,7 @@ const { SubBoard, Board } = require("../../models/Board");
 const { Subject } = require("../../models/Subject");
 
 const BookManagementController = {
-  
+
   async createBookTask(req, res, next) {
     const t = await db.transaction();
     try {
@@ -373,7 +373,7 @@ const BookManagementController = {
 
       const bookMapping = await TaskBookChapterMapping.findAll({
         where: { bookId: values },
-        include: [{ model: Chapter, attributes: ["id", "chapterNumber" ,"name"] }],
+        include: [{ model: Chapter, attributes: ["id", "chapterNumber", "name"] }],
       });
 
       res.status(httpStatus.OK).send(bookMapping);
@@ -446,6 +446,7 @@ const BookManagementController = {
           {
             model: Book,
             attributes: ["id", "name", "subTitle", "author", "publisher", "createdAt"],
+            where: { isArchived: false }
           },
           {
             model: BookTask,
@@ -494,7 +495,7 @@ const BookManagementController = {
       next(err);
     }
   },
-  
+
   async getCountsCardData(req, res, next) {
     try {
       const { assignedToUserId } = req.query;
@@ -505,7 +506,7 @@ const BookManagementController = {
         },
       });
 
-      let countsBySubject = {}; 
+      let countsBySubject = {};
       activeSheets.forEach((sheet) => {
         const subjectId = sheet.subjectId;
 
@@ -556,37 +557,37 @@ const BookManagementController = {
 
   async ArchiveAllBookDataByTask(req, res) {
     const id = req.query.bookTaskId;
-    const t = await db.transaction(); 
-  
+    const t = await db.transaction();
+
     try {
       const task = await BookTask.findByPk(id);
-  
+
       if (!task) {
-        await t.rollback(); 
+        await t.rollback();
         return res.status(404).json({ message: "Task not found" });
       }
-  
+
       let bookMappings = await TaskBookMapping.findAll({
         where: { bookTaskId: id },
       });
       let chapterMappings = await TaskBookChapterMapping.findAll({
         where: { bookTaskId: id },
       });
-      
+
       for (const mapping of [...bookMappings, ...chapterMappings]) {
         mapping.isArchived = true;
         await mapping.save({ transaction: t });
       }
-2
+      2
       task.isArchived = true;
       task.isSpam = false;
       await task.save({ transaction: t });
-  
+
       await t.commit();
-  
+
       res.status(httpStatus.OK).send({ message: "Task and related mappings archived successfully", bookMappings, chapterMappings });
     } catch (err) {
-      await t.rollback(); 
+      await t.rollback();
       return res.json({ status: 501, error: err.message });
     }
   },
@@ -596,7 +597,7 @@ const BookManagementController = {
     const t = await db.transaction();
     try {
       const task = await BookTask.findByPk(bookTaskId);
-  
+
       if (!task) {
         await t.rollback();
         return res.status(404).json({ message: "Task not found" });
@@ -609,15 +610,15 @@ const BookManagementController = {
       let book = await TaskBookMapping.findAll(whereQuery);
 
       let subTopicMappings = await TaskBookChapterMapping.findAll({
-        where: { bookTaskId, bookId}
+        where: { bookTaskId, bookId }
       });
-  
+
       for (const mapping of [...subTopicMappings]) {
         mapping.isArchived = true;
         mapping.isSpam = false;
         await mapping.save({ transaction: t });
       }
-      
+
       let dataToBeUpdated = {
         isArchived: true,
         isSpam: false
@@ -631,7 +632,9 @@ const BookManagementController = {
         }
       );
 
-      await t.commit(); 
+      var books = await Book.update({ isArchived: true }, { where: { id: bookId } });
+
+      await t.commit();
       res.status(httpStatus.OK).send({ message: "Book and related mappings archived successfully" });
     } catch (err) {
       console.log(err)
@@ -646,11 +649,11 @@ const BookManagementController = {
       const subTopicMapping = await TaskBookChapterMapping.findAll({
         where: { chapterId },
       });
-  
+
       if (!subTopicMapping) {
         return res.status(404).json({ message: "Chapter mapping not found" });
       }
-  
+
       let whereQuery = {
         where: { chapterId },
         raw: true,
@@ -665,7 +668,7 @@ const BookManagementController = {
         dataToBeUpdated,
         whereQuery
       );
-  
+
       res.status(httpStatus.OK).send({ message: "Chapter mapping archived successfully" });
     } catch (err) {
       console.log(err)
