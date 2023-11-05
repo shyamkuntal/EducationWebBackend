@@ -1751,11 +1751,39 @@ const QuestionManagementController = {
       let questionValues = req.body;
       console.log("success1")
       let updateValues = options;
-
+      let distractor = req.body.distractor
+   
       let { id, ...questionData } = questionValues;
 
+      const createdDistractorFiles = await Promise.all(
+        distractor.map(async (file,index) => {
+          if(file?.id){
+            await QuestionDistractor.update(
+              {
+                distractor: file.distractor,
+                content: file.content,
+              },
+              {
+                where: { id: file.id, questionId: id },
+              },
+              { transaction: t }
+            );
+          }
+          else{
+            const createdOption = await QuestionDistractor.create(
+              {
+                questionId:id,
+                distractor: file.distractor,
+                content: file.content,
+              },
+              { transaction: t }
+            );
+          }  
+        })
+      );
+
+
       const updatePairs = options;
-      console.log("success2")
       if (updatePairs && updatePairs.length > 0) {
         console.log("success21")
         for (let i = 0; i < updatePairs.length; i++) {
@@ -1772,21 +1800,6 @@ const QuestionManagementController = {
               },
               { transaction: t }
             );
-            console.log("success4")
-            // const createdDistractorFiles = await Promise.all(
-            //   distractor.map(async (file) => {
-            //     const createdOption = await QuestionDistractor.create(
-            //       {
-            //         questionId:id,
-            //         distractor: file.distractor,
-            //         content: file.content,
-            //       },
-            //       { transaction: t }
-            //     );
-      
-            //     return createdOption;
-            //   })
-            // );
           } else {
             console.log("success5")
             await MatchQuestionPair.create(
@@ -1797,23 +1810,9 @@ const QuestionManagementController = {
               { transaction: t }
             );
           }
-          console.log("success6")
-          // const createdDistractorFiles = await Promise.all(
-          //   distractor.map(async (file) => {
-          //     const createdOption = await QuestionDistractor.update(
-          //       {
-          //         distractor: file.distractor,
-          //         content: file.content,
-          //       },
-          //       { where: { id: file.id } },
-          //       { transaction: t }
-          //     );
-    
-          //     return createdOption;
-          //   })
-          // );
         }
 
+        
         await services.questionService.editQuestion(
           { questionData, ...rest },
           { where: { id: id } },
@@ -1849,39 +1848,7 @@ const QuestionManagementController = {
           matchPhrase: dataToBeAdded[i].matchPhrase,
           matchTarget: dataToBeAdded[i].matchTarget,
         };
-        // if (dataToBeAdded[i].matchPhraseContent) {
-        //   let buffer = Buffer.from(
-        //     dataToBeAdded[i].matchPhraseContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
-        //     "base64"
-        //   );
-
-        //   let fileObj = {
-        //     originalname: dataToBeAdded[i].matchPhraseContent.filename,
-        //     mimetype: dataToBeAdded[i].matchPhraseContent.mimetype,
-        //     buffer: buffer,
-        //   };
-
-        //   let fileName = await services.questionService.uploadFile(fileObj);
-        //   console.log(fileName);
-        //   dataToBeCreated.matchPhraseContent = fileName;
-        // }
-
-        // if (dataToBeAdded[i].matchTargetContent) {
-        //   let buffer = Buffer.from(
-        //     dataToBeAdded[i].matchTargetContent.buffer.replace(/^data:image\/\w+;base64,/, ""),
-        //     "base64"
-        //   );
-
-        //   let fileObj = {
-        //     originalname: dataToBeAdded[i].matchTargetContent.filename,
-        //     mimetype: dataToBeAdded[i].matchTargetContent.mimetype,
-        //     buffer: buffer,
-        //   };
-
-        //   let fileName = await services.questionService.uploadFile(fileObj);
-        //   console.log(fileName);
-        //   dataToBeCreated.matchTargetContent = fileName;
-        // }
+        
         await MatchQuestionPair.create(dataToBeCreated, { transaction: t });
       }
 
@@ -3046,6 +3013,16 @@ const QuestionManagementController = {
       res.status(httpStatus.OK).send(responseMessage);
     } catch (err) {
       console.log(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+  async deleteDistractor(req, res, next) {
+    const t = await db.transaction();
+    try {
+      await QuestionDistractor.destroy({where:{id:req.query.distracotrId}})
+      res.status(httpStatus.OK).send("success");
+    } catch (err) {
       await t.rollback();
       next(err);
     }

@@ -163,5 +163,6 @@ router.patch("/submitsheettosupervisor", QuestionManagementController.submitToSu
 
 router.get("/getallboards", BoardManagementController.getAllBoards);
 router.get("/getallsubboards", BoardManagementController.GetSubBoards);
+router.delete("/deletedistractor", QuestionManagementController.deleteDistractor);
 
 module.exports = router;

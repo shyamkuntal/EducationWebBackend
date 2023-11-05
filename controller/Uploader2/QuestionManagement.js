@@ -4,6 +4,7 @@ const CONSTANTS = require("../../constants/constants");
 const db = require("../../config/database");
 const { createQuestionsSchema } = require("../../validations/QuestionManagementValidation");
 const { MatchQuestion } = require("../../models/MatchQuestionPair");
+const { QuestionDistractor } = require("../../models/distractor");
 
 const QuestionManagementController = {
   async MatchQues(req, res, next) {
@@ -1378,6 +1379,10 @@ const QuestionManagementController = {
       next(err);
     }
   },
+
+  
 };
+
+
 
 module.exports = QuestionManagementController;
