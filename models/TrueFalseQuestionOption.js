@@ -14,7 +14,7 @@ const TrueFalseQuestionOption = db.define("trueFalseQuestionOption", {
     allowNull: true,
   },
   statement: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     allowNull: true,
   },
   isCorrectOption: {
@@ -23,7 +23,7 @@ const TrueFalseQuestionOption = db.define("trueFalseQuestionOption", {
     allowNull: false,
   },
   content: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     allowNull: true,
   },
 });

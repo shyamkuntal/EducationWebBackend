@@ -70,7 +70,7 @@ const ErrorManagementController = {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
             }
 
-            await Question.update({ isErrorByReviewer: true, isReCheckedByReviewer: true }, whereQuery)
+            await Question.update({ isErrorByReviewer: true,isCheckedByReviewer:false, isReCheckedByReviewer: true }, whereQuery)
 
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
