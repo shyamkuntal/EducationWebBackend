@@ -1034,13 +1034,7 @@ const QuestionManagementController = {
     try {
       let data = req.body;
 
-      let questionData = {
-        questionType: data.questionType,
-        questionData: data.questionData,
-        sheetId: data.sheetId,
-      };
-
-      let createdQuestion = await services.questionService.createQuestion(questionData, {
+      let createdQuestion = await services.questionService.createQuestion(data, {
         transaction: t,
       });
 
@@ -1087,7 +1081,7 @@ const QuestionManagementController = {
 
       const createdDistractorFiles = await Promise.all(
         distractor.map(async (file) => {
-          const createdOption = await QuestionItem.create(
+          const createdOption = await QuestionDistractor.create(
             {
               questionId,
               distractor: file.distractor,
@@ -1132,9 +1126,6 @@ const QuestionManagementController = {
               console.log(category, "cat");
               let categoryId = category?.id;
               console.log(categoryId);
-              // // const contentFileName = category.content
-              // //   ? await services.questionService.uploadFileToS3(category.content)
-              // //   : null;
 
               const categoryData = {
                 category: category?.category,
@@ -1209,8 +1200,14 @@ const QuestionManagementController = {
     try {
       const { questionId } = req.query;
       console.log(questionId, "id");
-
+        
       await QuestionTopicMapping.destroy({
+        where: {
+          questionId,
+        },
+      });
+
+      await QuestionDistractor.destroy({
         where: {
           questionId,
         },
@@ -2840,6 +2837,7 @@ const QuestionManagementController = {
         where: whereQuery,
         order: [["createdAt", "ASC"]],
         raw: true,
+        nest:true
       });
 
       let questionDetails = await services.questionService.findQuestions(questions);

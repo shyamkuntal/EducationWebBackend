@@ -527,7 +527,10 @@ const findQuestions = async (questions) => {
             let questionsWithSubPart = await Question.findAll({
               where: whereQuery,
               order: [["createdAt", "ASC"]],
-              raw: true,
+              raw: false,
+              include:[
+                {model:QuestionDistractor}
+              ]
             });
 
             subParts = await findQuestionSubParts(questionsWithSubPart);
@@ -771,6 +774,9 @@ const findQuestions = async (questions) => {
               where: whereQuery,
               order: [["createdAt", "ASC"]],
               raw: true,
+              include:[
+                {model:QuestionDistractor}
+              ]
             });
 
             subParts = await findQuestionSubParts(questionsWithSubPart);

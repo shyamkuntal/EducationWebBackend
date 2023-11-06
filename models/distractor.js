@@ -27,6 +27,10 @@ QuestionDistractor.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
+Question.hasMany(QuestionDistractor, {
+  foreignKey: { name: "questionId" },
+});
+
 QuestionDistractor.sync().then(() => {
   console.log("QuestionDistractor Created");
 });
