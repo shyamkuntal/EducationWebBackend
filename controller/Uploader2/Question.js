@@ -2804,6 +2804,7 @@ const QuestionManagementController = {
   async createLongAnswer(req, res, next) {
     const t = await db.transaction();
     try {
+    
       let values = await createQuestionsSchema.validateAsync(req.body);
 
       let question = await services.questionService.createQuestion(values, {
