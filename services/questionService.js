@@ -518,29 +518,29 @@ const findQuestions = async (questions) => {
       let type = questions[i].questionType;
 
       switch (type) {
-        case CONSTANTS.questionType.Long_Answer:
-          if (questions[i].hasSubPart) {
-            let subParts = [];
+        // case CONSTANTS.questionType.Long_Answer:
+        //   if (questions[i].hasSubPart) {
+        //     let subParts = [];
 
-            let whereQuery = { parentQuestionId: questions[i].id };
+        //     let whereQuery = { parentQuestionId: questions[i].id };
 
-            let questionsWithSubPart = await Question.findAll({
-              where: whereQuery,
-              order: [["createdAt", "ASC"]],
-              raw: false,
-              include:[
-                {model:QuestionDistractor}
-              ]
-            });
+        //     let questionsWithSubPart = await Question.findAll({
+        //       where: whereQuery,
+        //       order: [["createdAt", "ASC"]],
+        //       raw: false,
+        //       include:[
+        //         {model:QuestionDistractor}
+        //       ]
+        //     });
 
-            subParts = await findQuestionSubParts(questionsWithSubPart);
+        //     subParts = await findQuestionSubParts(questionsWithSubPart);
 
-            questionDetails.push({ ...questions[i], subParts });
-          } else {
-            questionDetails.push(questions[i]);
-          }
+        //     questionDetails.push({ ...questions[i], subParts });
+        //   } else {
+        //     questionDetails.push(questions[i]);
+        //   }
 
-          break;
+        //   break;
 
         case CONSTANTS.questionType.MCQ_Single:
           let mcqQuestion = questions[i];
@@ -651,36 +651,36 @@ const findQuestions = async (questions) => {
           break;
 
         case CONSTANTS.questionType.Fill_Dropdown:
-          let dropDownQuestion = questions[i];
+        //   let dropDownQuestion = questions[i];
 
-          let dropDownQuestionOptions = await FillDropDownOption.findAll({
-            where: { questionId: questions[i].id },
-          });
+        //   let dropDownQuestionOptions = await FillDropDownOption.findAll({
+        //     where: { questionId: questions[i].id },
+        //   });
 
-          dropDownQuestion.options = dropDownQuestionOptions;
+        //   dropDownQuestion.options = dropDownQuestionOptions;
 
-          if (questions[i].hasSubPart) {
-            let subParts = [];
+        //   if (questions[i].hasSubPart) {
+        //     let subParts = [];
 
-            let whereQuery = { parentQuestionId: questions[i].id };
+        //     let whereQuery = { parentQuestionId: questions[i].id };
 
-            let questionsWithSubPart = await Question.findAll({
-              where: whereQuery,
-              order: [["createdAt", "ASC"]],
-              raw: true,
-              include:[
-                {model:QuestionDistractor}
-              ]
-            });
+        //     let questionsWithSubPart = await Question.findAll({
+        //       where: whereQuery,
+        //       order: [["createdAt", "ASC"]],
+        //       raw: true,
+        //       include:[
+        //         {model:QuestionDistractor}
+        //       ]
+        //     });
 
-            subParts = await findQuestionSubParts(questionsWithSubPart);
+        //     subParts = await findQuestionSubParts(questionsWithSubPart);
 
-            questionDetails.push({ ...dropDownQuestion, subParts });
-          } else {
-            questionDetails.push(dropDownQuestion);
-          }
+        //     questionDetails.push({ ...dropDownQuestion, subParts });
+        //   } else {
+        //     questionDetails.push(dropDownQuestion);
+        //   }
 
-          break;
+        //   break;
 
         case CONSTANTS.questionType.Match:
           let matchQuestion = questions[i];
@@ -818,7 +818,7 @@ const findQuestions = async (questions) => {
 
           break;
 
-        case CONSTANTS.questionType.Label_Fill:
+         case CONSTANTS.questionType.Label_Fill:
           let labelFillQuestion = questions[i];
 
           let labelFillQuestionData = await LabelFillQuestion.findOne({
@@ -848,7 +848,7 @@ const findQuestions = async (questions) => {
 
           break;
 
-        case CONSTANTS.questionType.Label_Drag:
+         case CONSTANTS.questionType.Label_Drag:
           let labelDragQuestion = questions[i];
 
           let labelDragQuestionData = await LabelDragQuestion.findOne({

@@ -2820,8 +2820,8 @@ const QuestionManagementController = {
   async getQuestions(req, res, next) {
     try {
       let values = await getQuestionsSchema.validateAsync({ sheetId: req.query.sheetId });
+      console.log(values,"vlues")
       let whereQuery = { sheetId: values.sheetId };
-
       if (req.query.isCheckedByPricer)
         whereQuery = { ...whereQuery, isCheckedByPricer: req.query.isCheckedByPricer };
 
@@ -2833,13 +2833,17 @@ const QuestionManagementController = {
 
       if (req.query.isReCheckedByReviewer)
         whereQuery = { ...whereQuery, isReCheckedByReviewer: req.query.isReCheckedByReviewer };
-
+      
+      console.log("sucesss1")
+      
       let questions = await Question.findAll({
         where: whereQuery,
         order: [["createdAt", "ASC"]],
         raw: true,
         nest:true
       });
+      
+      console.log(questions,"questions")
 
       let questionDetails = await services.questionService.findQuestions(questions);
 
