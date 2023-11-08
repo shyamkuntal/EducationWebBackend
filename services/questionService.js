@@ -518,29 +518,25 @@ const findQuestions = async (questions) => {
       let type = questions[i].questionType;
 
       switch (type) {
-        // case CONSTANTS.questionType.Long_Answer:
-        //   if (questions[i].hasSubPart) {
-        //     let subParts = [];
+        case CONSTANTS.questionType.Long_Answer:
+          if (questions[i].hasSubPart) {
+            let subParts = [];
+            let whereQuery = { parentQuestionId: questions[i].id };
+            console.log(whereQuery,"whereQuery")
+            let questionsWithSubPart = await Question.findAll({
+              where: whereQuery,
+              order: [["createdAt", "ASC"]],
+              raw: false,
+            });
 
-        //     let whereQuery = { parentQuestionId: questions[i].id };
+            subParts = await findQuestionSubParts(questionsWithSubPart);
 
-        //     let questionsWithSubPart = await Question.findAll({
-        //       where: whereQuery,
-        //       order: [["createdAt", "ASC"]],
-        //       raw: false,
-        //       include:[
-        //         {model:QuestionDistractor}
-        //       ]
-        //     });
+            questionDetails.push({ ...questions[i], subParts });
+          } else {
+            questionDetails.push(questions[i]);
+          }
 
-        //     subParts = await findQuestionSubParts(questionsWithSubPart);
-
-        //     questionDetails.push({ ...questions[i], subParts });
-        //   } else {
-        //     questionDetails.push(questions[i]);
-        //   }
-
-        //   break;
+          break;
 
         case CONSTANTS.questionType.MCQ_Single:
           let mcqQuestion = questions[i];
