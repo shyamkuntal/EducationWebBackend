@@ -137,7 +137,7 @@ function getFolderName(fileType) {
 }
 
 async function uploadFileToS3(fileObj) {
- 
+
   try {
     const fileType = determineFileType(fileObj.originalname);
     const folderName = getFolderName(fileType);
@@ -521,7 +521,7 @@ const findQuestions = async (questions) => {
           if (questions[i].hasSubPart) {
             let subParts = [];
             let whereQuery = { parentQuestionId: questions[i].id };
-            console.log(whereQuery,"whereQuery")
+            console.log(whereQuery, "whereQuery")
             let questionsWithSubPart = await Question.findAll({
               where: whereQuery,
               order: [["createdAt", "ASC"]],
@@ -645,31 +645,31 @@ const findQuestions = async (questions) => {
 
           break;
         case CONSTANTS.questionType.Fill_Dropdown:
-        //   let dropDownQuestion = questions[i];
+          let dropDownQuestion = questions[i];
 
           let ddoptions = await FillTextAnswer.findOne({ where: { questionId: dropDownQuestion.id } })
           dropDownQuestion.options = ddoptions?.answerContent
 
-        //   if (questions[i].hasSubPart) {
-        //     let subParts = [];
+          if (questions[i].hasSubPart) {
+            let subParts = [];
 
-        //     let whereQuery = { parentQuestionId: questions[i].id };
+            let whereQuery = { parentQuestionId: questions[i].id };
 
-        //     let questionsWithSubPart = await Question.findAll({
-        //       where: whereQuery,
-        //       order: [["createdAt", "ASC"]],
-        //       raw: true,
-        //       include:[
-        //         {model:QuestionDistractor}
-        //       ]
-        //     });
+            let questionsWithSubPart = await Question.findAll({
+              where: whereQuery,
+              order: [["createdAt", "ASC"]],
+              raw: true,
+              include: [
+                { model: QuestionDistractor }
+              ]
+            });
 
-        //     subParts = await findQuestionSubParts(questionsWithSubPart);
+            subParts = await findQuestionSubParts(questionsWithSubPart);
 
-        //     questionDetails.push({ ...dropDownQuestion, subParts });
-        //   } else {
-        //     questionDetails.push(dropDownQuestion);
-        //   }
+            questionDetails.push({ ...dropDownQuestion, subParts });
+          } else {
+            questionDetails.push(dropDownQuestion);
+          }
 
           break;
         case CONSTANTS.questionType.Match:
@@ -762,8 +762,8 @@ const findQuestions = async (questions) => {
               where: whereQuery,
               order: [["createdAt", "ASC"]],
               raw: true,
-              include:[
-                {model:QuestionDistractor}
+              include: [
+                { model: QuestionDistractor }
               ]
             });
 
