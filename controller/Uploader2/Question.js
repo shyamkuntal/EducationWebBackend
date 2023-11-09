@@ -560,15 +560,8 @@ const QuestionManagementController = {
 
           const existingOption = await McqQuestionOption.findByPk(option.id);
 
-          if (existingOption) {
-            existingOption.option = option.option || existingOption.option;
-            existingOption.isCorrectOption =
-              option.isCorrectOption || existingOption.isCorrectOption;
-            existingOption.feedback = option.feedback || existingOption.feedback;
-            existingOption.content = contentFileName || existingOption.content;
-
-            await existingOption.save({ transaction: t });
-            updatedOptionsList.push(existingOption);
+          if (option?.id) {
+           McqQuestionOption.update(option,{where:{id:option.id}})
           } else {
             await McqQuestionOption.create(
               {
