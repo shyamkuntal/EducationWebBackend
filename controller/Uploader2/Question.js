@@ -8,7 +8,6 @@ const {
   McqSchema,
   createQuestionsSchema,
   createTextQuestionSchema,
-  updateTextQuestionSchema,
   createFillDropDownQuestionOptionsSchema,
   addFillDropDownQuestionOptionsSchema,
   deleteFillDropDownQuestionOptionsSchema,
@@ -71,6 +70,7 @@ const { QuestionDistractor } = require("../../models/distractor");
 const { User } = require("../../models/User");
 const { where } = require("sequelize");
 const { Vocabulary } = require("../../models/Vocabulary");
+const { FillTextAnswer } = require("../../models/FillTextAnswer");
 
 const QuestionManagementController = {
   async creatTextQues(req, res, next) {
@@ -1307,42 +1307,32 @@ const QuestionManagementController = {
   async createTableQues(req, res, next) {
     const t = await db.transaction();
     try {
-      let data = req.body;
+      let { tableData, autoPlot, allowPrefilledText, ...rest } = req.body;
 
       let questionData = {
-        questionType: data.questionType,
-        questionData: data.questionData,
-        sheetId: data.sheetId,
+        ...rest
       };
 
       let createdQuestion = await services.questionService.createQuestion(questionData, {
         transaction: t,
       });
 
-      let files = data.Files;
       let questionId = await createdQuestion.id;
 
-      const createdFiles = await Promise.all(
-        files.map(async (file) => {
-          const createdOption = await TableQuestion.create(
-            {
-              questionId,
-              item: file.item,
-              tableData: file.tableData,
-              autoPlot: file.autoPlot || false,
-              allowPrefilledText: file.allowPrefilledText || false,
-            },
-            { transaction: t }
-          );
-
-          return createdOption;
-        })
+      let tbq = await TableQuestion.create(
+        {
+          questionId,
+          tableData,
+          autoPlot: autoPlot || false,
+          allowPrefilledText: allowPrefilledText || false,
+        },
+        { transaction: t }
       );
 
       await t.commit();
       res.status(httpStatus.OK).send({
         question: createdQuestion,
-        files: createdFiles,
+        table: tbq,
       });
     } catch (err) {
       console.log(err);
@@ -1353,58 +1343,38 @@ const QuestionManagementController = {
   async editTableQues(req, res, next) {
     const t = await db.transaction();
     try {
+
       const id = req.body.id;
       const data = req.body;
 
       const questionUpdateData = {
-        questionType: data.questionType,
         questionData: data.questionData,
-        sheetId: data.sheetId,
+        explanation: data?.explanation,
+        includeExplanation: data?.includeExplanation
       };
 
-      await services.questionService.updateQuestion(id, data, {
+      await services.questionService.updateQuestion(id, questionUpdateData, {
         transaction: t,
       });
 
-      const files = data.Files;
+      let tbData = data.tableData;
+      let autoPlot = data.autoPlot;
+      let allowPrefilledText = data.allowPrefilledText
 
-      const updatedFiles = await Promise.all(
-        files.map(async (file) => {
-          const { fileId, item, tableData, autoPlot, allowPrefilledText } = file;
-
-          if (fileId) {
-            const updatedFile = await TableQuestion.update(
-              {
-                item,
-                tableData,
-                autoPlot: autoPlot || false,
-                allowPrefilledText: allowPrefilledText || false,
-              },
-              { where: { id: fileId }, transaction: t }
-            );
-
-            return updatedFile;
-          } else {
-            const createdFile = await TableQuestion.create(
-              {
-                questionId: id,
-                item,
-                tableData,
-                autoPlot: autoPlot || false,
-                allowPrefilledText: allowPrefilledText || false,
-              },
-              { transaction: t }
-            );
-
-            return createdFile;
-          }
-        })
+      let tbq = await TableQuestion.update(
+        {
+          tableData: tbData,
+          autoPlot: autoPlot || false,
+          allowPrefilledText: allowPrefilledText || false,
+        }, { where: { questionId: id, }, },
+        { transaction: t }
       );
+
 
       await t.commit();
       res.status(httpStatus.OK).send({
-        message: "Question and files updated successfully",
-        updatedFiles,
+        message: "Question and Table updated successfully",
+        tbq,
       });
     } catch (err) {
       console.log(err);
@@ -1415,11 +1385,12 @@ const QuestionManagementController = {
   async deleteTableQues(req, res, next) {
     const t = await db.transaction();
     try {
-      const id = req.query.id;
+      const id = req.query.questionId;
 
       await TableQuestion.destroy({ where: { questionId: id }, transaction: t });
 
-      await services.questionService.DeleteQues(id, { transaction: t });
+      const question = await Question.findByPk(id, { transaction: t });
+      await question.destroy({ transaction: t });
 
       await t.commit();
       res
@@ -1434,154 +1405,155 @@ const QuestionManagementController = {
   async createFillDropDown(req, res, next) {
     const t = await db.transaction();
     try {
-      const { dropDownOptions, ...rest } = req.body;
+      const { choices, ...rest } = req.body
+      let values = await createQuestionsSchema.validateAsync({ ...rest });
 
-      let questionValues = await createQuestionsSchema.validateAsync({
-        ...rest,
-        questionType: CONSTANTS.questionType.Fill_Dropdown,
-      });
+      let dataToBeCreated = { ...values, questionType: CONSTANTS.questionType.Fill_Dropdown };
 
-      let fillDropDownValues = await createFillDropDownQuestionOptionsSchema.validateAsync(
-        dropDownOptions
-      );
-
-      if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+      if (dataToBeCreated.isQuestionSubPart === true && !dataToBeCreated.parentQuestionId) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
-      if (fillDropDownValues.length > 10) {
-        throw new ApiError(httpStatus.BAD_REQUEST, "Only 10 options can be added!");
-      }
+      let question = await services.questionService.createQuestion(dataToBeCreated, { transaction: t });
+      await t.commit();
 
-      let question = await services.questionService.createQuestion(questionValues, {
-        raw: true,
-        transaction: t,
-      });
+      await FillTextAnswer.create({
+        questionId: question?.dataValues?.id,
+        answerContent: choices
+      })
 
-      let newQuestionData = question.dataValues;
+      res.status(httpStatus.OK).send({ message: "Fill Drop Down question created!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+  async deleteFillDropDownQues(req, res, next) {
+    const t = await db.transaction();
+    try {
+      const id = req.query.questionId;
 
-      for (let i = 0; i < fillDropDownValues.length; i++) {
-        await FillDropDownOption.create(
-          {
-            option: fillDropDownValues[i].option,
-            isCorrectOption: fillDropDownValues[i].isCorrectOption,
-            questionId: newQuestionData.id,
-          },
-          { transaction: t }
-        );
-      }
+      await FillTextAnswer.destroy({ where: { questionId: id }, transaction: t });
+
+      const question = await Question.findByPk(id, { transaction: t });
+      await question.destroy({ transaction: t });
+
       await t.commit();
       res
         .status(httpStatus.OK)
-        .send({ message: "FillDropDown options & New Question added!", newQuestionData });
+        .send({ message: "Fill Drop Down Question deleted successfully" });
     } catch (err) {
       console.log(err);
       await t.rollback();
       next(err);
     }
   },
-  async addFillDropDownOptions(req, res, next) {
+  // async addFillDropDownOptions(req, res, next) {
+  //   const t = await db.transaction();
+  //   try {
+  //     let values = await addFillDropDownQuestionOptionsSchema.validateAsync(req.body);
+
+  //     await services.questionService.checkFillDropDownOptions(values.questionId);
+
+  //     let = dataToBeAdded = values.optionsToBeAdded;
+
+  //     for (let i = 0; i < dataToBeAdded.length; i++) {
+  //       await FillDropDownOption.create(
+  //         {
+  //           option: dataToBeAdded[i].option,
+  //           isCorrectOption: dataToBeAdded[i].isCorrectOption,
+  //           questionId: values.questionId,
+  //         },
+  //         { transaction: t }
+  //       );
+  //     }
+
+  //     await t.commit();
+
+  //     res.status(httpStatus.OK).send({ message: "New dropDown Options added!" });
+  //   } catch (err) {
+  //     await t.rollback();
+  //     next(err);
+  //   }
+  // },
+  // async deleteFillDropDownOption(req, res, next) {
+  //   const t = await db.transaction();
+  //   try {
+  //     let values = await deleteFillDropDownQuestionOptionsSchema.validateAsync({
+  //       optionId: req.query.optionId,
+  //     });
+  //     await FillDropDownOption.destroy({ where: { id: values.optionId } });
+
+  //     await t.commit();
+
+  //     res.status(httpStatus.OK).send({ message: "option deleted!" });
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // },
+  async editFillDropDown(req, res, next) {
+
     const t = await db.transaction();
     try {
-      let values = await addFillDropDownQuestionOptionsSchema.validateAsync(req.body);
 
-      await services.questionService.checkFillDropDownOptions(values.questionId);
+      console.log(req.body)
+      const { choices, type, ...rest } = req.body
+      let values = await editQuestionSchema.validateAsync({ ...rest });
 
-      let = dataToBeAdded = values.optionsToBeAdded;
+      let dataToBeUpdated = { ...values, questionType: CONSTANTS.questionType.Fill_Dropdown };
 
-      for (let i = 0; i < dataToBeAdded.length; i++) {
-        await FillDropDownOption.create(
-          {
-            option: dataToBeAdded[i].option,
-            isCorrectOption: dataToBeAdded[i].isCorrectOption,
-            questionId: values.questionId,
-          },
-          { transaction: t }
-        );
+      if (dataToBeUpdated.isQuestionSubPart === true && !dataToBeUpdated.parentQuestionId) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
-      await t.commit();
+      let question = await services.questionService.updateQuestion(values.id, dataToBeUpdated, { transaction: t });
 
-      res.status(httpStatus.OK).send({ message: "New dropDown Options added!" });
-    } catch (err) {
-      await t.rollback();
-      next(err);
-    }
-  },
-  async deleteFillDropDownOption(req, res, next) {
-    const t = await db.transaction();
-    try {
-      let values = await deleteFillDropDownQuestionOptionsSchema.validateAsync({
-        optionId: req.query.optionId,
-      });
-      await FillDropDownOption.destroy({ where: { id: values.optionId } });
-
-      await t.commit();
-
-      res.status(httpStatus.OK).send({ message: "option deleted!" });
-    } catch (err) {
-      next(err);
-    }
-  },
-  async editFillDropDownOption(req, res, next) {
-    const t = await db.transaction();
-    try {
-      let values = await editFillDropDownQuestionOptionsSchema.validateAsync(req.body);
-
-      let questionId = values.questionId;
-      let dataToBeUpdated = values.dataToBeUpdated;
-
-      for (let i = 0; i < dataToBeUpdated.length; i++) {
-        await FillDropDownOption.update(
-          {
-            option: dataToBeUpdated[i].option,
-            isCorrectOption: dataToBeUpdated[i].isCorrectOption,
-          },
-          {
-            where: { questionId: questionId, id: dataToBeUpdated[i].id },
-          },
-          { transaction: t }
-        );
-      }
-
-      await t.commit();
-
-      res.status(httpStatus.OK).send({ message: "options updated!" });
-    } catch (err) {
-      await t.rollback();
-      next(err);
-    }
-  },
-  async getfillDropDownOptions(req, res, next) {
-    try {
-      let values = await getFillDropDownQuestionOptionsSchema.validateAsync({
-        questionId: req.query.questionId,
-      });
-
-      console.log(values);
-
-      let questionDetails = await services.questionService.getQuestionsDetailsById(
-        values.questionId
+      await FillTextAnswer.update(
+        { answerContent: choices },
+        {
+          where: { questionId: question?.dataValues?.id, },
+        },
+        { transaction: t }
       );
 
-      let fillDropDownOptions = await FillDropDownOption.findAll({
-        where: { questionId: values.questionId },
-        attributes: ["id", "option", "isCorrectOption"],
-        raw: true,
-      });
-      res.status(httpStatus.OK).send({ questionDetails, options: fillDropDownOptions });
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Fill Text question Updated!" });
     } catch (err) {
+      await t.rollback();
       next(err);
     }
   },
+  // async getfillDropDownOptions(req, res, next) {
+  //   try {
+  //     let values = await getFillDropDownQuestionOptionsSchema.validateAsync({
+  //       questionId: req.query.questionId,
+  //     });
+
+  //     console.log(values);
+
+  //     let questionDetails = await services.questionService.getQuestionsDetailsById(
+  //       values.questionId
+  //     );
+
+  //     let fillDropDownOptions = await FillDropDownOption.findAll({
+  //       where: { questionId: values.questionId },
+  //       attributes: ["id", "option", "isCorrectOption"],
+  //       raw: true,
+  //     });
+  //     res.status(httpStatus.OK).send({ questionDetails, options: fillDropDownOptions });
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // },
   async deleteFillDropDownQuestion(req, res, next) {
     const t = await db.transaction();
     try {
+
       let values = await deleteFillDropDownQuestionSchema.validateAsync({
         questionId: req.query.questionId,
       });
 
-      await FillDropDownOption.destroy(
+      await FillTextAnswer.destroy(
         { where: { questionId: values.questionId } },
         { transaction: t }
       );
@@ -1602,9 +1574,10 @@ const QuestionManagementController = {
   async createFillTextQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let values = await createQuestionsSchema.validateAsync(req.body);
+      const { choices, ...rest } = req.body
+      let values = await createQuestionsSchema.validateAsync({ ...rest });
 
-      console.log(values);
+      console.log("FILL TEXT QUESTION:", values);
 
       let dataToBeCreated = { ...values, questionType: CONSTANTS.questionType.Fill_Text };
 
@@ -1612,9 +1585,13 @@ const QuestionManagementController = {
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
-      await services.questionService.createQuestion(dataToBeCreated, { transaction: t });
-
+      let question = await services.questionService.createQuestion(dataToBeCreated, { transaction: t });
       await t.commit();
+
+      await FillTextAnswer.create({
+        questionId: question?.dataValues?.id,
+        answerContent: choices
+      })
 
       res.status(httpStatus.OK).send({ message: "Fill Text question created!" });
     } catch (err) {
@@ -1622,36 +1599,55 @@ const QuestionManagementController = {
       next(err);
     }
   },
-  async deleteFillTextQuestion(req, res, next) {
+  async editFillTextQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
 
-      let responseMessage = { message: "Fill Text question deleted" };
+      console.log(req.body)
+      const { choices, type, ...rest } = req.body
+      let values = await editQuestionSchema.validateAsync({ ...rest });
 
-      let whereQuery = {
-        where: {
-          id: values.questionId,
-          questionType: CONSTANTS.questionType.Fill_Text,
-        },
-      };
+      let dataToBeUpdated = { ...values, questionType: CONSTANTS.questionType.Fill_Text };
 
-      let deletedQuestion = await services.questionService.deleteQuestion(whereQuery, {
-        transaction: t,
-      });
-
-      console.log(deletedQuestion);
-
-      if (deletedQuestion <= 0) {
-        responseMessage.message = "Cannot delete Fill Text question!";
+      if (dataToBeUpdated.isQuestionSubPart === true && !dataToBeUpdated.parentQuestionId) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
-      await t.commit();
+      let question = await services.questionService.updateQuestion(values.id, dataToBeUpdated, { transaction: t });
 
-      res.status(httpStatus.OK).send(responseMessage);
+      await FillTextAnswer.update(
+        { answerContent: choices },
+        {
+          where: { questionId: question?.dataValues?.id, },
+        },
+        { transaction: t }
+      );
+
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Fill Text question Updated!" });
     } catch (err) {
       await t.rollback();
-      next();
+      next(err);
+    }
+  },
+  async deleteFillTextQues(req, res, next) {
+    const t = await db.transaction();
+    try {
+      const id = req.query.questionId;
+
+      await FillTextAnswer.destroy({ where: { questionId: id }, transaction: t });
+
+      const question = await Question.findByPk(id, { transaction: t });
+      await question.destroy({ transaction: t });
+
+      await t.commit();
+      res
+        .status(httpStatus.OK)
+        .send({ message: "Fill Text files deleted successfully" });
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      next(err);
     }
   },
   async editQuestion(req, res, next) {
@@ -1710,18 +1706,18 @@ const QuestionManagementController = {
           matchPhrase: matchPairs[i].matchPhrase,
           matchTarget: matchPairs[i].matchTarget,
         };
-        
+
         await MatchQuestionPair.create(dataToBeCreated, { transaction: t });
       }
 
-      
+
       let distractor = questionValues.distractors;
 
       const createdDistractorFiles = await Promise.all(
         distractor.map(async (file) => {
           const createdOption = await QuestionDistractor.create(
             {
-              questionId:newQuestionData.id,
+              questionId: newQuestionData.id,
               distractor: file.distractor,
               content: file.content,
             },
@@ -1733,7 +1729,7 @@ const QuestionManagementController = {
       );
 
       await t.commit();
-      console.log(createdDistractorFiles,"files of distracor")
+      console.log(createdDistractorFiles, "files of distracor")
       res.status(httpStatus.OK).send({ message: "created question & added match pairs" });
     } catch (err) {
       await t.rollback();
@@ -1807,19 +1803,33 @@ const QuestionManagementController = {
               { transaction: t }
             );
           }
+          console.log("success6")
+          // const createdDistractorFiles = await Promise.all(
+          //   distractor.map(async (file) => {
+          //     const createdOption = await QuestionDistractor.update(
+          //       {
+          //         distractor: file.distractor,
+          //         content: file.content,
+          //       },
+          //       { where: { id: file.id } },
+          //       { transaction: t }
+          //     );
+
+          //     return createdOption;
+          //   })
+          // );
         }
 
-        
         await services.questionService.editQuestion(
           { questionData, ...rest },
           { where: { id: id } },
           { transaction: t }
         );
         console.log("success7")
-         
-      let distractor = questionValues.distractors;
 
-      
+        let distractor = questionValues.distractors;
+
+
 
         await t.commit();
 

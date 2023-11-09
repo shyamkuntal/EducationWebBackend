@@ -14,7 +14,7 @@ const FillTextAnswer = db.define("fillTextAnswer", {
     allowNull: true,
   },
   answerContent: {
-    type: Sequelize.STRING,
+    type: Sequelize.JSON,
     allowNull: false,
   },
 });
@@ -23,8 +23,12 @@ FillTextAnswer.belongsTo(Question, {
   foreignKey: { name: "questionId" },
 });
 
+Question.hasMany(FillTextAnswer, {
+  foreignKey: { name: "questionId" },
+})
+
 FillTextAnswer.sync().then(() => {
   console.log("FillTextAnswer Created");
 });
 
-module.exports = { FillDropDownOption };
+module.exports = { FillTextAnswer };

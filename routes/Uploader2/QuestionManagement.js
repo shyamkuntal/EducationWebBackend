@@ -44,7 +44,7 @@ router.post(
   upload.array("content", 10),
   QuestionManagementController.createContentQues
 );
-router.delete( "/deletecontentquestion", QuestionManagementController.deleteContentQues);
+router.delete("/deletecontentquestion", QuestionManagementController.deleteContentQues);
 router.post(
   "/createvideoquestion",
   upload.single("content"),
@@ -60,24 +60,24 @@ router.post("/createclassifyquestion", QuestionManagementController.createClassi
 router.post("/uploadfiletos3", upload.single("file"), QuestionManagementController.uploadFileToS3);
 router.post("/deletefilefroms3", QuestionManagementController.deleteFileFromS3);
 // FillDropDown Apis -
-router.post("/createfilldropdown", QuestionManagementController.createFillDropDown);
-router.post("/addfilldropdownoptions", QuestionManagementController.addFillDropDownOptions);
-router.delete("/deletefilldropdownoption", QuestionManagementController.deleteFillDropDownOption);
-router.get("/getfilldropdownquestion", QuestionManagementController.getfillDropDownOptions);
+// router.post("/createfilldropdown", QuestionManagementController.createFillDropDown);
+// router.post("/addfilldropdownoptions", QuestionManagementController.addFillDropDownOptions);
+// router.delete("/deletefilldropdownoption", QuestionManagementController.deleteFillDropDownOption);
+// router.get("/getfilldropdownquestion", QuestionManagementController.getfillDropDownOptions);
 
-router.delete(
-  "/deletefilldropdownquestion",
-  QuestionManagementController.deleteFillDropDownQuestion
-);
+// router.delete(
+//   "/deletefilldropdownquestion",
+//   QuestionManagementController.deleteFillDropDownQuestion
+// );
 
-router.patch("/editfilldropdownoption", QuestionManagementController.editFillDropDownOption);
+// router.patch("/editfilldropdownoption", QuestionManagementController.editFillDropDownOption);
 
 // FillText Apis -
-router.post("/createfilltext", QuestionManagementController.createFillTextQuestion);
+// router.post("/createfilltext", QuestionManagementController.createFillTextQuestion);
 
-router.delete("/deletefilltext", QuestionManagementController.deleteFillTextQuestion);
+// router.delete("/deletefilltext", QuestionManagementController.deleteFillTextQuestion);
 
-router.patch("/editquestion", QuestionManagementController.editQuestion);
+// router.patch("/editquestion", QuestionManagementController.editQuestion);
 
 // Match Apis -
 
@@ -164,5 +164,20 @@ router.patch("/submitsheettosupervisor", QuestionManagementController.submitToSu
 router.get("/getallboards", BoardManagementController.getAllBoards);
 router.get("/getallsubboards", BoardManagementController.GetSubBoards);
 router.delete("/deletedistractor", QuestionManagementController.deleteDistractor);
+
+// fill text
+
+router.post("/createfilltextquestion", QuestionManagementController.createFillTextQuestion);
+router.patch("/editfilltextquestion", QuestionManagementController.editFillTextQuestion);
+router.delete("/deletefilltextquestion", QuestionManagementController.deleteFillTextQues);
+
+router.post("/createfillddquestion", QuestionManagementController.createFillDropDown);
+router.patch("/editfillddquestion", QuestionManagementController.editFillDropDown);
+router.delete("/deletefillddquestion", QuestionManagementController.deleteFillDropDownQues)
+
+
+router.post("/createtablequestion", QuestionManagementController.createTableQues);
+router.patch("/edittablequestion", QuestionManagementController.editTableQues);
+router.delete("/deletetablequestion", QuestionManagementController.deleteTableQues);
 
 module.exports = router;

@@ -13,7 +13,7 @@ const TableQuestion= db.define("tableQuestion", {
     allowNull: true,
   },
   tableData: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     allowNull: true,
   },
   allowPrefilledText: {
@@ -23,10 +23,6 @@ const TableQuestion= db.define("tableQuestion", {
   autoPlot: {
     type: Sequelize.BOOLEAN,
     default: false,
-  },
-  content: {
-    type: Sequelize.STRING,
-    allowNull: false,
   },
 });
 

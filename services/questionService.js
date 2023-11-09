@@ -25,6 +25,7 @@ const { McqQuestionOption } = require("../models/McqQuestionOption");
 const { TrueFalseQuestionOption } = require("../models/TrueFalseQuestionOption");
 const { QuestionContent } = require("../models/QuestionContent");
 const { QuestionDistractor } = require("../models/distractor");
+const { FillTextAnswer } = require("../models/FillTextAnswer");
 
 const createQuestion = async (dataToBeCreated, options) => {
   try {
@@ -203,7 +204,7 @@ async function deleteFileFromS3(fileName) {
   }
 }
 
-async function updateQuestion(questionId, updatedData) {
+async function updateQuestion(questionId, updatedData, options) {
   try {
     const question = await Question.findByPk(questionId);
 
@@ -211,7 +212,7 @@ async function updateQuestion(questionId, updatedData) {
       throw new Error(`Question with ID ${questionId} not found`);
     }
 
-    await question.update(updatedData);
+    await question.update(updatedData, options);
 
     return question;
   } catch (err) {
@@ -235,7 +236,7 @@ async function updateCategory(categoryId, categoryData) {
   }
 }
 
-async function DeleteQues(questionId) {
+async function DeleteQues(questionId, transaction) {
   const t = await db.transaction();
   try {
     const question = await Question.findByPk(questionId);
@@ -265,7 +266,6 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
       case CONSTANTS.questionType.Long_Answer:
         subParts.push({ ...questionsWithSubPart[j] });
         break;
-
       case CONSTANTS.questionType.MCQ_Single:
         let mcqQuestion = questionsWithSubPart[j];
 
@@ -289,7 +289,6 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
 
         subParts.push(mcqMutipleQuestion);
         break;
-
       case CONSTANTS.questionType.True_False:
         let trueFalseQuestion = questionsWithSubPart[j];
 
@@ -301,24 +300,23 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
 
         subParts.push(trueFalseQuestion);
         break;
-
       case CONSTANTS.questionType.Fill_Text:
-        subParts.push(questionsWithSubPart[j]);
-        break;
+        let filtextQuestion = questionsWithSubPart[j];
 
+        let options = await FillTextAnswer.findOne({ where: { questionId: filtextQuestion.id } })
+        filtextQuestion.options = options?.answerContent
+        subParts.push(filtextQuestion);
+        break;
       case CONSTANTS.questionType.Fill_Dropdown:
         let dropDownQuestion = questionsWithSubPart[j];
 
-        let dropDownQuestionOptions = await FillDropDownOption.findAll({
-          where: { questionId: questionsWithSubPart[j].id },
-        });
+        let ddoptions = await FillTextAnswer.findOne({ where: { questionId: dropDownQuestion.id } })
+        dropDownQuestion.options = ddoptions?.answerContent
 
-        dropDownQuestion.options = dropDownQuestionOptions;
 
         subParts.push(dropDownQuestion);
 
         break;
-
       case CONSTANTS.questionType.Match:
         let matchQuestion = questionsWithSubPart[j];
 
@@ -331,7 +329,6 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
         subParts.push(matchQuestion);
 
         break;
-
       case CONSTANTS.questionType.Sort:
         let sortQuestion = questionsWithSubPart[j];
 
@@ -343,7 +340,6 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
 
         subParts.push(sortQuestion);
         break;
-
       case CONSTANTS.questionType.Classify:
         let classifyQuestion = questionsWithSubPart[j];
 
@@ -364,7 +360,6 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
 
         subParts.push(classifyQuestion);
         break;
-
       case CONSTANTS.questionType.Drawing:
         let drawingQuestion = questionsWithSubPart[j];
 
@@ -377,7 +372,6 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
 
         subParts.push(drawingQuestion);
         break;
-
       case CONSTANTS.questionType.Label_Fill:
         let labelFillQuestion = questionsWithSubPart[j];
 
@@ -390,7 +384,6 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
 
         subParts.push(labelFillQuestion);
         break;
-
       case CONSTANTS.questionType.Label_Drag:
         let labelDragQuestion = questionsWithSubPart[j];
 
@@ -404,7 +397,6 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
         subParts.push(labelDragQuestion);
 
         break;
-
       case CONSTANTS.questionType.Hotspot:
         let hotSpotQuestion = questionsWithSubPart[j];
 
@@ -418,7 +410,6 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
         subParts.push(hotSpotQuestion);
 
         break;
-
       case CONSTANTS.questionType.Desmos_Graph:
         let desmosQuestion = questionsWithSubPart[j];
 
@@ -432,7 +423,6 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
         subParts.push(desmosQuestion);
 
         break;
-
       case CONSTANTS.questionType.Geogebra_Graph:
         let geoGebraQuestion = questionsWithSubPart[j];
 
@@ -444,6 +434,17 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
         geoGebraQuestion.graphData = geoGebraQuestionData;
 
         subParts.push(geoGebraQuestion);
+        break;
+      case CONSTANTS.questionType.Table:
+        let tableQuestion = questionsWithSubPart[j];
+
+        let tableQuestionData = await TableQuestion.findOne({
+          where: { questionId: questionsWithSubPart[j].id }
+        });
+
+        tableQuestion.tableData = tableQuestionData;
+
+        subParts.push(tableQuestion);
         break;
 
       // Content Type question
@@ -535,7 +536,6 @@ const findQuestions = async (questions) => {
           }
 
           break;
-
         case CONSTANTS.questionType.MCQ_Single:
           let mcqQuestion = questions[i];
 
@@ -592,7 +592,6 @@ const findQuestions = async (questions) => {
           }
 
           break;
-
         case CONSTANTS.questionType.True_False:
           let trueFalseQuestion = questions[i];
 
@@ -621,9 +620,11 @@ const findQuestions = async (questions) => {
           }
 
           break;
-
         case CONSTANTS.questionType.Fill_Text:
           let filtextQuestion = questions[i];
+
+          let options = await FillTextAnswer.findOne({ where: { questionId: filtextQuestion.id } })
+          filtextQuestion.options = options?.answerContent
           if (questions[i].hasSubPart) {
             let subParts = [];
 
@@ -643,15 +644,11 @@ const findQuestions = async (questions) => {
           }
 
           break;
-
         case CONSTANTS.questionType.Fill_Dropdown:
         //   let dropDownQuestion = questions[i];
 
-        //   let dropDownQuestionOptions = await FillDropDownOption.findAll({
-        //     where: { questionId: questions[i].id },
-        //   });
-
-        //   dropDownQuestion.options = dropDownQuestionOptions;
+          let ddoptions = await FillTextAnswer.findOne({ where: { questionId: dropDownQuestion.id } })
+          dropDownQuestion.options = ddoptions?.answerContent
 
         //   if (questions[i].hasSubPart) {
         //     let subParts = [];
@@ -674,8 +671,7 @@ const findQuestions = async (questions) => {
         //     questionDetails.push(dropDownQuestion);
         //   }
 
-        //   break;
-
+          break;
         case CONSTANTS.questionType.Match:
           let matchQuestion = questions[i];
 
@@ -698,8 +694,8 @@ const findQuestions = async (questions) => {
               where: whereQuery,
               order: [["createdAt", "ASC"]],
               raw: true,
-              include:[
-                {model:QuestionDistractor}
+              include: [
+                { model: QuestionDistractor }
               ]
             });
 
@@ -711,7 +707,6 @@ const findQuestions = async (questions) => {
           }
 
           break;
-
         case CONSTANTS.questionType.Sort:
           let sortQuestion = questions[i];
 
@@ -740,7 +735,6 @@ const findQuestions = async (questions) => {
           }
 
           break;
-
         case CONSTANTS.questionType.Classify:
           let classifyQuestion = questions[i];
 
@@ -781,7 +775,6 @@ const findQuestions = async (questions) => {
           }
 
           break;
-
         case CONSTANTS.questionType.Drawing:
           let drawingQuestion = questions[i];
 
@@ -811,8 +804,7 @@ const findQuestions = async (questions) => {
           }
 
           break;
-
-         case CONSTANTS.questionType.Label_Fill:
+        case CONSTANTS.questionType.Label_Fill:
           let labelFillQuestion = questions[i];
 
           let labelFillQuestionData = await LabelFillQuestion.findOne({
@@ -841,8 +833,7 @@ const findQuestions = async (questions) => {
           }
 
           break;
-
-         case CONSTANTS.questionType.Label_Drag:
+        case CONSTANTS.questionType.Label_Drag:
           let labelDragQuestion = questions[i];
 
           let labelDragQuestionData = await LabelDragQuestion.findOne({
@@ -871,7 +862,6 @@ const findQuestions = async (questions) => {
           }
 
           break;
-
         case CONSTANTS.questionType.Hotspot:
           let hotSpotQuestion = questions[i];
 
@@ -901,7 +891,6 @@ const findQuestions = async (questions) => {
           }
 
           break;
-
         case CONSTANTS.questionType.Desmos_Graph:
           let desmosQuestion = questions[i];
 
@@ -931,7 +920,6 @@ const findQuestions = async (questions) => {
           }
 
           break;
-
         case CONSTANTS.questionType.Geogebra_Graph:
           let geoGebraQuestion = questions[i];
 
@@ -958,6 +946,34 @@ const findQuestions = async (questions) => {
             questionDetails.push({ ...geoGebraQuestion, subParts });
           } else {
             questionDetails.push(geoGebraQuestion);
+          }
+
+          break;
+        case CONSTANTS.questionType.Table:
+          let tableQuestion = questions[i];
+
+          let tbQuestionData = await TableQuestion.findOne({
+            where: { questionId: questions[i].id },
+          });
+
+          tableQuestion.tableData = tbQuestionData;
+
+          if (questions[i].hasSubPart) {
+            let subParts = [];
+
+            let whereQuery = { parentQuestionId: questions[i].id };
+
+            let questionsWithSubPart = await Question.findAll({
+              where: whereQuery,
+              order: [["createdAt", "ASC"]],
+              raw: true,
+            });
+
+            subParts = await findQuestionSubParts(questionsWithSubPart);
+
+            questionDetails.push({ ...tableQuestion, subParts });
+          } else {
+            questionDetails.push(tableQuestion);
           }
 
           break;
