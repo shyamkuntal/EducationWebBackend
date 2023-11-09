@@ -23,6 +23,10 @@ SheetManagementPaperNoMapping.belongsTo(SheetManagement, {
   foreignKey: { name: "sheetManagementId" }
 });
 
+SheetManagement.hasMany(SheetManagementPaperNoMapping, {
+  foreignKey: { name: "sheetManagementId" }
+});
+
 SheetManagementPaperNoMapping.belongsTo(PaperNumber, {
   foreignKey: { name: "paperNoId" }
 });

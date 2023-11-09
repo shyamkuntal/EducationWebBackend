@@ -1,6 +1,8 @@
 const { Board, SubBoard } = require("../models/Board.js");
+const { PaperNumber } = require("../models/PaperNumberSheet.js");
 const { Question } = require("../models/Question.js");
 const { SheetManagement } = require("../models/SheetManagement.js");
+const { SheetManagementPaperNoMapping } = require("../models/SheetManagementPaperNoMapping.js");
 const { Subject, SubjectLevel, subjectName } = require("../models/Subject.js");
 const { User } = require("../models/User.js");
 const { Variant } = require("../models/Variants.js");
@@ -164,6 +166,7 @@ const paginatedSheetManagementSheets = () => {
           "isSpam",
           "isArchived",
           "isPublished",
+          "paperNumber"
         ],
         include: [
           {
@@ -200,6 +203,14 @@ const paginatedSheetManagementSheets = () => {
             attributes: ["subjectLevelName"],
             required: false,
           },
+          // {
+          //   model: SheetManagementPaperNoMapping,
+          //   include: [
+          //     {
+          //       model: PaperNumber
+          //     }
+          //   ]
+          // }
         ],
         where: filters,
         limit,

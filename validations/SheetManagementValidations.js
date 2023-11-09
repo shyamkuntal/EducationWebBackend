@@ -33,6 +33,7 @@ const createSheetSchema = Joi.object({
   startPageNo: Joi.number(),
   endPageNo: Joi.number(),
   supervisorId: Joi.string().uuid().required(),
+  paperNumber: Joi.array(),
 });
 const assignSheetToUploaderSchema = Joi.object({
   sheetId: Joi.string().guid().required(),

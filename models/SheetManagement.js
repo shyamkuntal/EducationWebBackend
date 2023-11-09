@@ -186,6 +186,10 @@ const SheetManagement = db.define("sheetManagement", {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
+  paperNumber: {
+    type: Sequelize.ARRAY(Sequelize.UUID),
+    defaultValue: [],
+  },
 });
 
 SheetManagement.belongsTo(Board, {

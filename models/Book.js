@@ -25,7 +25,6 @@ const Book = db.define("book", {
   },
   isArchived: {
     type: Sequelize.BOOLEAN,
-    allowNull: false,
     default: false
   }
 });

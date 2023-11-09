@@ -19,7 +19,7 @@ const SheetManagementController = {
     const t = await db.transaction();
     try {
       let values = await createSheetSchema.validateAsync(req.body);
-
+      
       let sheet = await SheetManagement.create(values, {
         transaction: t,
       });
@@ -39,7 +39,6 @@ const SheetManagementController = {
             transaction: t,
           }
         );
-        console.log("bookMapping", bookMapping);
       }
 
       if (values.sheetType === "Top School" || values.sheetType === "Past Paper") {

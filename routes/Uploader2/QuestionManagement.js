@@ -77,7 +77,7 @@ router.post("/deletefilefroms3", QuestionManagementController.deleteFileFromS3);
 
 // router.delete("/deletefilltext", QuestionManagementController.deleteFillTextQuestion);
 
-// router.patch("/editquestion", QuestionManagementController.editQuestion);
+router.patch("/editquestion", QuestionManagementController.editQuestion);
 
 // Match Apis -
 

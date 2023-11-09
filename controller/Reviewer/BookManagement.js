@@ -225,7 +225,7 @@ const ReviewerBookController = {
       let values = await addErrorsToBooksSchema.validateAsync(req.body);
 
       let dataToBeUpdated = {
-        isError: values.isError,
+        isError: true,
         errorReport: values.errorReport,
       };
 
