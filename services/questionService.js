@@ -136,9 +136,7 @@ function getFolderName(fileType) {
 }
 
 async function uploadFileToS3(fileObj) {
-
-  console.log(fileObj, "------->>>>")
-  
+ 
   try {
     const fileType = determineFileType(fileObj.originalname);
     const folderName = getFolderName(fileType);

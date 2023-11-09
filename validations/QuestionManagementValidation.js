@@ -113,9 +113,11 @@ const deleteQuestionSchema = Joi.object({ questionId: Joi.string().guid().requir
 const editQuestionSchema = Joi.object({
   id: Joi.string().guid(),
   parentQuestionId: Joi.string().guid(),
+  subQuestionNumberingScheme:Joi.string(),
   questionId: Joi.string().guid(),
   sheetId: Joi.string().guid(),
   questionType: Joi.string(),
+  hasSubPart:Joi.boolean(),
   type: Joi.string(),
   questionData: Joi.string(),
   marks: Joi.number(),
