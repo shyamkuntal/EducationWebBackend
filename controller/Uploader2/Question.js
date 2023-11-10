@@ -561,7 +561,7 @@ const QuestionManagementController = {
           const existingOption = await McqQuestionOption.findByPk(option.id);
 
           if (option?.id) {
-           McqQuestionOption.update(option,{where:{id:option.id}})
+            McqQuestionOption.update(option, { where: { id: option.id } })
           } else {
             await McqQuestionOption.create(
               {
@@ -1179,6 +1179,39 @@ const QuestionManagementController = {
           );
         }
 
+        const distracor = data.distracors
+        if (distracor.length > 0) {
+          const createdDistractorFiles = await Promise.all(
+            distractor.map(async (file) => {
+              var dis = await QuestionDistractor.findOne({ where: { questionId } })
+              if (dis === null) {
+                const createdOption = await QuestionDistractor.create(
+                  {
+                    questionId,
+                    distractor: file.distractor,
+                    content: file.content,
+                  },
+                  { transaction: t }
+                );
+
+                return createdOption;
+              }
+              else {
+                const updateOption = await QuestionDistractor.update(
+                  {
+                    distractor: file.distractor,
+                    content: file.content,
+                  },
+                  { where: { questionId } },
+                  { transaction: t }
+                );
+
+                return updateOption;
+              }
+            })
+          );
+        }
+
         await t.commit();
         res.status(httpStatus.OK).send({ message: "Question updated successfully" });
       }
@@ -1193,7 +1226,7 @@ const QuestionManagementController = {
     try {
       const { questionId } = req.query;
       console.log(questionId, "id");
-        
+
       await QuestionTopicMapping.destroy({
         where: {
           questionId,
@@ -1738,12 +1771,12 @@ const QuestionManagementController = {
       console.log("success1")
       let updateValues = options;
       let distractor = req.body.distractor
-   
+
       let { id, ...questionData } = questionValues;
 
       const createdDistractorFiles = await Promise.all(
-        distractor.map(async (file,index) => {
-          if(file?.id){
+        distractor.map(async (file, index) => {
+          if (file?.id) {
             await QuestionDistractor.update(
               {
                 distractor: file.distractor,
@@ -1755,16 +1788,16 @@ const QuestionManagementController = {
               { transaction: t }
             );
           }
-          else{
+          else {
             const createdOption = await QuestionDistractor.create(
               {
-                questionId:id,
+                questionId: id,
                 distractor: file.distractor,
                 content: file.content,
               },
               { transaction: t }
             );
-          }  
+          }
         })
       );
 
@@ -1848,7 +1881,7 @@ const QuestionManagementController = {
           matchPhrase: dataToBeAdded[i].matchPhrase,
           matchTarget: dataToBeAdded[i].matchTarget,
         };
-        
+
         await MatchQuestionPair.create(dataToBeCreated, { transaction: t });
       }
 
@@ -2807,7 +2840,7 @@ const QuestionManagementController = {
   async createLongAnswer(req, res, next) {
     const t = await db.transaction();
     try {
-    
+
       let values = await createQuestionsSchema.validateAsync(req.body);
 
       let question = await services.questionService.createQuestion(values, {
@@ -2823,7 +2856,7 @@ const QuestionManagementController = {
   async getQuestions(req, res, next) {
     try {
       let values = await getQuestionsSchema.validateAsync({ sheetId: req.query.sheetId });
-      console.log(values,"vlues")
+      console.log(values, "vlues")
       let whereQuery = { sheetId: values.sheetId };
       if (req.query.isCheckedByPricer)
         whereQuery = { ...whereQuery, isCheckedByPricer: req.query.isCheckedByPricer };
@@ -2836,17 +2869,17 @@ const QuestionManagementController = {
 
       if (req.query.isReCheckedByReviewer)
         whereQuery = { ...whereQuery, isReCheckedByReviewer: req.query.isReCheckedByReviewer };
-      
+
       console.log("sucesss1")
-      
+
       let questions = await Question.findAll({
         where: whereQuery,
         order: [["createdAt", "ASC"]],
         raw: true,
-        nest:true
+        nest: true
       });
-      
-      console.log(questions,"questions")
+
+      console.log(questions, "questions")
 
       let questionDetails = await services.questionService.findQuestions(questions);
 
@@ -3026,7 +3059,7 @@ const QuestionManagementController = {
   async deleteDistractor(req, res, next) {
     const t = await db.transaction();
     try {
-      await QuestionDistractor.destroy({where:{id:req.query.distracotrId}})
+      await QuestionDistractor.destroy({ where: { id: req.query.distracotrId } })
       res.status(httpStatus.OK).send("success");
     } catch (err) {
       await t.rollback();

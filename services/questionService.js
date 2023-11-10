@@ -358,6 +358,11 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
 
         classifyQuestion.categories = classifyQuestionCategory;
 
+        let classifyQuestionDistractorOptions = await QuestionDistractor.findAll({
+          where: { questionId: questionsWithSubPart[j].id },
+        });
+        classifyQuestion.distractors = classifyQuestionDistractorOptions;
+
         subParts.push(classifyQuestion);
         break;
       case CONSTANTS.questionType.Drawing:
@@ -752,6 +757,11 @@ const findQuestions = async (questions) => {
           }
 
           classifyQuestion.categories = classifyQuestionCategory;
+
+          let classifyQuestionDistractorOptions = await QuestionDistractor.findAll({
+            where: { questionId: questions[i].id },
+          });
+          classifyQuestion.distractors = classifyQuestionDistractorOptions;
 
           if (questions[i].hasSubPart) {
             let subParts = [];
