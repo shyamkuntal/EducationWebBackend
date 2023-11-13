@@ -29,6 +29,7 @@ const Notice = require("./Supervisor/NoticeBoard");
 const Archive = require("./Supervisor/ArchiveMangement");
 const Auth = require("./Auth.js");
 const Uploader2_Dashboard = require("./Uploader2/Dashboard")
+const General_Api = require("./GeneralApi")
 const {
   AuthSuperadmin,
   AuthPastPaper,
@@ -82,6 +83,9 @@ router.use("/teacherDashboard",AuthTeacher(),TeacherDashboard)
 router.use("/shmpricer", AuthPricer(), PricerSheetManagement);
 
 router.use("/uploader_dashboard",AuthUploader2(),Uploader2_Dashboard)
+router.use("/general",AuthTeacher(),General_Api)
+
+
 
 
 module.exports = router;

@@ -6,6 +6,7 @@ const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSu
 const paginatedSheetManagementSheets = require("../../middlewares/paginatedSheetManagementSheets");
 const BoardManagementController = require("../../controller/SuperAdmin/BoardM");
 const upload = require("../../config/multer");
+const { GeneralApi } = require("../../controller/GeneralApi");
 
 // router.post("/createquestion", QuestionManagementController.createQuestion);
 
@@ -179,6 +180,13 @@ router.delete("/deletefillddquestion", QuestionManagementController.deleteFillDr
 router.post("/createtablequestion", QuestionManagementController.createTableQues);
 router.patch("/edittablequestion", QuestionManagementController.editTableQues);
 router.delete("/deletetablequestion", QuestionManagementController.deleteTableQues);
+router.get("/getallSheetbySubjectid", GeneralApi.getAllSheetBySubjectIdandUserId);
+router.get("/getallPastPaperbySubjectid", GeneralApi.getAllPastPaperSheetBySubjectIdandUserId);
+router.get("/getallPaperNumberbySubjectid", GeneralApi.getAllPaperNoSheetBySubjectIdandUserId);
+router.get("/getallBookTasksbySubjectid", GeneralApi.getAllBookSheetBySubjectIdandUserId);
+router.get("/getallTopicTasksbySubjectid", GeneralApi.getAllTopicSheetBySubjectIdandUserId);
+
+
 
 
 module.exports = router;

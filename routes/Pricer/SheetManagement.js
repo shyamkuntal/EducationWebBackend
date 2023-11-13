@@ -5,6 +5,7 @@ const SubjectManagementController = require("../../controller/Supervisor/ManageS
 const paginatedSheetManagementSheets = require("../../middlewares/paginatedSheetManagementSheets");
 const PricerSheetManagementController = require("../../controller/Pricer/SheetManagement");
 const QuestionManagementController = require("../../controller/Uploader2/Question");
+const { GeneralApi } = require("../../controller/GeneralApi/index.js");
 const router = express.Router();
 
 
@@ -30,6 +31,11 @@ router.get("/getquestions", QuestionManagementController.getQuestions);
 router.get("/sheeterrorsbyreviewer", PricerSheetManagementController.getErrorsForQuestion);
 router.patch("/assigntosupervisor", PricerSheetManagementController.AssignSheetToSupervisor)
 router.patch("/addsheeterror", PricerSheetManagementController.reportSheetError);
+router.get("/getallSheetbySubjectid", GeneralApi.getAllSheetBySubjectIdandUserId);
+router.get("/getallPastPaperbySubjectid", GeneralApi.getAllPastPaperSheetBySubjectIdandUserId);
+router.get("/getallPaperNumberbySubjectid", GeneralApi.getAllPaperNoSheetBySubjectIdandUserId);
+router.get("/getallBookTasksbySubjectid", GeneralApi.getAllBookSheetBySubjectIdandUserId);
+router.get("/getallTopicTasksbySubjectid", GeneralApi.getAllTopicSheetBySubjectIdandUserId);
 
 
 module.exports = router;

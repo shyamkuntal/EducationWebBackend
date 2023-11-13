@@ -6,8 +6,8 @@ const { User } = require("../models/User.js");
 
 const paginatedPaperNumberSheet = (model, req) => {
   return async (req, res, next) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page)||1
+    const limit = parseInt(req.query.limit)||10
     const filters = {
       isArchived: false,
       // isPublished: true,
@@ -121,7 +121,6 @@ const paginatedPaperNumberSheet = (model, req) => {
           {
             model: Subject,
             where: req.query.subjectNameId ? { subjectNameId: req.query.subjectNameId } : {},
-            attributes: ["id", "boardId", "subBoardId", "grade", "subjectNameId"],
           },
           {
             model: User,

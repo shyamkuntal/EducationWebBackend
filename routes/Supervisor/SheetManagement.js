@@ -6,6 +6,7 @@ const BookManagementController = require("../../controller/Supervisor/Book");
 const paginatedSheetManagementSheets = require("../../middlewares/paginatedSheetManagementSheets");
 const TeacherSheetManagementController = require("../../controller/Teacher/SheetMangement");
 const QuestionManagementController = require("../../controller/Uploader2/Question");
+const { GeneralApi } = require("../../controller/GeneralApi");
 
 router.post("/createsheet", SheetManagementController.createSheet);
 
@@ -34,5 +35,11 @@ router.patch("/publishshmsheet", SheetManagementController.publishShmSheetTask);
 router.get("/gettopicsubtopicvocabmappingsforquestion", TeacherSheetManagementController.getTopicSubTopicVocabMappingsForQuestion);
 
 router.get("/getquestions", QuestionManagementController.getQuestions);
+
+router.get("/getallSheetbySubjectid", GeneralApi.getAllSheetBySubjectIdandUserId);
+router.get("/getallPastPaperbySubjectid", GeneralApi.getAllPastPaperSheetBySubjectIdandUserId);
+router.get("/getallPaperNumberbySubjectid", GeneralApi.getAllPaperNoSheetBySubjectIdandUserId);
+router.get("/getallBookTasksbySubjectid", GeneralApi.getAllBookSheetBySubjectIdandUserId);
+router.get("/getallTopicTasksbySubjectid", GeneralApi.getAllTopicSheetBySubjectIdandUserId);
 
 module.exports = router;

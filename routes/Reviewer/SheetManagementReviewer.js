@@ -5,6 +5,7 @@ const QuestionManagementController = require("../../controller/Uploader2/Questio
 const router = express.Router();
 const upload = require("../../config/multer");
 const questionCount = require("../../middlewares/questionCount");
+const { GeneralApi } = require("../../controller/GeneralApi");
 
 router.get("/getallpaginatedsheetmanagement", paginatedSheetManagementSheets(), (req, res) => {
     res.json(res.paginatedResults);
@@ -32,5 +33,10 @@ router.patch("/highlighterrors", SheetManagementController.saveHighlightDataInQu
 router.get("/gettopicsubtopicvocabmappingsforquestion", SheetManagementController.getTopicSubTopicVocabMappingsForQuestion);
 router.patch("/assigntosupervisor", SheetManagementController.AssignSheetToSupervisor)
 router.patch("/addsheeterror", SheetManagementController.reportSheetError);
+router.get("/getallSheetbySubjectid", GeneralApi.getAllSheetBySubjectIdandUserId);
+router.get("/getallPastPaperbySubjectid", GeneralApi.getAllPastPaperSheetBySubjectIdandUserId);
+router.get("/getallPaperNumberbySubjectid", GeneralApi.getAllPaperNoSheetBySubjectIdandUserId);
+router.get("/getallBookTasksbySubjectid", GeneralApi.getAllBookSheetBySubjectIdandUserId);
+router.get("/getallTopicTasksbySubjectid", GeneralApi.getAllTopicSheetBySubjectIdandUserId);
 
 module.exports = router;

@@ -15,6 +15,7 @@ const paginatedSheetResults = require("../../middlewares/paginatedSheet.js");
 const PastPaperUploaderController = require("../../controller/PastPaperUploader/PastPaper.js");
 const PastPaperSupervisorController = require("../../controller/Supervisor/PPMSupervisor.js");
 const BoardManagementController = require("../../controller/SuperAdmin/BoardM.js");
+const { GeneralApi } = require("../../controller/GeneralApi/index.js");
 
 const router = express.Router();
 
@@ -27,6 +28,8 @@ router.get("/:sheetId/getsinglesheet", paginatedSheetResults(), getsinglesheet);
 router.get("/getassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
 
 router.get("/getrecheckcomments", PastPaperUploaderController.getRecheckErrors);
+
+router.get("/getallPastPaperbySubjectid", GeneralApi.getAllPastPaperSheetBySubjectIdandUserId);
 
 router.post(
   "/createpastpaper",

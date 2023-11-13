@@ -3,6 +3,7 @@ const BookManagementController = require("../../controller/Supervisor/Book");
 const BookManagementDGController = require("../../controller/DataGenerator/BookManagement");
 const ReviewerBookController = require("../../controller/Reviewer/BookManagement");
 const paginatedBookTasks = require("../../middlewares/paginatedBookTask");
+const { GeneralApi } = require("../../controller/GeneralApi");
 const router = express.Router();
 
 router.get("/getassignedpaginatedbooktask", paginatedBookTasks(), (req, res) => {
@@ -40,5 +41,11 @@ router.get("/geterrorreportfile", ReviewerBookController.getErrorReportFile);
 router.get("/getrecheckcomment", ReviewerBookController.getRecheckComment);
 
 router.get("/getcountscarddata", BookManagementDGController.getCountsCardData);
+
+router.get("/getallSheetbySubjectid", GeneralApi.getAllSheetBySubjectIdandUserId);
+router.get("/getallPastPaperbySubjectid", GeneralApi.getAllPastPaperSheetBySubjectIdandUserId);
+router.get("/getallPaperNumberbySubjectid", GeneralApi.getAllPaperNoSheetBySubjectIdandUserId);
+router.get("/getallBookTasksbySubjectid", GeneralApi.getAllBookSheetBySubjectIdandUserId);
+router.get("/getallTopicTasksbySubjectid", GeneralApi.getAllTopicSheetBySubjectIdandUserId);
 
 module.exports = router;
