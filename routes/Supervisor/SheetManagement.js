@@ -9,6 +9,8 @@ const QuestionManagementController = require("../../controller/Uploader2/Questio
 
 router.post("/createsheet", SheetManagementController.createSheet);
 
+router.get("/getCountCardData", SheetManagementController.getCountsCardData);
+
 router.get("/getallchapterbybookid", BookManagementController.getAllChapterByBookId);
 
 router.get("/getallshmsheets", paginatedSheetManagementSheets(), (req, res) => {

@@ -36,6 +36,7 @@ module.exports = Object.freeze({
     PastPaper: "PastPaper",
     Supervisor: "Supervisor",
     Superadmin: "Superadmin",
+    NotAssigned: "Not Assigned"
   },
   sheetStatuses: {
     NotStarted: "NotStarted",

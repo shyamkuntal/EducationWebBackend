@@ -317,7 +317,7 @@ const PaperNumberSheetController = {
       });
 
       let countsBySubject = {};
-      // Convert the countsBySubject object into an array of objects
+      
       const countsArray = Object.values(countsBySubject);
 
       res.send(countsArray);
