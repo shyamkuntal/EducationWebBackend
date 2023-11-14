@@ -7,6 +7,8 @@ const { QuestionVocabMapping } = require("../../models/QuestionVocabMapping");
 const { QuestionSubTopicMapping } = require("../../models/QuestionSubTopicMapping");
 const { Topic, SubTopic } = require("../../models/Topic");
 const { Vocabulary } = require("../../models/Vocabulary");
+const { updateInprogressTaskStatusSchema } = require("../../validations/PricerValidation");
+const { SheetManagement } = require("../../models/SheetManagement");
 
 const TeacherSheetManagementController = {
   async createTopicSubTopicMappingForQuestion(req, res, next) {
@@ -253,14 +255,15 @@ const TeacherSheetManagementController = {
       next(err);
     }
   },
-  async markQuestionAsChecked(req, res, next){
+  async markQuestionAsChecked(req, res, next) {
     const t = await db.transaction();
     try {
-      const { questionId, questionData } = req.body;
+      const { questionId, ...rest } = req.body;
 
       const updatedData = {
         isCheckedByTeacher: true,
-        isErrorByTeacher: false
+        isErrorByTeacher: false,
+        ...rest,
       };
 
       let question = await services.questionService.updateQuestion(questionId, updatedData, {
@@ -274,15 +277,15 @@ const TeacherSheetManagementController = {
       next(err);
     }
   },
-  async markQuestionAsError(req, res, next){
+  async markQuestionAsError(req, res, next) {
     const t = await db.transaction();
     try {
-      const { questionId, errorReport } = req.body;
+      const { questionId, ...rest } = req.body;
 
       const updatedData = {
         isCheckedByTeacher: false,
         isErrorByTeacher: true,
-        errorReportByTeacher: errorReport
+        ...rest,
       };
 
       let question = await services.questionService.updateQuestion(questionId, updatedData, {
@@ -296,7 +299,7 @@ const TeacherSheetManagementController = {
       next(err);
     }
   },
-  async removeQuestionAsError(req, res, next){
+  async removeQuestionAsError(req, res, next) {
     const t = await db.transaction();
     try {
       const questionId = req.query.questionId;
@@ -316,13 +319,13 @@ const TeacherSheetManagementController = {
       next(err);
     }
   },
-  async removeQuestionAsChecked(req, res, next){
+  async removeQuestionAsChecked(req, res, next) {
     const t = await db.transaction();
     try {
       const questionId = req.query.questionId;
 
       const updatedData = {
-        isCheckedByTeacher: false
+        isCheckedByTeacher: false,
       };
 
       let question = await services.questionService.updateQuestion(questionId, updatedData, {
@@ -332,6 +335,157 @@ const TeacherSheetManagementController = {
       res.status(httpStatus.OK).send(question);
       await t.commit();
     } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async updateCompletedTaskStatus(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = req.body
+      let whereQuery = { where: { id: values.id }, raw: true };
+
+      let sheetData = await SheetManagement.findOne(whereQuery);
+
+      if (!sheetData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
+      }
+
+      let assignedTo = sheetData.assignedToUserId;
+      let lifeCycle = sheetData.lifeCycle;
+
+      if (assignedTo !== values.teacherId || lifeCycle !== CONSTANTS.roleNames.Teacher) {
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          "Task not assigned to Teacher or lifecycle mismatch"
+        );
+      }
+
+      await SheetManagement.update(
+        {
+          statusForTeacher: CONSTANTS.sheetStatuses.Complete,
+        },
+        whereQuery
+      );
+
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Task Status Updated successfully!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async updateInProgressTaskStatus(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = req.body;
+      let whereQuery = { where: { id: values.id }, raw: true };
+
+      let sheetData = await SheetManagement.findOne(whereQuery);
+
+      if (!sheetData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
+      }
+
+      let assignedTo = sheetData.assignedToUserId;
+      let lifeCycle = sheetData.lifeCycle;
+      let previousStatus = sheetData.statusForPricer;
+
+      if (assignedTo !== values.teacherId || lifeCycle !== CONSTANTS.roleNames.Teacher) {
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          "Task not assigned to Teacher or lifecycle mismatch"
+        );
+      }
+
+      if (previousStatus === CONSTANTS.sheetStatuses.InProgress) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Current sheet status is already Inprogress");
+      }
+
+      await SheetManagement.update(
+        {
+          statusForTeacher: CONSTANTS.sheetStatuses.InProgress,
+        },
+        whereQuery
+      );
+
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Task Status Updated successfully!" });
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async SubmitSheetToSupervisor(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = req.body;
+
+      let responseMessage = {
+        assinedUserToSheet: "",
+        UpdateSheetStatus: "",
+        sheetLog: "",
+      };
+
+      let userData = await services.userService.finduser(
+        values.teacherId,
+        CONSTANTS.roleNames.Teacher, 
+        { transaction: t }
+      );
+      let sheetData = SheetManagement.findOne({
+        where: { id: id },
+        include: [
+          {
+            model: User,
+            as: "supervisor",
+          },
+        ],
+        raw: true,
+        nest: true,
+      });
+
+      if (sheetData) {
+        let dataToBeUpdated = {
+          statusForTeacher: CONSTANTS.sheetStatuses.Complete,
+          assignedToUserId: sheetData.supervisorId,
+          lifeCycle: CONSTANTS.roleNames.Supervisor,
+        };
+        let whereQuery = {
+          where: {
+            id: sheetData.id,
+          },
+        };
+        let statusToUpdate = await SheetManagement.update(
+          dataToBeUpdated,
+          whereQuery, 
+          { transaction: t }
+        );
+
+        let createLog = await services.sheetManagementService.createSheetLog(
+          sheetData.id,
+          sheetData.supervisor.Name,
+          userData.Name,
+          CONSTANTS.sheetLogsMessages.uploaderAssignToSupervisor, 
+          { transaction: t }
+        );
+
+        if (statusToUpdate.length > 0 && createLog) {
+          responseMessage.assinedUserToSheet = "Sheet assigned to supervisor successfully";
+          responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
+          responseMessage.sheetLog = "Log record for Sheet to supervisor added successfully";
+        }
+
+        await t.commit();
+        res.status(httpStatus.OK).send({ message: responseMessage });
+      } else {
+        await t.commit();
+        res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Sheet Id" });
+      }
+    } catch (err) {
+      console.log(err);
       await t.rollback();
       next(err);
     }

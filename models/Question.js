@@ -173,8 +173,13 @@ const Question = db.define("question", {
   isReCheckedByReviewer: {
     type: Sequelize.BOOLEAN,
     allowNull: true,
-    defaultValue: false
-  }
+    defaultValue: false,
+  },
+  criteriaPoints: {
+    type: Sequelize.ARRAY(Sequelize.CHAR),
+    allowNull: true,
+    defaultValue: [],
+  },
 });
 
 Question.sync().then(() => {

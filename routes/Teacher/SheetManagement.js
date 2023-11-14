@@ -20,6 +20,10 @@ router.get("/getallshmsheets", paginatedSheetManagementSheets(), (req, res) => {
   res.json(res.paginatedResults);
 });
 
+router.patch("/updateinprogressstatus", TeacherSheetManagementController.updateInProgressTaskStatus)
+router.patch("/updatecompletestatus", TeacherSheetManagementController.updateCompletedTaskStatus)
+router.patch("/assigntosupervisor", TeacherSheetManagementController.SubmitSheetToSupervisor)
+
 router.get("/getalltopicsubtopicvocab", TopicManagementController.getAllTopicSubTopicVocab);
 
 router.post("/createtopicsubtopicmapping", TeacherSheetManagementController.createTopicSubTopicMappingForQuestion);

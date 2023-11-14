@@ -108,7 +108,6 @@ const findTopicTaskAndUser = async (topicTaskId) => {
 
 const createTopicTaskLog = async (topicTaskId, assignee, assignedTo, logMessage, options) => {
   try {
-    console.log(topicTaskId, assignee, assignedTo, logMessage);
     let taskLog = await TopicTaskLog.create(
       { topicTaskId, assignee, assignedTo, logMessage },
       options
