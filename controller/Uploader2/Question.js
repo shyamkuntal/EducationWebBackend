@@ -3070,7 +3070,8 @@ const QuestionManagementController = {
   async UpdateParaentQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      await QuestionDistractor.update({marks:req.body.marks,requiredTime:req.body.requiredTime},{ where: { id: req.body.parentId } })
+      const Reuslt = await Question.update({marks:req.body.marks,requiredTime:req.body.requiredTime},{ where: { id: req.body.parentId } })
+      console.log(Reuslt,"result")
       res.status(httpStatus.OK).send("success");
     } catch (err) {
       await t.rollback();
