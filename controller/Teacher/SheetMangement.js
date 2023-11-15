@@ -9,6 +9,8 @@ const { Topic, SubTopic } = require("../../models/Topic");
 const { Vocabulary } = require("../../models/Vocabulary");
 const { updateInprogressTaskStatusSchema } = require("../../validations/PricerValidation");
 const { SheetManagement } = require("../../models/SheetManagement");
+const { ApiError } = require("../../middlewares/apiError");
+const { User } = require("../../models/User");
 
 const TeacherSheetManagementController = {
   async createTopicSubTopicMappingForQuestion(req, res, next) {
@@ -423,7 +425,7 @@ const TeacherSheetManagementController = {
     const t = await db.transaction();
     try {
       let values = req.body;
-
+      
       let responseMessage = {
         assinedUserToSheet: "",
         UpdateSheetStatus: "",
@@ -435,8 +437,9 @@ const TeacherSheetManagementController = {
         CONSTANTS.roleNames.Teacher, 
         { transaction: t }
       );
-      let sheetData = SheetManagement.findOne({
-        where: { id: id },
+   
+      let sheetData = await SheetManagement.findOne({
+        where: { id: values.id },
         include: [
           {
             model: User,
@@ -446,7 +449,7 @@ const TeacherSheetManagementController = {
         raw: true,
         nest: true,
       });
-
+      
       if (sheetData) {
         let dataToBeUpdated = {
           statusForTeacher: CONSTANTS.sheetStatuses.Complete,
@@ -455,7 +458,7 @@ const TeacherSheetManagementController = {
         };
         let whereQuery = {
           where: {
-            id: sheetData.id,
+            id: values.id,
           },
         };
         let statusToUpdate = await SheetManagement.update(
