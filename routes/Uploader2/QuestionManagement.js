@@ -185,7 +185,7 @@ router.get("/getallPastPaperbySubjectid", GeneralApi.getAllPastPaperSheetBySubje
 router.get("/getallPaperNumberbySubjectid", GeneralApi.getAllPaperNoSheetBySubjectIdandUserId);
 router.get("/getallBookTasksbySubjectid", GeneralApi.getAllBookSheetBySubjectIdandUserId);
 router.get("/getallTopicTasksbySubjectid", GeneralApi.getAllTopicSheetBySubjectIdandUserId);
-
+router.post("/updateParentQuestion", QuestionManagementController.UpdateParaentQuestion);
 
 
 

@@ -3066,6 +3066,17 @@ const QuestionManagementController = {
       next(err);
     }
   },
+
+  async UpdateParaentQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+      await QuestionDistractor.update({marks:req.body.marks,requiredTime:req.body.requiredTime},{ where: { id: req.body.parentId } })
+      res.status(httpStatus.OK).send("success");
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
 };
 
 module.exports = QuestionManagementController;
