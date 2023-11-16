@@ -11,6 +11,7 @@ const { updateInprogressTaskStatusSchema } = require("../../validations/PricerVa
 const { SheetManagement } = require("../../models/SheetManagement");
 const { ApiError } = require("../../middlewares/apiError");
 const { User } = require("../../models/User");
+const { Question } = require("../../models/Question");
 
 const TeacherSheetManagementController = {
   async createTopicSubTopicMappingForQuestion(req, res, next) {
@@ -260,44 +261,114 @@ const TeacherSheetManagementController = {
   async markQuestionAsChecked(req, res, next) {
     const t = await db.transaction();
     try {
-      const { questionId, ...rest } = req.body;
+      let whereQuery = { where: { id: req.body.id }, raw: true };
 
-      const updatedData = {
+      let { questionDetailsForSubPart, ...rest } = req.body;
+
+      let question = await Question.findOne(whereQuery);
+
+      if (!question) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
+      }
+
+      if (question.hasSubPart) {
+        let whereQuery = { parentQuestionId: question.id };
+
+        let subPart = await Question.findAll(
+          {
+            where: whereQuery,
+            order: [["createdAt", "ASC"]],
+            raw: true,
+          },
+          { transaction: t }
+        );
+
+        for (var i = 0; i < subPart.length; i++) {
+          console.log(questionDetailsForSubPart[i].criteriaPoints)
+          let whereQuery = { where: { id: subPart[i].id }, raw: true };
+          let request = {
+            criteriaPoints: JSON.stringify(questionDetailsForSubPart[i].criteriaPoints),
+            errorReportByTeacher: questionDetailsForSubPart[i].errorReportByTeacher,
+            isPremium: questionDetailsForSubPart[i].isPremium,
+            marks: questionDetailsForSubPart[i].marks,
+            requiredTime: questionDetailsForSubPart[i].requiredTime,
+            videoLink: questionDetailsForSubPart[i].videoLink,
+          };
+          await Question.update(request, whereQuery, { transaction: t });
+        }
+      }
+
+      let request = {
         isCheckedByTeacher: true,
         isErrorByTeacher: false,
-        ...rest,
+        ...rest
       };
 
-      let question = await services.questionService.updateQuestion(questionId, updatedData, {
-        transaction: t,
-      });
+      // let values = await updatePriceInQuestionSchema.validateAsync(request);
+      await Question.update(request, whereQuery, { transaction: t });
 
-      res.status(httpStatus.OK).send(question);
       await t.commit();
+      res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
     } catch (err) {
       await t.rollback();
+      console.log(err);
       next(err);
     }
   },
   async markQuestionAsError(req, res, next) {
     const t = await db.transaction();
     try {
-      const { questionId, ...rest } = req.body;
+      let whereQuery = { where: { id: req.body.id }, raw: true };
 
-      const updatedData = {
+      let { questionDetailsForSubPart, ...rest } = req.body;
+
+      let question = await Question.findOne(whereQuery);
+
+      if (!question) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
+      }
+
+      if (question.hasSubPart) {
+        let whereQuery = { parentQuestionId: question.id };
+
+        let subPart = await Question.findAll(
+          {
+            where: whereQuery,
+            order: [["createdAt", "ASC"]],
+            raw: true,
+          },
+          { transaction: t }
+        );
+
+        for (var i = 0; i < subPart.length; i++) {
+          console.log(questionDetailsForSubPart[i].criteriaPoints)
+          let whereQuery = { where: { id: subPart[i].id }, raw: true };
+          let request = {
+            criteriaPoints: JSON.stringify(questionDetailsForSubPart[i].criteriaPoints),
+            errorReportByTeacher: questionDetailsForSubPart[i].errorReportByTeacher,
+            isPremium: questionDetailsForSubPart[i].isPremium,
+            marks: questionDetailsForSubPart[i].marks,
+            requiredTime: questionDetailsForSubPart[i].requiredTime,
+            videoLink: questionDetailsForSubPart[i].videoLink,
+          };
+          await Question.update(request, whereQuery, { transaction: t });
+        }
+      }
+
+      let request = {
         isCheckedByTeacher: false,
         isErrorByTeacher: true,
-        ...rest,
+        ...rest
       };
 
-      let question = await services.questionService.updateQuestion(questionId, updatedData, {
-        transaction: t,
-      });
+      // let values = await updatePriceInQuestionSchema.validateAsync(request);
+      await Question.update(request, whereQuery, { transaction: t });
 
-      res.status(httpStatus.OK).send(question);
       await t.commit();
+      res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
     } catch (err) {
       await t.rollback();
+      console.log(err);
       next(err);
     }
   },
@@ -341,11 +412,10 @@ const TeacherSheetManagementController = {
       next(err);
     }
   },
-
   async updateCompletedTaskStatus(req, res, next) {
     const t = await db.transaction();
     try {
-      let values = req.body
+      let values = req.body;
       let whereQuery = { where: { id: values.id }, raw: true };
 
       let sheetData = await SheetManagement.findOne(whereQuery);
@@ -378,7 +448,6 @@ const TeacherSheetManagementController = {
       next(err);
     }
   },
-
   async updateInProgressTaskStatus(req, res, next) {
     const t = await db.transaction();
     try {
@@ -420,12 +489,11 @@ const TeacherSheetManagementController = {
       next(err);
     }
   },
-
   async SubmitSheetToSupervisor(req, res, next) {
     const t = await db.transaction();
     try {
       let values = req.body;
-      
+
       let responseMessage = {
         assinedUserToSheet: "",
         UpdateSheetStatus: "",
@@ -434,10 +502,10 @@ const TeacherSheetManagementController = {
 
       let userData = await services.userService.finduser(
         values.teacherId,
-        CONSTANTS.roleNames.Teacher, 
+        CONSTANTS.roleNames.Teacher,
         { transaction: t }
       );
-   
+
       let sheetData = await SheetManagement.findOne({
         where: { id: values.id },
         include: [
@@ -449,7 +517,7 @@ const TeacherSheetManagementController = {
         raw: true,
         nest: true,
       });
-      
+
       if (sheetData) {
         let dataToBeUpdated = {
           statusForTeacher: CONSTANTS.sheetStatuses.Complete,
@@ -461,17 +529,15 @@ const TeacherSheetManagementController = {
             id: values.id,
           },
         };
-        let statusToUpdate = await SheetManagement.update(
-          dataToBeUpdated,
-          whereQuery, 
-          { transaction: t }
-        );
+        let statusToUpdate = await SheetManagement.update(dataToBeUpdated, whereQuery, {
+          transaction: t,
+        });
 
         let createLog = await services.sheetManagementService.createSheetLog(
           sheetData.id,
           sheetData.supervisor.Name,
           userData.Name,
-          CONSTANTS.sheetLogsMessages.uploaderAssignToSupervisor, 
+          CONSTANTS.sheetLogsMessages.uploaderAssignToSupervisor,
           { transaction: t }
         );
 
@@ -483,6 +549,63 @@ const TeacherSheetManagementController = {
 
         await t.commit();
         res.status(httpStatus.OK).send({ message: responseMessage });
+      } else {
+        await t.commit();
+        res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Sheet Id" });
+      }
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      next(err);
+    }
+  },
+  async addCheckCommentInSheet(req, res, next) {
+    const t = await db.transaction();
+    try {
+      let values = req.body;
+      let userData = await services.userService.finduser(
+        values.teacherId,
+        CONSTANTS.roleNames.Teacher,
+        { transaction: t }
+      );
+
+      let sheetData = await SheetManagement.findOne({
+        where: { id: values.id },
+        include: [
+          {
+            model: User,
+            as: "supervisor",
+          },
+        ],
+        raw: true,
+        nest: true,
+      });
+      if (sheetData) {
+        let dataToBeUpdated = {
+          statusForTeacher: CONSTANTS.sheetStatuses.Complete,
+          assignedToUserId: sheetData.supervisorId,
+          lifeCycle: CONSTANTS.roleNames.Supervisor,
+          errorReportByTeacher: values.comment
+        };
+        let whereQuery = {
+          where: {
+            id: values.id,
+          },
+        };
+        let statusToUpdate = await SheetManagement.update(dataToBeUpdated, whereQuery, {
+          transaction: t,
+        });
+
+        let createLog = await services.sheetManagementService.createSheetLog(
+          sheetData.id,
+          sheetData.supervisor.Name,
+          userData.Name,
+          CONSTANTS.sheetLogsMessages.uploaderAssignToSupervisor,
+          { transaction: t }
+        );
+
+        await t.commit();
+        res.status(httpStatus.OK).send({ message: "Sheet Assigned and Error Marked Successfully" });
       } else {
         await t.commit();
         res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Sheet Id" });

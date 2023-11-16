@@ -175,10 +175,13 @@ const Question = db.define("question", {
     allowNull: true,
     defaultValue: false,
   },
+  showCriteria: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false
+  },
   criteriaPoints: {
-    type: Sequelize.ARRAY(Sequelize.CHAR),
+    type: Sequelize.TEXT,
     allowNull: true,
-    defaultValue: [],
   },
 });
 

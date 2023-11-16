@@ -23,6 +23,7 @@ router.get("/getallshmsheets", paginatedSheetManagementSheets(), (req, res) => {
 router.patch("/updateinprogressstatus", TeacherSheetManagementController.updateInProgressTaskStatus)
 router.patch("/updatecompletestatus", TeacherSheetManagementController.updateCompletedTaskStatus)
 router.patch("/assigntosupervisor", TeacherSheetManagementController.SubmitSheetToSupervisor)
+router.patch("/addCheckCommentInSheet", TeacherSheetManagementController.addCheckCommentInSheet)
 
 router.get("/getalltopicsubtopicvocab", TopicManagementController.getAllTopicSubTopicVocab);
 
