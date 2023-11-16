@@ -2,6 +2,7 @@ const { Board, SubBoard } = require("../models/Board.js");
 const { PaperNumber } = require("../models/PaperNumberSheet.js");
 const { Question } = require("../models/Question.js");
 const { SheetManagement } = require("../models/SheetManagement.js");
+const { SheetManagementBookMapping } = require("../models/SheetManagementBookMapping.js");
 const { SheetManagementPaperNoMapping } = require("../models/SheetManagementPaperNoMapping.js");
 const { Subject, SubjectLevel, subjectName } = require("../models/Subject.js");
 const { User } = require("../models/User.js");
@@ -58,7 +59,7 @@ const paginatedSheetManagementSheets = () => {
     if (req.query.statusForReviewer) {
       filters.statusForReviewer = req.query.statusForReviewer;
     }
-    
+
     if (req.query.statusForTeacher) {
       filters.statusForTeacher = req.query.statusForTeacher;
     }
@@ -218,6 +219,26 @@ const paginatedSheetManagementSheets = () => {
         raw: true,
         nest: true,
       });
+
+      for (var i = 0; i < ShmSheets.length; i++) {
+        if (ShmSheets[i].paperNumber !== null && ShmSheets[i].paperNumber !== undefined) {
+          for (var j = 0; j < ShmSheets[i].paperNumber?.length; j++) {
+            try {
+              var pno = await PaperNumber.findOne({ where: { id: ShmSheets[i].paperNumber[j] }, attributes: ["paperNumber"], raw: true })
+              ShmSheets[i].paperNumber[j] = pno?.paperNumber
+            }
+            catch (e) {
+              ShmSheets[i].paperNumber[j] = ""
+            }
+          }
+        }
+        else { ShmSheets[i].paperNumber = [] }
+
+        if (ShmSheets[i].sheetType === "Books") {
+          ShmSheets[i].bookData = await SheetManagementBookMapping.findOne({ where: { sheetManagementId: ShmSheets[i].id } })
+        }
+
+      }
 
       results.results = ShmSheets;
 
