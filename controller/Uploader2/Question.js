@@ -77,7 +77,6 @@ const QuestionManagementController = {
     const t = await db.transaction();
     try {
       const { createData, ...rest } = req.body;
-      console.log(req.body,"body")
       let questionValues = await createQuestionsSchema.validateAsync({
         ...rest,
         questionType: CONSTANTS.questionType.Text,

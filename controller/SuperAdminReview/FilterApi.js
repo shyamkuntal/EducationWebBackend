@@ -1,5 +1,5 @@
 const { Board, SubBoard } = require("../../models/Board");
-const { Subject, SubjectLevel } = require("../../models/Subject");
+const { Subject, SubjectLevel, subjectName } = require("../../models/Subject");
 const { SheetManagement } = require("../../models/SheetManagement");
 const { Variant } = require("../../models/Variants");
 const { PaperNumberSheet, PaperNumber } = require("../../models/PaperNumberSheet");
@@ -27,11 +27,7 @@ const AllFilteredApi = {
     try {
       const boardId = req.query.id; // Assuming boardId is passed in the request params
       console.log(boardId, "id");
-      const Result = await SubBoard.findAll({
-        where: {
-          boardId: boardId,
-        },
-      });
+      const Result = await SubBoard.findAll();
 
       res.send(Result);
     } catch (error) {
@@ -42,30 +38,20 @@ const AllFilteredApi = {
 
   async getAllSubjects(req, res) {
     try {
-      const boardId = req.query.id;
-      const grade = req.query.grade; // Assuming boardId is passed in the request params
-      const Result = await Subject.findAll({
-        where: {
-          subBoardId: boardId,
-          grade: grade,
-        },
-        include: ["subjectName"], // Include the associated Child model
-      });
+      const Result = await subjectName.findAll();
+      console.log(Result,"result")
       res.send(Result);
     } catch (error) {
       console.error(error);
       res.status(500).send("Internal Server Error");
     }
+
   },
 
   async getAllgrades(req, res) {
     try {
       const boardId = req.query.id; // Assuming boardId is passed in the request params
-      const Result = await SheetManagement.findAll({
-        where: {
-          subBoardId: boardId,
-        },
-      });
+      const Result = await SheetManagement.findAll();
 
       let gradeSet = new Set(); // Create a Set to store unique grades
 
@@ -87,11 +73,7 @@ const AllFilteredApi = {
   async getAllYear(req, res) {
     try {
       const boardId = req.query.id; // Assuming boardId is passed in the request params
-      const Result = await SheetManagement.findAll({
-        where: {
-          subBoardId: boardId,
-        },
-      });
+      const Result = await SheetManagement.findAll();
 
       console.log(Result, "result");
 
@@ -115,11 +97,7 @@ const AllFilteredApi = {
   async getAllSeason(req, res) {
     try {
       const boardId = req.query.id; // Assuming boardId is passed in the request params
-      const Result = await SheetManagement.findAll({
-        where: {
-          subBoardId: boardId,
-        },
-      });
+      const Result = await SheetManagement.findAll();
 
       let seasonSet = new Set(); // Create a Set to store unique grades
 
@@ -141,11 +119,7 @@ const AllFilteredApi = {
   async getAllVariant(req, res) {
     try {
       const boardId = req.query.id; // Assuming boardId is passed in the request params
-      const Result = await SheetManagement.findAll({
-        where: {
-          subBoardId: boardId,
-        },
-      });
+      const Result = await SheetManagement.findAll();
 
       let yearSet = new Set(); // Create a Set to store unique grades
 
@@ -156,7 +130,6 @@ const AllFilteredApi = {
       });
 
       const yearArray = Array.from(yearSet); //
-
       res.send(yearArray);
     } catch (error) {
       console.error(error);
@@ -167,11 +140,7 @@ const AllFilteredApi = {
   async getSubjectLevel(req, res) {
     try {
       const subjectId = req.query.id; // Assuming boardId is passed in the request params
-      const Result = await SubjectLevel.findAll({
-        where: {
-          subjectId: subjectId,
-        },
-      });
+      const Result = await SubjectLevel.findAll();
 
       res.send(Result);
     } catch (error) {
@@ -192,16 +161,7 @@ const AllFilteredApi = {
   async getAllPaperNumber(req, res) {
     try {
       const subjectId = req.query.id; // Assuming boardId is passed in the request params
-      const Result = await PaperNumber.findAll({
-        include: [
-          {
-            model: PaperNumberSheet,
-            where: {
-              subjectId: subjectId,
-            },
-          },
-        ],
-      });
+      const Result = await PaperNumber.findAll();
       res.send(Result);
     } catch (error) {
       console.error(error);
@@ -217,25 +177,12 @@ const AllFilteredApi = {
       if (topicId) {
         whereClauseForTopic.id = topicId;
       }
-      const topics = await TaskTopicMapping.findAll({
-        include: [
-          {
-            model: TopicTask,
-            where: {
-              subjectId: subjectId,
-            },
-          },
-          {
-            model: Topic,
-            where: whereClauseForTopic,
-          },
-        ],
-      });
-      let TopicNameArray = [];
-      topics.forEach((topic) => {
-        TopicNameArray.push({ topic: topic?.topic, topicTaskId: topic.topicTaskId });
-      });
-      res.send(TopicNameArray);
+      const topics = await Topic.findAll();
+      // let TopicNameArray = [];
+      // topics.forEach((topic) => {
+      //   TopicNameArray.push({ topic: topic?.topic, topicTaskId: topic.topicTaskId });
+      // });
+      res.send(topics);
     } catch (error) {
       console.error(error);
       res.status(500).send("Internal Server Error");
@@ -250,26 +197,28 @@ const AllFilteredApi = {
       let whereClauseForTopic = {};
       let board = req.query.board;
       let subboard = req.query.subboard;
-      let grade = req.query.grade;
-      let subject = req.query.subject;
-      let topic = req.query.topic;
-      let year = req.query.year;
+      let grades = req.query.grade ? req.query.grade.split(",") : null; // Handle multiple grades
+      let subjects = req.query.subject ? req.query.subject.split(",") : null; // Handle multiple subjects
+      let topics = req.query.topic ? req.query.topic.split(",") : null; // Handle multiple topics
+      let years = req.query.year ? req.query.year.split(",") : null; // Handle multiple years
       let season = req.query.season;
       let variant = req.query.variant;
-      let paperNo = req.query.paperNo;
-      let level = req.query.level;
-
+      let paperNumbers = req.query.paperNo ? req.query.paperNo.split(",") : null; // Handle multiple paper numbers
+      let levels = req.query.level ? req.query.level.split(",") : null; // Handle multiple levels
+  
+      whereClauseForSheet.isPublished = true;
+  
       if (board) {
         whereClauseForSheet.boardId = board;
       }
       if (subboard) {
         whereClauseForSheet.subBoardId == subboard;
       }
-      if (grade) {
-        whereClauseForSheet.grade = grade;
+      if (grades) {
+        whereClauseForSheet.grade = { [Op.in]: grades };
       }
-      if (year) {
-        whereClauseForSheet.year = year;
+      if (years) {
+        whereClauseForSheet.year = { [Op.in]: years };
       }
       if (season) {
         whereClauseForSheet.season = season;
@@ -277,19 +226,19 @@ const AllFilteredApi = {
       if (variant) {
         whereClauseForSheet.variantId = variant;
       }
-      if (subject) {
-        whereClauseForSheet.subjectId = subject;
+      if (subjects) {
+        whereClauseForSheet.subjectId = { [Op.in]: subjects };
       }
-      if (level) {
-        whereClauseForLevel.id = level;
+      if (levels) {
+        whereClauseForLevel.id = { [Op.in]: levels };
       }
-      if (paperNo) {
-        whereClauseForPaperNo.id = paperNo;
+      if (paperNumbers) {
+        whereClauseForPaperNo.id = { [Op.in]: paperNumbers };
       }
-      if (topic) {
-        whereClauseForTopic.topicId = topic;
+      if (topics) {
+        whereClauseForTopic.topicId = { [Op.in]: topics };
       }
-
+  
       let Questions = await Question.findAll({
         include: [
           {
@@ -307,15 +256,6 @@ const AllFilteredApi = {
                     model: PaperNumberSheet,
                     where: whereClauseForPaperNo,
                   },
-                  {
-                    model: TopicTask,
-                    include: [
-                      {
-                        model: TaskTopicMapping,
-                        where: whereClauseForTopic,
-                      },
-                    ],
-                  },
                 ],
               },
             ],
@@ -325,10 +265,9 @@ const AllFilteredApi = {
             include: [
               {
                 model: Topic,
-                // whereClauseForTopic,
+                where: whereClauseForTopic,
               },
             ],
-            where: whereClauseForTopic,
           },
           {
             model: QuestionVocabMapping,
@@ -340,13 +279,121 @@ const AllFilteredApi = {
           },
         ],
       });
-
       res.send(Questions);
     } catch (error) {
       console.error(error);
       res.status(500).send("Internal Server Error");
     }
-  },
+  }
+  
+
+//   async getQuestionsByFilterResult(req, res) {
+//     try {
+//       let whereClauseForSheet = {};
+//       let whereClauseForLevel = {};
+//       let whereClauseForPaperNo = {};
+//       let whereClauseForTopic = {};
+//       let board = req.query.board;
+//       let subboard = req.query.subboard;
+//       let grade = req.query.grade;
+//       let subject = req.query.subject;
+//       let topic = req.query.topic;
+//       let year = req.query.year;
+//       let season = req.query.season;
+//       let variant = req.query.variant;
+//       let paperNo = req.query.paperNo;
+//       let level = req.query.level;
+
+//       whereClauseForSheet.isPublished =true
+
+//       if (board) {
+//         whereClauseForSheet.boardId = board;
+//       }
+//       if (subboard) {
+//         whereClauseForSheet.subBoardId == subboard;
+//       }
+//       if (grade) {
+//         whereClauseForSheet.grade = grade;
+//       }
+//       if (year) {
+//         whereClauseForSheet.year = year;
+//       }
+//       if (season) {
+//         whereClauseForSheet.season = season;
+//       }
+//       if (variant) {
+//         whereClauseForSheet.variantId = variant;
+//       }
+//       if (subject) {
+//         whereClauseForSheet.subjectId = subject;
+//       }
+//       if (level) {
+//         whereClauseForLevel.id = level;
+//       }
+//       if (paperNo) {
+//         whereClauseForPaperNo.id = paperNo;
+//       }
+//       if (topic) {
+//         whereClauseForTopic.topicId = topic;
+//       }
+
+//       let Questions = await Question.findAll({
+//         include: [
+//           {
+//             model: SheetManagement,
+//             where: whereClauseForSheet,
+//             include: [
+//               {
+//                 model: Subject,
+//                 include: [
+//                   {
+//                     model: SubjectLevel,
+//                     where: whereClauseForLevel,
+//                   },
+//                   {
+//                     model: PaperNumberSheet,
+//                     where: whereClauseForPaperNo,
+//                   },
+//                   {
+//                     model: TopicTask,
+//                     include: [
+//                       {
+//                         model: TaskTopicMapping,
+//                         where: whereClauseForTopic,
+//                       },
+//                     ],
+//                   },
+//                 ],
+//               },
+//             ],
+//           },
+//           {
+//             model: QuestionTopicMapping,
+//             include: [
+//               {
+//                 model: Topic,
+//                 // whereClauseForTopic,
+//               },
+//             ],
+//             where: whereClauseForTopic,
+//           },
+//           {
+//             model: QuestionVocabMapping,
+//             include: [
+//               {
+//                 model: Vocabulary,
+//               },
+//             ],
+//           },
+//         ],
+//       });
+
+//       res.send(Questions);
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).send("Internal Server Error");
+//     }
+//   },
 };
 
 module.exports = { AllFilteredApi };

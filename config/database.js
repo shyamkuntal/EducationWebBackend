@@ -9,6 +9,12 @@ const db = new Sequelize(
     host: "eduplanet-dev.cf9kzprqr4ax.ap-south-1.rds.amazonaws.com",
     dialect: "postgres",
     synchronize: true, // Automatically creates tables based on model definitions
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    }
   }
 );
 
