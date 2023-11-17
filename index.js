@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const { convertToApiError, handleError } = require("./middlewares/apiError.js");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./utils/swagger.json");
+const logger = require("./middlewares/loggerMiddleware");
 
 const app = express();
 app.use(express.json({ limit: "50mb" }));
@@ -55,6 +56,7 @@ db.authenticate()
 
 // api route
 app.use("/api", routes);
+app.use(logger);
 
 //API ERROR HANDLING
 app.use(convertToApiError);

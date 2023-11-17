@@ -1032,6 +1032,779 @@
         }
       }
     },
+    "/boardmanagement/getallboardsforfiltereation": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/boardmanagement/getAllSubBoardsforfilteration": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/boardmanagement/getAllGradforfilteration": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/boardmanagement/getAllYearforfilteration": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/boardmanagement/getAllSeasonforfilteration": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/boardmanagement/getAllSubjectforfilteration": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/boardmanagement/getSubjectLevel": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/boardmanagement/getAllVariant": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/boardmanagement/getAllPaperNumber": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/boardmanagement/getAllTopicUsingSubjectID": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "topicId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/boardmanagement/getQuestionsByFilterResult": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "board",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subboard",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subject",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "topic",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "season",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "variant",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "paperNo",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/supervisordashboard/getboarddata": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/supervisordashboard/gettotal": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notice/createnotice": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notice/allnotices": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notice/noticebyname": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notice/datagenerator": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notice/reviewer": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notice/teacher": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notice/uploader": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notice/pastpaper": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notice/pricer": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notice/noticebyrole": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notice/deleteforsender": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/count": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/archivedsubjects": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subjectName",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/unarchivesubject": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                },
+                "levels": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/archivedlevels": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subjectName",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/unarchivelevel": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/archivedtopics": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/unarchivetopic": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                },
+                "subTopics": {
+                  "example": "any"
+                },
+                "vocabs": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/archivedsubtopics": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/unarchivesubtopic": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/archivedvocabs": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/unarchivevocab": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/archivedpnos": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/unarchivepno": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/archivedbooks": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/unarchivebook": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/archivedpastpapersubjects": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/archivedpastpapers": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ids": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/unarchivepastpaper": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/archivedsheetsubjects": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/archivedsheets": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ids": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/unarchivesheet": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/archivedtasks": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/archivemanagement/unarchivetask": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "TaskType": {
+                  "example": "any"
+                },
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/ppmsupervisor/createvariant": {
       "post": {
         "description": "",
@@ -1515,28 +2288,7 @@
         }
       }
     },
-    "/ppmsupervisor/{sheetid}/togglearchivesheet": {
-      "patch": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "sheetid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      }
-    },
-    "/ppmsupervisor/assignsheettopastpaper": {
+    "/ppmsupervisor/assignsheettoreviewer": {
       "patch": {
         "description": "",
         "responses": {
@@ -1546,7 +2298,7 @@
         }
       }
     },
-    "/ppmsupervisor/assignsheettoreviewer": {
+    "/ppmsupervisor/assignsheettopastpaper": {
       "patch": {
         "description": "",
         "responses": {
@@ -1601,6 +2353,26 @@
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/ppmsupervisor/togglearchivesheet": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -1745,16 +2517,6 @@
       }
     },
     "/subjectmanagement/togglepublishsubject": {
-      "patch": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/subjectmanagement/togglearchiveSubjectLevels": {
       "patch": {
         "description": "",
         "responses": {
@@ -1942,6 +2704,40 @@
             "name": "subjectNameId",
             "in": "query",
             "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/subjectmanagement/togglearchiveSubjectLevels": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/subjectmanagement/archiveSubject": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "subjectId": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -2258,11 +3054,53 @@
             "name": "assignedToUserId",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/pnmanagement/archiveallpaperno": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "paperNumberSheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/pnmanagement/archivepapernumber": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }
@@ -2624,6 +3462,108 @@
         }
       }
     },
+    "/topicmanagement/archivealltopicdata": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "topicId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/topicmanagement/archivedatabytask": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/topicmanagement/archivesubtopic": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subTopicId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "topicId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/topicmanagement/archivevocab": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "vocabularyId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "topicTaskId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "topicId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/bookmanagement/getallpaginatedbooktask": {
       "get": {
         "description": "",
@@ -2981,6 +3921,68 @@
         }
       }
     },
+    "/bookmanagement/archivebooktask": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "bookTaskId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/bookmanagement/archivebook": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "bookTaskId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "bookId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/bookmanagement/archivechapter": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "chapterId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/ppuploader/getallsheets": {
       "get": {
         "description": "",
@@ -3247,6 +4249,31 @@
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/ppuploader/getallPastPaperbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -4699,6 +5726,131 @@
         }
       }
     },
+    "/bmdatagenerator/getallSheetbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/getallPastPaperbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/getallPaperNumberbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/getallBookTasksbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/bmdatagenerator/getallTopicTasksbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/pnreviewer/getallsheets": {
       "get": {
         "description": "",
@@ -5717,6 +6869,699 @@
         }
       }
     },
+    "/shmreviewer/getallpaginatedsheetmanagement": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "uploader2Id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectLevelId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForUploader2",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForTeacher",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "sheetType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "answerType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "lifeCycle",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "questionVideoLink",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByTeacher",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/shmreviewer/updateinprogressstatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/updatecompletestatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/getquestions": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isCheckedByPricer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isCheckedByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isReCheckedByReviewer",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/getquestionsstatus": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmreviewer/checkquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/uncheckquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/seterrorquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/unseterrorquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/adderrorquestion": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/addtopicsubtopicvocaberrorquestion": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/addhighlighterrorpdf": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/highlighterrorpdf": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/highlighterrors": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionId": {
+                  "example": "any"
+                },
+                "report": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/gettopicsubtopicvocabmappingsforquestion": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/assigntosupervisor": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/addsheeterror": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmreviewer/getallSheetbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmreviewer/getallPastPaperbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmreviewer/getallPaperNumberbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmreviewer/getallBookTasksbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmreviewer/getallTopicTasksbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ermreviewer/getquestionsstatus": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ermreviewer/checkquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ermreviewer/uncheckquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ermreviewer/seterrorquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ermreviewer/unseterrorquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ermreviewer/sheeterrorsbyreviewer": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/shmsupervisor/createsheet": {
       "post": {
         "description": "",
@@ -5727,8 +7572,606 @@
         }
       }
     },
-    "/shmuploader/createquestion": {
-      "post": {
+    "/shmsupervisor/getCountCardData": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/shmsupervisor/getallchapterbybookid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "bookId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmsupervisor/getallshmsheets": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "uploader2Id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectLevelId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForUploader2",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForTeacher",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "sheetType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "answerType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "lifeCycle",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "questionVideoLink",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByTeacher",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/shmsupervisor/assignsheettouploader2": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmsupervisor/assignsheettoreviewer": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmsupervisor/assignsheettoteacher": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmsupervisor/assignsheettopricer": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmsupervisor/getsheetlogs": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmsupervisor/archivesheet": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmsupervisor/publishshmsheet": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sheetId": {
+                  "example": "any"
+                },
+                "publishTo": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmsupervisor/gettopicsubtopicvocabmappingsforquestion": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmsupervisor/getquestions": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isCheckedByPricer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isCheckedByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isReCheckedByReviewer",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmsupervisor/getallSheetbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmsupervisor/getallPastPaperbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmsupervisor/getallPaperNumberbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmsupervisor/getallBookTasksbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmsupervisor/getallTopicTasksbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmuploader/getallshmsheets": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "uploader2Id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectLevelId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForUploader2",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForTeacher",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "sheetType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "answerType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "lifeCycle",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "questionVideoLink",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByTeacher",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/shmuploader/getassignedsubjects": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/getsubjectnames": {
+      "get": {
         "description": "",
         "responses": {
           "default": {
@@ -5747,7 +8190,7 @@
         }
       }
     },
-    "/shmuploader/matchquestion": {
+    "/shmuploader/mcquestion": {
       "post": {
         "description": "",
         "parameters": [
@@ -5757,32 +8200,16 @@
             "schema": {
               "type": "object",
               "properties": {
-                "questionType": {
-                  "example": "any"
-                },
-                "questionData": {
-                  "example": "any"
-                },
-                "sheetId": {
-                  "example": "any"
-                },
                 "options": {
+                  "example": "any"
+                },
+                "rest": {
                   "example": "any"
                 }
               }
             }
           }
         ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/shmuploader/mcquestion": {
-      "post": {
-        "description": "",
         "responses": {
           "default": {
             "description": ""
@@ -5839,6 +8266,104 @@
         }
       }
     },
+    "/shmuploader/editClassifyQuestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionId": {
+                  "example": "any"
+                },
+                "categories": {
+                  "example": "any"
+                },
+                "distracors": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletetClassifyQuestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletetClassifyItem": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletetClassifyCategory": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletetClassifyDisct": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "distractorID",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/shmuploader/truefalse": {
       "post": {
         "description": "",
@@ -5849,16 +8374,10 @@
             "schema": {
               "type": "object",
               "properties": {
-                "questionType": {
-                  "example": "any"
-                },
-                "questionData": {
-                  "example": "any"
-                },
-                "sheetId": {
-                  "example": "any"
-                },
                 "statements": {
+                  "example": "any"
+                },
+                "rest": {
                   "example": "any"
                 }
               }
@@ -5888,7 +8407,7 @@
                 "questionData": {
                   "example": "any"
                 },
-                "statementsToUpdate": {
+                "statements": {
                   "example": "any"
                 },
                 "statementsToAdd": {
@@ -5947,6 +8466,126 @@
         }
       }
     },
+    "/shmuploader/createtextquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "createData": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createaccordianquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tabs": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/updateaccordianquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tabs": {
+                  "example": "any"
+                },
+                "questionId": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/shmuploader/updatequestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionId": {
+                  "example": "any"
+                },
+                "questionData": {
+                  "example": "any"
+                },
+                "explanation": {
+                  "example": "any"
+                },
+                "includeExplanation": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/shmuploader/createcontentquestion": {
       "post": {
         "description": "",
@@ -5957,16 +8596,95 @@
             "schema": {
               "type": "object",
               "properties": {
-                "questionType": {
+                "files": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletecontentquestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "questionType",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createvideoquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editvideosimulationques": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionId": {
                   "example": "any"
                 },
                 "questionData": {
                   "example": "any"
                 },
-                "sheetId": {
+                "questionDescription": {
                   "example": "any"
                 },
-                "statements": {
+                "content": {
+                  "example": "any"
+                },
+                "rest": {
                   "example": "any"
                 }
               }
@@ -5990,9 +8708,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "questionId": {
-                  "example": "any"
-                },
                 "questionData": {
                   "example": "any"
                 },
@@ -6000,6 +8715,12 @@
                   "example": "any"
                 },
                 "filesToDelete": {
+                  "example": "any"
+                },
+                "questionId": {
+                  "example": "any"
+                },
+                "rest": {
                   "example": "any"
                 }
               }
@@ -6023,15 +8744,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "questionType": {
-                  "example": "any"
-                },
-                "questionData": {
-                  "example": "any"
-                },
-                "sheetId": {
-                  "example": "any"
-                },
                 "categories": {
                   "example": "any"
                 },
@@ -6049,7 +8761,44 @@
         }
       }
     },
-    "/shmuploader/createfilldropdown": {
+    "/shmuploader/uploadfiletos3": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletefilefroms3": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "fileName",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editquestion": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/creatematchquestion": {
       "post": {
         "description": "",
         "parameters": [
@@ -6059,7 +8808,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "dropDownOptions": {
+                "pairs": {
                   "example": "any"
                 },
                 "rest": {
@@ -6076,7 +8825,43 @@
         }
       }
     },
-    "/shmuploader/addfilldropdownoptions": {
+    "/shmuploader/editmatchquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "distractor": {
+                  "example": "any"
+                },
+                "distractors": {
+                  "example": "any"
+                },
+                "options": {
+                  "example": "any"
+                },
+                "pairsToBeAdded": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/addmatchquestionpairs": {
       "post": {
         "description": "",
         "responses": {
@@ -6086,7 +8871,597 @@
         }
       }
     },
-    "/shmuploader/deletefilldropdownoption": {
+    "/shmuploader/deletematchquestionpair": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "pairId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletematchquestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createdrawingquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uploaderJson": {
+                  "example": "any"
+                },
+                "studentJson": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editdrawingquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uploaderJson": {
+                  "example": "any"
+                },
+                "studentJson": {
+                  "example": "any"
+                },
+                "questionId": {
+                  "example": "any"
+                },
+                "questionData": {
+                  "example": "any"
+                },
+                "sheetId": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletedrawingquestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createlabeldragquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uploaderJson": {
+                  "example": "any"
+                },
+                "studentJson": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editlabeldragquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uploaderJson": {
+                  "example": "any"
+                },
+                "studentJson": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletelabeldragquestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createlabelfillquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "dataGeneratorJson": {
+                  "example": "any"
+                },
+                "studentJson": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editlabelfillquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "dataGeneratorJson": {
+                  "example": "any"
+                },
+                "studentJson": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletelabelfillquestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/creategeogebraquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uploaderJson": {
+                  "example": "any"
+                },
+                "studentJson": {
+                  "example": "any"
+                },
+                "allowAlgebraInput": {
+                  "example": "any"
+                },
+                "graphType": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editgeogebraquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uploaderJson": {
+                  "example": "any"
+                },
+                "studentJson": {
+                  "example": "any"
+                },
+                "allowAlgebraInput": {
+                  "example": "any"
+                },
+                "graphType": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletegeogebraquestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createdesmosquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uploaderJson": {
+                  "example": "any"
+                },
+                "studentJson": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editdesmosquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uploaderJson": {
+                  "example": "any"
+                },
+                "studentJson": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletedesmosquestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createhotspotquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uploaderJson": {
+                  "example": "any"
+                },
+                "studentJson": {
+                  "example": "any"
+                },
+                "hotSpotIds": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/edithotspotquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uploaderJson": {
+                  "example": "any"
+                },
+                "studentJson": {
+                  "example": "any"
+                },
+                "hotSpotIds": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletehotspotquestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createsortquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "options": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editsortquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "options": {
+                  "example": "any"
+                },
+                "type": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/addsortquestionoption": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletesortquestionoption": {
       "delete": {
         "description": "",
         "parameters": [
@@ -6103,24 +9478,7 @@
         }
       }
     },
-    "/shmuploader/getfilldropdownquestion": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "questionId",
-            "in": "query",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/shmuploader/deletefilldropdownquestion": {
+    "/shmuploader/deletesortquestion": {
       "delete": {
         "description": "",
         "parameters": [
@@ -6137,7 +9495,44 @@
         }
       }
     },
-    "/shmuploader/editfilldropdownoption": {
+    "/shmuploader/getquestions": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isCheckedByPricer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isCheckedByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isReCheckedByReviewer",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/updatesheetinprogress": {
       "patch": {
         "description": "",
         "responses": {
@@ -6147,12 +9542,2341 @@
         }
       }
     },
-    "/shmuploader/createfilltext": {
-      "post": {
+    "/shmuploader/updatesheetcomplete": {
+      "patch": {
         "description": "",
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/submitsheettosupervisor": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/getallboards": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/getallsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletedistractor": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "distracotrId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createfilltextquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "choices": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editfilltextquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "choices": {
+                  "example": "any"
+                },
+                "type": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletefilltextquestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createfillddquestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "choices": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/editfillddquestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "choices": {
+                  "example": "any"
+                },
+                "type": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletefillddquestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/createtablequestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tableData": {
+                  "example": "any"
+                },
+                "autoPlot": {
+                  "example": "any"
+                },
+                "allowPrefilledText": {
+                  "example": "any"
+                },
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/edittablequestion": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                },
+                "questionData": {
+                  "example": "any"
+                },
+                "tableData": {
+                  "example": "any"
+                },
+                "autoPlot": {
+                  "example": "any"
+                },
+                "allowPrefilledText": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/deletetablequestion": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmuploader/getallSheetbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmuploader/getallPastPaperbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmuploader/getallPaperNumberbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmuploader/getallBookTasksbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmuploader/getallTopicTasksbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmuploader/updateParentQuestion": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "marks": {
+                  "example": "any"
+                },
+                "requiredTime": {
+                  "example": "any"
+                },
+                "parentId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/getassignedsubjects": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/getsubjectnames": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/getallboards": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/getallsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/getsubjectdetailsbyids": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/getsubjectbysubjectnameid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/getallshmsheets": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "uploader2Id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectLevelId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForUploader2",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForTeacher",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "sheetType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "answerType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "lifeCycle",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "questionVideoLink",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByTeacher",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/shmteacher/updateinprogressstatus": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                },
+                "teacherId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/updatecompletestatus": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                },
+                "teacherId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/assigntosupervisor": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "teacherId": {
+                  "example": "any"
+                },
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/addCheckCommentInSheet": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "teacherId": {
+                  "example": "any"
+                },
+                "id": {
+                  "example": "any"
+                },
+                "comment": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/getalltopicsubtopicvocab": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/createtopicsubtopicmapping": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionId": {
+                  "example": "any"
+                },
+                "topicIds": {
+                  "example": "any"
+                },
+                "subTopicIds": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/edittopicsubtopicmapping": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionId": {
+                  "example": "any"
+                },
+                "createNewTopics": {
+                  "example": "any"
+                },
+                "deleteTopics": {
+                  "example": "any"
+                },
+                "createNewSubTopics": {
+                  "example": "any"
+                },
+                "deleteSubTopics": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/createvocabmapping": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionId": {
+                  "example": "any"
+                },
+                "vocabIds": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/editvocabmapping": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionId": {
+                  "example": "any"
+                },
+                "createNewVocab": {
+                  "example": "any"
+                },
+                "deleteVocab": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/gettopicsubtopicvocabmappingsforquestion": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/getquestions": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isCheckedByPricer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isCheckedByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isReCheckedByReviewer",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/editquestion": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/markquestionaserror": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                },
+                "where": {
+                  "example": "any"
+                },
+                "raw": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/markquestionaschecked": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                },
+                "where": {
+                  "example": "any"
+                },
+                "raw": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/removequestionaserror": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmteacher/removequestionaschecked": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/teacherDashboard/getallSheetByTeacherId": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/teacherDashboard/getallQuestionManagement": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/teacherDashboard/getallReportedError": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/teacherDashboard/getallSpamQuestionByUser": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "teacher2Id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/teacherDashboard/getallSheetbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/teacherDashboard/getallReportedErrorbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/teacherDashboard/getallSpamQuestionbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/teacherDashboard/getallBoardForTeacher": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/teacherDashboard/getallSubBoardForTeacher": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/teacherDashboard/getallSubjectForTeacher": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/teacherDashboard/getallNoticeForTeacher": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/teacherDashboard/deleteNoticeFromReciver": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "noticeId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmpricer/getassignedsubjects": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/getsubjectnames": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/getallboards": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/getallsubboards": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/getsubjectdetailsbyids": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/getsubjectbysubjectnameid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/getallshmsheets": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "assignedToUserId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "uploader2Id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "supervisorId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectLevelId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForUploader2",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusForTeacher",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "sheetType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "answerType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "lifeCycle",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "questionVideoLink",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByTeacher",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectNameId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/shmpricer/updateinprogressstatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/updatecompletestatus": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/gettopicsubtopicvocabmappingsforquestion": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/addprice": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                },
+                "priceForTeacher": {
+                  "example": "any"
+                },
+                "priceForStudent": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/removeprice": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/getquestions": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "sheetId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isCheckedByPricer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isCheckedByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isErrorByReviewer",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isReCheckedByReviewer",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/sheeterrorsbyreviewer": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/assigntosupervisor": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/addsheeterror": {
+      "patch": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/shmpricer/getallSheetbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmpricer/getallPastPaperbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmpricer/getallPaperNumberbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmpricer/getallBookTasksbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/shmpricer/getallTopicTasksbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploader_dashboard/getallSheetByUploaderId": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploader_dashboard/getallQuestionManagement": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploader_dashboard/getallReportedError": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploader_dashboard/getallSpamQuestionByUser": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subBoardId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isSpam",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "uploader2Id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploader_dashboard/getallSheetbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploader_dashboard/getallReportedErrorbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploader_dashboard/getallSpamQuestionbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploader_dashboard/getallBoardForUploader2": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploader_dashboard/getallSubBoardForUploader2": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploader_dashboard/getallSubjectForUploader2": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploader_dashboard/getallNoticeForUploader2": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploader_dashboard/deleteNoticeFromReciver": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "noticeId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/general/getallSheetbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/general/getallPastPaperbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/general/getallPaperNumberbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/general/getallBookTasksbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/general/getallTopicTasksbySubjectid": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
