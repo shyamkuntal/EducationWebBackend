@@ -16,6 +16,7 @@ app.use(logger);
 
 //API DOCS
 if (process.env.NODE_ENV === "dev") {
+  app.use('/logs', express.static('logs'));
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }
 
