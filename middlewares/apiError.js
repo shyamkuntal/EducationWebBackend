@@ -1,4 +1,6 @@
 const httpStatus = require("http-status");
+const logger = require('../utils/logger');
+
 class ApiError extends Error {
   constructor(statusCode, message) {
     super();
@@ -9,6 +11,8 @@ class ApiError extends Error {
 
 const handleError = (err, res) => {
   const { statusCode, message } = err;
+  
+  logger.error(`${message}`)
 
   res.status(statusCode).send({
     status: "error",
@@ -19,6 +23,7 @@ const handleError = (err, res) => {
 
 const convertToApiError = (err, req, res, next) => {
   let error = err;
+
   if (!(error instanceof ApiError)) {
     const statusCode = error.statusCode
       ? httpStatus.BAD_REQUEST
@@ -27,8 +32,10 @@ const convertToApiError = (err, req, res, next) => {
     const message = error.message || httpStatus[statusCode];
     error = new ApiError(statusCode, message);
   }
+  
   next(error);
 };
+
 module.exports = {
   ApiError,
   handleError,

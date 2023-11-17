@@ -5,21 +5,17 @@ const logFormat = format.printf(
     ({ timestamp, label, level, message }) => `${timestamp} [${label}] ${level.toUpperCase()}: ${message}`,
 );
 
-const debug = new DailyRotateFile({
+const info = new DailyRotateFile({
     filename: 'logs/%DATE%.log',
     datePattern: 'YYYY-MM-DD',
     zippedArchive: true,
     maxSize: '30m',
     maxFiles: '14d',
-    level: 'debug',
+    level: 'info',
     handleExceptions: true,
 });
 
-let transport = [new transports.Console({ silent: false })];
-
-if (process.env.NODE_ENV === "dev") {
-    transport = [debug];
-}
+let transport = [new transports.Console({ silent: false }), info];
 
 const logger = createLogger({
     format: format.combine(format.timestamp(), format.label({ label: process.env.APP_LABEL || 'EDUPLANET' }), logFormat),

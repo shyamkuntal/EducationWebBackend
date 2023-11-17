@@ -12,6 +12,7 @@ const logger = require("./middlewares/loggerMiddleware");
 const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(logger);
 
 //API DOCS
 if (process.env.NODE_ENV === "dev") {
@@ -54,9 +55,9 @@ db.authenticate()
 //   console.log("MongoDB Connected!");
 // }
 
+
 // api route
 app.use("/api", routes);
-app.use(logger);
 
 //API ERROR HANDLING
 app.use(convertToApiError);
