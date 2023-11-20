@@ -82,7 +82,7 @@ const QuestionManagementController = {
         questionType: CONSTANTS.questionType.Text,
       });
 
-      console.log(questionValues,"values")
+      console.log(questionValues, "values")
 
       let createDataValues = await createTextQuestionSchema.validateAsync(createData);
 
@@ -3071,9 +3071,24 @@ const QuestionManagementController = {
   async UpdateParaentQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      const Reuslt = await Question.update({marks:req.body.marks,requiredTime:req.body.requiredTime},{ where: { id: req.body.parentId } })
-      console.log(Reuslt,"result")
+      const Reuslt = await Question.update({ marks: req.body.marks, requiredTime: req.body.requiredTime }, { where: { id: req.body.parentId } })
+      console.log(Reuslt, "result")
       res.status(httpStatus.OK).send("success");
+    } catch (err) {
+      await t.rollback();
+      next(err);
+    }
+  },
+
+  async addBookQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+
+      const bookSheet = await SheetManagement.findOne({ where: { id: req.body.sheetId } }, { transaction: t })
+      const incrementResult = await bookSheet.increment('numberOfQuestion', { by: 1 }, { transaction: t });
+
+      await t.commit()
+      res.status(httpStatus.OK).send({ ...incrementResult, message: "Success" });
     } catch (err) {
       await t.rollback();
       next(err);

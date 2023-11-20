@@ -187,6 +187,7 @@ router.get("/getallBookTasksbySubjectid", GeneralApi.getAllBookSheetBySubjectIda
 router.get("/getallTopicTasksbySubjectid", GeneralApi.getAllTopicSheetBySubjectIdandUserId);
 router.post("/updateParentQuestion", QuestionManagementController.UpdateParaentQuestion);
 
+router.patch("/addbookquestion", QuestionManagementController.addBookQuestion);
 
 
 module.exports = router;
