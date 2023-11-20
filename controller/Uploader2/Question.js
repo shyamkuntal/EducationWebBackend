@@ -82,7 +82,7 @@ const QuestionManagementController = {
         questionType: CONSTANTS.questionType.Text,
       });
 
-      console.log(questionValues, "values")
+      console.log(questionValues, "values");
 
       let createDataValues = await createTextQuestionSchema.validateAsync(createData);
 
@@ -358,7 +358,7 @@ const QuestionManagementController = {
     const t = await db.transaction();
     try {
       let { ...rest } = req.body;
-      let data = req.body
+      let data = req.body;
       let questionId = data.questionId;
 
       await services.questionService.updateQuestion(questionId, {
@@ -562,7 +562,7 @@ const QuestionManagementController = {
           const existingOption = await McqQuestionOption.findByPk(option.id);
 
           if (option?.id) {
-            McqQuestionOption.update(option, { where: { id: option.id } })
+            McqQuestionOption.update(option, { where: { id: option.id } });
           } else {
             await McqQuestionOption.create(
               {
@@ -1180,11 +1180,11 @@ const QuestionManagementController = {
           );
         }
 
-        const distracor = data.distracors
+        const distracor = data.distracors;
         if (distracor.length > 0) {
           const createdDistractorFiles = await Promise.all(
             distractor.map(async (file) => {
-              var dis = await QuestionDistractor.findOne({ where: { questionId } })
+              var dis = await QuestionDistractor.findOne({ where: { questionId } });
               if (dis === null) {
                 const createdOption = await QuestionDistractor.create(
                   {
@@ -1196,8 +1196,7 @@ const QuestionManagementController = {
                 );
 
                 return createdOption;
-              }
-              else {
+              } else {
                 const updateOption = await QuestionDistractor.update(
                   {
                     distractor: file.distractor,
@@ -1337,7 +1336,7 @@ const QuestionManagementController = {
       let { tableData, autoPlot, allowPrefilledText, ...rest } = req.body;
 
       let questionData = {
-        ...rest
+        ...rest,
       };
 
       let createdQuestion = await services.questionService.createQuestion(questionData, {
@@ -1370,14 +1369,13 @@ const QuestionManagementController = {
   async editTableQues(req, res, next) {
     const t = await db.transaction();
     try {
-
       const id = req.body.id;
       const data = req.body;
 
       const questionUpdateData = {
         questionData: data.questionData,
         explanation: data?.explanation,
-        includeExplanation: data?.includeExplanation
+        includeExplanation: data?.includeExplanation,
       };
 
       await services.questionService.updateQuestion(id, questionUpdateData, {
@@ -1386,17 +1384,17 @@ const QuestionManagementController = {
 
       let tbData = data.tableData;
       let autoPlot = data.autoPlot;
-      let allowPrefilledText = data.allowPrefilledText
+      let allowPrefilledText = data.allowPrefilledText;
 
       let tbq = await TableQuestion.update(
         {
           tableData: tbData,
           autoPlot: autoPlot || false,
           allowPrefilledText: allowPrefilledText || false,
-        }, { where: { questionId: id, }, },
+        },
+        { where: { questionId: id } },
         { transaction: t }
       );
-
 
       await t.commit();
       res.status(httpStatus.OK).send({
@@ -1432,7 +1430,7 @@ const QuestionManagementController = {
   async createFillDropDown(req, res, next) {
     const t = await db.transaction();
     try {
-      const { choices, ...rest } = req.body
+      const { choices, ...rest } = req.body;
       let values = await createQuestionsSchema.validateAsync({ ...rest });
 
       let dataToBeCreated = { ...values, questionType: CONSTANTS.questionType.Fill_Dropdown };
@@ -1441,13 +1439,15 @@ const QuestionManagementController = {
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
-      let question = await services.questionService.createQuestion(dataToBeCreated, { transaction: t });
+      let question = await services.questionService.createQuestion(dataToBeCreated, {
+        transaction: t,
+      });
       await t.commit();
 
       await FillTextAnswer.create({
         questionId: question?.dataValues?.id,
-        answerContent: choices
-      })
+        answerContent: choices,
+      });
 
       res.status(httpStatus.OK).send({ message: "Fill Drop Down question created!" });
     } catch (err) {
@@ -1466,9 +1466,7 @@ const QuestionManagementController = {
       await question.destroy({ transaction: t });
 
       await t.commit();
-      res
-        .status(httpStatus.OK)
-        .send({ message: "Fill Drop Down Question deleted successfully" });
+      res.status(httpStatus.OK).send({ message: "Fill Drop Down Question deleted successfully" });
     } catch (err) {
       console.log(err);
       await t.rollback();
@@ -1519,12 +1517,10 @@ const QuestionManagementController = {
   //   }
   // },
   async editFillDropDown(req, res, next) {
-
     const t = await db.transaction();
     try {
-
-      console.log(req.body)
-      const { choices, type, ...rest } = req.body
+      console.log(req.body);
+      const { choices, type, ...rest } = req.body;
       let values = await editQuestionSchema.validateAsync({ ...rest });
 
       let dataToBeUpdated = { ...values, questionType: CONSTANTS.questionType.Fill_Dropdown };
@@ -1533,12 +1529,14 @@ const QuestionManagementController = {
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
-      let question = await services.questionService.updateQuestion(values.id, dataToBeUpdated, { transaction: t });
+      let question = await services.questionService.updateQuestion(values.id, dataToBeUpdated, {
+        transaction: t,
+      });
 
       await FillTextAnswer.update(
         { answerContent: choices },
         {
-          where: { questionId: question?.dataValues?.id, },
+          where: { questionId: question?.dataValues?.id },
         },
         { transaction: t }
       );
@@ -1575,7 +1573,6 @@ const QuestionManagementController = {
   async deleteFillDropDownQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-
       let values = await deleteFillDropDownQuestionSchema.validateAsync({
         questionId: req.query.questionId,
       });
@@ -1601,7 +1598,7 @@ const QuestionManagementController = {
   async createFillTextQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      const { choices, ...rest } = req.body
+      const { choices, ...rest } = req.body;
       let values = await createQuestionsSchema.validateAsync({ ...rest });
 
       console.log("FILL TEXT QUESTION:", values);
@@ -1612,13 +1609,15 @@ const QuestionManagementController = {
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
-      let question = await services.questionService.createQuestion(dataToBeCreated, { transaction: t });
+      let question = await services.questionService.createQuestion(dataToBeCreated, {
+        transaction: t,
+      });
       await t.commit();
 
       await FillTextAnswer.create({
         questionId: question?.dataValues?.id,
-        answerContent: choices
-      })
+        answerContent: choices,
+      });
 
       res.status(httpStatus.OK).send({ message: "Fill Text question created!" });
     } catch (err) {
@@ -1629,9 +1628,8 @@ const QuestionManagementController = {
   async editFillTextQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-
-      console.log(req.body)
-      const { choices, type, ...rest } = req.body
+      console.log(req.body);
+      const { choices, type, ...rest } = req.body;
       let values = await editQuestionSchema.validateAsync({ ...rest });
 
       let dataToBeUpdated = { ...values, questionType: CONSTANTS.questionType.Fill_Text };
@@ -1640,12 +1638,14 @@ const QuestionManagementController = {
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
-      let question = await services.questionService.updateQuestion(values.id, dataToBeUpdated, { transaction: t });
+      let question = await services.questionService.updateQuestion(values.id, dataToBeUpdated, {
+        transaction: t,
+      });
 
       await FillTextAnswer.update(
         { answerContent: choices },
         {
-          where: { questionId: question?.dataValues?.id, },
+          where: { questionId: question?.dataValues?.id },
         },
         { transaction: t }
       );
@@ -1668,9 +1668,7 @@ const QuestionManagementController = {
       await question.destroy({ transaction: t });
 
       await t.commit();
-      res
-        .status(httpStatus.OK)
-        .send({ message: "Fill Text files deleted successfully" });
+      res.status(httpStatus.OK).send({ message: "Fill Text files deleted successfully" });
     } catch (err) {
       console.log(err);
       await t.rollback();
@@ -1737,7 +1735,6 @@ const QuestionManagementController = {
         await MatchQuestionPair.create(dataToBeCreated, { transaction: t });
       }
 
-
       let distractor = questionValues.distractors;
 
       const createdDistractorFiles = await Promise.all(
@@ -1756,7 +1753,7 @@ const QuestionManagementController = {
       );
 
       await t.commit();
-      console.log(createdDistractorFiles, "files of distracor")
+      console.log(createdDistractorFiles, "files of distracor");
       res.status(httpStatus.OK).send({ message: "created question & added match pairs" });
     } catch (err) {
       await t.rollback();
@@ -1769,9 +1766,9 @@ const QuestionManagementController = {
     try {
       let { options, pairsToBeAdded, ...rest } = req.body;
       let questionValues = req.body;
-      console.log("success1")
+      console.log("success1");
       let updateValues = options;
-      let distractor = req.body.distractor
+      let distractor = req.body.distractor;
 
       let { id, ...questionData } = questionValues;
 
@@ -1788,8 +1785,7 @@ const QuestionManagementController = {
               },
               { transaction: t }
             );
-          }
-          else {
+          } else {
             const createdOption = await QuestionDistractor.create(
               {
                 questionId: id,
@@ -1802,16 +1798,15 @@ const QuestionManagementController = {
         })
       );
 
-
       const updatePairs = options;
       if (updatePairs && updatePairs.length > 0) {
-        console.log("success21")
+        console.log("success21");
         for (let i = 0; i < updatePairs.length; i++) {
           let dataToBeUpdated = {
             matchPhrase: updatePairs[i].matchPhrase,
             matchTarget: updatePairs[i].matchTarget,
           };
-          console.log("success3")
+          console.log("success3");
           if (updatePairs[i]?.id) {
             await MatchQuestionPair.update(
               dataToBeUpdated,
@@ -1821,7 +1816,7 @@ const QuestionManagementController = {
               { transaction: t }
             );
           } else {
-            console.log("success5")
+            console.log("success5");
             await MatchQuestionPair.create(
               { ...dataToBeUpdated, questionId: id },
               {
@@ -1830,7 +1825,7 @@ const QuestionManagementController = {
               { transaction: t }
             );
           }
-          console.log("success6")
+          console.log("success6");
           // const createdDistractorFiles = await Promise.all(
           //   distractor.map(async (file) => {
           //     const createdOption = await QuestionDistractor.update(
@@ -1852,11 +1847,9 @@ const QuestionManagementController = {
           { where: { id: id } },
           { transaction: t }
         );
-        console.log("success7")
+        console.log("success7");
 
         let distractor = questionValues.distractors;
-
-
 
         await t.commit();
 
@@ -2841,7 +2834,6 @@ const QuestionManagementController = {
   async createLongAnswer(req, res, next) {
     const t = await db.transaction();
     try {
-
       let values = await createQuestionsSchema.validateAsync(req.body);
 
       let question = await services.questionService.createQuestion(values, {
@@ -2857,7 +2849,7 @@ const QuestionManagementController = {
   async getQuestions(req, res, next) {
     try {
       let values = await getQuestionsSchema.validateAsync({ sheetId: req.query.sheetId });
-      console.log(values, "vlues")
+      console.log(values, "vlues");
       let whereQuery = { sheetId: values.sheetId };
       if (req.query.isCheckedByPricer)
         whereQuery = { ...whereQuery, isCheckedByPricer: req.query.isCheckedByPricer };
@@ -2871,16 +2863,16 @@ const QuestionManagementController = {
       if (req.query.isReCheckedByReviewer)
         whereQuery = { ...whereQuery, isReCheckedByReviewer: req.query.isReCheckedByReviewer };
 
-      console.log("sucesss1")
+      console.log("sucesss1");
 
       let questions = await Question.findAll({
         where: whereQuery,
         order: [["createdAt", "ASC"]],
         raw: true,
-        nest: true
+        nest: true,
       });
 
-      console.log(questions, "questions")
+      console.log(questions.length, "questions");
 
       let questionDetails = await services.questionService.findQuestions(questions);
 
@@ -3060,7 +3052,7 @@ const QuestionManagementController = {
   async deleteDistractor(req, res, next) {
     const t = await db.transaction();
     try {
-      await QuestionDistractor.destroy({ where: { id: req.query.distracotrId } })
+      await QuestionDistractor.destroy({ where: { id: req.query.distracotrId } });
       res.status(httpStatus.OK).send("success");
     } catch (err) {
       await t.rollback();
@@ -3071,8 +3063,11 @@ const QuestionManagementController = {
   async UpdateParaentQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      const Reuslt = await Question.update({ marks: req.body.marks, requiredTime: req.body.requiredTime }, { where: { id: req.body.parentId } })
-      console.log(Reuslt, "result")
+      const Reuslt = await Question.update(
+        { marks: req.body.marks, requiredTime: req.body.requiredTime },
+        { where: { id: req.body.parentId } }
+      );
+      console.log(Reuslt, "result");
       res.status(httpStatus.OK).send("success");
     } catch (err) {
       await t.rollback();
@@ -3083,11 +3078,17 @@ const QuestionManagementController = {
   async addBookQuestion(req, res, next) {
     const t = await db.transaction();
     try {
+      const bookSheet = await SheetManagement.findOne(
+        { where: { id: req.body.sheetId } },
+        { transaction: t }
+      );
+      const incrementResult = await bookSheet.increment(
+        "numberOfQuestion",
+        { by: 1 },
+        { transaction: t }
+      );
 
-      const bookSheet = await SheetManagement.findOne({ where: { id: req.body.sheetId } }, { transaction: t })
-      const incrementResult = await bookSheet.increment('numberOfQuestion', { by: 1 }, { transaction: t });
-
-      await t.commit()
+      await t.commit();
       res.status(httpStatus.OK).send({ ...incrementResult, message: "Success" });
     } catch (err) {
       await t.rollback();
