@@ -15,9 +15,7 @@ const db = new Sequelize(
       acquire: 30000,
       idle: 10000,
     },
-    logging: (msg) => {
-      console.log(msg);
-    },
+    logging: (msg) => console.log(msg),
   }
 );
 
