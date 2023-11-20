@@ -10,7 +10,7 @@ const db = new Sequelize(
     dialect: "postgres",
     synchronize: true, // Automatically creates tables based on model definitions
     pool: {
-      max: 10,
+      max: 50,
       min: 0,
       acquire: 30000,
       idle: 10000,
