@@ -12,6 +12,7 @@ const { SheetManagement } = require("../../models/SheetManagement");
 const { ApiError } = require("../../middlewares/apiError");
 const { User } = require("../../models/User");
 const { Question } = require("../../models/Question");
+const { TaskTopicMapping } = require("../../models/TopicTaskMapping");
 
 const TeacherSheetManagementController = {
   async createTopicSubTopicMappingForQuestion(req, res, next) {
@@ -258,12 +259,91 @@ const TeacherSheetManagementController = {
       next(err);
     }
   },
+  
+  // async getTopicSubTopicVocabMappingsForQuestion(req, res, next) {
+  //   try {
+  //     const questionId = req.query.questionId;
+
+  //     let response = {};
+
+  //     const topicMappings = await QuestionTopicMapping.findAll({
+  //       where: {
+  //         questionId,
+  //       },
+  //       attributes: ["topicId"],
+  //       include: [
+  //         {
+  //           model: Topic,
+  //           attributes: ["name"],
+  //         },
+  //       ],
+  //       raw: true,
+  //     });
+  
+  //     response = await Promise.all(
+  //       topicMappings.map(async (topicMapping) => {
+  //         const { topicId, name } = topicMapping;
+  
+  //         const subTopicMappings = await QuestionSubTopicMapping.findAll({
+  //           where: {
+  //             questionId,
+  //             topicId, 
+  //           },
+  //           attributes: ["subTopicId"],
+  //           include: [
+  //             {
+  //               model: SubTopic,
+  //               attributes: ["name"],
+  //             },
+  //           ],
+  //           raw: true,
+  //         });
+  
+  //         const vocabMappings = await QuestionVocabMapping.findAll({
+  //           where: {
+  //             questionId,
+  //             topicId,
+  //           },
+  //           attributes: ["vocabId"],
+  //           include: [
+  //             {
+  //               model: Vocabulary,
+  //               attributes: ["name"],
+  //             },
+  //           ],
+  //           raw: true,
+  //         });
+  
+  //         return {
+  //           topicId,
+  //           name,
+  //           subTopics: subTopicMappings.map((subTopicMapping) => ({
+  //             subTopicId: subTopicMapping.subTopicId,
+  //             subTopicName: subTopicMapping.SubTopic.name,
+  //           })),
+  //           vocabularies: vocabMappings.map((vocabMapping) => ({
+  //             vocabId: vocabMapping.vocabId,
+  //             vocabName: vocabMapping.Vocabulary.name,
+  //           })),
+  //         };
+  //       })
+  //     );
+  
+  //     res.status(httpStatus.OK).send({
+  //       questionId,
+  //       response,
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+  //     next(err);
+  //   }
+  // },
   async markQuestionAsChecked(req, res, next) {
     const t = await db.transaction();
     try {
       let whereQuery = { where: { id: req.body.id }, raw: true };
 
-      let { questionDetailsForSubPart, ...rest } = req.body;
+      let { questionDetailsForSubPart, questionDetails } = req.body;
 
       let question = await Question.findOne(whereQuery);
 
@@ -284,7 +364,6 @@ const TeacherSheetManagementController = {
         );
 
         for (var i = 0; i < subPart.length; i++) {
-          console.log(questionDetailsForSubPart[i].criteriaPoints)
           let whereQuery = { where: { id: subPart[i].id }, raw: true };
           let request = {
             criteriaPoints: JSON.stringify(questionDetailsForSubPart[i].criteriaPoints),
@@ -301,9 +380,8 @@ const TeacherSheetManagementController = {
       let request = {
         isCheckedByTeacher: true,
         isErrorByTeacher: false,
-        ...rest
+        ...questionDetails,
       };
-
       // let values = await updatePriceInQuestionSchema.validateAsync(request);
       await Question.update(request, whereQuery, { transaction: t });
 
@@ -320,7 +398,7 @@ const TeacherSheetManagementController = {
     try {
       let whereQuery = { where: { id: req.body.id }, raw: true };
 
-      let { questionDetailsForSubPart, ...rest } = req.body;
+      let { questionDetailsForSubPart, questionDetails } = req.body;
 
       let question = await Question.findOne(whereQuery);
 
@@ -341,7 +419,6 @@ const TeacherSheetManagementController = {
         );
 
         for (var i = 0; i < subPart.length; i++) {
-          console.log(questionDetailsForSubPart[i].criteriaPoints)
           let whereQuery = { where: { id: subPart[i].id }, raw: true };
           let request = {
             criteriaPoints: JSON.stringify(questionDetailsForSubPart[i].criteriaPoints),
@@ -358,9 +435,10 @@ const TeacherSheetManagementController = {
       let request = {
         isCheckedByTeacher: false,
         isErrorByTeacher: true,
-        ...rest
+        ...questionDetails,
       };
 
+      console.log("-------", request);
       // let values = await updatePriceInQuestionSchema.validateAsync(request);
       await Question.update(request, whereQuery, { transaction: t });
 
@@ -585,7 +663,7 @@ const TeacherSheetManagementController = {
           statusForTeacher: CONSTANTS.sheetStatuses.Complete,
           assignedToUserId: sheetData.supervisorId,
           lifeCycle: CONSTANTS.roleNames.Supervisor,
-          errorReportByTeacher: values.comment
+          errorReportByTeacher: values.comment,
         };
         let whereQuery = {
           where: {

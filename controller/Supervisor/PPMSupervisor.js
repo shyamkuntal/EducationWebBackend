@@ -285,7 +285,7 @@ const PastPaperSupervisorController = {
     try {
       const users = await User.findAll({
         attributes: ["id", "Name"],
-        where: { roleId: roleId },
+        where: { roleId: roleId, isActive: true },
         // include: { all: true, nested: true },
       });
 
@@ -364,7 +364,7 @@ const PastPaperSupervisorController = {
     try {
       const users = await User.findAll({
         attributes: ["id", "userName", "email", "Name"],
-        where: { roleId },
+        where: { roleId, isActive: true },
         include: [
           {
             model: BookTask,
