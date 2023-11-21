@@ -338,6 +338,7 @@ const TeacherSheetManagementController = {
   //     next(err);
   //   }
   // },
+  
   async markQuestionAsChecked(req, res, next) {
     const t = await db.transaction();
     try {
