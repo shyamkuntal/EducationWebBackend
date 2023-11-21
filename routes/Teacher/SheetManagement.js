@@ -7,6 +7,7 @@ const TopicManagementController = require("../../controller/Supervisor/TopicMana
 const TeacherSheetManagementController = require("../../controller/Teacher/SheetMangement");
 const QuestionManagementController = require("../../controller/Uploader2/Question");
 const router = express.Router();
+const upload = require("../../config/multer");
 
 
 router.get("/getassignedsubjects", PastPaperSupervisorController.getUserAssignedSubjects);
@@ -40,6 +41,10 @@ router.patch("/markquestionaserror", TeacherSheetManagementController.markQuesti
 router.patch("/markquestionaschecked", TeacherSheetManagementController.markQuestionAsChecked);
 router.patch("/removequestionaserror", TeacherSheetManagementController.removeQuestionAsError);
 router.patch("/removequestionaschecked", TeacherSheetManagementController.removeQuestionAsChecked);
+
+router.patch("/addhighlighterrorpdf", upload.single("file"), TeacherSheetManagementController.addHighlightPdfToQuestion);
+router.get("/highlighterrorpdf", TeacherSheetManagementController.getHighlightPdfQuestion);
+router.patch("/highlighterrors", TeacherSheetManagementController.saveHighlightDataInQuestions);
 
 
 module.exports = router;

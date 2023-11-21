@@ -70,7 +70,7 @@ const ErrorManagementController = {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
             }
 
-            await Question.update({ isErrorByReviewer: true,isCheckedByReviewer:false, isReCheckedByReviewer: true }, whereQuery)
+            await Question.update({ isErrorByReviewer: true, isCheckedByReviewer: false, isReCheckedByReviewer: true }, whereQuery)
 
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
@@ -137,10 +137,9 @@ const ErrorManagementController = {
             };
             let whereQuery = {
                 where: { id: sheetData.id },
+                transaction: t
             };
-            await SheetManagement.update(dataToBeUpdated, whereQuery, {
-                transaction: t,
-            });
+            await SheetManagement.update(dataToBeUpdated, whereQuery);
             responseMessage.assinedUserToSheet = "Sheet assigned to supervisor successfully";
             responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
             // Create sheetLog
@@ -261,7 +260,7 @@ const ErrorManagementController = {
                 raw: true,
                 nest: true,
             };
-            let whereQuery = { where: { id: values.sheetId }, raw: true };
+            let whereQuery = { where: { id: values.sheetId }, raw: true, transaction: t };
 
             let sheetData = await SheetManagement.findOne(whereQueryForFindSheet);
 
@@ -288,9 +287,7 @@ const ErrorManagementController = {
                 isSpam: true,
             };
 
-            await SheetManagement.update(dataToBeUpdated, whereQuery, {
-                transaction: t,
-            });
+            await SheetManagement.update(dataToBeUpdated, whereQuery);
 
             // Create sheetLog
             await services.sheetManagementService.createSheetLog(

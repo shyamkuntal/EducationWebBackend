@@ -156,14 +156,14 @@ const PricerSheetManagementController = {
                 }, { transaction: t });
 
                 for (var i = 0; i < subPart.length; i++) {
-                    let whereQuery = { where: { id: subPart[i].id }, raw: true };
+                    let whereQuery = { where: { id: subPart[i].id }, raw: true, transaction: t };
                     let request = {
                         priceForTeacher: Number(req.body.priceForTeacher[i]),
                         priceForStudent: Number(req.body.priceForStudent[i]),
                         isCheckedByPricer: true,
                         isErrorByReviewer: false
                     }
-                    await Question.update(request, whereQuery, { transaction: t })
+                    await Question.update(request, whereQuery)
                 }
             }
 
@@ -175,7 +175,7 @@ const PricerSheetManagementController = {
             }
 
             let values = await updatePriceInQuestionSchema.validateAsync(request);
-            await Question.update(values, whereQuery, { transaction: t })
+            await Question.update(values, { ...whereQuery, transaction: t })
 
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
@@ -207,13 +207,13 @@ const PricerSheetManagementController = {
                 }, { transaction: t });
 
                 for (var i = 0; i < subPart.length; i++) {
-                    let whereQuery = { where: { id: subPart[i].id }, raw: true };
+                    let whereQuery = { where: { id: subPart[i].id }, raw: true, transaction: t };
                     let request = {
                         priceForTeacher: null,
                         priceForStudent: null,
                         isCheckedByPricer: false
                     }
-                    await Question.update(request, whereQuery, { transaction: t })
+                    await Question.update(request, whereQuery)
                 }
             }
 
@@ -223,7 +223,7 @@ const PricerSheetManagementController = {
                 isCheckedByPricer: false
             }
 
-            await Question.update(request, whereQuery, { transaction: t })
+            await Question.update(request, { ...whereQuery, transaction: t })
 
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
@@ -271,10 +271,9 @@ const PricerSheetManagementController = {
             };
             let whereQuery = {
                 where: { id: sheetData.id },
-            };
-            await SheetManagement.update(dataToBeUpdated, whereQuery, {
                 transaction: t,
-            });
+            };
+            await SheetManagement.update(dataToBeUpdated, whereQuery);
             responseMessage.assinedUserToSheet = "Sheet assigned to supervisor successfully";
             responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
             // Create sheetLog
@@ -311,7 +310,7 @@ const PricerSheetManagementController = {
                 raw: true,
                 nest: true,
             };
-            let whereQuery = { where: { id: values.sheetId }, raw: true };
+            let whereQuery = { where: { id: values.sheetId }, raw: true, transaction: t };
 
             let sheetData = await SheetManagement.findOne(whereQueryForFindSheet);
 
@@ -334,9 +333,7 @@ const PricerSheetManagementController = {
                 isSpam: true,
             };
 
-            await SheetManagement.update(dataToBeUpdated, whereQuery, {
-                transaction: t,
-            });
+            await SheetManagement.update(dataToBeUpdated, whereQuery);
 
             // Create sheetLog
             await services.sheetManagementService.createSheetLog(

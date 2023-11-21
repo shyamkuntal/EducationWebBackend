@@ -84,6 +84,9 @@ const checkTopicTask = async ({ boardId, subBoardId, grade, subjectId }) => {
 
 const updateTopicTask = async (dataToBeUpdated, whereQuery, options) => {
   try {
+    if(options)
+      whereQuery={...whereQuery,...options}
+
     let updatedTopicTask = await TopicTask.update(dataToBeUpdated, whereQuery, options);
 
     return updatedTopicTask;
@@ -219,6 +222,9 @@ const getTaskLogs = async (topicTaskId) => {
 
 const updateTaskTopicMapping = async (dataToBeUpdated, whereQuery, options) => {
   try {
+    if(options)
+      whereQuery={...whereQuery,...options}
+
     let updatedMapping = await TaskTopicMapping.update(dataToBeUpdated, whereQuery, options);
 
     return updatedMapping;
@@ -229,6 +235,9 @@ const updateTaskTopicMapping = async (dataToBeUpdated, whereQuery, options) => {
 
 const updateTaskSubTopicMapping = async (dataToBeUpdated, whereQuery, options) => {
   try {
+    if(options)
+      whereQuery={...whereQuery,...options}
+
     let updatedMapping = await TaskSubTopicMapping.update(dataToBeUpdated, whereQuery, options);
 
     return updatedMapping;
@@ -239,6 +248,9 @@ const updateTaskSubTopicMapping = async (dataToBeUpdated, whereQuery, options) =
 
 const updateTaskVocabularyMapping = async (dataToBeUpdated, whereQuery, options) => {
   try {
+    if(options)
+      whereQuery={...whereQuery,...options}
+
     let updatedMapping = await TaskVocabularyMapping.update(dataToBeUpdated, whereQuery, options);
 
     return updatedMapping;

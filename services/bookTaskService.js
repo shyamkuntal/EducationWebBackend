@@ -50,7 +50,10 @@ const createBookTaskLog = async (bookTaskId, assignee, assignedTo, logMessage) =
 
 const updateBookTask = async (dataToBeUpdated, whereQuery, options) => {
   try {
-    let updatedTask = await BookTask.update(dataToBeUpdated, whereQuery, options);
+    if (options)
+      whereQuery = { ...whereQuery, ...options }
+
+    let updatedTask = await BookTask.update(dataToBeUpdated, whereQuery);
 
     return updatedTask;
   } catch (err) {
@@ -70,6 +73,8 @@ const findBookByBookTask = async (whereQuery) => {
 
 const updateTaskBookMapping = async (dataToBeUpdated, whereQuery, options) => {
   try {
+    if(options)
+      whereQuery={...whereQuery,...options}
     let updatedTaskBookMapping = await TaskBookMapping.update(dataToBeUpdated, whereQuery, options);
 
     return updatedTaskBookMapping;
@@ -80,6 +85,9 @@ const updateTaskBookMapping = async (dataToBeUpdated, whereQuery, options) => {
 
 const updateTaskChapterMapping = async (dataToBeUpdated, whereQuery, options) => {
   try {
+    if(options)
+      whereQuery={...whereQuery,...options}
+
     let updatedMapping = await TaskBookChapterMapping.update(dataToBeUpdated, whereQuery, options);
 
     return updatedMapping;

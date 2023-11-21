@@ -12,6 +12,9 @@ const { SheetManagement } = require("../../models/SheetManagement");
 const { ApiError } = require("../../middlewares/apiError");
 const { User } = require("../../models/User");
 const { Question } = require("../../models/Question");
+const { s3Client } = require("../../config/s3");
+const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const { generateFileName } = require("../../config/s3");
 const { TaskTopicMapping } = require("../../models/TopicTaskMapping");
 
 const TeacherSheetManagementController = {
@@ -365,7 +368,8 @@ const TeacherSheetManagementController = {
         );
 
         for (var i = 0; i < subPart.length; i++) {
-          let whereQuery = { where: { id: subPart[i].id }, raw: true };
+          console.log(questionDetailsForSubPart[i].criteriaPoints)
+          let whereQuery = { where: { id: subPart[i].id }, raw: true, transaction: t };
           let request = {
             criteriaPoints: JSON.stringify(questionDetailsForSubPart[i].criteriaPoints),
             errorReportByTeacher: questionDetailsForSubPart[i].errorReportByTeacher,
@@ -374,7 +378,7 @@ const TeacherSheetManagementController = {
             requiredTime: questionDetailsForSubPart[i].requiredTime,
             videoLink: questionDetailsForSubPart[i].videoLink,
           };
-          await Question.update(request, whereQuery, { transaction: t });
+          await Question.update(request, whereQuery);
         }
       }
 
@@ -384,7 +388,7 @@ const TeacherSheetManagementController = {
         ...questionDetails,
       };
       // let values = await updatePriceInQuestionSchema.validateAsync(request);
-      await Question.update(request, whereQuery, { transaction: t });
+      await Question.update(request, { ...whereQuery, transaction: t });
 
       await t.commit();
       res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
@@ -420,7 +424,8 @@ const TeacherSheetManagementController = {
         );
 
         for (var i = 0; i < subPart.length; i++) {
-          let whereQuery = { where: { id: subPart[i].id }, raw: true };
+          console.log(questionDetailsForSubPart[i].criteriaPoints)
+          let whereQuery = { where: { id: subPart[i].id }, raw: true, transaction: t };
           let request = {
             criteriaPoints: JSON.stringify(questionDetailsForSubPart[i].criteriaPoints),
             errorReportByTeacher: questionDetailsForSubPart[i].errorReportByTeacher,
@@ -429,7 +434,7 @@ const TeacherSheetManagementController = {
             requiredTime: questionDetailsForSubPart[i].requiredTime,
             videoLink: questionDetailsForSubPart[i].videoLink,
           };
-          await Question.update(request, whereQuery, { transaction: t });
+          await Question.update(request, { ...whereQuery, transaction: t });
         }
       }
 
@@ -441,7 +446,7 @@ const TeacherSheetManagementController = {
 
       console.log("-------", request);
       // let values = await updatePriceInQuestionSchema.validateAsync(request);
-      await Question.update(request, whereQuery, { transaction: t });
+      await Question.update(request, whereQuery);
 
       await t.commit();
       res.status(httpStatus.OK).send({ message: "Question Updated successfully!" });
@@ -607,10 +612,9 @@ const TeacherSheetManagementController = {
           where: {
             id: values.id,
           },
-        };
-        let statusToUpdate = await SheetManagement.update(dataToBeUpdated, whereQuery, {
           transaction: t,
-        });
+        };
+        let statusToUpdate = await SheetManagement.update(dataToBeUpdated, whereQuery);
 
         let createLog = await services.sheetManagementService.createSheetLog(
           sheetData.id,
@@ -670,10 +674,9 @@ const TeacherSheetManagementController = {
           where: {
             id: values.id,
           },
-        };
-        let statusToUpdate = await SheetManagement.update(dataToBeUpdated, whereQuery, {
           transaction: t,
-        });
+        };
+        let statusToUpdate = await SheetManagement.update(dataToBeUpdated, whereQuery);
 
         let createLog = await services.sheetManagementService.createSheetLog(
           sheetData.id,
@@ -692,6 +695,89 @@ const TeacherSheetManagementController = {
     } catch (err) {
       console.log(err);
       await t.rollback();
+      next(err);
+    }
+  },
+  async addHighlightPdfToQuestion(req, res, next) {
+    const t = await db.transaction();
+    try {
+
+      let questionData = await Question.findOne({ where: { id: req.body.questionId } });
+      if (!questionData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
+      }
+
+      if (questionData.teacherHighlightErrorPdf) {
+        let deleteParams = {
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: questionData.teacherHighlightErrorPdf,
+        };
+
+        await s3Client.send(new DeleteObjectCommand(deleteParams));
+      }
+
+      let uploadFile;
+      if (req.file) {
+        let fileName =
+          process.env.AWS_BUCKET_SHEETMANAGEMENT_HIGHLIGHT_PDF_FOLDER +
+          "/" +
+          generateFileName(req.file.originalname)
+
+        uploadFile = await services.sheetManagementReviewerService.uploadSheetManagementErrorReportFile(
+          fileName,
+          req.file
+        );
+      }
+
+      let dataToBeUpdated = {
+        teacherHighlightErrorPdf: uploadFile,
+      };
+
+
+      await Question.update(dataToBeUpdated, { where: { id: req.body.questionId } })
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Added pdf In Question Sucessfully" });
+    } catch (err) {
+      await t.rollback();
+      console.log(err)
+      next(err);
+    }
+  },
+  async getHighlightPdfQuestion(req, res, next) {
+    try {
+
+      let questionData = await Question.findOne({ where: { id: req.query.questionId } });
+      if (!questionData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
+      }
+
+      let fileUrl = await services.sheetManagementReviewerService.getFilesUrlFromS3(questionData.teacherHighlightErrorPdf);
+      res.status(httpStatus.OK).send({ pdf: fileUrl, errors: questionData.teacherHighlightErrorErrors });
+
+    } catch (err) {
+      console.log(err)
+      next(err);
+    }
+  },
+  async saveHighlightDataInQuestions(req, res, next) {
+    const t = await db.transaction();
+    try {
+
+      let questionData = await Question.findOne({ where: { id: req.body.questionId } });
+      if (!questionData) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
+      }
+
+      let dataToBeUpdated = {
+        teacherHighlightErrorErrors: req.body.report,
+      };
+
+      await Question.update(dataToBeUpdated, { where: { id: req.body.questionId } })
+      await t.commit();
+      res.status(httpStatus.OK).send({ message: "Updated Error In Question Sucessfully" });
+
+    } catch (err) {
+      console.log(err)
       next(err);
     }
   },

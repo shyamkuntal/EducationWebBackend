@@ -338,10 +338,9 @@ const SheetManagementController = {
             };
             let whereQuery = {
                 where: { id: sheetData.id },
-            };
-            await SheetManagement.update(dataToBeUpdated, whereQuery, {
                 transaction: t,
-            });
+            };
+            await SheetManagement.update(dataToBeUpdated, whereQuery);
             responseMessage.assinedUserToSheet = "Sheet assigned to supervisor successfully";
             responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
             // Create sheetLog
@@ -354,9 +353,7 @@ const SheetManagementController = {
             );
             responseMessage.sheetLog = "Log record for assignment to supervisor added successfully";
 
-            await Question.update({ isReCheckedByReviewer: false }, { sheetId: values.sheetId }, {
-                transaction: t,
-            });
+            await Question.update({ isReCheckedByReviewer: false }, { sheetId: values.sheetId, transaction: t });
 
             await t.commit();
             res.status(httpStatus.OK).send(responseMessage);
@@ -466,7 +463,7 @@ const SheetManagementController = {
                 raw: true,
                 nest: true,
             };
-            let whereQuery = { where: { id: values.sheetId }, raw: true };
+            let whereQuery = { where: { id: values.sheetId }, raw: true, transaction: t };
 
             let sheetData = await SheetManagement.findOne(whereQueryForFindSheet);
 
@@ -489,9 +486,7 @@ const SheetManagementController = {
                 isSpam: true,
             };
 
-            await SheetManagement.update(dataToBeUpdated, whereQuery, {
-                transaction: t,
-            });
+            await SheetManagement.update(dataToBeUpdated, whereQuery);
 
             // Create sheetLog
             await services.sheetManagementService.createSheetLog(
@@ -503,9 +498,7 @@ const SheetManagementController = {
             );
 
             console.log("IN")
-            await Question.update({ isReCheckedByReviewer: false }, { where: { sheetId: values.sheetId } }, {
-                transaction: t,
-            });
+            await Question.update({ isReCheckedByReviewer: false }, { where: { sheetId: values.sheetId }, transaction: t });
             console.log("OUT")
 
             await t.commit();

@@ -73,6 +73,9 @@ const deleteQuestion = async (whereQuery, options) => {
 
 const editQuestion = async (dataToBeUpdated, whereQuery, options) => {
   try {
+    if(options)
+      whereQuery={...whereQuery,...options}
+
     let question = await Question.update(dataToBeUpdated, whereQuery, options);
 
     return question;

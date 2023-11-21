@@ -170,6 +170,14 @@ const Question = db.define("question", {
     type: Sequelize.TEXT,
     allowNull: true,
   },
+  teacherHighlightErrorPdf: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  teacherHighlightErrorErrors: {
+    type: Sequelize.TEXT,
+    allowNull: true,
+  },
   isReCheckedByReviewer: {
     type: Sequelize.BOOLEAN,
     allowNull: true,

@@ -74,6 +74,9 @@ const getFilesUrlFromS3 = async (fileName) => {
 
 const updatePaperNumberSheet = async (dataToBeUpdated, whereQuery, options) => {
   try {
+    if(options)
+      whereQuery={...whereQuery,...options}
+
     let updateStatus = await PaperNumberSheet.update(dataToBeUpdated, whereQuery, options);
 
     return updateStatus;

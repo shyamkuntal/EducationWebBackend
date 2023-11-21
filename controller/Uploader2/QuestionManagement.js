@@ -162,6 +162,7 @@ const QuestionManagementController = {
 
       res.status(httpStatus.OK).send({ message: "option deleted!" });
     } catch (err) {
+      await t.rollback()
       next(err);
     }
   },
@@ -181,9 +182,8 @@ const QuestionManagementController = {
             isCorrectOption: dataToBeUpdated[i].isCorrectOption,
           },
           {
-            where: { questionId: questionId, id: dataToBeUpdated[i].id },
+            where: { questionId: questionId, id: dataToBeUpdated[i].id },transaction: t
           },
-          { transaction: t }
         );
       }
 
@@ -214,6 +214,7 @@ const QuestionManagementController = {
       });
       res.status(httpStatus.OK).send({ questionDetails, options: fillDropDownOptions });
     } catch (err) {
+      await t.rollback()
       next(err);
     }
   },
@@ -471,9 +472,8 @@ const QuestionManagementController = {
           await MatchQuestionPair.update(
             dataToBeUpdated,
             {
-              where: { id: updatePairs[i].id, questionId: id },
+              where: { id: updatePairs[i].id, questionId: id }, transaction: t
             },
-            { transaction: t }
           );
         }
 
@@ -652,8 +652,7 @@ const QuestionManagementController = {
       if (drawingQuestionValues.newCanvasJson && drawingQuestionValues.newCanvasJson.length > 0) {
         await DrawingQuestion.update(
           { canvasJson: drawingQuestionValues.newCanvasJson },
-          { where: { questionId: id } },
-          { transaction: t }
+          { where: { questionId: id }, transaction: t },
         );
       }
 
@@ -764,8 +763,7 @@ const QuestionManagementController = {
             dataGeneratorJson: labelDragQuestionValues.newDataGeneratorCanvasJson,
             studentJson: labelDragQuestionValues.newStudentCanvasJson,
           },
-          { where: { questionId: questionValues.id } },
-          { transaction: t }
+          { where: { questionId: questionValues.id },transaction: t  },
         );
       }
 
@@ -1020,6 +1018,7 @@ const QuestionManagementController = {
 
       res.status(httpStatus.OK).send({ message: "Geogebra question deleted!" });
     } catch (err) {
+      await t.rollback()
       next(err);
     }
   },
@@ -1060,6 +1059,7 @@ const QuestionManagementController = {
         .status(httpStatus.OK)
         .send({ message: "Desmos Graph Question created!", desmosQuestion: createDesmosQuestion });
     } catch (err) {
+      await t.rollback()
       next(err);
     }
   },
@@ -1088,8 +1088,7 @@ const QuestionManagementController = {
             dataGeneratorJson: desmosQuestionValues.newDataGeneratorJson,
             studentJson: desmosQuestionValues.newStudentJson,
           },
-          { where: { questionId: id } },
-          { transaction: t }
+          { where: { questionId: id },transaction: t },
         );
       }
 
@@ -1097,6 +1096,7 @@ const QuestionManagementController = {
 
       res.status(httpStatus.OK).send({ message: "Desmos Graph Question Updated!" });
     } catch (err) {
+      await t.rollback()
       next(err);
     }
   },
@@ -1195,8 +1195,7 @@ const QuestionManagementController = {
             dataGeneratorJson: hotSpotQuestionValues.newDataGeneratorJson,
             studentJson: hotSpotQuestionValues.newStudentJson,
           },
-          { where: { questionId: id } },
-          { transaction: t }
+          { where: { questionId: id },transaction: t },
         );
       }
 
@@ -1295,8 +1294,7 @@ const QuestionManagementController = {
         };
         await SortQuestionOption.update(
           dataToBeUpdated,
-          { where: { id: sortQuestionOptionToBeUpdated[i].id, questionId: id } },
-          { transaction: t }
+          { where: { id: sortQuestionOptionToBeUpdated[i].id, questionId: id },transaction: t },
         );
       }
 

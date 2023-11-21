@@ -1163,8 +1163,7 @@ const QuestionManagementController = {
                   if (itemId) {
                     await QuestionItem.update(
                       itemData,
-                      { where: { id: itemId } },
-                      { transaction: t }
+                      { where: { id: itemId }, transaction: t }
                     );
                   } else {
                     await QuestionItem.create(itemData, { transaction: t });
@@ -1202,8 +1201,7 @@ const QuestionManagementController = {
                     distractor: file.distractor,
                     content: file.content,
                   },
-                  { where: { questionId } },
-                  { transaction: t }
+                  { where: { questionId }, transaction: t },
                 );
 
                 return updateOption;
@@ -1391,9 +1389,7 @@ const QuestionManagementController = {
           tableData: tbData,
           autoPlot: autoPlot || false,
           allowPrefilledText: allowPrefilledText || false,
-        },
-        { where: { questionId: id } },
-        { transaction: t }
+        }, { where: { questionId: id, }, transaction: t }
       );
 
       await t.commit();
@@ -1536,9 +1532,9 @@ const QuestionManagementController = {
       await FillTextAnswer.update(
         { answerContent: choices },
         {
-          where: { questionId: question?.dataValues?.id },
-        },
-        { transaction: t }
+          where: { questionId: question?.dataValues?.id, },
+          transaction: t
+        }
       );
 
       await t.commit();
@@ -1645,9 +1641,8 @@ const QuestionManagementController = {
       await FillTextAnswer.update(
         { answerContent: choices },
         {
-          where: { questionId: question?.dataValues?.id },
-        },
-        { transaction: t }
+          where: { questionId: question?.dataValues?.id, }, transaction: t
+        }
       );
 
       await t.commit();
@@ -1782,10 +1777,11 @@ const QuestionManagementController = {
               },
               {
                 where: { id: file.id, questionId: id },
+                transaction: t
               },
-              { transaction: t }
             );
-          } else {
+          }
+          else {
             const createdOption = await QuestionDistractor.create(
               {
                 questionId: id,
@@ -1811,9 +1807,8 @@ const QuestionManagementController = {
             await MatchQuestionPair.update(
               dataToBeUpdated,
               {
-                where: { id: updatePairs[i].id, questionId: id },
+                where: { id: updatePairs[i].id, questionId: id }, transaction: t
               },
-              { transaction: t }
             );
           } else {
             console.log("success5");
@@ -2000,16 +1995,14 @@ const QuestionManagementController = {
 
       await Question.update(
         { questionData: questionData, ...rest },
-        { where: { id: questionId } },
-        { transaction: t }
+        { where: { id: questionId }, transaction: t },
       );
       await DrawingQuestion.update(
         {
           studentJson: drawingQuestionValues.studentJson,
           uploaderJson: drawingQuestionValues.uploaderJson,
         },
-        { where: { questionId: questionId } },
-        { transaction: t }
+        { where: { questionId: questionId }, transaction: t }
       );
 
       await t.commit();
@@ -2118,9 +2111,8 @@ const QuestionManagementController = {
       await Question.update(
         { questionData, ...rest },
         {
-          where: { id: questionId },
-        },
-        { transaction: t }
+          where: { id: questionId }, transaction: t
+        }
       );
 
       await LabelDragQuestion.update(
@@ -2128,8 +2120,7 @@ const QuestionManagementController = {
           uploaderJson: labelDragQuestionValues.uploaderJson,
           studentJson: labelDragQuestionValues.studentJson,
         },
-        { where: { questionId: questionValues.questionId } },
-        { transaction: t }
+        { where: { questionId: questionValues.questionId }, transaction: t },
       );
 
       await t.commit();
@@ -2238,9 +2229,8 @@ const QuestionManagementController = {
       await Question.update(
         { questionData, ...rest },
         {
-          where: { id: questionId },
+          where: { id: questionId }, transaction: t
         },
-        { transaction: t }
       );
 
       await LabelFillQuestion.update(
@@ -2422,6 +2412,7 @@ const QuestionManagementController = {
 
       res.status(httpStatus.OK).send({ message: "Geogebra question deleted!" });
     } catch (err) {
+      await t.rollback()
       next(err);
     }
   },
@@ -2462,6 +2453,7 @@ const QuestionManagementController = {
         .status(httpStatus.OK)
         .send({ message: "Desmos Graph Question created!", desmosQuestion: createDesmosQuestion });
     } catch (err) {
+      await t.rollback()
       next(err);
     }
   },
@@ -2487,8 +2479,7 @@ const QuestionManagementController = {
           uploaderJson: desmosQuestionValues.uploaderJson,
           studentJson: desmosQuestionValues.studentJson,
         },
-        { where: { questionId: questionId } },
-        { transaction: t }
+        { where: { questionId: questionId }, transaction: t },
       );
       // }
 
@@ -2496,6 +2487,7 @@ const QuestionManagementController = {
 
       res.status(httpStatus.OK).send({ message: "Desmos Graph Question Updated!" });
     } catch (err) {
+      await t.rollback()
       next(err);
     }
   },
@@ -2606,8 +2598,7 @@ const QuestionManagementController = {
           uploaderJson: hotSpotQuestionValues.uploaderJson,
           studentJson: hotSpotQuestionValues.studentJson,
         },
-        { where: { questionId: questionId } },
-        { transaction: t }
+        { where: { questionId: questionId }, transaction: t },
       );
 
       await t.commit();
@@ -2720,8 +2711,7 @@ const QuestionManagementController = {
         if (sortQuestionOptionToBeUpdated[i].id) {
           await SortQuestionOption.update(
             dataToBeUpdated,
-            { where: { id: sortQuestionOptionToBeUpdated[i].id, questionId: id } },
-            { transaction: t }
+            { where: { id: sortQuestionOptionToBeUpdated[i].id, questionId: id }, transaction: t },
           );
         } else {
           await SortQuestionOption.create(
@@ -2912,9 +2902,9 @@ const QuestionManagementController = {
         statusForUploader: CONSTANTS.sheetStatuses.InProgress,
       };
 
-      let whereQueryForSheetUpdate = { where: { id: sheetData.id } };
+      let whereQueryForSheetUpdate = { where: { id: sheetData.id }, transaction: t };
 
-      await SheetManagement.update(dataToBeUpdated, whereQueryForSheetUpdate, { transaction: t });
+      await SheetManagement.update(dataToBeUpdated, whereQueryForSheetUpdate);
 
       await t.commit();
       res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
@@ -2957,9 +2947,9 @@ const QuestionManagementController = {
         statusForUploader: CONSTANTS.sheetStatuses.Complete,
       };
 
-      let whereQueryForSheetUpdate = { where: { id: sheetData.id } };
+      let whereQueryForSheetUpdate = { where: { id: sheetData.id }, transaction: t };
 
-      await SheetManagement.update(dataToBeUpdated, whereQueryForSheetUpdate, { transaction: t });
+      await SheetManagement.update(dataToBeUpdated, whereQueryForSheetUpdate);
 
       await t.commit();
       res.status(httpStatus.OK).send({ message: "Sheet Status Updated successfully!" });
@@ -3014,11 +3004,10 @@ const QuestionManagementController = {
 
       let whereQuery = {
         where: { id: sheetData.id },
+        transaction: t,
       };
 
-      await SheetManagement.update(dataToBeUpdated, whereQuery, {
-        transaction: t,
-      });
+      await SheetManagement.update(dataToBeUpdated, whereQuery);
 
       responseMessage.assinedUserToSheet = "Sheet assigned to supervisor successfully";
       responseMessage.UpdateSheetStatus = "Sheet Statuses updated successfully";
@@ -3073,15 +3062,9 @@ const QuestionManagementController = {
   async addBookQuestion(req, res, next) {
     const t = await db.transaction();
     try {
-      const bookSheet = await SheetManagement.findOne(
-        { where: { id: req.body.sheetId } },
-        { transaction: t }
-      );
-      const incrementResult = await bookSheet.increment(
-        "numberOfQuestion",
-        { by: 1 },
-        { transaction: t }
-      );
+
+      const bookSheet = await SheetManagement.findOne({ where: { id: req.body.sheetId } }, { transaction: t })
+      const incrementResult = await bookSheet.increment('numberOfQuestion', { by: 1,transaction: t });
 
       await t.commit();
       res.status(httpStatus.OK).send({ ...incrementResult, message: "Success" });
