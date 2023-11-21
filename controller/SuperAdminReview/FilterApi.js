@@ -284,116 +284,115 @@ const AllFilteredApi = {
       console.error(error);
       res.status(500).send("Internal Server Error");
     }
-  }
+  },
   
 
-//   async getQuestionsByFilterResult(req, res) {
-//     try {
-//       let whereClauseForSheet = {};
-//       let whereClauseForLevel = {};
-//       let whereClauseForPaperNo = {};
-//       let whereClauseForTopic = {};
-//       let board = req.query.board;
-//       let subboard = req.query.subboard;
-//       let grade = req.query.grade;
-//       let subject = req.query.subject;
-//       let topic = req.query.topic;
-//       let year = req.query.year;
-//       let season = req.query.season;
-//       let variant = req.query.variant;
-//       let paperNo = req.query.paperNo;
-//       let level = req.query.level;
+  async getQuestionsByFilterResult(req, res) {
+    try {
+      let whereClauseForSheet = {};
+      let whereClauseForLevel = {};
+      let whereClauseForPaperNo = {};
+      let whereClauseForTopic = {};
+      let board = req.query.board;
+      let subboard = req.query.subboard;
+      let grade = req.query.grade;
+      let subject = req.query.subject;
+      let topic = req.query.topic;
+      let year = req.query.year;
+      let season = req.query.season;
+      let variant = req.query.variant;
+      let paperNo = req.query.paperNo;
+      let level = req.query.level;
 
-//       whereClauseForSheet.isPublished =true
+      whereClauseForSheet.isPublished =true
 
-//       if (board) {
-//         whereClauseForSheet.boardId = board;
-//       }
-//       if (subboard) {
-//         whereClauseForSheet.subBoardId == subboard;
-//       }
-//       if (grade) {
-//         whereClauseForSheet.grade = grade;
-//       }
-//       if (year) {
-//         whereClauseForSheet.year = year;
-//       }
-//       if (season) {
-//         whereClauseForSheet.season = season;
-//       }
-//       if (variant) {
-//         whereClauseForSheet.variantId = variant;
-//       }
-//       if (subject) {
-//         whereClauseForSheet.subjectId = subject;
-//       }
-//       if (level) {
-//         whereClauseForLevel.id = level;
-//       }
-//       if (paperNo) {
-//         whereClauseForPaperNo.id = paperNo;
-//       }
-//       if (topic) {
-//         whereClauseForTopic.topicId = topic;
-//       }
+      if (board) {
+        whereClauseForSheet.boardId = board;
+      }
+      if (subboard) {
+        whereClauseForSheet.subBoardId == subboard;
+      }
+      if (grade) {
+        whereClauseForSheet.grade = grade;
+      }
+      if (year) {
+        whereClauseForSheet.year = year;
+      }
+      if (season) {
+        whereClauseForSheet.season = season;
+      }
+      if (variant) {
+        whereClauseForSheet.variantId = variant;
+      }
+      if (subject) {
+        whereClauseForSheet.subjectName = subject;
+      }
+      if (level) {
+        whereClauseForLevel.id = level;
+      }
+      if (paperNo) {
+        whereClauseForPaperNo.id = paperNo;
+      }
+      if (topic) {
+        whereClauseForTopic.name = topic;
+      }
 
-//       let Questions = await Question.findAll({
-//         include: [
-//           {
-//             model: SheetManagement,
-//             where: whereClauseForSheet,
-//             include: [
-//               {
-//                 model: Subject,
-//                 include: [
-//                   {
-//                     model: SubjectLevel,
-//                     where: whereClauseForLevel,
-//                   },
-//                   {
-//                     model: PaperNumberSheet,
-//                     where: whereClauseForPaperNo,
-//                   },
-//                   {
-//                     model: TopicTask,
-//                     include: [
-//                       {
-//                         model: TaskTopicMapping,
-//                         where: whereClauseForTopic,
-//                       },
-//                     ],
-//                   },
-//                 ],
-//               },
-//             ],
-//           },
-//           {
-//             model: QuestionTopicMapping,
-//             include: [
-//               {
-//                 model: Topic,
-//                 // whereClauseForTopic,
-//               },
-//             ],
-//             where: whereClauseForTopic,
-//           },
-//           {
-//             model: QuestionVocabMapping,
-//             include: [
-//               {
-//                 model: Vocabulary,
-//               },
-//             ],
-//           },
-//         ],
-//       });
+      let Questions = await Question.findAll({
+        include: [
+          {
+            model: SheetManagement,
+            where: whereClauseForSheet,
+            include: [
+              {
+                model: Subject,
+                include: [
+                  {
+                    model: SubjectLevel,
+                    where: whereClauseForLevel,
+                  },
+                  {
+                    model: PaperNumberSheet,
+                    where: whereClauseForPaperNo,
+                  },
+                  {
+                    model: TopicTask,
+                    include: [
+                      {
+                        model: TaskTopicMapping,
+                        where: whereClauseForTopic,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: QuestionTopicMapping,
+            include: [
+              {
+                model: Topic,
+                whereClauseForTopic,
+              },
+            ],
+          },
+          {
+            model: QuestionVocabMapping,
+            include: [
+              {
+                model: Vocabulary,
+              },
+            ],
+          },
+        ],
+      });
 
-//       res.send(Questions);
-//     } catch (error) {
-//       console.error(error);
-//       res.status(500).send("Internal Server Error");
-//     }
-//   },
+      res.send(Questions);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  },
 };
 
 module.exports = { AllFilteredApi };
