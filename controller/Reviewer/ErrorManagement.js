@@ -240,6 +240,7 @@ const ErrorManagementController = {
 
         } catch (err) {
             console.log(err)
+            await t.rollback();
             next(err);
         }
     },

@@ -157,6 +157,7 @@ const BookManagementController = {
         // Checking if sheet is already assigned to Data Generator
 
         if (bookTaskData.assignedToUserId === userData.id) {
+          await t.commit();
           res.status(httpStatus.OK).send({ message: "Task already assigned to Data Generator" });
         } else {
           // UPDATE task assignment & life cycle & task status
@@ -215,6 +216,7 @@ const BookManagementController = {
           res.status(httpStatus.OK).send(responseMessage);
         }
       } else {
+        await t.commit();
         res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Task Id" });
       }
     } catch (err) {
@@ -246,6 +248,7 @@ const BookManagementController = {
         // Checking if sheet is already assigned to Data Generator
 
         if (bookTaskData.assignedToUserId === userData.id) {
+          await t.commit();
           res.status(httpStatus.OK).send({ message: "Task already assigned to Data Generator" });
         } else {
           // UPDATE task assignment & life cycle & task status
@@ -303,6 +306,7 @@ const BookManagementController = {
           res.status(httpStatus.OK).send(responseMessage);
         }
       } else {
+        await t.commit();
         res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Task Id" });
       }
     } catch (err) {

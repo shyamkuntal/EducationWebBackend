@@ -749,6 +749,7 @@ const PastPaperSupervisorController = {
     try {
       let values;
     } catch (err) {
+      await t.rollback();
       next(err);
     }
   },

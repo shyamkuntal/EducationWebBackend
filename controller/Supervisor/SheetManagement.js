@@ -124,6 +124,7 @@ const SheetManagementController = {
         // Checking if sheet is already assigned to Data Generator
 
         if (sheetData.assignedToUserId === userData.id) {
+          await t.commit();
           res.status(httpStatus.OK).send({ message: "Sheet already assigned to Uploader" });
         } else {
           let dataToBeUpdatedInTaskTable = {
@@ -164,6 +165,7 @@ const SheetManagementController = {
           res.status(httpStatus.OK).send(responseMessage);
         }
       } else {
+        await t.commit();
         res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Task Id" });
       }
     } catch (err) {
@@ -193,6 +195,7 @@ const SheetManagementController = {
 
       if (userData && sheetData) {
         if (sheetData.assignedToUserId === userData.id) {
+          await t.commit();
           res.status(httpStatus.OK).send({ message: "Sheet already assigned to Reviewer" });
         } else {
           let dataToBeUpdatedInTaskTable = {
@@ -233,6 +236,7 @@ const SheetManagementController = {
           res.status(httpStatus.OK).send(responseMessage);
         }
       } else {
+        await t.commit();
         res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Task Id" });
       }
     } catch (err) {
@@ -262,6 +266,7 @@ const SheetManagementController = {
 
       if (userData && sheetData) {
         if (sheetData.assignedToUserId === userData.id) {
+          await t.commit();
           res.status(httpStatus.OK).send({ message: "Sheet already assigned to Teacher" });
         } else {
           let dataToBeUpdatedInTaskTable = {
@@ -302,6 +307,7 @@ const SheetManagementController = {
           res.status(httpStatus.OK).send(responseMessage);
         }
       } else {
+        await t.commit();
         res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Task Id" });
       }
     } catch (err) {
@@ -331,6 +337,7 @@ const SheetManagementController = {
 
       if (userData && sheetData) {
         if (sheetData.assignedToUserId === userData.id) {
+          await t.commit();
           res.status(httpStatus.OK).send({ message: "Sheet already assigned to Pricer" });
         } else {
           let dataToBeUpdatedInTaskTable = {
@@ -371,6 +378,7 @@ const SheetManagementController = {
           res.status(httpStatus.OK).send(responseMessage);
         }
       } else {
+        await t.commit();
         res.status(httpStatus.BAD_REQUEST).send({ message: "Wrong user Id or Task Id" });
       }
     } catch (err) {

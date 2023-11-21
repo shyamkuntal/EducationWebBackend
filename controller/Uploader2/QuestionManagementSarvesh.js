@@ -62,10 +62,12 @@ const QuestionManagementSarveshController = {
       );
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        await t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
       if (fillDropDownValues.length > 10) {
+        await t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Only 10 options can be added!");
       }
 
@@ -788,6 +790,7 @@ const QuestionManagementSarveshController = {
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        await t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -904,6 +907,7 @@ const QuestionManagementSarveshController = {
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        await t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -922,12 +926,11 @@ const QuestionManagementSarveshController = {
         },
         { transaction: t }
       );
-
+      await t.commit();
       res
         .status(httpStatus.OK)
         .send({ message: "Geogebra question created!", geogebraQuestion: createGeoGebraQuestion });
 
-      await t.commit();
     } catch (err) {
       await t.rollback();
       next(err);

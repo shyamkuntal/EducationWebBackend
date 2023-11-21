@@ -812,6 +812,7 @@ const QuestionManagementController = {
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        await t.rollback();
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -928,6 +929,7 @@ const QuestionManagementController = {
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        await t.rollback();
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -1132,6 +1134,7 @@ const QuestionManagementController = {
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        await t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 

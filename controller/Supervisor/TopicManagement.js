@@ -517,6 +517,7 @@ const TopicManagementController = {
       let task = await services.topicTaskService.findTopicTasks(whereQueryForTaskFind);
 
       if (!task) {
+        await t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
       }
 

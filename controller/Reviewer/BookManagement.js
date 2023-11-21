@@ -236,7 +236,6 @@ const ReviewerBookController = {
         whereQuery,
         { transaction: t }
       );
-      await t.commit();
       if (!updateTaskBookMapping[0] > 0) {
         throw new ApiError(
           httpStatus.INTERNAL_SERVER_ERROR,
@@ -245,6 +244,7 @@ const ReviewerBookController = {
       } else {
         res.status(httpStatus.OK).send({ message: "Added Error Report to taskBook mapping!" });
       }
+      await t.commit();
     } catch (err) {
       await t.rollback();
       next(err);

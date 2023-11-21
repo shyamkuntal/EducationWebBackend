@@ -379,6 +379,7 @@ const QuestionManagementController = {
         });
         updatedData = response.data;
       } else {
+        await t.commit();
         res.status(httpStatus.OK).send({
           message: "QuestionContent Not Found",
         });
@@ -2303,6 +2304,7 @@ const QuestionManagementController = {
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        await t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -2322,12 +2324,13 @@ const QuestionManagementController = {
         },
         { transaction: t }
       );
-
+      
+      await t.commit();
       res
         .status(httpStatus.OK)
         .send({ message: "Geogebra question created!", geogebraQuestion: createGeoGebraQuestion });
 
-      await t.commit();
+      
     } catch (err) {
       console.log(err);
       await t.rollback();
@@ -3037,6 +3040,7 @@ const QuestionManagementController = {
     const t = await db.transaction();
     try {
       await QuestionDistractor.destroy({ where: { id: req.query.distracotrId } });
+      await t.commit();
       res.status(httpStatus.OK).send("success");
     } catch (err) {
       await t.rollback();
@@ -3052,6 +3056,7 @@ const QuestionManagementController = {
         { where: { id: req.body.parentId } }
       );
       console.log(Reuslt, "result");
+      await t.commit();
       res.status(httpStatus.OK).send("success");
     } catch (err) {
       await t.rollback();
