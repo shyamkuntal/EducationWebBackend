@@ -1183,7 +1183,7 @@ const QuestionManagementController = {
         const distracor = data.distracors;
         if (distracor.length > 0) {
           const createdDistractorFiles = await Promise.all(
-            distractor.map(async (file) => {
+            distracor.map(async (file) => {
               var dis = await QuestionDistractor.findOne({ where: { questionId } });
               if (dis === null) {
                 const createdOption = await QuestionDistractor.create(
@@ -1705,13 +1705,15 @@ const QuestionManagementController = {
       let pairsValues = await createMatchQuestionPairsSchema.validateAsync({ pairs });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        await t.commit()
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
       if (pairsValues.length > 20) {
+        await t.commit()
         throw new ApiError(httpStatus.BAD_REQUEST, "Only 20 options can be added!");
       }
-
+        
       let question = await services.questionService.createQuestion(questionValues, {
         raw: true,
         transaction: t,
@@ -1762,7 +1764,6 @@ const QuestionManagementController = {
     try {
       let { options, pairsToBeAdded, ...rest } = req.body;
       let questionValues = req.body;
-      console.log("success1");
       let updateValues = options;
       let distractor = req.body.distractor;
 
@@ -1955,6 +1956,7 @@ const QuestionManagementController = {
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        t.commit() 
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -2068,6 +2070,7 @@ const QuestionManagementController = {
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        t.commit() 
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -2185,6 +2188,7 @@ const QuestionManagementController = {
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        t.commit() 
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -2427,6 +2431,7 @@ const QuestionManagementController = {
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       if (questionValues.hasSubPart === true && !questionValues.parentQuestionId) {
+        t.commit() 
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -2540,6 +2545,7 @@ const QuestionManagementController = {
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
+        t.commit() 
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -2663,9 +2669,7 @@ const QuestionManagementController = {
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       let sortQuestionValues = await createSortQuestionSchema.validateAsync({ options });
-      console.log(questionValues);
-      console.log(sortQuestionValues);
-
+    
       let question = await services.questionService.createQuestion(questionValues, {
         transaction: t,
       });
@@ -2804,8 +2808,6 @@ const QuestionManagementController = {
       });
       let values = await deleteQuestionSchema.validateAsync({ questionId: req.query.questionId });
 
-      console.log(values);
-
       await SortQuestionOption.destroy(
         { where: { questionId: values.questionId } },
         { transaction: t }
@@ -2886,10 +2888,12 @@ const QuestionManagementController = {
       let previousStatus = sheetData.statusForUploader;
 
       if (!sheetData) {
+        t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Sheet not found!");
       }
 
       if (assignedTo !== values.uploaderId || lifeCycle !== CONSTANTS.roleNames.Uploader2) {
+        t.commit();
         throw new ApiError(
           httpStatus.BAD_REQUEST,
           "Sheet not assigned to Uploader or lifecycle mismatch"
@@ -2897,6 +2901,7 @@ const QuestionManagementController = {
       }
 
       if (previousStatus === CONSTANTS.sheetStatuses.InProgress) {
+        t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Current task status is already Inprogress");
       }
 
@@ -2932,10 +2937,12 @@ const QuestionManagementController = {
       let previousStatus = sheetData.statusForUploader;
 
       if (!sheetData) {
+        t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Sheet not found!");
       }
 
       if (assignedTo !== values.uploaderId || lifeCycle !== CONSTANTS.roleNames.Uploader2) {
+        t.commit();
         throw new ApiError(
           httpStatus.BAD_REQUEST,
           "Sheet not assigned to Uploader or lifecycle mismatch"
@@ -2943,6 +2950,7 @@ const QuestionManagementController = {
       }
 
       if (previousStatus === CONSTANTS.sheetStatuses.Complete) {
+        t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Current task status is already Complete");
       }
 
@@ -2987,15 +2995,18 @@ const QuestionManagementController = {
       let sheetData = await SheetManagement.findOne(whereQueryForFindSheet);
 
       if (!sheetData) {
+        t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Topic Task not found!");
       }
 
       if (sheetData.assignedToUserId === sheetData.supervisorId) {
+        t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Task already assigned to supervisor!");
       }
 
       // Checking if sheet status is complete for reviewer
       if (sheetData.statusForUploader !== CONSTANTS.sheetStatuses.Complete) {
+        t.commit();
         throw new ApiError(httpStatus.BAD_REQUEST, "Please mark it as complete first");
       }
 

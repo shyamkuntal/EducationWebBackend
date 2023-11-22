@@ -211,6 +211,7 @@ async function updateQuestion(questionId, updatedData, options) {
     const question = await Question.findByPk(questionId);
 
     if (!question) {
+      await options?.transaction?.commit()
       throw new Error(`Question with ID ${questionId} not found`);
     }
 
@@ -218,6 +219,7 @@ async function updateQuestion(questionId, updatedData, options) {
 
     return question;
   } catch (err) {
+    await options?.transaction?.rollback()
     throw err;
   }
 }
@@ -227,6 +229,7 @@ async function updateCategory(categoryId, categoryData) {
     const question = await QuestionCategory.findByPk(categoryId);
 
     if (!question) {
+      await t.commit();
       throw new Error(`Question with ID ${categoryId} not found`);
     }
 
@@ -234,6 +237,7 @@ async function updateCategory(categoryId, categoryData) {
 
     return question;
   } catch (err) {
+    await t.rollback()
     throw err;
   }
 }
