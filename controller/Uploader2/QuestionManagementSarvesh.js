@@ -140,11 +140,7 @@ const QuestionManagementSarveshController = {
 
       res.status(httpStatus.OK).send({ message: "option deleted!" });
     } catch (err) {
-<<<<<<< Updated upstream
       await t.rollback()
-=======
-      await t.rollback();
->>>>>>> Stashed changes
       next(err);
     }
   },

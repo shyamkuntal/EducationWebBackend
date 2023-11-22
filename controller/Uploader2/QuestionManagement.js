@@ -162,11 +162,7 @@ const QuestionManagementController = {
 
       res.status(httpStatus.OK).send({ message: "option deleted!" });
     } catch (err) {
-<<<<<<< Updated upstream
       await t.rollback()
-=======
-      await t.rollback();
->>>>>>> Stashed changes
       next(err);
     }
   },
@@ -1024,11 +1020,7 @@ const QuestionManagementController = {
 
       res.status(httpStatus.OK).send({ message: "Geogebra question deleted!" });
     } catch (err) {
-<<<<<<< Updated upstream
       await t.rollback()
-=======
-      await t.rollback();
->>>>>>> Stashed changes
       next(err);
     }
   },
@@ -1069,11 +1061,7 @@ const QuestionManagementController = {
         .status(httpStatus.OK)
         .send({ message: "Desmos Graph Question created!", desmosQuestion: createDesmosQuestion });
     } catch (err) {
-<<<<<<< Updated upstream
       await t.rollback()
-=======
-      await t.rollback();
->>>>>>> Stashed changes
       next(err);
     }
   },
@@ -1110,11 +1098,7 @@ const QuestionManagementController = {
 
       res.status(httpStatus.OK).send({ message: "Desmos Graph Question Updated!" });
     } catch (err) {
-<<<<<<< Updated upstream
       await t.rollback()
-=======
-      await t.rollback();
->>>>>>> Stashed changes
       next(err);
     }
   },
