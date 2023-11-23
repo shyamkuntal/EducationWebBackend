@@ -13,8 +13,33 @@ const {
 } = require("../../validations/PaperNumberValidations.js");
 const constants = require("../../constants/constants.js");
 const { getSheetLogsSchema } = require("../../validations/PPMSupervisorValidations.js");
+const { Subject, subjectName } = require("../../models/Subject.js");
 
 const PaperNumberSheetController = {
+
+  async getCountsCardData(req, res, next) {
+    try {
+      const { supervisorId } = req.query;
+
+      const activeSheets = await PaperNumberSheet.findAll({
+        attributes: ["id","subjectId", "statusForDataGenerator", "statusForReviewer", "lifeCycle", "assignedToUserId", "supervisorId"],
+        where: {
+          supervisorId: supervisorId,
+          isArchived: false
+        },
+        include: [{
+          model: Subject,
+          include: [{
+            model: subjectName
+          }]
+        }]
+      });
+      res.send(activeSheets);
+    } catch (err) {
+      console.log(err)
+      return res.json({ status: 501, error: err.message });
+    }
+  },
   //take care of isarchived and ispublished later
   async CreatePaperNumberSheet(req, res, next) {
     try {
@@ -302,27 +327,6 @@ const PaperNumberSheetController = {
       res.status(httpStatus.OK).send(paperNumbers);
     } catch (err) {
       next(err);
-    }
-  },
-
-  async getCountsCardData(req, res, next) {
-    try {
-      const { assignedToUserId, subjectId } = req.query;
-
-      const activeSheets = await PaperNumberSheet.findAll({
-        where: {
-          assignedToUserId: assignedToUserId,
-          subjectId: subjectId
-        },
-      });
-
-      let countsBySubject = {};
-      
-      const countsArray = Object.values(countsBySubject);
-
-      res.send(countsArray);
-    } catch (err) {
-      return res.json({ status: 501, error: err.message });
     }
   },
 

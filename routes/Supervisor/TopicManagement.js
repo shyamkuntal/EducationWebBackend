@@ -77,4 +77,6 @@ router.patch("/archivedatabytask", TopicManagementController.ArchiveAllTopicData
 router.patch("/archivesubtopic", TopicManagementController.ArchiveSubTopic);
 router.patch("/archivevocab", TopicManagementController.ArchiveVocab);
 
+router.get("/getCountCardData", TopicManagementController.getCountsCardData);
+
 module.exports = router;

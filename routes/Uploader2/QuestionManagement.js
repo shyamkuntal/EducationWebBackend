@@ -7,6 +7,7 @@ const paginatedSheetManagementSheets = require("../../middlewares/paginatedSheet
 const BoardManagementController = require("../../controller/SuperAdmin/BoardM");
 const upload = require("../../config/multer");
 const { GeneralApi } = require("../../controller/GeneralApi");
+const TeacherSheetManagementController = require("../../controller/Teacher/SheetMangement");
 
 // router.post("/createquestion", QuestionManagementController.createQuestion);
 
@@ -188,6 +189,7 @@ router.get("/getallTopicTasksbySubjectid", GeneralApi.getAllTopicSheetBySubjectI
 router.post("/updateParentQuestion", QuestionManagementController.UpdateParaentQuestion);
 
 router.patch("/addbookquestion", QuestionManagementController.addBookQuestion);
+router.get("/gettopicsubtopicvocabmappingsforquestion", TeacherSheetManagementController.getTopicSubTopicVocabMappingsForQuestion);
 
 
 module.exports = router;

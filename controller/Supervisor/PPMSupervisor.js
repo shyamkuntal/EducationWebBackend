@@ -1,7 +1,7 @@
 const { Board, SubBoard } = require("../../models/Board.js");
 const { Sheet, SheetLog } = require("../../models/PastPaperSheet.js");
 const CONSTANTS = require("../../constants/constants.js");
-const { Subject, SubjectLevel } = require("../../models/Subject.js");
+const { Subject, SubjectLevel, subjectName } = require("../../models/Subject.js");
 const services = require("../../services/index.js");
 const {
   assignUploderUserToSheetSchema,
@@ -31,6 +31,30 @@ const { PaperNumberSheet } = require("../../models/PaperNumberSheet.js");
 const { SheetManagement } = require("../../models/SheetManagement.js");
 
 const PastPaperSupervisorController = {
+  async getCountsCardData(req, res, next) {
+    try {
+      const { supervisorId } = req.query;
+
+      const activeSheets = await Sheet.findAll({
+        attributes: ["id","subjectId", "statusForPastPaper", "statusForReviewer", "lifeCycle", "assignedToUserId", "supervisorId"],
+        where: {
+          supervisorId: supervisorId,
+          isArchived: false
+        },
+        include: [{
+          model: Subject,
+          include: [{
+            model: subjectName
+          }]
+        }]
+      });
+      res.send(activeSheets);
+    } catch (err) {
+      console.log(err)
+      return res.json({ status: 501, error: err.message });
+    }
+  },
+
   async CreateSheet(req, res, next) {
     try {
       let values = await createPastPaperSheetSchema.validateAsync(req.body);
@@ -771,64 +795,6 @@ const PastPaperSupervisorController = {
     } catch (err) {
       await t.rollback();
       next(err);
-    }
-  },
-  async getCountsCardData(req, res, next) {
-    try {
-      const { assignedToUserId } = req.query;
-
-      const activeSheets = await Sheet.findAll({
-        where: {
-          assignedToUserId: assignedToUserId,
-        },
-      });
-
-      let countsBySubject = {};
-      activeSheets.forEach((sheet) => {
-        const subjectId = sheet.subjectId;
-
-        if (!countsBySubject[subjectId]) {
-          countsBySubject[subjectId] = {
-            subjectId: subjectId,
-            InProgress: 0,
-            NotStarted: 0,
-            Complete: 0,
-          };
-        }
-
-        if (sheet.lifeCycle === "DataGenerator") {
-          switch (sheet.statusForDataGenerator) {
-            case "InProgress":
-              countsBySubject[subjectId].InProgress++;
-              break;
-            case "NotStarted":
-              countsBySubject[subjectId].NotStarted++;
-              break;
-            case "Complete":
-              countsBySubject[subjectId].Complete++;
-              break;
-          }
-        } else if (sheet.lifeCycle === "Reviewer") {
-          switch (sheet.statusForReviewer) {
-            case "InProgress":
-              countsBySubject[subjectId].InProgress++;
-              break;
-            case "NotStarted":
-              countsBySubject[subjectId].NotStarted++;
-              break;
-            case "Complete":
-              countsBySubject[subjectId].Complete++;
-              break;
-          }
-        }
-      });
-
-      // Convert the countsBySubject object into an array of objects
-      const countsArray = Object.values(countsBySubject);
-
-      res.send(countsArray);
-    } catch (err) {
-      return res.json({ status: 501, error: err.message });
     }
   },
 

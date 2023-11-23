@@ -1,6 +1,6 @@
 const { Question } = require("../../models/Question");
-const{UserSubjectMapping, User} = require("../../models/User")
-const {SheetManagement} = require("../../models/SheetManagement");
+const { UserSubjectMapping, User } = require("../../models/User");
+const { SheetManagement } = require("../../models/SheetManagement");
 const { subjectName, Subject } = require("../../models/Subject");
 const { where } = require("sequelize");
 const { SubBoard, Board } = require("../../models/Board");
@@ -10,12 +10,14 @@ const { PaperNumberSheet } = require("../../models/PaperNumberSheet");
 const { BookTask } = require("../../models/BookTask");
 const { TopicTask } = require("../../models/TopicTask");
 
-
 const GeneralApi = {
   async getAllSubjectByUserId(req, res) {
     try {
-      const id = req.query.id
-      const Result = await UserSubjectMapping.findAll({where:{userId:id},include:[{model:subjectName,include:[{model:Subject}]}]});
+      const id = req.query.id;
+      const Result = await UserSubjectMapping.findAll({
+        where: { userId: id },
+        include: [{ model: subjectName, include: [{ model: Subject }] }],
+      });
       res.send(Result);
     } catch (error) {
       console.log(error);
@@ -28,8 +30,8 @@ const GeneralApi = {
       const id = req.query.id;
       const Result = await SheetManagement.findAll({
         where: {
-            uploader2Id: id,
-            isSpam:false
+          uploader2Id: id,
+          isSpam: false,
         },
       });
       res.send(Result);
@@ -44,8 +46,8 @@ const GeneralApi = {
       const id = req.query.id;
       const Result = await SheetManagement.findAll({
         where: {
-            uploader2Id: id,
-            isSpam:true
+          uploader2Id: id,
+          isSpam: true,
         },
       });
       res.send(Result);
@@ -57,8 +59,8 @@ const GeneralApi = {
 
   async getAllSpamQuestionByUSer(req, res) {
     try {
-      const id= req.query.id; 
-      let filters = {}
+      const id = req.query.id;
+      let filters = {};
       if (req.query.boardId) {
         filters.boardId = req.query.boardId;
       }
@@ -72,22 +74,22 @@ const GeneralApi = {
         filters.grade = req.query.grade;
       }
       if (req.query.isSpam) {
-        filters.isSpam = true
+        filters.isSpam = true;
       }
       if (req.query.uploader2Id) {
         filters.uploader2Id = req.query.uploader2Id;
       }
       const Result = await Question.findAll({
         where: {
-            isErrorByTeacher: true,
-            isErrorByReviewer:true
+          isErrorByTeacher: true,
+          isErrorByReviewer: true,
         },
-        include:[
-        {
-            model:SheetManagement,
-            where:filters
-        }
-        ]
+        include: [
+          {
+            model: SheetManagement,
+            where: filters,
+          },
+        ],
       });
       res.send(Result);
     } catch (error) {
@@ -95,41 +97,42 @@ const GeneralApi = {
       res.status(500).send("Internal Server Error");
     }
   },
-  
-  async getAllSheetBySubjectIdandUserId(req, res){
+
+  async getAllSheetBySubjectIdandUserId(req, res) {
     try {
       const id = req.query.id;
-      const subjectNameId = req.query.subjectId
-      if(subjectNameId){
+      const subjectNameId = req.query.subjectId;
+      if (subjectNameId) {
         Result = await SheetManagement.findAll({
           where: {
             assignedToUserId: id,
-              isSpam:false,
+            isArchived: false,
+            isPublished: false,
           },
-          include:{
-            model:Subject,
-            include:[{
-              model:subjectName,
-              where:{
-                 id:subjectNameId
-              }
-            }
+          include: {
+            model: Subject,
+            include: [
+              {
+                model: subjectName,
+                where: {
+                  id: subjectNameId,
+                },
+              },
             ],
-            where:{
-              subjectNameId:subjectNameId
-            }
-          }
+            where: {
+              subjectNameId: subjectNameId,
+            },
+          },
+        });
+      } else {
+        Result = await SheetManagement.findAll({
+          where: {
+            uploader2Id: id,
+            isSpam: false,
+          },
         });
       }
-      else{
-        Result = await SheetManagement.findAll({
-          where: {
-              uploader2Id: id,
-              isSpam:false
-          },
-        }); 
-      }
-      
+
       res.send(Result);
     } catch (error) {
       console.error(error);
@@ -137,30 +140,31 @@ const GeneralApi = {
     }
   },
 
-  async getAllPastPaperSheetBySubjectIdandUserId(req, res){
+  async getAllPastPaperSheetBySubjectIdandUserId(req, res) {
     try {
-      console.log("success")
       const id = req.query.id;
-      const subjectNameId = req.query.subjectId
-        Result = await Sheet.findAll({
+      const subjectNameId = req.query.subjectId;
+      Result = await Sheet.findAll({
+        where: {
+          assignedToUserId: id,
+          isArchived: false,
+          isPublished: false,
+        },
+        include: {
+          model: Subject,
+          include: [
+            {
+              model: subjectName,
+              where: {
+                id: subjectNameId,
+              },
+            },
+          ],
           where: {
-            assignedToUserId: id,
-              isSpam:false,
+            subjectNameId: subjectNameId,
           },
-          include:{
-            model:Subject,
-            include:[{
-              model:subjectName,
-              where:{
-                 id:subjectNameId
-              }
-            }
-            ],
-            where:{
-              subjectNameId:subjectNameId
-            }
-          }
-        });      
+        },
+      });
       res.send(Result);
     } catch (error) {
       console.error(error);
@@ -168,41 +172,43 @@ const GeneralApi = {
     }
   },
 
-  async getAllPaperNoSheetBySubjectIdandUserId(req, res){
+  async getAllPaperNoSheetBySubjectIdandUserId(req, res) {
     try {
       const id = req.query.id;
       const subjectNameId = req.query.subjectId;
       // const supervisorId = req.query.supervisorId
-      if(subjectNameId){
+      if (subjectNameId) {
         Result = await PaperNumberSheet.findAll({
           where: {
             assignedToUserId: id,
-              isSpam:false,
+            isArchived: false,
+            isPublished: false,
           },
-          include:{
-            model:Subject,
-            include:[{
-              model:subjectName,
-              where:{
-                 id:subjectNameId
-              }
-            }
+          include: {
+            model: Subject,
+            include: [
+              {
+                model: subjectName,
+                where: {
+                  id: subjectNameId,
+                },
+              },
             ],
-            where:{
-              subjectNameId:subjectNameId
-            }
-          }
+            where: {
+              subjectNameId: subjectNameId,
+            },
+          },
         });
-      }
-      else{
+      } else {
         Result = await SheetManagement.findAll({
           where: {
-              uploader2Id: id,
-              isSpam:false
+            uploader2Id: id,
+            isSpam: false,
+            isArchived: false,
           },
-        }); 
+        });
       }
-      
+
       res.send(Result);
     } catch (error) {
       console.error(error);
@@ -210,42 +216,43 @@ const GeneralApi = {
     }
   },
 
- 
-  async getAllBookSheetBySubjectIdandUserId(req, res){
+  async getAllBookSheetBySubjectIdandUserId(req, res) {
     try {
       const id = req.query.id;
       const subjectNameId = req.query.subjectId;
       // const supervisorId = req.query.supervisorId
-      if(subjectNameId){
+      if (subjectNameId) {
         Result = await BookTask.findAll({
           where: {
             assignedToUserId: id,
-              isSpam:false,
+            isArchived: false,
+            isPublished: false,
           },
-          include:{
-            model:Subject,
-            include:[{
-              model:subjectName,
-              where:{
-                 id:subjectNameId
-              }
-            }
+          include: {
+            model: Subject,
+            include: [
+              {
+                model: subjectName,
+                where: {
+                  id: subjectNameId,
+                },
+              },
             ],
-            where:{
-              subjectNameId:subjectNameId
-            }
-          }
+            where: {
+              subjectNameId: subjectNameId,
+            },
+          },
         });
-      }
-      else{
+      } else {
         Result = await SheetManagement.findAll({
           where: {
-              uploader2Id: id,
-              isSpam:false
+            uploader2Id: id,
+            isSpam: false,
+            isArchived: false,
           },
-        }); 
+        });
       }
-      
+
       res.send(Result);
     } catch (error) {
       console.error(error);
@@ -253,42 +260,42 @@ const GeneralApi = {
     }
   },
 
-
-  async getAllTopicSheetBySubjectIdandUserId(req, res){
+  async getAllTopicSheetBySubjectIdandUserId(req, res) {
     try {
       const id = req.query.id;
       const subjectNameId = req.query.subjectId;
       // const supervisorId = req.query.supervisorId
-      if(subjectNameId){
+      if (subjectNameId) {
         Result = await TopicTask.findAll({
           where: {
             assignedToUserId: id,
-              isSpam:false,
+            isArchived: false,
+            isPublished: false,
           },
-          include:{
-            model:Subject,
-            include:[{
-              model:subjectName,
-              where:{
-                 id:subjectNameId
-              }
-            }
+          include: {
+            model: Subject,
+            include: [
+              {
+                model: subjectName,
+                where: {
+                  id: subjectNameId,
+                },
+              },
             ],
-            where:{
-              subjectNameId:subjectNameId
-            }
-          }
+            where: {
+              subjectNameId: subjectNameId,
+            },
+          },
         });
-      }
-      else{
+      } else {
         Result = await SheetManagement.findAll({
           where: {
-              uploader2Id: id,
-              isSpam:false
+            uploader2Id: id,
+            isSpam: false,
           },
-        }); 
+        });
       }
-      
+
       res.send(Result);
     } catch (error) {
       console.error(error);

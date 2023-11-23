@@ -22,7 +22,7 @@ const SheetManagementController = {
       const { supervisorId } = req.query;
 
       const activeSheets = await SheetManagement.findAll({
-        attributes: ["id","subjectId", "statusForPricer", "statusForTeacher", "statusForUploader", "statusForReviewer", "lifeCycle"],
+        attributes: ["id","subjectId", "statusForPricer", "statusForTeacher", "statusForUploader", "statusForReviewer", "lifeCycle", "isSpam"],
         where: {
           supervisorId: supervisorId,
           isSpam: false

@@ -20,8 +20,32 @@ const { ApiError } = require("../../middlewares/apiError");
 const db = require("../../config/database");
 const { TopicTask } = require("../../models/TopicTask");
 const { TaskSubTopicMapping, TaskVocabularyMapping, TaskTopicMapping } = require("../../models/TopicTaskMapping");
+const { subjectName, Subject } = require("../../models/Subject");
 
 const TopicManagementController = {
+  async getCountsCardData(req, res, next) {
+    try {
+      const { supervisorId } = req.query;
+
+      const activeSheets = await TopicTask.findAll({
+        attributes: ["id","subjectId", "statusForDataGenerator", "statusForReviewer", "lifeCycle", "assignedToUserId", "supervisorId"],
+        where: {
+          supervisorId: supervisorId,
+          isArchived: false
+        },
+        include: [{
+          model: Subject,
+          include: [{
+            model: subjectName
+          }]
+        }]
+      });
+      res.send(activeSheets);
+    } catch (err) {
+      console.log(err)
+      return res.json({ status: 501, error: err.message });
+    }
+  },
   async createTopicTask(req, res, next) {
     const t = await db.transaction();
     try {
@@ -592,65 +616,6 @@ const TopicManagementController = {
       });
     } catch (err) {
       next(err);
-    }
-  },
-
-  async getCountsCardData(req, res, next) {
-    try {
-      const { assignedToUserId } = req.query;
-
-      const activeSheets = await TopicTask.findAll({
-        where: {
-          assignedToUserId: assignedToUserId,
-        },
-      });
-
-      let countsBySubject = {};
-      activeSheets.forEach((sheet) => {
-        const subjectId = sheet.subjectId;
-
-        if (!countsBySubject[subjectId]) {
-          countsBySubject[subjectId] = {
-            subjectId: subjectId,
-            InProgress: 0,
-            NotStarted: 0,
-            Complete: 0,
-          };
-        }
-
-        if (sheet.lifeCycle === "DataGenerator") {
-          switch (sheet.statusForDataGenerator) {
-            case "InProgress":
-              countsBySubject[subjectId].InProgress++;
-              break;
-            case "NotStarted":
-              countsBySubject[subjectId].NotStarted++;
-              break;
-            case "Complete":
-              countsBySubject[subjectId].Complete++;
-              break;
-          }
-        } else if (sheet.lifeCycle === "Reviewer") {
-          switch (sheet.statusForReviewer) {
-            case "InProgress":
-              countsBySubject[subjectId].InProgress++;
-              break;
-            case "NotStarted":
-              countsBySubject[subjectId].NotStarted++;
-              break;
-            case "Complete":
-              countsBySubject[subjectId].Complete++;
-              break;
-          }
-        }
-      });
-
-      // Convert the countsBySubject object into an array of objects
-      const countsArray = Object.values(countsBySubject);
-
-      res.send(countsArray);
-    } catch (err) {
-      return res.json({ status: 501, error: err.message });
     }
   },
 

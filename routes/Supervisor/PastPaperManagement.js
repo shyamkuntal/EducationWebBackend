@@ -63,5 +63,7 @@ router.get(
   
 router.patch("/togglearchivesheet", PastPaperSupervisorController.ToggleArchiveSheet);
 
+router.get("/getCountCardData", PastPaperSupervisorController.getCountsCardData);
+
 
 module.exports = router;

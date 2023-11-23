@@ -12,6 +12,7 @@ router.get("/getallpaginatedbooktask", paginatedBookTasks(), (req, res) => {
 });
 
 router.post("/createbooktask", BookManagementController.createBookTask);
+router.get("/getCountCardData", BookManagementController.getCountsCardData);
 
 router.patch("/updatebooktask", BookManagementController.updateBookTask);
 
