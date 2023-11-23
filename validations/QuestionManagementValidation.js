@@ -3,13 +3,13 @@ const CONSTANTS = require("../constants/constants");
 
 const createQuestionsSchema = Joi.object({
   sheetId: Joi.string().guid(),
-  parentQuestionId:Joi.string().guid(),
-  distractors:Joi.array(),
+  parentQuestionId: Joi.string().guid(),
+  distractors: Joi.array(),
   questionType: Joi.string().required(),
   questionData: Joi.string().required(),
   questionDescription: Joi.string().allow(""),
   marks: Joi.number(),
-  isQuestionSubPart:Joi.boolean(),
+  isQuestionSubPart: Joi.boolean(),
   requiredTime: Joi.number(),
   uploaderDescription: Joi.string(),
   videoLink: Joi.string().uri(),
@@ -113,14 +113,14 @@ const deleteQuestionSchema = Joi.object({ questionId: Joi.string().guid().requir
 const editQuestionSchema = Joi.object({
   id: Joi.string().guid(),
   parentQuestionId: Joi.string().guid(),
-  subQuestionNumberingScheme:Joi.string(),
-  bookExcercise:Joi.string(),
-  bookExcerciseNo:Joi.number(),
-  exampleNo:Joi.number(),
+  subQuestionNumberingScheme: Joi.string(),
+  bookExcercise: Joi.string(),
+  bookExcerciseNo: Joi.number(),
+  exampleNo: Joi.number(),
   questionId: Joi.string().guid(),
   sheetId: Joi.string().guid(),
   questionType: Joi.string(),
-  hasSubPart:Joi.boolean(),
+  hasSubPart: Joi.boolean(),
   type: Joi.string(),
   questionData: Joi.string(),
   marks: Joi.number(),
@@ -215,7 +215,7 @@ const createLabelDragQuestionSchema = Joi.object({
 
 const editLabelDragQuestionSchema = Joi.object({
   uploaderJson: Joi.string().required(),
-  studentJson: Joi.string().required(),
+  studentJson: Joi.string(),
 });
 
 const createLabelFillQuestionSchema = Joi.object({
@@ -225,7 +225,7 @@ const createLabelFillQuestionSchema = Joi.object({
 
 const editLabelFillQuestionSchema = Joi.object({
   dataGeneratorJson: Joi.string().required(),
-  studentJson: Joi.string().required(),
+  studentJson: Joi.string(),
 });
 
 const createGeogebraGraphQuestionSchema = Joi.object({

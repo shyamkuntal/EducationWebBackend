@@ -367,39 +367,22 @@ const SheetManagementController = {
         const t = await db.transaction();
         try {
 
-            let questionData = await Question.findOne({ where: { id: req.body.questionId } });
+            let questionData = await Question.findOne({ where: { id: req.body.questionId }, transaction: t });
             if (!questionData) {
+                await t.rollback();
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
             }
 
-            if (questionData.reviewerHighlightErrorPdf) {
-                let deleteParams = {
-                    Bucket: process.env.AWS_BUCKET_NAME,
-                    Key: questionData.reviewerHighlightErrorPdf,
-                };
-
-                await s3Client.send(new DeleteObjectCommand(deleteParams));
-            }
-
-            let uploadFile;
-            if (req.file) {
-                let fileName =
-                    process.env.AWS_BUCKET_SHEETMANAGEMENT_HIGHLIGHT_PDF_FOLDER +
-                    "/" +
-                    generateFileName(req.file.originalname)
-
-                uploadFile = await services.sheetManagementReviewerService.uploadSheetManagementErrorReportFile(
-                    fileName,
-                    req.file
-                );
+            if (questionData.reviewerHighlightErrorPdf !== null) {
+                await t.commit();
+                return res.status(httpStatus.OK).send({ message: "Highlight Already Exist" })
             }
 
             let dataToBeUpdated = {
-                reviewerHighlightErrorPdf: uploadFile,
+                reviewerHighlightErrorPdf: req.body.file,
             };
 
-
-            await Question.update(dataToBeUpdated, { where: { id: req.body.questionId } })
+            await Question.update(dataToBeUpdated, { where: { id: req.body.questionId }, transaction: t })
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Added pdf In Question Sucessfully" });
         } catch (err) {
@@ -416,8 +399,7 @@ const SheetManagementController = {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
             }
 
-            let fileUrl = await services.sheetManagementReviewerService.getFilesUrlFromS3(questionData.reviewerHighlightErrorPdf);
-            res.status(httpStatus.OK).send({ pdf: fileUrl, errors: questionData.reviewerHighlightErrorErrors });
+            res.status(httpStatus.OK).send({ dataURL: questionData.reviewerHighlightErrorPdf });
 
         } catch (err) {
             console.log(err)
@@ -428,22 +410,22 @@ const SheetManagementController = {
         const t = await db.transaction();
         try {
 
-            let questionData = await Question.findOne({ where: { id: req.body.questionId } });
+            let questionData = await Question.findOne({ where: { id: req.body.questionId }, transaction: t });
             if (!questionData) {
+                await t.rollback()
                 throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
             }
 
             let dataToBeUpdated = {
-                reviewerHighlightErrorErrors: req.body.report,
+                reviewerHighlightErrorPdf: req.body.report,
             };
 
-            await Question.update(dataToBeUpdated, { where: { id: req.body.questionId } })
+            await Question.update(dataToBeUpdated, { where: { id: req.body.questionId }, transaction: t })
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Updated Error In Question Sucessfully" });
 
         } catch (err) {
             console.log(err)
-            await t.rollback();
             next(err);
         }
     },

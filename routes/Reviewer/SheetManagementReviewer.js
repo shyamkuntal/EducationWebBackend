@@ -25,7 +25,7 @@ router.patch("/unseterrorquestion", SheetManagementController.unsetErrorQuestion
 
 router.patch("/adderrorquestion", upload.single("errorReportFile"), SheetManagementController.addErrorReportToQuestion);
 router.patch("/addtopicsubtopicvocaberrorquestion", upload.single("errorReportFile"), SheetManagementController.addTopicSubTopicVocabErrorReportToQuestion);
-router.patch("/addhighlighterrorpdf", upload.single("file"), SheetManagementController.addHighlightPdfToQuestion);
+router.patch("/addhighlighterrorpdf", SheetManagementController.addHighlightPdfToQuestion);
 
 router.get("/highlighterrorpdf", SheetManagementController.getHighlightPdfQuestion);
 router.patch("/highlighterrors", SheetManagementController.saveHighlightDataInQuestions);

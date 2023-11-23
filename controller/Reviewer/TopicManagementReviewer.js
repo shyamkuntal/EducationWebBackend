@@ -474,13 +474,13 @@ const TopicManagementController = {
       responseMessage.message.taskLog =
         "Log record for assignment to supervisor added successfully";
 
+      await t.commit();
       res.status(httpStatus.OK).send({
         message: "Recheking error added successfully!",
         responseMessage,
         addRecheckComment,
       });
 
-      await t.commit();
     } catch (err) {
       console.log(err);
       await t.rollback();
@@ -538,17 +538,17 @@ const TopicManagementController = {
   async getCountsCardData(req, res, next) {
     try {
       const { assignedToUserId } = req.query;
-  
+
       const activeSheets = await TopicTask.findAll({
         where: {
           assignedToUserId: assignedToUserId
         },
       });
-  
+
       let countsBySubject = {}; // Create an object to store counts for each subject
       activeSheets.forEach((sheet) => {
         const subjectId = sheet.subjectId;
-  
+
         if (!countsBySubject[subjectId]) {
           countsBySubject[subjectId] = {
             subjectId: subjectId,
@@ -557,7 +557,7 @@ const TopicManagementController = {
             Complete: 0,
           };
         }
-  
+
         if (sheet.lifeCycle === "DataGenerator") {
           switch (sheet.statusForDataGenerator) {
             case "InProgress":
@@ -584,10 +584,10 @@ const TopicManagementController = {
           }
         }
       });
-  
+
       // Convert the countsBySubject object into an array of objects
       const countsArray = Object.values(countsBySubject);
-  
+
       res.send(countsArray);
     } catch (err) {
       return res.json({ status: 501, error: err.message });

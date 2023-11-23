@@ -262,7 +262,7 @@ const TeacherSheetManagementController = {
       next(err);
     }
   },
-  
+
   // async getTopicSubTopicVocabMappingsForQuestion(req, res, next) {
   //   try {
   //     const questionId = req.query.questionId;
@@ -282,11 +282,11 @@ const TeacherSheetManagementController = {
   //       ],
   //       raw: true,
   //     });
-  
+
   //     response = await Promise.all(
   //       topicMappings.map(async (topicMapping) => {
   //         const { topicId, name } = topicMapping;
-  
+
   //         const subTopicMappings = await QuestionSubTopicMapping.findAll({
   //           where: {
   //             questionId,
@@ -301,7 +301,7 @@ const TeacherSheetManagementController = {
   //           ],
   //           raw: true,
   //         });
-  
+
   //         const vocabMappings = await QuestionVocabMapping.findAll({
   //           where: {
   //             questionId,
@@ -316,7 +316,7 @@ const TeacherSheetManagementController = {
   //           ],
   //           raw: true,
   //         });
-  
+
   //         return {
   //           topicId,
   //           name,
@@ -331,7 +331,7 @@ const TeacherSheetManagementController = {
   //         };
   //       })
   //     );
-  
+
   //     res.status(httpStatus.OK).send({
   //       questionId,
   //       response,
@@ -341,7 +341,7 @@ const TeacherSheetManagementController = {
   //     next(err);
   //   }
   // },
-  
+
   async markQuestionAsChecked(req, res, next) {
     const t = await db.transaction();
     try {
@@ -702,39 +702,22 @@ const TeacherSheetManagementController = {
     const t = await db.transaction();
     try {
 
-      let questionData = await Question.findOne({ where: { id: req.body.questionId } });
+      let questionData = await Question.findOne({ where: { id: req.body.questionId }, transaction: t });
       if (!questionData) {
+        await t.rollback();
         throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
       }
 
-      if (questionData.teacherHighlightErrorPdf) {
-        let deleteParams = {
-          Bucket: process.env.AWS_BUCKET_NAME,
-          Key: questionData.teacherHighlightErrorPdf,
-        };
-
-        await s3Client.send(new DeleteObjectCommand(deleteParams));
-      }
-
-      let uploadFile;
-      if (req.file) {
-        let fileName =
-          process.env.AWS_BUCKET_SHEETMANAGEMENT_HIGHLIGHT_PDF_FOLDER +
-          "/" +
-          generateFileName(req.file.originalname)
-
-        uploadFile = await services.sheetManagementReviewerService.uploadSheetManagementErrorReportFile(
-          fileName,
-          req.file
-        );
+      if (questionData.teacherHighlightErrorPdf !== null) {
+        await t.commit();
+        return res.status(httpStatus.OK).send({ message: "Highlight Already Exist" })
       }
 
       let dataToBeUpdated = {
-        teacherHighlightErrorPdf: uploadFile,
+        teacherHighlightErrorPdf: req.body.file,
       };
 
-
-      await Question.update(dataToBeUpdated, { where: { id: req.body.questionId } })
+      await Question.update(dataToBeUpdated, { where: { id: req.body.questionId }, transaction: t })
       await t.commit();
       res.status(httpStatus.OK).send({ message: "Added pdf In Question Sucessfully" });
     } catch (err) {
@@ -751,8 +734,7 @@ const TeacherSheetManagementController = {
         throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
       }
 
-      let fileUrl = await services.sheetManagementReviewerService.getFilesUrlFromS3(questionData.teacherHighlightErrorPdf);
-      res.status(httpStatus.OK).send({ pdf: fileUrl, errors: questionData.teacherHighlightErrorErrors });
+      res.status(httpStatus.OK).send({ dataURL: questionData.teacherHighlightErrorPdf });
 
     } catch (err) {
       console.log(err)
@@ -763,16 +745,17 @@ const TeacherSheetManagementController = {
     const t = await db.transaction();
     try {
 
-      let questionData = await Question.findOne({ where: { id: req.body.questionId } });
+      let questionData = await Question.findOne({ where: { id: req.body.questionId }, transaction: t });
       if (!questionData) {
+        await t.rollback()
         throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
       }
 
       let dataToBeUpdated = {
-        teacherHighlightErrorErrors: req.body.report,
+        teacherHighlightErrorPdf: req.body.report,
       };
 
-      await Question.update(dataToBeUpdated, { where: { id: req.body.questionId } })
+      await Question.update(dataToBeUpdated, { where: { id: req.body.questionId }, transaction: t })
       await t.commit();
       res.status(httpStatus.OK).send({ message: "Updated Error In Question Sucessfully" });
 

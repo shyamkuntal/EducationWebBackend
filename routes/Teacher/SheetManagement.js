@@ -42,7 +42,7 @@ router.patch("/markquestionaschecked", TeacherSheetManagementController.markQues
 router.patch("/removequestionaserror", TeacherSheetManagementController.removeQuestionAsError);
 router.patch("/removequestionaschecked", TeacherSheetManagementController.removeQuestionAsChecked);
 
-router.patch("/addhighlighterrorpdf", upload.single("file"), TeacherSheetManagementController.addHighlightPdfToQuestion);
+router.patch("/addhighlighterrorpdf", TeacherSheetManagementController.addHighlightPdfToQuestion);
 router.get("/highlighterrorpdf", TeacherSheetManagementController.getHighlightPdfQuestion);
 router.patch("/highlighterrors", TeacherSheetManagementController.saveHighlightDataInQuestions);
 

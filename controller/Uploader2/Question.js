@@ -1713,7 +1713,7 @@ const QuestionManagementController = {
         await t.commit()
         throw new ApiError(httpStatus.BAD_REQUEST, "Only 20 options can be added!");
       }
-        
+
       let question = await services.questionService.createQuestion(questionValues, {
         raw: true,
         transaction: t,
@@ -1956,7 +1956,7 @@ const QuestionManagementController = {
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
-        t.commit() 
+        t.commit()
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -2070,7 +2070,7 @@ const QuestionManagementController = {
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
-        t.commit() 
+        t.commit()
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -2120,10 +2120,7 @@ const QuestionManagementController = {
       );
 
       await LabelDragQuestion.update(
-        {
-          uploaderJson: labelDragQuestionValues.uploaderJson,
-          studentJson: labelDragQuestionValues.studentJson,
-        },
+        labelDragQuestionValues,
         { where: { questionId: questionValues.questionId }, transaction: t },
       );
 
@@ -2188,7 +2185,7 @@ const QuestionManagementController = {
       });
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
-        t.commit() 
+        t.commit()
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -2239,10 +2236,7 @@ const QuestionManagementController = {
       );
 
       await LabelFillQuestion.update(
-        {
-          dataGeneratorJson: labelFillQuestionValues.dataGeneratorJson,
-          studentJson: labelFillQuestionValues.studentJson,
-        },
+        labelFillQuestionValues,
         { where: { questionId: questionId } }
       );
 
@@ -2328,13 +2322,13 @@ const QuestionManagementController = {
         },
         { transaction: t }
       );
-      
+
       await t.commit();
       res
         .status(httpStatus.OK)
         .send({ message: "Geogebra question created!", geogebraQuestion: createGeoGebraQuestion });
 
-      
+
     } catch (err) {
       console.log(err);
       await t.rollback();
@@ -2431,7 +2425,7 @@ const QuestionManagementController = {
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       if (questionValues.hasSubPart === true && !questionValues.parentQuestionId) {
-        t.commit() 
+        t.commit()
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -2495,7 +2489,7 @@ const QuestionManagementController = {
 
       res.status(httpStatus.OK).send({ message: "Desmos Graph Question Updated!" });
     } catch (err) {
-      await t.rollback()
+      await t.rollback();
       next(err);
     }
   },
@@ -2545,7 +2539,7 @@ const QuestionManagementController = {
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       if (questionValues.isQuestionSubPart === true && !questionValues.parentQuestionId) {
-        t.commit() 
+        t.commit()
         throw new ApiError(httpStatus.BAD_REQUEST, "Please give parentQuestionId!");
       }
 
@@ -2669,7 +2663,7 @@ const QuestionManagementController = {
       let questionValues = await createQuestionsSchema.validateAsync(rest);
 
       let sortQuestionValues = await createSortQuestionSchema.validateAsync({ options });
-    
+
       let question = await services.questionService.createQuestion(questionValues, {
         transaction: t,
       });
@@ -3080,7 +3074,7 @@ const QuestionManagementController = {
     try {
 
       const bookSheet = await SheetManagement.findOne({ where: { id: req.body.sheetId } }, { transaction: t })
-      const incrementResult = await bookSheet.increment('numberOfQuestion', { by: 1,transaction: t });
+      const incrementResult = await bookSheet.increment('numberOfQuestion', { by: 1, transaction: t });
 
       await t.commit();
       res.status(httpStatus.OK).send({ ...incrementResult, message: "Success" });
