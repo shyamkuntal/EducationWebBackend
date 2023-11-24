@@ -19,6 +19,8 @@ router.get("/getassignedsubjects", PastPaperSupervisorController.getUserAssigned
 
 router.get("/getsubjectnames", PastPaperSupervisorController.getSubjectNames);
 router.post("/longanswer", QuestionManagementController.createLongAnswer);
+router.get("/gethighlightpdferrorforuploader", QuestionManagementController.getHighlightPdfQuestionForUoloader);
+router.get("/gethighlightpdferrorforuploaderbyTeacher", QuestionManagementController.getHighlightPdfQuestionForUploaderbyTeacher);
 // router.post(
 //   "/matchquestion",
 //   upload.array("optionFiles", 10),

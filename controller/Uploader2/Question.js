@@ -3143,10 +3143,41 @@ const QuestionManagementController = {
         res.status(httpStatus.OK).send({ message: "Added To Spam Succesfully" });
     } catch (err) {
         await t.rollback();
+    }
+    },
+  async getHighlightPdfQuestionForUoloader(req, res, next) {
+    try {
+
+        let questionData = await Question.findOne({ where: { id: req.query.questionId } });
+        if (!questionData) {
+            throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
+        }
+
+        res.status(httpStatus.OK).send({ dataURL: questionData.reviewerHighlightErrorPdf });
+
+    } catch (err) {
         console.log(err)
         next(err);
     }
 },
+
+async getHighlightPdfQuestionForUploaderbyTeacher(req, res, next) {
+  try {
+
+      let questionData = await Question.findOne({ where: { id: req.query.questionId } });
+      if (!questionData) {
+          throw new ApiError(httpStatus.BAD_REQUEST, "Question not found!");
+      }
+
+      res.status(httpStatus.OK).send({ dataURL: questionData.teacherHighlightErrorPdf });
+
+  } catch (err) {
+      console.log(err)
+      next(err);
+  }
+},
 };
+
+
 
 module.exports = QuestionManagementController;
