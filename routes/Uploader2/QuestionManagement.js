@@ -190,6 +190,7 @@ router.post("/updateParentQuestion", QuestionManagementController.UpdateParaentQ
 
 router.patch("/addbookquestion", QuestionManagementController.addBookQuestion);
 router.get("/gettopicsubtopicvocabmappingsforquestion", TeacherSheetManagementController.getTopicSubTopicVocabMappingsForQuestion);
+router.patch("/addsheeterror", QuestionManagementController.reportSheetError);
 
 
 module.exports = router;

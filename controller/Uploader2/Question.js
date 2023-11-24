@@ -71,6 +71,7 @@ const { User } = require("../../models/User");
 const { where } = require("sequelize");
 const { Vocabulary } = require("../../models/Vocabulary");
 const { FillTextAnswer } = require("../../models/FillTextAnswer");
+const { addErrorReportToSheetSchemaForUploader } = require("../../validations/ReviewerValidation");
 
 const QuestionManagementController = {
   async creatTextQues(req, res, next) {
@@ -3083,6 +3084,69 @@ const QuestionManagementController = {
       next(err);
     }
   },
+  async reportSheetError(req, res, next) {
+    const t = await db.transaction();
+    try {
+        let values = await addErrorReportToSheetSchemaForUploader.validateAsync(req.body);
+
+        // checking sheet
+        let whereQueryForFindSheet = {
+            where: {
+                id: values.sheetId,
+            },
+            include: [
+                { model: User, as: "assignedToUserName", attributes: ["id", "Name", "userName"] },
+                { model: User, as: "supervisor", attributes: ["id", "Name", "userName"] },
+            ],
+            raw: true,
+            nest: true,
+        };
+        let whereQuery = { where: { id: values.sheetId }, raw: true, transaction: t };
+
+        let sheetData = await SheetManagement.findOne(whereQueryForFindSheet);
+
+        if (!sheetData) {
+            throw new ApiError(httpStatus.BAD_REQUEST, "Sheet not found!");
+        }
+
+        if (
+            values.uploaderId !== sheetData.uploader2Id ||
+            sheetData.assignedToUserId !== sheetData.uploader2Id
+        ) {
+            throw new ApiError(httpStatus.BAD_REQUEST, "Uploader not assigned to sheet!");
+        }
+
+        let dataToBeUpdated = {
+            assignedToUserId: sheetData.supervisorId,
+            statusForReviewer: CONSTANTS.sheetStatuses.Complete,
+            statusForSupervisor: CONSTANTS.sheetStatuses.Complete,
+            reviewerCommentToSupervisor: values.errorReport,
+            isSpam: true,
+        };
+
+        await SheetManagement.update(dataToBeUpdated, whereQuery);
+
+        // Create sheetLog
+        await services.sheetManagementService.createSheetLog(
+            values.sheetId,
+            sheetData.assignedToUserName.userName,
+            sheetData.supervisor.userName,
+            CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisorErrorReport,
+            { transaction: t }
+        );
+
+        console.log("IN")
+        await Question.update({ isReCheckedByReviewer: false }, { where: { sheetId: values.sheetId }, transaction: t });
+        console.log("OUT")
+
+        await t.commit();
+        res.status(httpStatus.OK).send({ message: "Added To Spam Succesfully" });
+    } catch (err) {
+        await t.rollback();
+        console.log(err)
+        next(err);
+    }
+},
 };
 
 module.exports = QuestionManagementController;

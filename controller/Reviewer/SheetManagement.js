@@ -1,5 +1,5 @@
 const {
-    updateInprogressTaskStatusSchema, assignSupervisorUserToSheetSchema, addErrorReportSchema, addErrorReportToSheetSchema
+    updateInprogressTaskStatusSchema, assignSupervisorUserToSheetSchema, addErrorReportSchema, addErrorReportToSheetSchema, addErrorReportToSheetSchemaForUploader
 } = require("../../validations/ReviewerValidation");
 const { generateFileName } = require("../../config/s3");
 const { SheetManagement } = require("../../models/SheetManagement");
@@ -432,7 +432,7 @@ const SheetManagementController = {
     async reportSheetError(req, res, next) {
         const t = await db.transaction();
         try {
-            let values = await addErrorReportToSheetSchema.validateAsync(req.body);
+            let values = await addErrorReportToSheetSchemaForUploader.validateAsync(req.body);
 
             // checking sheet
             let whereQueryForFindSheet = {
@@ -456,16 +456,16 @@ const SheetManagementController = {
 
             if (
                 values.reviewerId !== sheetData.reviewerId ||
-                sheetData.assignedToUserId !== sheetData.reviewerId
+                sheetData.assignedToUserId !== sheetData.uploader2Id
             ) {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Reviewer not assigned to sheet!");
             }
 
             let dataToBeUpdated = {
                 assignedToUserId: sheetData.supervisorId,
-                statusForReviewer: CONSTANTS.sheetStatuses.Complete,
+                statusForUploader: CONSTANTS.sheetStatuses.Complete,
                 statusForSupervisor: CONSTANTS.sheetStatuses.Complete,
-                reviewerCommentToSupervisor: values.errorReport,
+                uploader2CommentToSupervisor: values.errorReport,
                 isSpam: true,
             };
 
@@ -476,13 +476,11 @@ const SheetManagementController = {
                 values.sheetId,
                 sheetData.assignedToUserName.userName,
                 sheetData.supervisor.userName,
-                CONSTANTS.sheetLogsMessages.reviewerAssignToSupervisorErrorReport,
+                CONSTANTS.sheetLogsMessages.uploaderAssignToSupervisor,
                 { transaction: t }
             );
+            // await Question.update({ isReCheckedByReviewer: false }, { where: { sheetId: values.sheetId }, transaction: t });
 
-            console.log("IN")
-            await Question.update({ isReCheckedByReviewer: false }, { where: { sheetId: values.sheetId }, transaction: t });
-            console.log("OUT")
 
             await t.commit();
             res.status(httpStatus.OK).send({ message: "Added To Spam Succesfully" });

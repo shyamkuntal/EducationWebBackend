@@ -48,6 +48,11 @@ const addErrorReportToSheetSchema = Joi.object({
     reviewerId: Joi.string().guid().required(),
     errorReport: Joi.string().max(225).required(),
 });
+const addErrorReportToSheetSchemaForUploader = Joi.object({
+    sheetId: Joi.string().guid().required(),
+    uploaderId: Joi.string().guid().required(),
+    errorReport: Joi.string().max(225).required(),
+});
 
 module.exports = {
     assignSupervisorUserToSheetSchema,
@@ -57,5 +62,6 @@ module.exports = {
     getReviewerSheetsSchema,
     updateInprogressTaskStatusSchema,
     addErrorReportSchema,
-    addErrorReportToSheetSchema
+    addErrorReportToSheetSchema,
+    addErrorReportToSheetSchemaForUploader
 };
