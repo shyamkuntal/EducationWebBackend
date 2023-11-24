@@ -92,6 +92,67 @@ const SheetManagementController = {
     }
   },
 
+  async editSheet(req, res, next) {
+    const t = await db.transaction();
+    try {
+        // let values =  await createSheetSchema.validateAsync(req.body);
+        let values =  req.body;
+        const sheetId = values.sheetId;
+
+        let sheet = await SheetManagement.findByPk(sheetId);
+        if (!sheet) {
+            return res.status(httpStatus.NOT_FOUND).send({ error: 'Sheet not found' });
+        }
+
+        sheet = await sheet.update(values, { transaction: t });
+
+        await SheetManagementBookMapping.destroy({ where: { sheetManagementId: sheetId }, transaction: t });
+        await SheetManagementPaperNoMapping.destroy({ where: { sheetManagementId: sheetId }, transaction: t });
+
+        const mappingEntries = [];
+
+        if (values.sheetType === "Books") {
+            let bookMapping = await SheetManagementBookMapping.create(
+                {
+                    sheetManagementId: sheet.id,
+                    bookId: values.bookId,
+                    chapterNo: values.chapterNo,
+                    chapterName: values.chapterName,
+                    startPageNo: values.startPageNo,
+                    endPageNo: values.endPageNo,
+                },
+                {
+                    transaction: t,
+                }
+            );
+        }
+
+        if (values.sheetType === "Top School" || values.sheetType === "Past Paper") {
+            let paperNumbers = values.paperNumber;
+            for (let item of paperNumbers) {
+                const mapping = await SheetManagementPaperNoMapping.create(
+                    {
+                        sheetManagementId: sheet.id,
+                        paperNoId: item,
+                    },
+                    {
+                        transaction: t,
+                    }
+                );
+                mappingEntries.push(mapping);
+            }
+        }
+
+        await t.commit();
+        res.status(httpStatus.OK).send({ sheet, mappingEntries });
+    } catch (err) {
+        console.log(err);
+        await t.rollback();
+        next(err);
+    }
+},
+
+
   async FindBookByBookId(req, res, next) {
     const id = req.query.bookId;
     try {

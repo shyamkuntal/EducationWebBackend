@@ -669,6 +669,7 @@ const TeacherSheetManagementController = {
           assignedToUserId: sheetData.supervisorId,
           lifeCycle: CONSTANTS.roleNames.Supervisor,
           errorReportByTeacher: values.comment,
+          isSpam: true
         };
         let whereQuery = {
           where: {

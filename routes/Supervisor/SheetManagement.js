@@ -10,6 +10,8 @@ const { GeneralApi } = require("../../controller/GeneralApi");
 
 router.post("/createsheet", SheetManagementController.createSheet);
 
+router.post("/editsheet", SheetManagementController.editSheet);
+
 router.get("/getCountCardData", SheetManagementController.getCountsCardData);
 
 router.get("/getallchapterbybookid", BookManagementController.getAllChapterByBookId);
