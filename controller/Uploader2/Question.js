@@ -2839,7 +2839,7 @@ const QuestionManagementController = {
   async getQuestions(req, res, next) {
     try {
       let values = await getQuestionsSchema.validateAsync({ sheetId: req.query.sheetId });
-      let whereQuery = { sheetId: values.sheetId };
+      let whereQuery = { sheetId: values.sheetId, parentQuestionId: null };
       if (req.query.isCheckedByPricer)
         whereQuery = { ...whereQuery, isCheckedByPricer: req.query.isCheckedByPricer };
 

@@ -521,24 +521,683 @@ const findQuestionSubParts = async (questionsWithSubPart) => {
   return subParts;
 };
 
+// const findQuestions = async (questions) => {
+//   let questionDetails = [];
+
+//   if (questions.length > 0) {
+//     for (let i = 0; i < questions.length; i++) {
+//       let type = questions[i].questionType;
+//       console.log("question loop", i, type);
+
+//       switch (type) {
+//         case CONSTANTS.questionType.Long_Answer:
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+//             let whereQuery = { parentQuestionId: questions[i].id };
+//             console.log(whereQuery, "whereQuery");
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: false,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...questions[i], subParts });
+//           } else {
+//             questionDetails.push(questions[i]);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.MCQ_Single:
+//           let mcqQuestion = questions[i];
+
+//           let mcqOptions = await McqQuestionOption.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+
+//           mcqQuestion.options = mcqOptions;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...questions[i], subParts });
+//           } else {
+//             questionDetails.push(mcqQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.MCQ_Multiple:
+//           let mcqMutipleQuestion = questions[i];
+
+//           let mcqMultipleOptions = await McqQuestionOption.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+
+//           mcqMutipleQuestion.options = mcqMultipleOptions;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...mcqMutipleQuestion, subParts });
+//           } else {
+//             questionDetails.push(mcqMutipleQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.True_False:
+//           let trueFalseQuestion = questions[i];
+
+//           let trueFalseStatements = await TrueFalseQuestionOption.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+
+//           trueFalseQuestion.options = trueFalseStatements;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...trueFalseQuestion, subParts });
+//           } else {
+//             questionDetails.push(trueFalseQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Fill_Text:
+//           let filtextQuestion = questions[i];
+
+//           let options = await FillTextAnswer.findOne({ where: { questionId: filtextQuestion.id } });
+//           filtextQuestion.options = options?.answerContent;
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...filtextQuestion, subParts });
+//           } else {
+//             questionDetails.push(filtextQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Fill_Dropdown:
+//           let dropDownQuestion = questions[i];
+
+//           let ddoptions = await FillTextAnswer.findOne({
+//             where: { questionId: dropDownQuestion.id },
+//           });
+//           dropDownQuestion.options = ddoptions?.answerContent;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//               include: [{ model: QuestionDistractor }],
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...dropDownQuestion, subParts });
+//           } else {
+//             questionDetails.push(dropDownQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Match:
+//           let matchQuestion = questions[i];
+
+//           let matchQuestionOptions = await MatchQuestionPair.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+//           matchQuestion.options = matchQuestionOptions;
+
+//           let QuestionDistractorOptions = await QuestionDistractor.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+//           matchQuestion.distractor = QuestionDistractorOptions;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//               include: [{ model: QuestionDistractor }],
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...matchQuestion, subParts });
+//           } else {
+//             questionDetails.push(matchQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Sort:
+//           let sortQuestion = questions[i];
+
+//           let sortQuestionOptions = await SortQuestionOption.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+
+//           sortQuestion.options = sortQuestionOptions;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...sortQuestion, subParts });
+//           } else {
+//             questionDetails.push(sortQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Classify:
+//           let classifyQuestion = questions[i];
+
+//           let classifyQuestionCategory = await QuestionCategory.findAll({
+//             where: { questionId: questions[i].id },
+//             raw: true,
+//           });
+
+//           for (let i = 0; i < classifyQuestionCategory.length; i++) {
+//             let classifyQuestionCategoryOptions = await QuestionItem.findAll({
+//               where: { categoryId: classifyQuestionCategory[i].id },
+//             });
+
+//             classifyQuestionCategory[i].options = classifyQuestionCategoryOptions;
+//           }
+
+//           classifyQuestion.categories = classifyQuestionCategory;
+
+//           let classifyQuestionDistractorOptions = await QuestionDistractor.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+//           classifyQuestion.distractors = classifyQuestionDistractorOptions;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//               include: [{ model: QuestionDistractor }],
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...classifyQuestion, subParts });
+//           } else {
+//             questionDetails.push(classifyQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Drawing:
+//           let drawingQuestion = questions[i];
+
+//           let drawingQuestionData = await DrawingQuestion.findOne({
+//             where: { questionId: questions[i].id },
+//             attributes: ["uploaderJson", "studentJson", "questionId"],
+//           });
+
+//           drawingQuestion.canvasData = drawingQuestionData;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...drawingQuestion, subParts });
+//           } else {
+//             questionDetails.push(drawingQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Label_Fill:
+//           let labelFillQuestion = questions[i];
+
+//           let labelFillQuestionData = await LabelFillQuestion.findOne({
+//             where: { questionId: questions[i].id },
+//             attributes: ["dataGeneratorJson", "studentJson", "questionId"],
+//           });
+
+//           labelFillQuestion.canvasData = labelFillQuestionData;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...labelFillQuestion, subParts });
+//           } else {
+//             questionDetails.push(labelFillQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Label_Drag:
+//           let labelDragQuestion = questions[i];
+
+//           let labelDragQuestionData = await LabelDragQuestion.findOne({
+//             where: { questionId: questions[i].id },
+//             attributes: ["uploaderJson", "studentJson", "questionId"],
+//           });
+
+//           labelDragQuestion.canvasData = labelDragQuestionData;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...labelDragQuestion, subParts });
+//           } else {
+//             questionDetails.push(labelDragQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Hotspot:
+//           let hotSpotQuestion = questions[i];
+
+//           let hotSpotQuestionData = await HotSpotQuestion.findOne({
+//             where: { questionId: questions[i].id },
+//             attributes: ["uploaderJson", "studentJson", "questionId"],
+//           });
+
+//           hotSpotQuestion.canvasData = hotSpotQuestionData;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...hotSpotQuestion, subParts });
+//           } else {
+//             questionDetails.push(hotSpotQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Desmos_Graph:
+//           let desmosQuestion = questions[i];
+
+//           let desmosQuestionData = await DesmosGraphQuestion.findOne({
+//             where: { questionId: questions[i].id },
+//             attributes: ["uploaderJson", "studentJson", "questionId"],
+//           });
+
+//           desmosQuestion.graphData = desmosQuestionData;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...desmosQuestion, subParts });
+//           } else {
+//             questionDetails.push(desmosQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Geogebra_Graph:
+//           let geoGebraQuestion = questions[i];
+
+//           let geoGebraQuestionData = await GeogebraGraphQuestion.findOne({
+//             where: { questionId: questions[i].id },
+//             attributes: ["uploaderJson", "studentJson", "questionId"],
+//           });
+
+//           geoGebraQuestion.graphData = geoGebraQuestionData;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...geoGebraQuestion, subParts });
+//           } else {
+//             questionDetails.push(geoGebraQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Table:
+//           let tableQuestion = questions[i];
+
+//           let tbQuestionData = await TableQuestion.findOne({
+//             where: { questionId: questions[i].id },
+//           });
+
+//           tableQuestion.tableData = tbQuestionData;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...tableQuestion, subParts });
+//           } else {
+//             questionDetails.push(tableQuestion);
+//           }
+
+//           break;
+
+//         // Content Type question
+
+//         case CONSTANTS.questionType.Text:
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...questions[i], subParts });
+//           } else {
+//             questionDetails.push(questions[i]);
+//           }
+
+//           break;
+
+//         case CONSTANTS.questionType.Image:
+//           let imageQuestion = questions[i];
+//           let image = await QuestionContent.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+//           imageQuestion.imagesData = image;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...imageQuestion, subParts });
+//           } else {
+//             questionDetails.push(imageQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Audio:
+//           let audioQuestion = questions[i];
+//           let audio = await QuestionContent.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+//           audioQuestion.audioData = audio;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...audioQuestion, subParts });
+//           } else {
+//             questionDetails.push(audioQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Video:
+//           let videoQuestion = questions[i];
+//           let video = await QuestionContent.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+//           videoQuestion.videoData = video[0];
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...videoQuestion, subParts });
+//           } else {
+//             questionDetails.push(videoQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Simulation:
+//           let simulationQuestion = questions[i];
+//           let simulation = await QuestionContent.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+//           simulationQuestion.simulationData = simulation[0];
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...simulationQuestion, subParts });
+//           } else {
+//             questionDetails.push(simulationQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.PDF:
+//           let pdfQuestion = questions[i];
+//           let pdf = await QuestionContent.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+//           pdfQuestion.pdfData = pdf;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...pdfQuestion, subParts });
+//           } else {
+//             questionDetails.push(pdfQuestion);
+//           }
+
+//           break;
+//         case CONSTANTS.questionType.Accordian:
+//           let accordianQuestion = questions[i];
+//           let accordian = await Accordian.findAll({
+//             where: { questionId: questions[i].id },
+//           });
+//           accordianQuestion.accordianData = accordian;
+
+//           if (questions[i].hasSubPart) {
+//             let subParts = [];
+
+//             let whereQuery = { parentQuestionId: questions[i].id };
+
+//             let questionsWithSubPart = await Question.findAll({
+//               where: whereQuery,
+//               order: [["createdAt", "ASC"]],
+//               raw: true,
+//             });
+
+//             subParts = await findQuestionSubParts(questionsWithSubPart);
+
+//             questionDetails.push({ ...accordianQuestion, subParts });
+//           } else {
+//             questionDetails.push(accordianQuestion);
+//           }
+
+//           break;
+
+//         default:
+//       }
+//     }
+//   }
+
+//   return questionDetails;
+// };
+
 const findQuestions = async (questions) => {
   let questionDetails = [];
 
   if (questions.length > 0) {
     for (let i = 0; i < questions.length; i++) {
       let type = questions[i].questionType;
-      console.log("question loop", i, type);
 
       switch (type) {
         case CONSTANTS.questionType.Long_Answer:
           if (questions[i].hasSubPart) {
             let subParts = [];
+
             let whereQuery = { parentQuestionId: questions[i].id };
-            console.log(whereQuery, "whereQuery");
+
             let questionsWithSubPart = await Question.findAll({
               where: whereQuery,
               order: [["createdAt", "ASC"]],
-              raw: false,
+              raw: true,
             });
 
             subParts = await findQuestionSubParts(questionsWithSubPart);
@@ -549,6 +1208,7 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.MCQ_Single:
           let mcqQuestion = questions[i];
 
@@ -605,6 +1265,7 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.True_False:
           let trueFalseQuestion = questions[i];
 
@@ -633,11 +1294,9 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.Fill_Text:
           let filtextQuestion = questions[i];
-
-          let options = await FillTextAnswer.findOne({ where: { questionId: filtextQuestion.id } });
-          filtextQuestion.options = options?.answerContent;
           if (questions[i].hasSubPart) {
             let subParts = [];
 
@@ -657,13 +1316,15 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.Fill_Dropdown:
           let dropDownQuestion = questions[i];
 
-          let ddoptions = await FillTextAnswer.findOne({
-            where: { questionId: dropDownQuestion.id },
+          let dropDownQuestionOptions = await FillDropDownOption.findAll({
+            where: { questionId: questions[i].id },
           });
-          dropDownQuestion.options = ddoptions?.answerContent;
+
+          dropDownQuestion.options = dropDownQuestionOptions;
 
           if (questions[i].hasSubPart) {
             let subParts = [];
@@ -674,7 +1335,6 @@ const findQuestions = async (questions) => {
               where: whereQuery,
               order: [["createdAt", "ASC"]],
               raw: true,
-              include: [{ model: QuestionDistractor }],
             });
 
             subParts = await findQuestionSubParts(questionsWithSubPart);
@@ -685,18 +1345,15 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.Match:
           let matchQuestion = questions[i];
 
           let matchQuestionOptions = await MatchQuestionPair.findAll({
             where: { questionId: questions[i].id },
           });
-          matchQuestion.options = matchQuestionOptions;
 
-          let QuestionDistractorOptions = await QuestionDistractor.findAll({
-            where: { questionId: questions[i].id },
-          });
-          matchQuestion.distractor = QuestionDistractorOptions;
+          matchQuestion.options = matchQuestionOptions;
 
           if (questions[i].hasSubPart) {
             let subParts = [];
@@ -707,7 +1364,6 @@ const findQuestions = async (questions) => {
               where: whereQuery,
               order: [["createdAt", "ASC"]],
               raw: true,
-              include: [{ model: QuestionDistractor }],
             });
 
             subParts = await findQuestionSubParts(questionsWithSubPart);
@@ -718,6 +1374,7 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.Sort:
           let sortQuestion = questions[i];
 
@@ -746,6 +1403,7 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.Classify:
           let classifyQuestion = questions[i];
 
@@ -764,11 +1422,6 @@ const findQuestions = async (questions) => {
 
           classifyQuestion.categories = classifyQuestionCategory;
 
-          let classifyQuestionDistractorOptions = await QuestionDistractor.findAll({
-            where: { questionId: questions[i].id },
-          });
-          classifyQuestion.distractors = classifyQuestionDistractorOptions;
-
           if (questions[i].hasSubPart) {
             let subParts = [];
 
@@ -778,7 +1431,6 @@ const findQuestions = async (questions) => {
               where: whereQuery,
               order: [["createdAt", "ASC"]],
               raw: true,
-              include: [{ model: QuestionDistractor }],
             });
 
             subParts = await findQuestionSubParts(questionsWithSubPart);
@@ -789,6 +1441,7 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.Drawing:
           let drawingQuestion = questions[i];
 
@@ -818,6 +1471,7 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.Label_Fill:
           let labelFillQuestion = questions[i];
 
@@ -847,6 +1501,7 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.Label_Drag:
           let labelDragQuestion = questions[i];
 
@@ -876,6 +1531,7 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.Hotspot:
           let hotSpotQuestion = questions[i];
 
@@ -905,6 +1561,7 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.Desmos_Graph:
           let desmosQuestion = questions[i];
 
@@ -934,6 +1591,7 @@ const findQuestions = async (questions) => {
           }
 
           break;
+
         case CONSTANTS.questionType.Geogebra_Graph:
           let geoGebraQuestion = questions[i];
 
@@ -960,34 +1618,6 @@ const findQuestions = async (questions) => {
             questionDetails.push({ ...geoGebraQuestion, subParts });
           } else {
             questionDetails.push(geoGebraQuestion);
-          }
-
-          break;
-        case CONSTANTS.questionType.Table:
-          let tableQuestion = questions[i];
-
-          let tbQuestionData = await TableQuestion.findOne({
-            where: { questionId: questions[i].id },
-          });
-
-          tableQuestion.tableData = tbQuestionData;
-
-          if (questions[i].hasSubPart) {
-            let subParts = [];
-
-            let whereQuery = { parentQuestionId: questions[i].id };
-
-            let questionsWithSubPart = await Question.findAll({
-              where: whereQuery,
-              order: [["createdAt", "ASC"]],
-              raw: true,
-            });
-
-            subParts = await findQuestionSubParts(questionsWithSubPart);
-
-            questionDetails.push({ ...tableQuestion, subParts });
-          } else {
-            questionDetails.push(tableQuestion);
           }
 
           break;
