@@ -607,6 +607,7 @@ const TeacherSheetManagementController = {
           statusForTeacher: CONSTANTS.sheetStatuses.Complete,
           assignedToUserId: sheetData.supervisorId,
           lifeCycle: CONSTANTS.roleNames.Supervisor,
+          isSpam: false
         };
         let whereQuery = {
           where: {

@@ -353,7 +353,7 @@ const SheetManagementController = {
             );
             responseMessage.sheetLog = "Log record for assignment to supervisor added successfully";
 
-            await Question.update({ isReCheckedByReviewer: false }, { sheetId: values.sheetId, transaction: t });
+            await Question.update({ isReCheckedByReviewer: false }, { where:{sheetId: values.sheetId}, transaction: t });
 
             await t.commit();
             res.status(httpStatus.OK).send(responseMessage);
@@ -432,7 +432,7 @@ const SheetManagementController = {
     async reportSheetError(req, res, next) {
         const t = await db.transaction();
         try {
-            let values = await addErrorReportToSheetSchemaForUploader.validateAsync(req.body);
+            let values = await addErrorReportToSheetSchema.validateAsync(req.body);
 
             // checking sheet
             let whereQueryForFindSheet = {
@@ -456,14 +456,14 @@ const SheetManagementController = {
 
             if (
                 values.reviewerId !== sheetData.reviewerId ||
-                sheetData.assignedToUserId !== sheetData.uploader2Id
+                sheetData.assignedToUserId !== sheetData.reviewerId
             ) {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Reviewer not assigned to sheet!");
             }
 
             let dataToBeUpdated = {
                 assignedToUserId: sheetData.supervisorId,
-                statusForUploader: CONSTANTS.sheetStatuses.Complete,
+                statusForReviewer: CONSTANTS.sheetStatuses.Complete,
                 statusForSupervisor: CONSTANTS.sheetStatuses.Complete,
                 uploader2CommentToSupervisor: values.errorReport,
                 isSpam: true,

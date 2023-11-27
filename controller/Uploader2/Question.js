@@ -1599,8 +1599,6 @@ const QuestionManagementController = {
       const { choices, ...rest } = req.body;
       let values = await createQuestionsSchema.validateAsync({ ...rest });
 
-      console.log("FILL TEXT QUESTION:", values);
-
       let dataToBeCreated = { ...values, questionType: CONSTANTS.questionType.Fill_Text };
 
       if (dataToBeCreated.isQuestionSubPart === true && !dataToBeCreated.parentQuestionId) {
@@ -1612,12 +1610,12 @@ const QuestionManagementController = {
       });
       await t.commit();
 
-      await FillTextAnswer.create({
+      let choice = await FillTextAnswer.create({
         questionId: question?.dataValues?.id,
         answerContent: choices,
       });
 
-      res.status(httpStatus.OK).send({ message: "Fill Text question created!" });
+      res.status(httpStatus.OK).send({ message: "Fill Text question created!", FillText: choice});
     } catch (err) {
       await t.rollback();
       next(err);
