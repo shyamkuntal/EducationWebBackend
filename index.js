@@ -1,9 +1,9 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 const routes = require("./routes/index.js");
 const db = require("./config/database.js");
-const mongoose = require("mongoose");
 const { convertToApiError, handleError } = require("./middlewares/apiError.js");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./utils/swagger.json");
@@ -12,7 +12,7 @@ const logger = require("./middlewares/loggerMiddleware");
 const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
-app.use(logger);
+app.use(logger); 
 
 //API DOCS
 if (process.env.NODE_ENV === "dev") {
@@ -46,15 +46,15 @@ db.authenticate()
   .catch((err) => console.log("Error: " + err));
 
 //MongoDb Connection
-// const mongoUri = process.env.MONGO_DB_URL;
+const mongoUri = process.env.MONGO_DB_URL;
 
-// mongoose.connect(mongoUri);
+mongoose.connect(mongoUri);
 
-// const connection = mongoose.connection;
+const connection = mongoose.connection;
 
-// if (connection) {
-//   console.log("MongoDB Connected!");
-// }
+if (connection) {
+  console.log("MongoDB Connected!");
+}
 
 
 // api route
